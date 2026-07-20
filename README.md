@@ -18,7 +18,7 @@
 
 请前往 [v0.1.1 预发布页面](https://github.com/yusen/zhangwen-desktop/releases/tag/v0.1.1) 下载：
 
-`掌问_0.1.1_x64-setup.exe`
+`Zhangwen_0.1.1_x64-setup.exe`
 
 | 项目 | 信息 |
 |---|---|
@@ -31,7 +31,7 @@
 
 ## 安装与首次启动
 
-1. 下载 `掌问_0.1.1_x64-setup.exe`。
+1. 下载 `Zhangwen_0.1.1_x64-setup.exe`。
 2. 双击安装包并按提示完成安装。
 3. 从开始菜单启动“掌问”。
 4. 首次使用时创建本地账号，并在设置中配置所选云端模型服务的 API Key。
