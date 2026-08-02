@@ -308,7 +308,8 @@ M8.1–M8.5 与本轮反馈修正已执行：
   `https://github.com/yusen/zhangwen`，GitHub API 已确认 `private=true`。
 - 这次上传是私有源码备份，不是 M8.7 公开发布，不改变 Creator 的产品、真机或安装包验收状态。
 - 当前工作区是无 `.git` 历史的源码快照；已在 `main` 初始化新仓库。历史交接中记录的里程碑提交和
-  标签仍是恢复依据说明，但不能从此快照恢复为真实 Git 对象；首次上传会建立新的单提交基线。
+  标签仍是恢复依据说明，但不能从此快照恢复为真实 Git 对象；新的源码基线提交为
+  `964927bbbf865709dd9695c4625481961e6988dd`。
 - 上传前复核得到 1,132 个文件、22,948,007 bytes（21.88 MiB），无单文件超过 20 MiB；
   高置信度 GitHub/AWS/Google/OpenAI Key 与私钥头特征扫描为 0。唯一 `.env.example` 只含
   `change-me`、`replace-with-*`、空用户名/密码和 `example.invalid` 占位配置。
@@ -316,10 +317,16 @@ M8.1–M8.5 与本轮反馈修正已执行：
   前文的桌面端 `42 files / 270 tests passed`、Local API `884 passed, 1 hardware deselected`
   以及 contracts、严格 TypeScript 和生产构建通过。
 - 已运行的新增命令包括：`git init -b main`、GitHub 凭据账号检查、仓库名称可用性检查、
-  GitHub REST 私有仓库创建、文件体积审计和仅输出文件名的高置信度凭据扫描。
+  GitHub REST 私有仓库创建、文件体积审计、仅输出文件名的高置信度凭据扫描、初始提交、
+  `git push -u origin main`、远端引用和 GitHub REST 私有状态复核。
 - `git diff --cached --check` 识别出 7 个历史文件的 94 条既有空白格式报告，主要是 Markdown
   强制换行尾空格，另有两个 Python 文件末尾多空行；为保持无历史源码快照原样，本轮未顺手重写。
-- 下一精确动作：为新仓库配置 `origin`，显式暂存当前源码快照，创建初始提交并推送 `main`；
-  随后通过 GitHub 连接器复核远端提交和 Private 可见性，再把结果回写本交接。
+- `main` 已跟踪 `origin/main`；`git ls-remote` 与 GitHub REST 均返回初始提交
+  `964927bbbf865709dd9695c4625481961e6988dd`，REST 同时确认 `visibility=private`。
+- GitHub 插件连接器尚未获得这个新建私有仓库的安装范围，因此连接器读取返回 404；这不影响仓库、
+  私有可见性或 Git 推送。若后续需要用连接器管理该仓库，应在 GitHub App 设置中授权
+  `yusen/zhangwen`。
+- 本节随收尾提交进入 `origin/main` 后，私有源码备份阶段完成；下一精确动作恢复为上文的
+  `ZW-CREATOR-001` M8.6 真人、真机与安装包验收。
 - 不得把仓库切换为 Public，不得强制推送，不得把本机 Git 凭据、API token 或 Credential Manager
   输出写入仓库、日志或交接。
