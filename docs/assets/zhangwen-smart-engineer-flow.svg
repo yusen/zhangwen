@@ -1,0 +1,128 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="2200" height="1400" viewBox="0 0 2200 1400">
+  <defs>
+    <marker id="a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto"><path d="M0 0L10 5L0 10z" fill="#26384d"/></marker>
+    <marker id="ag" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto"><path d="M0 0L10 5L0 10z" fill="#2f9f68"/></marker>
+    <filter id="s" x="-10%" y="-10%" width="120%" height="130%"><feDropShadow dx="0" dy="3" stdDeviation="5" flood-color="#14243a" flood-opacity=".08"/></filter>
+    <style>
+      text{font-family:"Microsoft YaHei","PingFang SC","Noto Sans CJK SC",Arial,sans-serif;fill:#172538}.t{font-size:38px;font-weight:700}.sub{font-size:21px;fill:#53657a}.h{font-size:25px;font-weight:700}.mh{font-size:22px;font-weight:700}.b{font-size:18px}.sm{font-size:16px;fill:#5b6b80}.xs{font-size:14px;fill:#66768b}.c{text-anchor:middle}.bold{font-weight:700}.line{fill:none;stroke:#26384d;stroke-width:2.3;marker-end:url(#a)}.green{fill:none;stroke:#2f9f68;stroke-width:2.2;marker-end:url(#ag)}.dash{fill:none;stroke:#52795f;stroke-width:2;stroke-dasharray:8 7;marker-end:url(#ag)}
+    </style>
+  </defs>
+  <rect width="2200" height="1400" fill="#fff"/>
+  <text x="40" y="55" class="t">智能工程师架构流程图</text>
+  <text x="42" y="90" class="sub">从已确认需求 → 硬件与规则校验 → 工程方案 / MicroPython → 本地验证 → 受控设备部署</text>
+
+  <g filter="url(#s)">
+    <rect x="40" y="120" width="505" height="205" rx="12" fill="#f2faf5" stroke="#78bd96"/>
+    <rect x="575" y="120" width="505" height="205" rx="12" fill="#f4f8fe" stroke="#79a9e7"/>
+    <rect x="1110" y="120" width="505" height="205" rx="12" fill="#fff9ed" stroke="#e5b55e"/>
+    <rect x="1645" y="120" width="515" height="205" rx="12" fill="#fff6f6" stroke="#e69b9b"/>
+  </g>
+  <circle cx="73" cy="158" r="12" fill="#2f9f68"/><path d="M66 151h14v14H66zM69 148h8M69 168h8" stroke="#fff" stroke-width="2" fill="none"/>
+  <text x="98" y="166" class="h" fill="#247b52">角色定位</text>
+  <text x="72" y="208" class="b bold">用技术实现想法</text>
+  <text x="72" y="243" class="b">连接硬件、软件、IoT、数据与 AI</text>
+  <text x="72" y="278" class="b">把工程结果做成可复现产物</text>
+  <text x="72" y="313" class="b">当前嵌入式代码默认 MicroPython</text>
+
+  <circle cx="608" cy="158" r="12" fill="#3977cf"/><path d="M602 152h12v13h-12zM605 149h6" stroke="#fff" stroke-width="2" fill="none"/>
+  <text x="633" y="166" class="h" fill="#2b65b8">工程输入</text>
+  <text x="607" y="208" class="b">已确认需求、方案与项目事实</text>
+  <text x="607" y="243" class="b">ACTIVE Hardware Skill revision</text>
+  <text x="607" y="278" class="b">BoardProfile、Spec 与当前代码版本</text>
+  <text x="607" y="313" class="b">用户已有器件与设备会话状态</text>
+
+  <circle cx="1143" cy="158" r="12" fill="#e58a21"/><path d="M1136 158h14M1143 151v14" stroke="#fff" stroke-width="2.5"/>
+  <text x="1168" y="166" class="h" fill="#ba7414">工程产出</text>
+  <text x="1142" y="208" class="b">硬件方案、BOM、IO Map、接线表</text>
+  <text x="1142" y="243" class="b">Spec、MicroPython 与 IoT 契约</text>
+  <text x="1142" y="278" class="b">静态 / 语法检查与版本化报告</text>
+  <text x="1142" y="313" class="b">项目包、设备部署记录与恢复证据</text>
+
+  <path d="M1678 145l13 6v10c0 9-6 15-13 20-7-5-13-11-13-20v-10z" fill="#df5c5c"/>
+  <text x="1710" y="166" class="h" fill="#bd4848">安全边界</text>
+  <text x="1678" y="208" class="b">硬件参数与兼容规则由本地权威校验</text>
+  <text x="1678" y="243" class="b">新代码检查不执行用户程序</text>
+  <text x="1678" y="278" class="b">上传与固件烧录分离并分别确认</text>
+  <text x="1678" y="313" class="b">普通代码更新不擦除 Flash</text>
+
+  <text x="40" y="375" class="h">核心业务流程</text>
+  <rect x="30" y="395" width="2140" height="955" rx="16" fill="#fcfdff" stroke="#aab8c8" stroke-width="1.6" stroke-dasharray="10 8"/>
+
+  <!-- upstream -->
+  <rect x="60" y="485" width="245" height="235" rx="12" fill="#f4f8fe" stroke="#79a9e7"/>
+  <text x="182" y="528" class="mh c" fill="#2b65b8">项目工程请求</text>
+  <text x="182" y="575" class="b c">硬件 / 代码 / IoT / AI</text>
+  <text x="182" y="614" class="sm c">中央主对话</text>
+  <text x="182" y="648" class="sm c">@智能工程师</text>
+  <text x="182" y="692" class="xs c">明确任务直接工作，避免重复访谈</text>
+
+  <rect x="345" y="485" width="285" height="235" rx="12" fill="#f2f6fa" stroke="#98aabd"/>
+  <text x="487" y="528" class="mh c">ContextAssembler</text>
+  <text x="487" y="572" class="b c">项目最小必要上下文</text>
+  <text x="487" y="610" class="sm c">需求 / 当前方案 / Spec</text>
+  <text x="487" y="644" class="sm c">currentCode / 用户变更摘要</text>
+  <text x="487" y="688" class="xs c">只向智能工程师注入当前代码正文</text>
+
+  <rect x="670" y="455" width="335" height="295" rx="12" fill="#fff9ed" stroke="#e5b55e" stroke-width="1.5"/>
+  <text x="837" y="497" class="mh c" fill="#ba7414">本地工程知识与规则</text>
+  <text x="837" y="540" class="b c">Hardware Skill compiler</text>
+  <text x="837" y="575" class="sm c">电压 / 电平 / 电流 / 协议 / 驱动</text>
+  <text x="837" y="610" class="b c">Rule Engine</text>
+  <text x="837" y="645" class="sm c">兼容、IO、总电流与条件规则</text>
+  <text x="837" y="680" class="b c">BoardProfile</text>
+  <text x="837" y="715" class="xs c">目标板资源、固件与 MicroPython API</text>
+
+  <rect x="1045" y="485" width="300" height="235" rx="12" fill="#f2faf5" stroke="#78bd96" stroke-width="1.6"/>
+  <text x="1195" y="528" class="mh c" fill="#247b52">智能工程师 Runtime</text>
+  <text x="1195" y="570" class="b c">Agent Skill 行为包</text>
+  <text x="1195" y="608" class="sm c">工程规则 / MicroPython 闭环</text>
+  <text x="1195" y="642" class="sm c">验证、上传与交付边界</text>
+  <text x="1195" y="686" class="xs c">现有用户代码优先于旧模型草稿</text>
+
+  <rect x="1385" y="485" width="285" height="235" rx="12" fill="#eef5fe" stroke="#79a9e7"/>
+  <text x="1527" y="528" class="mh c" fill="#2b65b8">DeepSeek 云端 LLM</text>
+  <text x="1527" y="575" class="b c">生成工程内容与代码</text>
+  <text x="1527" y="614" class="sm c">结构化输出 + 一次修复重试</text>
+  <text x="1527" y="648" class="sm c">不接触 API Key、文件或设备</text>
+  <text x="1527" y="692" class="xs c">本地规则结果不能被模型覆盖</text>
+
+  <rect x="1710" y="455" width="400" height="295" rx="12" fill="#f3faf6" stroke="#78bd96" stroke-width="1.5"/>
+  <text x="1910" y="497" class="mh c" fill="#247b52">本地结构与安全校验</text>
+  <text x="1910" y="540" class="b c">Pydantic Schema</text>
+  <text x="1910" y="575" class="sm c">器件、引脚、文件与状态契约</text>
+  <text x="1910" y="612" class="b c">代码安全边界</text>
+  <text x="1910" y="647" class="sm c">凭据 / Shell 能力 / Python AST</text>
+  <text x="1910" y="684" class="b c">结果分类</text>
+  <text x="1910" y="719" class="xs c">工程方案、代码草稿或结构化澄清</text>
+
+  <path d="M305 602H345" class="line"/><path d="M630 602H670" class="line"/><path d="M1005 602H1045" class="line"/><path d="M1345 602H1385" class="line"/><path d="M1670 602H1710" class="line"/>
+
+  <!-- output lanes -->
+  <rect x="60" y="800" width="2050" height="128" rx="12" fill="#f1fbfc" stroke="#76c3c9" stroke-width="1.4"/>
+  <text x="120" y="838" class="mh" fill="#248991">工程设计链</text>
+  <rect x="300" y="825" width="275" height="72" rx="9" fill="#fff" stroke="#9fd5d9"/><text x="437" y="855" class="b c">硬件方案 / BOM</text><text x="437" y="883" class="xs c">优先复用用户已有器件</text>
+  <rect x="610" y="825" width="245" height="72" rx="9" fill="#fff" stroke="#9fd5d9"/><text x="732" y="855" class="b c">IO Map / 接线</text><text x="732" y="883" class="xs c">器件名、引脚与代码一致</text>
+  <rect x="890" y="825" width="245" height="72" rx="9" fill="#fff" stroke="#9fd5d9"/><text x="1012" y="855" class="b c">电气兼容检查</text><text x="1012" y="883" class="xs c">FAIL 阻断 / WARNING 提醒</text>
+  <rect x="1170" y="825" width="245" height="72" rx="9" fill="#fff" stroke="#9fd5d9"/><text x="1292" y="855" class="b c">工程 Spec</text><text x="1292" y="883" class="xs c">模块、接口与验收约束</text>
+  <rect x="1450" y="825" width="285" height="72" rx="9" fill="#fff" stroke="#9fd5d9"/><text x="1592" y="855" class="b c">版本化 Artifact</text><text x="1592" y="883" class="xs c">方案 / 文档 / 依赖 / 历史</text>
+  <rect x="1770" y="825" width="310" height="72" rx="9" fill="#fff" stroke="#9fd5d9"/><text x="1925" y="855" class="b c">中央确认或继续修改</text><text x="1925" y="883" class="xs c">同一项目时间线持续推进</text>
+  <path d="M1910 750V800" class="dash"/>
+
+  <rect x="60" y="955" width="2050" height="178" rx="12" fill="#f2faf5" stroke="#78bd96" stroke-width="1.4"/>
+  <text x="120" y="997" class="mh" fill="#247b52">MicroPython 代码与设备链</text>
+  <rect x="300" y="979" width="230" height="112" rx="9" fill="#fff" stroke="#9bcdb0"/><text x="415" y="1015" class="b c">CodeRun</text><text x="415" y="1046" class="xs c">只保存实际上传的 src/*.py</text><text x="415" y="1074" class="xs c">保存即创建不可变新版本</text>
+  <rect x="565" y="979" width="245" height="112" rx="9" fill="#fff" stroke="#9bcdb0"/><text x="687" y="1015" class="b c">本地验证</text><text x="687" y="1046" class="xs c">静态检查 + 语法检查</text><text x="687" y="1074" class="xs c">仅以真实退出码判断</text>
+  <rect x="845" y="979" width="245" height="112" rx="9" fill="#fff" stroke="#9bcdb0"/><text x="967" y="1015" class="b c">中央接受代码</text><text x="967" y="1046" class="xs c">两项退出码均为 0</text><text x="967" y="1074" class="xs c">失败版本不可接受</text>
+  <rect x="1125" y="979" width="245" height="112" rx="9" fill="#fff" stroke="#9bcdb0"/><text x="1247" y="1015" class="b c">设备 Tab</text><text x="1247" y="1046" class="xs c">扫描 / 连接 / 明确确认</text><text x="1247" y="1074" class="xs c">Web 模式保持禁用</text>
+  <rect x="1405" y="979" width="285" height="112" rx="9" fill="#fff" stroke="#9bcdb0"/><text x="1547" y="1015" class="b c">USB 文件部署</text><text x="1547" y="1046" class="xs c">备份 / 写入 / SHA-256 回读</text><text x="1547" y="1074" class="xs c">重启与管理通道分项显示</text>
+  <rect x="1725" y="979" width="355" height="112" rx="9" fill="#fff6f6" stroke="#e69b9b"/><text x="1902" y="1015" class="b c" fill="#bd4848">独立固件流程</text><text x="1902" y="1046" class="xs c">板型 / 哈希 / 地址 / 风险确认</text><text x="1902" y="1074" class="xs c">不与日常代码上传混用</text>
+  <path d="M530 1035H565" class="green"/><path d="M810 1035H845" class="green"/><path d="M1090 1035H1125" class="green"/><path d="M1370 1035H1405" class="green"/><path d="M1690 1035H1725" class="green"/>
+  <path d="M1527 720V770H415V979" class="dash"/>
+
+  <!-- infrastructure -->
+  <rect x="60" y="1170" width="2050" height="130" rx="12" fill="#f5f6f8" stroke="#a6afb9" stroke-width="1.4"/>
+  <text x="1085" y="1207" class="mh c">本地控制与数据基础</text>
+  <text x="235" y="1250" class="b c">FastAPI Sidecar</text><text x="505" y="1250" class="b c">SQLite v25</text><text x="785" y="1250" class="b c">Hardware Skill 目录</text><text x="1115" y="1250" class="b c">Artifact 文件存储</text><text x="1445" y="1250" class="b c">Capability Token</text><text x="1785" y="1250" class="b c">Windows 凭据存储</text><text x="2020" y="1250" class="b c">确认门禁</text>
+  <text x="1085" y="1282" class="xs c">云端只生成内容；规则、权限、状态、代码检查、文件、串口与设备执行始终由本地保持权威</text>
+  <path d="M1085 1170V1133" class="dash"/>
+</svg>

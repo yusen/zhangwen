@@ -1,0 +1,254 @@
+{
+  "name": "unihiker-k10-micropython-engineer",
+  "version": "1.0.0",
+  "target": "UNIHIKER K10 / DFR0992",
+  "runtime": "MicroPython",
+  "profile": "unihiker_k10",
+  "generated_date": "2026-07-12",
+  "source_document": "https://www.unihiker.com.cn/wiki/k10/micropython_unihiker_k10",
+  "source_firmware_label_seen": "micropython_unihiker_k10&Box_20260430_V0.9.8.zip",
+  "hardware_validation": false,
+  "syntax_validation": true,
+  "notes": [
+    "Official MicroPython firmware page describes the firmware as testing-stage.",
+    "MQTT example on the source page imports WiFi and MqttClient classes but omits object creation."
+  ],
+  "files": [
+    {
+      "path": "BUILD_REPORT.md",
+      "size": 201,
+      "sha256": "655326469da796e8a4415a30cfe3d4e21da91518a5b8a296f8db152da4acb294"
+    },
+    {
+      "path": "CHANGELOG.md",
+      "size": 480,
+      "sha256": "c4c5c8718fa08d5a27dfe23f59a4e8e8f591f2d559893c68fc3a6bc2eed2414a"
+    },
+    {
+      "path": "NOTICE.md",
+      "size": 542,
+      "sha256": "80d1e71b4bbff52bce21c6a9a49acab986f168186f1b7440c8108126cfbc0902"
+    },
+    {
+      "path": "README.md",
+      "size": 3114,
+      "sha256": "4227e0c4435c792c0984173495fe67f5587f59a98527d294242eb0c47ba50c3a"
+    },
+    {
+      "path": "SKILL.md",
+      "size": 13045,
+      "sha256": "74bcfc87dad44b1d92bce47de16fd15a59df444b456e48724b6c8080256e284c"
+    },
+    {
+      "path": "examples/button_rgb/README.md",
+      "size": 165,
+      "sha256": "595844985f93a6d04725832463f26a0a16dba3827fc1b4786785e2a8082b31f7"
+    },
+    {
+      "path": "examples/button_rgb/main.py",
+      "size": 728,
+      "sha256": "8c9264585064ac278a5bb79cc01d508f2781e52d72a9cf76e3b0f84d850e2866"
+    },
+    {
+      "path": "examples/environment_monitor/README.md",
+      "size": 365,
+      "sha256": "990f299d1ea5b87287b74a88b2cf0eae5f397416091705abf702804488188ed7"
+    },
+    {
+      "path": "examples/environment_monitor/main.py",
+      "size": 2327,
+      "sha256": "cd91de984695ac4b21551749d5120c98230a76a676661b9e9cbd251007d8bf2e"
+    },
+    {
+      "path": "examples/qr_scanner/README.md",
+      "size": 274,
+      "sha256": "c34ba3a0cf6a0c0d1a275268c4bb062899cb941882e59dabf7f2f011cd7a489b"
+    },
+    {
+      "path": "examples/qr_scanner/main.py",
+      "size": 564,
+      "sha256": "ec622555a85f7862a12e0a61444cc1cf23ed89556af1d12918b71edda2450512"
+    },
+    {
+      "path": "references/00-sources-and-scope.md",
+      "size": 1135,
+      "sha256": "410ee5f17508a136192d40bbe723e301e9dccf56d5404db3506093312cfa2f7c"
+    },
+    {
+      "path": "references/01-platform-and-firmware.md",
+      "size": 1505,
+      "sha256": "6923f9a23b873b3cf3664c1114e8c639d6cb9d3d191177c2ce22630468902739"
+    },
+    {
+      "path": "references/02-deployment.md",
+      "size": 1366,
+      "sha256": "775dd76920d1f6533944687aa05af7387eec1c2844833f4e42cb1ed31f376377"
+    },
+    {
+      "path": "references/03-screen-api.md",
+      "size": 1740,
+      "sha256": "ca1ac9d5cd6db0c3b4378ec2637c6ce7f9646efef836c365a965a7635e987716"
+    },
+    {
+      "path": "references/04-onboard-api.md",
+      "size": 1318,
+      "sha256": "067f10b79635f0c25b9f00b29c3b124b1d543c9c8d9e5945786774c21b78251a"
+    },
+    {
+      "path": "references/05-storage-audio-api.md",
+      "size": 992,
+      "sha256": "ee766eb88442f9c72aa6f20a7350505dc63cba329b6d4808536eb0918ccb3322"
+    },
+    {
+      "path": "references/06-connectivity-api.md",
+      "size": 1665,
+      "sha256": "5037a6a60854819e11d00623acc1415bc75b79477c9a529a69c078c72eae1c0a"
+    },
+    {
+      "path": "references/07-ai-api.md",
+      "size": 2055,
+      "sha256": "8b0fefe13eef6440e2e03a8d23423eebbbf270e6c3563d49c792a82a0b90a8d5"
+    },
+    {
+      "path": "references/08-external-hardware-api.md",
+      "size": 2075,
+      "sha256": "e5d13956594f661f017a11a7cc44149b314863b82d244ed1309f7ffd0c347861"
+    },
+    {
+      "path": "references/09-safety-and-troubleshooting.md",
+      "size": 1961,
+      "sha256": "b0737e1dd2b371e66ec016021da6da0884dc5fad5d8eb16fa0f694171a579633"
+    },
+    {
+      "path": "references/10-verification-matrix.md",
+      "size": 1942,
+      "sha256": "ba7874888c45c6d376cfd1e83eb823866ec5a0b1bafd8eb4ebf5ec372460fd14"
+    },
+    {
+      "path": "templates/00_profile_probe.py",
+      "size": 406,
+      "sha256": "fdc139075fea00c813e698eed5b66966eddc734140ee1d272462d51e1090d7e6"
+    },
+    {
+      "path": "templates/01_screen_shapes.py",
+      "size": 600,
+      "sha256": "653f2012487a101e6a9bd8558df2d60fcd062270ae853373e3017c3b18e772b1"
+    },
+    {
+      "path": "templates/02_onboard_dashboard.py",
+      "size": 1757,
+      "sha256": "35a87c7ca82bdf98d0365bc7a2533072747c4d756eec381beb69f3c95e70925b"
+    },
+    {
+      "path": "templates/03_button_event_safe.py",
+      "size": 1058,
+      "sha256": "24ed212a1abdbe7dd9b1f39a359f217dcf394250cd8abc1f4e6acaa96d7ac4ae"
+    },
+    {
+      "path": "templates/04_rgb_status.py",
+      "size": 444,
+      "sha256": "c733408cfec1f7510a612a498244ece27684ce75be17b55eec4a5ea765273262"
+    },
+    {
+      "path": "templates/05_tf_card_list.py",
+      "size": 351,
+      "sha256": "e574827c8e0cbca4f00a8decc2718cebc1325765005f13a0fa57bcc82d6d1c1c"
+    },
+    {
+      "path": "templates/06_audio_record_play.py",
+      "size": 448,
+      "sha256": "a25f8caabe834b7177c1cefb9c78070234d99892d9b16c6ac8614c0e4fc44458"
+    },
+    {
+      "path": "templates/07_wifi_connect.py",
+      "size": 621,
+      "sha256": "cbf070a715ed6a15a970d9da85feed6d625efb56736bce1881c0ee895c69f179"
+    },
+    {
+      "path": "templates/08_mqtt_probe.py",
+      "size": 895,
+      "sha256": "1ddb67a9179ff9097192ad852bc68c2a8e91e7dae060e45dff9ac38f99cf84bd"
+    },
+    {
+      "path": "templates/09_ble_hid.py",
+      "size": 1062,
+      "sha256": "4cf747ec20608d82b5a78afc740907a96ad1fcd8bd698ee5ac3a483ea3d64848"
+    },
+    {
+      "path": "templates/10_ai_qr_scanner.py",
+      "size": 564,
+      "sha256": "ec622555a85f7862a12e0a61444cc1cf23ed89556af1d12918b71edda2450512"
+    },
+    {
+      "path": "templates/11_ai_motion_detect.py",
+      "size": 497,
+      "sha256": "a0fea47bf6798e724a011729c94de182653d793c8b09ca6e87599fc288846504"
+    },
+    {
+      "path": "templates/12_gpio_test.py",
+      "size": 687,
+      "sha256": "219ca79d4f8ac89e6636cee2c1e26962194c8b19d0fce22996912273c820b275"
+    },
+    {
+      "path": "templates/13_servo_safe.py",
+      "size": 664,
+      "sha256": "379e85cffffd8ec0927a21af2baf2cb758b6966c17bea109291d6ce71b8ab888"
+    },
+    {
+      "path": "templates/14_camera_preview.py",
+      "size": 353,
+      "sha256": "db225854a40be1c9a4eac590a07df82a26fef37931a8447ef69d26dddb880571"
+    },
+    {
+      "path": "templates/15_asr_tts.py",
+      "size": 928,
+      "sha256": "06321504db82ef851ecbcabdbbb035606a31f89bdaa116dee9bb9035e7625e0b"
+    },
+    {
+      "path": "templates/16_ai_face_recognition.py",
+      "size": 1490,
+      "sha256": "b73d4a6fea6b98254d8d607162130c3cb5971071b3273d1ce17017f6d41b86a1"
+    },
+    {
+      "path": "templates/17_dht_sensor.py",
+      "size": 333,
+      "sha256": "ce9ea1506fcd5b766c93968470e00d045fda10e4b39cb7255e24158f99ff361e"
+    },
+    {
+      "path": "templates/18_ds18b20_sensor.py",
+      "size": 308,
+      "sha256": "24def367d84900d656d8375be36c575510c1306005f856911628c57926ed8aac"
+    },
+    {
+      "path": "templates/19_ultrasonic.py",
+      "size": 404,
+      "sha256": "bf15bef2fcc6079f1ea75db8231af1ffcae21a59a53eea0f9880a1190d9713af"
+    },
+    {
+      "path": "templates/20_neopixel.py",
+      "size": 504,
+      "sha256": "6466469aa360fec070c02217db5144c030801f48b04c995a39463ed47e06ce3b"
+    },
+    {
+      "path": "templates/21_force_sensor_probe.py",
+      "size": 627,
+      "sha256": "8c611f58708d4e3dda80b22e57d70b1f0066ff46e69eded401d5892bfa355249"
+    },
+    {
+      "path": "templates/README.md",
+      "size": 1504,
+      "sha256": "bb03a5eb472d6681b4df63e4d9d63bdb5135926c936f965f77269dc30ec082e0"
+    },
+    {
+      "path": "tests/agent_acceptance_tests.md",
+      "size": 1808,
+      "sha256": "c5ed95cd61c5bb60c56137802ec63bd1f8432faafb1d6234eb6fc605d160559f"
+    },
+    {
+      "path": "tests/syntax_check.py",
+      "size": 600,
+      "sha256": "698f85ff063c30be8b90260d3262530946f86f66131fa7ac6a146c2093667c71"
+    }
+  ],
+  "file_hash_note": "manifest.json is excluded because its own hash would be self-referential."
+}

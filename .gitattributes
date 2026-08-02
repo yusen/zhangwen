@@ -1,0 +1,2 @@
+# Immutable external source snapshots must remain byte-for-byte reproducible.
+references/source-packages/** -text -whitespace

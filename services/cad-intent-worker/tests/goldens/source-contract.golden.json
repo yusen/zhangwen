@@ -1,0 +1,45 @@
+{
+  "routes": [
+    {
+      "input": { "prompt": "做一个自动浇花系统" },
+      "output": { "route_action": "new_requirement", "confidence": 0.72, "workflow_stage": "" }
+    },
+    {
+      "input": { "routeAction": "selected_hardware_enclosure", "prompt": "给所选硬件做一个外壳" },
+      "output": { "route_action": "selected_hardware_enclosure", "confidence": 1, "workflow_stage": "" }
+    },
+    {
+      "input": { "prompt": "把上盖加厚 1mm", "currentDesignState": { "id": "cad-golden" } },
+      "output": { "route_action": "model_edit", "confidence": 0.84, "workflow_stage": "" }
+    }
+  ],
+  "productIds": ["unihiker_plant_caregiver", "mpython_board_enclosure"],
+  "templateIds": [
+    "unihiker_smart_watering_system",
+    "unihiker_photo_album",
+    "unihiker_light_effect_cup_v1",
+    "unihiker_handheld_fan_v1",
+    "mpython_board_enclosure_v1",
+    "unihiker_auto_open_lid_box_v1"
+  ],
+  "workflowToolIds": [
+    "workflow_orchestration",
+    "conversation_route",
+    "standalone_structural_parts",
+    "model_edit",
+    "surface_engraving",
+    "design_revision",
+    "requirement_function_selection_analysis",
+    "intent_analyze",
+    "hardware_bom_select",
+    "function_verify",
+    "profile_check",
+    "orientation_resolve",
+    "box_feasibility_check",
+    "layout_solve",
+    "design_validate",
+    "cadquery_generate",
+    "artifact_export",
+    "cadquery_build"
+  ]
+}

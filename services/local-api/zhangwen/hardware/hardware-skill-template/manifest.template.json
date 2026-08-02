@@ -1,0 +1,27 @@
+{
+  "schema": "zhangwen.hardware-skill-manifest/v1",
+  "schemaVersion": 1,
+  "skillName": "<小写英文硬件-slug>",
+  "componentId": "<唯一硬件ID>",
+  "displayName": "<硬件显示名称>",
+  "description": "<一句话说明用途与边界>",
+  "status": "ACTIVE",
+  "sourceKind": "MANUAL",
+  "files": [
+    "README.md",
+    "SKILL.md",
+    "references/specifications.md",
+    "references/compatibility-rules.md",
+    "references/mechanical.md",
+    "references/integration.md",
+    "references/safety.md",
+    "references/sources.md",
+    "models/cadquery.py",
+    "examples/usage.md",
+    "tests/validation-cases.md"
+  ],
+  "media": [],
+  "revision": "<24位小写内容revision>",
+  "createdAt": "<ISO-8601时间>",
+  "updatedAt": "<ISO-8601时间>"
+}

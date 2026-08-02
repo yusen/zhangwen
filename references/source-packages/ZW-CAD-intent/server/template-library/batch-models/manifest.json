@@ -1,0 +1,39 @@
+{
+  "schema_version": "batch_model_templates_v1",
+  "model_contract": "template_parts_v1",
+  "source_policy": "read_only_imported_copy",
+  "cases": [
+    {
+      "template_id": "unihiker_light_effect_cup_v1",
+      "source_filename": "unihiker_light_effect_cup_v1.cq.py",
+      "original_filename": "光效水杯.txt",
+      "source_sha256": "6eccb944ea677d2cd3bdcc2002bcddaf81f9bba8dac5f91d37fc747de2ff27fa",
+      "printable_part_ids": ["main_body"],
+      "reference_part_ids": ["rgb_ring_model", "battery_model", "k10_model"]
+    },
+    {
+      "template_id": "unihiker_handheld_fan_v1",
+      "source_filename": "unihiker_handheld_fan_v1.cq.py",
+      "original_filename": "手持小风扇.txt",
+      "source_sha256": "29a323d62f667c7a47d47cc3354a1731652a0a7a841729ac002093f4adccc248",
+      "printable_part_ids": ["main_body"],
+      "reference_part_ids": ["k10_model", "battery_model", "fan_model"]
+    },
+    {
+      "template_id": "mpython_board_enclosure_v1",
+      "source_filename": "mpython_board_enclosure_v1.cq.py",
+      "original_filename": "掌控板外壳.txt",
+      "source_sha256": "f30e5ebc66f27ab8259c7ce78c29613386877b0552753914f52fd2d46c9e35a4",
+      "printable_part_ids": ["bottom_shell", "top_cover"],
+      "reference_part_ids": []
+    },
+    {
+      "template_id": "unihiker_auto_open_lid_box_v1",
+      "source_filename": "unihiker_auto_open_lid_box_v1.cq.py",
+      "original_filename": "行空板自动感应开盖智能盒子_CadQuery完整代码.txt",
+      "source_sha256": "8608f82b54577cea5837cb34f8651b6525dfb8883e09b1985f84e6db7544312f",
+      "printable_part_ids": ["base_part", "lid_part"],
+      "reference_part_ids": ["unihiker_k10", "unihiker_k10_io_expansion_board", "unihiker_servo", "unihiker_ultrasonic_distance_sensor", "servo_horn"]
+    }
+  ]
+}

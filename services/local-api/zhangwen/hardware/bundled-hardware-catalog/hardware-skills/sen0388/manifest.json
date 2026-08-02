@@ -1,0 +1,26 @@
+{
+  "schema": "zhangwen.hardware-skill-manifest/v1",
+  "schemaVersion": 1,
+  "skillName": "sen0388",
+  "componentId": "hw_dfrobot_sen0388",
+  "displayName": "SEN0388 URM09 超声波测距传感器",
+  "description": "DFRobot SEN0388 的官方规格、K10 单线数字接口接线、安全说明和自动校验规则。",
+  "status": "ACTIVE",
+  "sourceKind": "BUNDLED",
+  "files": [
+    "README.md",
+    "CHANGELOG.md",
+    "SKILL.md",
+    "references/specifications.md",
+    "references/compatibility-rules.md",
+    "references/integration.md",
+    "references/safety.md",
+    "references/sources.md",
+    "examples/usage.md",
+    "tests/validation-cases.md"
+  ],
+  "media": [],
+  "revision": "399c3ea020ae46920e723db9",
+  "createdAt": "2026-07-25T00:00:00+08:00",
+  "updatedAt": "2026-07-25T00:00:00+08:00"
+}

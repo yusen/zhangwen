@@ -1,0 +1,152 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="2200" height="1400" viewBox="0 0 2200 1400">
+  <defs>
+    <marker id="a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto"><path d="M0 0L10 5L0 10z" fill="#26384d"/></marker>
+    <marker id="ap" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto"><path d="M0 0L10 5L0 10z" fill="#7957bd"/></marker>
+    <filter id="s" x="-10%" y="-10%" width="120%" height="130%"><feDropShadow dx="0" dy="3" stdDeviation="5" flood-color="#14243a" flood-opacity=".08"/></filter>
+    <style>
+      text{font-family:"Microsoft YaHei","PingFang SC","Noto Sans CJK SC",Arial,sans-serif;fill:#172538}.t{font-size:38px;font-weight:700}.sub{font-size:21px;fill:#53657a}.h{font-size:25px;font-weight:700}.mh{font-size:22px;font-weight:700}.b{font-size:18px}.sm{font-size:16px;fill:#5b6b80}.xs{font-size:14px;fill:#66768b}.c{text-anchor:middle}.bold{font-weight:700}.line{fill:none;stroke:#26384d;stroke-width:2.3;marker-end:url(#a)}.purple{fill:none;stroke:#7957bd;stroke-width:2.2;marker-end:url(#ap)}.dash{fill:none;stroke:#776392;stroke-width:2;stroke-dasharray:8 7;marker-end:url(#ap)}
+    </style>
+  </defs>
+  <rect width="2200" height="1400" fill="#fff"/>
+  <text x="40" y="55" class="t">结构工程师架构流程图</text>
+  <text x="42" y="90" class="sub">从结构意图 → 中央尺寸澄清 → 声明式 cadDraft → 用户确认 → 受限 CAD Worker → 版本化 3D 产物</text>
+
+  <g filter="url(#s)">
+    <rect x="40" y="120" width="505" height="205" rx="12" fill="#f8f5fd" stroke="#9e84d1"/>
+    <rect x="575" y="120" width="505" height="205" rx="12" fill="#f4f8fe" stroke="#79a9e7"/>
+    <rect x="1110" y="120" width="505" height="205" rx="12" fill="#f3faf6" stroke="#78bd96"/>
+    <rect x="1645" y="120" width="515" height="205" rx="12" fill="#fff6f6" stroke="#e69b9b"/>
+  </g>
+  <circle cx="73" cy="158" r="12" fill="#7957bd"/><path d="M65 154l8-5 8 5-8 5zM65 154v10l8 5 8-5v-10" stroke="#fff" stroke-width="2" fill="none"/>
+  <text x="98" y="166" class="h" fill="#6542aa">角色定位</text>
+  <text x="72" y="208" class="b bold">把想法变成可制造实物</text>
+  <text x="72" y="243" class="b">结构、布局、安装、开孔与装配</text>
+  <text x="72" y="278" class="b">尺寸、公差、可打印性与制造风险</text>
+  <text x="72" y="313" class="b">当前真实建模为受限盒体闭环</text>
+
+  <circle cx="608" cy="158" r="12" fill="#3977cf"/><path d="M602 152h12v13h-12zM605 149h6" stroke="#fff" stroke-width="2" fill="none"/>
+  <text x="633" y="166" class="h" fill="#2b65b8">权威输入</text>
+  <text x="607" y="208" class="b">安装模式：松散存放 / 固定安装</text>
+  <text x="607" y="243" class="b">内腔长 × 宽 × 高（毫米）</text>
+  <text x="607" y="278" class="b">显式选择的受信机械档案</text>
+  <text x="607" y="313" class="b">确认事实 ID、revision 与 SHA-256</text>
+
+  <circle cx="1143" cy="158" r="12" fill="#2f9f68"/><path d="M1137 158l4 4 8-9" stroke="#fff" stroke-width="2.5" fill="none"/>
+  <text x="1168" y="166" class="h" fill="#247b52">结构产出</text>
+  <text x="1142" y="208" class="b">结构草稿、尺寸与装配说明</text>
+  <text x="1142" y="243" class="b">STEP / STL / GLB</text>
+  <text x="1142" y="278" class="b">几何、开孔、安装与制造报告</text>
+  <text x="1142" y="313" class="b">3D 浮窗预览与版本化产物</text>
+
+  <path d="M1678 145l13 6v10c0 9-6 15-13 20-7-5-13-11-13-20v-10z" fill="#df5c5c"/>
+  <text x="1710" y="166" class="h" fill="#bd4848">当前限制</text>
+  <text x="1678" y="208" class="b">仅支持 BOX_WITH_LID / box-with-lid.v1</text>
+  <text x="1678" y="243" class="b">不是通用 CAD、CAE、CNC 或切片平台</text>
+  <text x="1678" y="278" class="b">云端不能输出或执行 CadQuery / Python</text>
+  <text x="1678" y="313" class="b">本地建模、确认与文件读取需桌面权限</text>
+
+  <text x="40" y="375" class="h">核心业务流程</text>
+  <rect x="30" y="395" width="2140" height="955" rx="16" fill="#fcfdff" stroke="#aab8c8" stroke-width="1.6" stroke-dasharray="10 8"/>
+
+  <!-- intake lane -->
+  <rect x="55" y="475" width="235" height="225" rx="12" fill="#f4f8fe" stroke="#79a9e7"/>
+  <text x="172" y="516" class="mh c" fill="#2b65b8">结构建模请求</text>
+  <text x="172" y="561" class="b c">中央主对话</text>
+  <text x="172" y="599" class="sm c">@结构工程师</text>
+  <text x="172" y="633" class="sm c">保护盒 / 外壳 / 3D 建模</text>
+  <text x="172" y="676" class="xs c">方案与立项阶段同样优先进入 CAD</text>
+
+  <rect x="325" y="475" width="260" height="225" rx="12" fill="#f2f6fa" stroke="#98aabd"/>
+  <text x="455" y="516" class="mh c">CAD-first 路由</text>
+  <text x="455" y="559" class="b c">确认专家真实身份</text>
+  <text x="455" y="597" class="sm c">当前文本 / 来源澄清卡</text>
+  <text x="455" y="631" class="sm c">最近 CAD 语境与修订表达</text>
+  <text x="455" y="675" class="xs c">普通结构咨询不会被永久锁入建模</text>
+
+  <polygon points="750,465 875,585 750,705 625,585" fill="#f8f6fd" stroke="#9e84d1" stroke-width="1.6"/>
+  <text x="750" y="560" class="mh c" fill="#6542aa">输入是否完整？</text>
+  <text x="750" y="596" class="sm c">安装模式 + 内腔尺寸</text>
+  <text x="750" y="628" class="xs c">固定安装还需机械档案</text>
+
+  <rect x="925" y="445" width="350" height="260" rx="12" fill="#fff9ef" stroke="#e7a052" stroke-width="1.5"/>
+  <text x="1100" y="486" class="mh c" fill="#c66b0c">中央整组澄清</text>
+  <text x="1100" y="528" class="b c">第一轮：安装模式 + 内腔尺寸</text>
+  <text x="1100" y="565" class="sm c">长 × 宽 × 高 mm</text>
+  <text x="1100" y="600" class="b c">固定安装才进入第二轮</text>
+  <text x="1100" y="637" class="sm c">服务端受信机械档案多选</text>
+  <text x="1100" y="678" class="xs c">答案、answered 状态和 CAD Facts 同事务</text>
+
+  <rect x="1320" y="445" width="350" height="260" rx="12" fill="#f8f5fd" stroke="#9e84d1" stroke-width="1.5"/>
+  <text x="1495" y="486" class="mh c" fill="#6542aa">声明式 cadDraft</text>
+  <text x="1495" y="528" class="b c">BOX_WITH_LID</text>
+  <text x="1495" y="565" class="sm c">参数只含白名单数值与制造约束</text>
+  <text x="1495" y="600" class="sm c">松散存放允许 components = []</text>
+  <text x="1495" y="635" class="sm c">固定安装引用精确 profile revision</text>
+  <text x="1495" y="678" class="xs c">无路径、命令、Python、Job 或 Artifact ID</text>
+
+  <rect x="1715" y="445" width="395" height="260" rx="12" fill="#f2faf5" stroke="#78bd96" stroke-width="1.5"/>
+  <text x="1912" y="486" class="mh c" fill="#247b52">Sidecar 固化与本地校验</text>
+  <text x="1912" y="528" class="b c">模板 / 范围 / 档案 / 权限检查</text>
+  <text x="1912" y="565" class="sm c">生成 templateRevision</text>
+  <text x="1912" y="600" class="sm c">固化 intakeSnapshotSha256</text>
+  <text x="1912" y="635" class="sm c">创建 DRAFT CadRun</text>
+  <text x="1912" y="678" class="xs c">新 intake 会封存旧非活动候选</text>
+
+  <path d="M290 585H325" class="line"/><path d="M585 585H625" class="line"/>
+  <path d="M875 540H925" class="purple"/><text x="900" y="522" class="xs c">缺少</text>
+  <path d="M1100 705V745H750V705" class="purple"/>
+  <text x="910" y="770" class="xs c" fill="#7957bd">用户一次提交整组答案后回到同一结构线程</text>
+  <path d="M830 675C930 795 1280 790 1385 705" class="purple"/><text x="1160" y="797" class="xs c">完整</text>
+  <path d="M1275 575H1320" class="purple"/><path d="M1670 575H1715" class="line"/>
+
+  <!-- execution lane -->
+  <rect x="55" y="830" width="2055" height="235" rx="12" fill="#f2f6fa" stroke="#98aabd" stroke-width="1.4"/>
+  <text x="1082" y="867" class="mh c">桌面本地建模与版本发布链</text>
+  <rect x="85" y="895" width="245" height="130" rx="9" fill="#fff" stroke="#c3cfdb"/>
+  <text x="207" y="929" class="b c">中央“开始建模”</text>
+  <text x="207" y="963" class="xs c">用户明确确认</text>
+  <text x="207" y="991" class="xs c">Web 模式按钮禁用</text>
+  <rect x="365" y="895" width="245" height="130" rx="9" fill="#fff" stroke="#c3cfdb"/>
+  <text x="487" y="929" class="b c">CadJobCoordinator</text>
+  <text x="487" y="963" class="xs c">队列 / 取消 / 重试</text>
+  <text x="487" y="991" class="xs c">复核当前 intake 指纹</text>
+  <rect x="645" y="895" width="260" height="130" rx="9" fill="#fff" stroke="#c3cfdb"/>
+  <text x="775" y="929" class="b c">受限 CadQuery Worker</text>
+  <text x="775" y="963" class="xs c">stdin JSON + 受控 staging</text>
+  <text x="775" y="991" class="xs c">不读取项目 SQLite 或凭据</text>
+  <rect x="940" y="895" width="270" height="130" rx="9" fill="#fff" stroke="#c3cfdb"/>
+  <text x="1075" y="929" class="b c">确定性几何与校验</text>
+  <text x="1075" y="963" class="xs c">布局 / 开孔 / 安装 / 干涉</text>
+  <text x="1075" y="991" class="xs c">单位 / 封闭性 / 最小壁厚</text>
+  <rect x="1245" y="895" width="255" height="130" rx="9" fill="#fff" stroke="#c3cfdb"/>
+  <text x="1372" y="929" class="b c">固定 11 个文件</text>
+  <text x="1372" y="963" class="xs c">STEP / STL / GLB</text>
+  <text x="1372" y="991" class="xs c">JSON / manifest / 报告</text>
+  <rect x="1535" y="895" width="250" height="130" rx="9" fill="#fff" stroke="#c3cfdb"/>
+  <text x="1660" y="929" class="b c">ArtifactVersion</text>
+  <text x="1660" y="963" class="xs c">二进制进入文件目录</text>
+  <text x="1660" y="991" class="xs c">SQLite 只存元数据</text>
+  <rect x="1820" y="895" width="260" height="130" rx="9" fill="#fff" stroke="#c3cfdb"/>
+  <text x="1950" y="929" class="b c">预览与最终确认</text>
+  <text x="1950" y="963" class="xs c">MODEL_3D 浮窗</text>
+  <text x="1950" y="991" class="xs c">中央确认 CAD / 退回 CAD</text>
+  <path d="M330 960H365" class="line"/><path d="M610 960H645" class="line"/><path d="M905 960H940" class="line"/><path d="M1210 960H1245" class="line"/><path d="M1500 960H1535" class="line"/><path d="M1785 960H1820" class="line"/>
+  <path d="M1912 705V790H207V895" class="dash"/>
+
+  <!-- stale/revision control -->
+  <rect x="55" y="1095" width="1325" height="116" rx="12" fill="#fff9ed" stroke="#e5b55e" stroke-width="1.4"/>
+  <text x="717" y="1132" class="mh c" fill="#ba7414">机械档案与版本真实性</text>
+  <text x="220" y="1175" class="b c">profileId</text><text x="430" y="1175" class="b c">revision</text><text x="650" y="1175" class="b c">SHA-256</text><text x="900" y="1175" class="b c">安装面 / 开孔</text><text x="1200" y="1175" class="b c">尺寸证据</text>
+  <text x="717" y="1200" class="xs c">只使用服务端受信档案；不按器件名称猜尺寸，也不把泛称 ESP32 映射成具体板型</text>
+
+  <rect x="1415" y="1095" width="695" height="116" rx="12" fill="#fff6f6" stroke="#e69b9b" stroke-width="1.5"/>
+  <path d="M1445 1118l13 6v10c0 9-6 15-13 20-7-5-13-11-13-20v-10z" fill="#df5c5c"/>
+  <text x="1480" y="1138" class="b bold" fill="#bd4848">修订与过期保护</text>
+  <text x="1480" y="1174" class="sm">create / retry / finalize / confirm 都复核 intakeSnapshotSha256。</text>
+  <text x="1480" y="1200" class="sm">失配返回 CAD_INTAKE_REVISED，旧 Worker 结果不得重新发布。</text>
+
+  <rect x="55" y="1238" width="2055" height="82" rx="12" fill="#f5f6f8" stroke="#a6afb9" stroke-width="1.4"/>
+  <text x="1082" y="1270" class="mh c">本地控制与数据基础</text>
+  <text x="260" y="1304" class="b c">FastAPI Sidecar</text><text x="555" y="1304" class="b c">SQLite v25 / cad_jobs</text><text x="900" y="1304" class="b c">Artifact 文件存储</text><text x="1255" y="1304" class="b c">机械档案版本库</text><text x="1590" y="1304" class="b c">Desktop Capability</text><text x="1950" y="1304" class="b c">中央确认门禁</text>
+  <path d="M1082 1238V1211" class="dash"/>
+</svg>

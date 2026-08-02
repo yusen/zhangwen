@@ -1,0 +1,4 @@
+interface:
+  display_name: "模型自然语言修改"
+  short_description: "理解自然语言，安全修改当前项目的结构、边线和 CadQuery 模型"
+  default_prompt: "使用 $model-edit 分析我对当前模型的自然语言修改，先列出歧义与风险并在确认后安全执行。"

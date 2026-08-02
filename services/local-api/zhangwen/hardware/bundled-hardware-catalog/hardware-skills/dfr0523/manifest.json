@@ -1,0 +1,26 @@
+{
+  "schema": "zhangwen.hardware-skill-manifest/v1",
+  "schemaVersion": 1,
+  "skillName": "dfr0523",
+  "componentId": "hw_dfrobot_dfr0523",
+  "displayName": "DFR0523 数字蠕动泵",
+  "description": "DFRobot DFR0523 的官方规格、独立供电约束、K10 PWM 接线、安全时限和确定性校验规则。",
+  "status": "ACTIVE",
+  "sourceKind": "BUNDLED",
+  "files": [
+    "README.md",
+    "CHANGELOG.md",
+    "SKILL.md",
+    "references/specifications.md",
+    "references/compatibility-rules.md",
+    "references/integration.md",
+    "references/safety.md",
+    "references/sources.md",
+    "examples/usage.md",
+    "tests/validation-cases.md"
+  ],
+  "media": [],
+  "revision": "5d81bc80d697774961a421e0",
+  "createdAt": "2026-07-25T00:00:00+08:00",
+  "updatedAt": "2026-07-25T00:00:00+08:00"
+}

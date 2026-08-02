@@ -1,0 +1,55 @@
+/* ZW-UX-009 M4：V2 壳内浮窗与对话框视觉统一。
+   FloatingWindow / SettingsDialog / ProjectCreationDialog 是 V1/V2 共享组件，
+   这里只在 .zw-shell 作用域内做外观覆盖，不改动共享组件与 V1 样式。 */
+
+/* ============ 浮窗 ============ */
+.zw-shell .floating-window {
+  border: 1px solid var(--zw-border-strong);
+  border-radius: var(--zw-r-lg);
+  background: var(--zw-surface);
+  box-shadow: var(--zw-shadow-2);
+}
+.zw-shell .floating-window-active {
+  border-color: var(--zw-brand);
+  box-shadow:
+    0 0 0 1px rgba(53, 104, 255, 0.14),
+    var(--zw-shadow-2);
+}
+.zw-shell .floating-header {
+  border-bottom: 1px solid var(--zw-border);
+  border-radius: var(--zw-r-lg) var(--zw-r-lg) 0 0;
+  background: var(--zw-surface-sub);
+}
+.zw-shell .floating-title { color: var(--zw-text); font-weight: 700; }
+.zw-shell .floating-control,
+.zw-shell .floating-close {
+  border-radius: var(--zw-r-sm);
+  transition: background var(--zw-motion), color var(--zw-motion);
+}
+.zw-shell .floating-control:hover,
+.zw-shell .floating-close:hover {
+  background: var(--zw-brand-soft);
+  color: var(--zw-brand-ink);
+}
+
+/* ============ 设置 / 新建项目对话框 ============ */
+.zw-shell .settings-overlay {
+  background: rgba(10, 22, 42, 0.48);
+}
+.zw-shell .settings-dialog,
+.zw-shell .project-dialog {
+  border: 1px solid var(--zw-border);
+  border-radius: var(--zw-r-lg);
+  background: var(--zw-surface);
+  box-shadow: var(--zw-shadow-2);
+}
+.zw-shell .settings-header {
+  border-bottom: 1px solid var(--zw-border);
+  border-radius: var(--zw-r-lg) var(--zw-r-lg) 0 0;
+  background: var(--zw-surface-sub);
+}
+.zw-shell .settings-nav button[aria-current="page"],
+.zw-shell .project-steps button[aria-current="page"] {
+  background: var(--zw-brand-soft);
+  color: var(--zw-brand-ink);
+}

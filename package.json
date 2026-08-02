@@ -1,0 +1,30 @@
+{
+  "name": "zhangwen",
+  "private": true,
+  "version": "0.1.0",
+  "description": "掌问 — AI 创客工程工作台",
+  "scripts": {
+    "start": "cmd /c start-local.bat",
+    "start:check": "cmd /c start-local.bat --check",
+    "dev:web": "powershell -ExecutionPolicy Bypass -File scripts-dev/start-web.ps1",
+    "dev:web:fake": "powershell -ExecutionPolicy Bypass -File scripts-dev/start-web.ps1 -FakeProvider",
+    "dev:web:paid": "powershell -ExecutionPolicy Bypass -File scripts-dev/start-web.ps1 -PaidProvider",
+    "clean:generated": "powershell -ExecutionPolicy Bypass -File scripts-dev/clean-generated.ps1",
+    "build:contracts": "pnpm --filter @zhangwen/contracts build",
+    "build:desktop": "pnpm --filter @zhangwen/contracts build && pnpm --filter @zhangwen/desktop build",
+    "package:sidecar": "powershell -NoProfile -ExecutionPolicy Bypass -File scripts-dev/build-windows-sidecar.ps1",
+    "package:windows": "powershell -NoProfile -ExecutionPolicy Bypass -File scripts-dev/build-windows-package.ps1",
+    "verify:package:windows": "powershell -NoProfile -ExecutionPolicy Bypass -File scripts-dev/verify-windows-package.ps1",
+    "tauri:build": "pnpm package:windows",
+    "test:frontend": "pnpm --filter @zhangwen/contracts build && pnpm --filter @zhangwen/desktop test",
+    "test:api": ".venv\\Scripts\\python.exe -m pytest services/local-api/tests/ -v --rootdir services/local-api",
+    "typecheck": "pnpm --filter @zhangwen/contracts build && pnpm --filter @zhangwen/contracts typecheck && pnpm --filter @zhangwen/desktop typecheck"
+  },
+  "engines": {
+    "node": ">=20.0.0",
+    "pnpm": ">=9.0.0"
+  },
+  "devDependencies": {
+    "@tauri-apps/cli": "2.11.4"
+  }
+}

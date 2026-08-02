@@ -1,0 +1,14 @@
+fastapi>=0.115.0,<1.0.0
+markdown-it-py>=4.0.0,<5.0.0
+pyserial>=3.5,<4.0.0
+mpremote>=1.26.0,<2.0.0
+esptool>=5.0.0,<6.0.0
+uvicorn[standard]>=0.34.0,<1.0.0
+pydantic>=2.0.0,<3.0.0
+pypdf>=5.0.0,<6.0.0
+httpx>=0.27.0,<1.0.0
+cadquery==2.8.0
+cadquery-ocp==7.9.3.1.1
+trimesh==4.12.2
+pytest>=8.0.0,<9.0.0
+pytest-asyncio>=0.24.0,<1.0.0

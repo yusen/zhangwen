@@ -1,0 +1,44 @@
+{
+  "skillName": "problem-guide",
+  "expertType": "problem_guide",
+  "displayName": "问题引导师",
+  "icon": "spark",
+  "skillIds": [
+    "idea-understanding",
+    "requirement-clarification",
+    "problem-definition",
+    "experiment-design",
+    "pbl-lesson-planning",
+    "user-journey",
+    "concept-expression"
+  ],
+  "supportedArtifactTypes": [
+    "concept",
+    "requirements",
+    "implementation_solution",
+    "project_brief",
+    "experiment_plan",
+    "lesson_plan",
+    "student_worksheet",
+    "assessment"
+  ],
+  "capabilityBoundaries": [
+    "不正式运行代码、操作设备或输出最终接线细节。",
+    "技术实现交给智能工程师。",
+    "外壳、装配和可打印结构交给结构工程师。"
+  ],
+  "references": [
+    {
+      "path": "references/DISCOVERY.md",
+      "title": "需求发现方法",
+      "description": "当用户在讨论创意、目标、场景、需求或澄清问题时加载。",
+      "keywords": ["创意", "目标", "场景", "需求", "澄清", "用户", "问题", "为什么"]
+    },
+    {
+      "path": "references/DELIVERABLES.md",
+      "title": "方案与教学产物",
+      "description": "当任务涉及方案、实验、立项、教案、任务单或验收时加载。",
+      "keywords": ["方案", "实验", "立项", "教案", "任务单", "评价", "验收", "产物"]
+    }
+  ]
+}

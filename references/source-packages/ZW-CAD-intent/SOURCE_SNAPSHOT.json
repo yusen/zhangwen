@@ -1,0 +1,14 @@
+{
+  "schemaVersion": 1,
+  "sourceName": "ZW-CAD-intent",
+  "sourceVersion": "0.1.0",
+  "capturedAt": "2026-07-26",
+  "sourceDescription": "User-provided, revalidated CAD intent module; local absolute source path intentionally omitted.",
+  "sourceFileCount": 149,
+  "sourceBytes": 8392462,
+  "sourceTreeSha256": "c6054bcb0a3c106f931583eb931babd1c0cf846b03f08343aafdb509a3a852ee",
+  "checksumsFileSha256": "302d89c9e97cba600bb07c41fbdc74e21a7daff342b0ad52b7685233caddd76c",
+  "included": ["README.md", "package.json", "package-lock.json", "server/", "skills/", "public/"],
+  "excluded": ["node_modules/", ".env", "model-sources.local.json", ".data/", "outputs/", "exports/", "tmp/", ".tmp/", "coverage/"],
+  "productionPolicy": "Reference UI, project store, provider settings and hardware JSON are audit inputs only. Production integration must use the typed CAD Intent Worker adapters."
+}

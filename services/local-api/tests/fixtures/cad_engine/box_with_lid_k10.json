@@ -1,0 +1,109 @@
+{
+  "schema_version": "1.0",
+  "design_id": "box_k10_reference",
+  "template": "box_with_lid",
+  "units": "mm",
+  "enclosure": {
+    "inner_length_x": 100.0,
+    "inner_width_y": 70.0,
+    "inner_height_z": 40.0,
+    "wall_thickness": 2.4,
+    "floor_thickness": 2.4,
+    "lid_thickness": 3.0,
+    "lid_lip_height": 4.0,
+    "lid_lip_thickness": 1.6,
+    "lid_clearance": 0.35,
+    "corner_radius": 5.0,
+    "min_wall_thickness": 1.6,
+    "hardware_gap": 5.0,
+    "edge_clearance": 8.0,
+    "lid_fasteners": {
+      "enabled": true,
+      "post_outer_diameter": 8.0,
+      "hole_diameter": 2.4,
+      "edge_inset": 8.0,
+      "top_clearance": 0.4
+    }
+  },
+  "standoffs": [
+    {
+      "standoff_id": "sensor_mount",
+      "center": {
+        "x": -30.0,
+        "y": -20.0
+      },
+      "outer_diameter": 6.0,
+      "bore_diameter": 2.6,
+      "height": 8.0,
+      "supports_instance_id": null
+    }
+  ],
+  "openings": [
+    {
+      "kind": "circle",
+      "opening_id": "top_access",
+      "face": "top",
+      "center_u": 0.0,
+      "center_v": 0.0,
+      "diameter": 8.0
+    },
+    {
+      "kind": "rectangle",
+      "opening_id": "right_connector",
+      "face": "right",
+      "center_u": 0.0,
+      "center_v": 20.0,
+      "size_u": 16.0,
+      "size_v": 8.0,
+      "corner_radius": 1.0
+    }
+  ],
+  "profiles": [
+    {
+      "profile_id": "unihiker_k10",
+      "revision": "measured-v1",
+      "display_name": "UNIHIKER K10",
+      "category": "controller",
+      "roles": [
+        "controller",
+        "display",
+        "camera"
+      ],
+      "dimensions": {
+        "length_x": 83.2,
+        "width_y": 51.3,
+        "height_z": 10.6
+      },
+      "coordinate_system": {
+        "origin": "pcb_center",
+        "x_axis": "length",
+        "y_axis": "width",
+        "positive_z": "component_side"
+      },
+      "mounting": {
+        "mode": "external_independent_module",
+        "preferred_surface": "external",
+        "clearance": 0.8
+      },
+      "model_kind": "unihiker_k10",
+      "source": "trusted",
+      "keepouts": []
+    }
+  ],
+  "hardware": [
+    {
+      "instance_id": "k10_reference",
+      "profile_id": "unihiker_k10",
+      "placement": {
+        "surface": "external",
+        "center": {
+          "x": 100.0,
+          "y": 0.0,
+          "z": 10.0
+        }
+      },
+      "rotation_z_deg": 0,
+      "include_reference_geometry": true
+    }
+  ]
+}
