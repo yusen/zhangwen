@@ -20,6 +20,12 @@
 
 已上传标签：`backup/desktop-before-mu-web-20261015`，保留该旧提交和完整历史。本地另有验证通过的 `.publish/desktop-before-mu-web-20261015.bundle`。新版通过正常后继提交更新 main，不强推、不重写旧历史。
 
+## 远程回读
+
+初始主分支替换提交：`a5d200dff106e4e18cf994a85c11ef7e2f257823`，父提交为旧main。根树：`3a66048d9a30c0f4ea6185d6bc3b3a5289fe8477`。Git传输多次重置/超时，改用官方Git Data API上传：98个新二进制blob以及所有子树/根树SHA与本地逐一相等，随后普通提交以`force=false`更新main。回读1444文件的路径/模式/blob SHA与本地完全一致，含817个随包硬件资源；旧apps/desktop与Cargo入口已从当前树移除，README一键启动说明已远程确认。仓库仍为私有。
+
+GitHub Actions `Verify Mu Web` 已触发，首次回读时正在运行，不能当作远程CI已通过。Windows本地53项及隔离安装为已完成证据。上传过程的凭据由现有Git Credential Manager在内存中取得，不写入脚本/报告/项目设置，不修改系统凭据。
+
 ## 限制
 
 这是在本机隔离目录模拟新电脑的实际安装，尚未在第二台物理电脑或 macOS/Linux 实机运行。Windows 标准用户目录、首次联网、桌面 Chrome/Edge 是推荐路径；代理/企业限制和板卡串口驱动由目标电脑环境决定。没有发布 npm 包，不提供虚构的 npx 安装命令。新增 GitHub Actions 工作流用于后续推送回归，其远程运行结果与上述本地验证分别记录。
