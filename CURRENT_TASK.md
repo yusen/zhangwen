@@ -1,5 +1,7 @@
 # 当前任务
 
+2026-10-15 最新修订：按用户要求，启动前先离线检查实际 Node/npm/Python 与项目依赖。优先复用可用的项目运行环境和本机环境；Node22+/npm、Python3.11+ 执行检查通过才使用，缺失才准备项目内运行时。Python/前端依赖按锁定版本及导入/可执行入口检查，完整时跳过安装，丢失回执也不重装；缺包按需修复且优先下载缓存。5项启动器自动测试、Windows PowerShell5.1实际系统环境复用/项目环境复用/完整依赖/丢回执/缺包修复和复用后HTTP启动通过；详细证据 docs/environment-detection-smoke.json。原471源码/817资源摘要一致。GitHub与部署ZIP采用同一版本交付，详见tasks/DEPLOYMENT.md。
+
 2026-10-15 最新任务：用户授权以 V4 替换 GitHub yusen/zhangwen 旧桌面资料，并实现其他电脑一键部署。Windows start-web.bat 已支持自动下载并校验项目内 Node/uv、准备 Python、锁定安装、strict构建和启动，重复执行跳过成功步骤；macOS/Linux保留已有环境的源码命令。完整74包/817文件随源码 resources 发布，经原HardwareSkill安装器初始化，含新增主控共76包/74可见/5主控。原471文件不变。已在无本机依赖/imports/.data的隔离目录下载环境、部署、保存/检查/上传清单和摘要验证通过，未访问设备/真实模型。远程旧main 7e0b34e 已备份到 backup/desktop-before-mu-web-20261015，另有 .publish/desktop-before-mu-web-20261015.bundle。53项本地回归与main替换已完成，远程1444文件树回读与本地一致；初始发布提交a5d200d，Git传输异常时使用官方Git Data API，逐blob/子树/根树摘要一致后以force=false更新main。详见tasks/DEPLOYMENT.md、docs/DEPLOYMENT.md。
 
 2026-10-15最新：左上角改为主控选择，Web可见K10/XIAO S3/通用ESP32-C3/掌控2.0/掌控3.0。复用原3.0包，新增两款以原HardwareSkill加载器/写入器/SQLite投影安装，不修改原471保护文件。文件面板支持本机.py载入/导出、设备根目录列表/64KiB读取与SHA校验、历史版本。上传引导连接/保存/确认，运行支持自然返回REPL与报错反馈。strict构建、25API/14浏览器/13协议共52项通过，3080浅深×1440/375只读布局检查0异常/写入。COM522真机通过独立验收脚本运行同一serial.ts：mpython with ESP32、OLED128×64/circle可用，原main.py931bytes备份，上传177bytes、SHA一致、执行标记ZW_CIRCLE_OK、自然返回、显式读取一致、中心0/四边界点1。真实浏览器端口选择未完成，不能宣称浏览器真机闭环；用户已确认实物屏幕显示空心圆。验收项目「掌控板2.0空心圆验收」，原文件.device-backups和设备.zw-96c134f4866d482cab94dce319664f1e.bak均保留。当前服务80149。

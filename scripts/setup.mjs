@@ -1,16 +1,17 @@
 // Source installation, with cached successful steps. Never touches user data.
-import { spawn } from 'node:child_process';
+import { spawn, spawnSync } from 'node:child_process';
 import { createHash } from 'node:crypto';
 import { existsSync, mkdirSync, openSync, writeFileSync, readFileSync, readdirSync, closeSync, unlinkSync } from 'node:fs';
 import { resolve, join } from 'node:path';
 import { root } from './python.mjs';
+import { inspectNodeDependencies } from './dependencies.mjs';
 
 const runtime = resolve(root, '.runtime');
 mkdirSync(runtime, { recursive: true });
 const lockPath = join(runtime, 'setup.lock');
 const statePath = join(runtime, 'setup-state.json');
 const localPython = resolve(root, process.platform === 'win32' ? '.venv/Scripts/python.exe' : '.venv/bin/python');
-const npmCli = resolve(process.execPath, '..', process.platform === 'win32' ? 'node_modules/npm/bin/npm-cli.js' : '../lib/node_modules/npm/bin/npm-cli.js');
+const npmCli = process.env.ZHANGWEN_NPM_CLI || resolve(process.execPath, '..', process.platform === 'win32' ? 'node_modules/npm/bin/npm-cli.js' : '../lib/node_modules/npm/bin/npm-cli.js');
 const args = process.argv.slice(2);
 const prepareOnly = args.includes('--prepare-only');
 const serverArgs = args.filter(arg => arg !== '--prepare-only');
@@ -68,20 +69,30 @@ try {
     await run(process.env.ZHANGWEN_PYTHON || (process.platform === 'win32' ? 'python' : 'python3'), ['-m', 'venv', resolve(root, '.venv')]);
   }
   await run(localPython, ['-c', 'import sys; assert sys.version_info >= (3, 11), "Python 3.11+ required"']);
-  const pyKey = digest(['services/local-api/requirements-web-lock.txt', '.venv/pyvenv.cfg']);
-  if (state.python !== pyKey) {
-    console.log('安装 Python 锁定依赖…');
+  function inspectPython() {
+    const probe = spawnSync(localPython, ['scripts/check-python-deps.py'], { cwd: root, env: { ...process.env, PYTHONUTF8: '1' }, encoding: 'utf8', timeout: 30_000, windowsHide: true });
+    try { return JSON.parse(probe.stdout); }
+    catch { throw new Error('Python 依赖检测失败，请检查 .venv 是否可运行。'); }
+  }
+  console.log('检测实际安装的 Python 依赖…');
+  const pythonDeps = inspectPython();
+  if (!pythonDeps.ready) {
+    console.log(`Python 依赖缺失或不匹配（${pythonDeps.problems.length} 项），补齐锁定依赖…`);
+    if (!pythonDeps.pipAvailable) await run(localPython, ['-m', 'ensurepip', '--upgrade']);
     await run(localPython, ['-m', 'pip', 'install', '--disable-pip-version-check', '-r', 'services/local-api/requirements-web-lock.txt'], { PYTHONUTF8: '1' });
-    state.python = pyKey;
-    writeFileSync(statePath, JSON.stringify(state, null, 2));
-  }
-  const nodeKey = digest(['package.json', 'package-lock.json']) + process.versions.node;
-  if (state.node !== nodeKey || !existsSync(resolve(root, 'node_modules/.package-lock.json'))) {
-    console.log('安装前端锁定依赖…');
-    await npm(['ci', '--no-audit', '--no-fund']);
-    state.node = nodeKey;
-    writeFileSync(statePath, JSON.stringify(state, null, 2));
-  }
+    if (!inspectPython().ready) {
+      console.log('Python 安装记录存在但模块不可用，修复项目内锁定依赖…');
+      await run(localPython, ['-m', 'pip', 'install', '--disable-pip-version-check', '--force-reinstall', '--no-deps', '-r', 'services/local-api/requirements-web-lock.txt'], { PYTHONUTF8: '1' });
+    }
+    if (!inspectPython().ready) throw new Error('Python 依赖安装后仍未通过检查，请查看上方错误。');
+  } else console.log('Python 依赖完整，复用现有安装。');
+  console.log('检测实际安装的前端依赖…');
+  const nodeDeps = inspectNodeDependencies(root);
+  if (!nodeDeps.ready) {
+    console.log(`前端依赖缺失或不匹配（${nodeDeps.problems.length} 项），恢复锁定依赖并优先复用下载缓存…`);
+    await npm(['ci', '--prefer-offline', '--no-audit', '--no-fund']);
+    if (!inspectNodeDependencies(root).ready) throw new Error('前端依赖安装后仍未通过检查，请查看上方错误。');
+  } else console.log('前端依赖完整，复用现有安装。');
   const buildKey = digest(['apps/web/src', 'apps/web/index.html', 'packages', 'tsconfig.json', 'vite.config.ts', 'package.json', 'package-lock.json']);
   if (state.build !== buildKey || !existsSync(resolve(root, 'dist/index.html'))) {
     console.log('构建工作台页面…');

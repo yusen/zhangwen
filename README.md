@@ -5,11 +5,11 @@
 ## Windows 一键启动
 
 1. 在 [GitHub 仓库](https://github.com/yusen/zhangwen) 点击 **Code → Download ZIP**，解压到普通可写目录；或 `git clone https://github.com/yusen/zhangwen.git`。
-2. 双击 **start-web.bat**。无需预装 Node.js、Python 或管理员权限；首次联网下载项目内运行环境、安装锁定依赖并构建。
+2. 双击 **start-web.bat**。先检测并复用已有 Node.js、Python 和项目依赖；仅缺失或版本不满足时下载、安装，再按需构建。无需管理员权限，也不要求预装环境。
 3. 就绪后自动打开 **http://127.0.0.1:3080**，使用桌面版 **Chrome / Edge**。
 4. 需要 AI 时，在页面「API 设置」填写自己的 DeepSeek Key；手工编程和串口上传不需要 Key。
 
-后续仍双击同一个文件，未变化的安装/构建步骤会跳过。保留启动窗口，Ctrl+C 停止服务。首次需要访问 nodejs.org、GitHub、PyPI 和 npm，失败后根据窗口错误重试，不会清空项目。
+后续仍双击同一个文件，每次检查实际版本和依赖是否完整，环境完整时直接复用；源码未变化则跳过构建。保留启动窗口，Ctrl+C 停止服务。需要补充环境时联网访问对应下载源，失败后根据窗口错误重试，不会清空项目。
 
 当前仓库为**私有仓库**：其他电脑须登录具有访问权限的 GitHub 账号，或获得你提供的源码 ZIP。一键入口已经包含在仓库中，无需 npm 发布。
 
@@ -59,7 +59,7 @@ cd zhangwen
 
 ## 源码安装（已有 Node / Python）
 
-环境：Node.js 22+、Python 3.11+；Windows 用户可跳过本节，直接双击启动。自动启动器使用项目内 Node 24.14.0 / Python 3.13.7，不修改系统 PATH。在源码目录执行：
+环境：Node.js 22+、Python 3.11+；Windows 用户可跳过本节，直接双击启动。自动启动器优先复用已有可用环境，缺失时准备项目内 Node 24.14.0 / Python 3.13.7；不修改系统 PATH，Python依赖隔离在项目 `.venv/`。在源码目录执行：
 
 ```powershell
 npm run setup

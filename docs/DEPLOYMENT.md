@@ -12,13 +12,13 @@ Windows 10/11 x64：从 https://github.com/yusen/zhangwen 下载完整 ZIP 并�
 
 `start-web.bat` 调用本项目的 PowerShell 脚本；ExecutionPolicy Bypass 仅作用于本次进程，不修改系统执行策略。
 
-1. 官方下载 Node 24.14.0、uv 0.8.22，验证脚本内固定 SHA-256 后解压到 `.runtime/`。
-2. 通过 uv 准备项目内 Python 3.13.7 与 `.venv/`；已有本项目虚拟环境则保留。
-3. 使用 `requirements-web-lock.txt` 和 `package-lock.json` 安装依赖。
+1. 离线执行版本检查：先查项目已有 Node，再查 PATH 中的 Node；要求 Node 22+ 且 npm 可运行。只有都不满足时才使用固定SHA校验的缓存压缩包或官方下载项目内 Node 24.14.0。
+2. 检查 `.venv/` 是否可执行且为 Python 3.11+ 的虚拟环境；否则寻找本机 Python、Python Launcher、项目已有托管 Python，及本机 uv 离线发现的解释器，用它创建隔离 `.venv/`。只有未找到可用 Python 时才按需准备 uv 0.8.22 / Python 3.13.7。无法使用的普通旧 `.venv` 保留到 `.runtime/venv-invalid-*` 后重建，不改系统Python或全局依赖。
+3. 每次检测真实安装：Python逐项对照 `requirements-web-lock.txt` 版本并检查关键导入；前端逐项对照 `package-lock.json` 的包版本、适用平台与可执行入口。依赖完整时跳过pip/npm安装，即使安装回执丢失也复用。依赖缺失/不匹配时，pip补齐锁定要求；前端用 `npm ci --prefer-offline` 恢复锁定依赖树，优先使用下载缓存。
 4. TypeScript strict 检查并构建页面，启动单一 FastAPI 服务，只绑定 `127.0.0.1`。
 5. 全新 `.data/` 使用原 Hardware Skill 加载器安装随包的 74 个原硬件包及新增 2 包。共 76 包，Web 可见 74 包 / 5 款主控 / K10 68 个模块。已有用户包保留，不覆盖。
 
-运行环境、依赖和构建各自缓存；源码变化触发构建，锁文件变化触发安装，失败步骤不会记录成功，可重新启动继续。首次需要 nodejs.org、GitHub、PyPI、registry.npmjs.org；下载失败会在窗口显示具体原因。不静默改国内镜像或系统凭据，不需要管理员权限。
+已有环境通过执行检查后直接复用，安装缓存标记不替代真实依赖检查；源码或锁文件变化按需重建。只有检测结果确实需要补充环境/依赖时，才访问 nodejs.org、GitHub、PyPI 或 registry.npmjs.org。运行环境、依赖和构建都完整时可离线启动，AI对话仍需网络。失败后可重新运行，不静默改国内镜像或系统凭据，不需要管理员权限。
 
 ```powershell
 # 仅安装和构建，不启动
