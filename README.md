@@ -55,6 +55,8 @@ cd zhangwen
 - 用 Chrome/Edge 的 Web Serial 选择串口、识别 MicroPython、上传/备份/摘要回读、单独运行/中断、发送 REPL 和查看输出。
 - 可选 DeepSeek 真实对话：发送当前代码及所选硬件资料，逐步显示回答；核对并接受后才改草稿。显示等待时间，可点击「取消生成」；服务繁忙、断流和超时保留输入与代码。无 Key 明确显示未配置。
 
+在「API 设置 → 测试连接」检查网络、Key、所选模型、账户和实际生成。可测试尚未保存的输入；检测使用简短消息，不发送项目内容，不保存设置。支持取消，只有完整回答才显示生成通过。检测说明见 [AI 检测](docs/AI_DIAGNOSTICS.md)。
+
 首版只上传一个 UTF-8 `main.py`，最多 **64 KiB**；需要设备已经安装 MicroPython、提供 raw REPL、`machine`、`os`、`json/ujson`、`binascii` 和 `hashlib/uhashlib` SHA-256。不包含固件烧录、多文件部署、CAD/仿真界面或完整课堂迁移。
 
 ## 源码安装（已有 Node / Python）

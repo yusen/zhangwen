@@ -163,6 +163,23 @@ dialog::backdrop { background: #0b182d70; backdrop-filter: blur(3px); }
 .ai-progress p { display: flex; align-items: center; gap: 6px; margin: 0; }
 .ai-progress button { min-height: 36px; padding: 6px 10px; border: 1px solid var(--border2); border-radius: 7px; }
 .ai-progress small { width: 100%; color: var(--ink-3); line-height: 1.7; }
+.ai-test-controls { display: flex; align-items: center; gap: 10px; margin: 12px 0; }
+.ai-test-controls button { flex-shrink: 0; border: 1px solid var(--border2); min-height: 40px; border-radius: 7px; padding: 8px 12px; }
+.ai-test-controls > span { font-size: 12px; line-height: 1.7; color: var(--ink-3); }
+.ai-diagnostics { border: 1px solid var(--border2); border-radius: 8px; margin: 12px 0; background: var(--raised); }
+.ai-diagnostics ol { margin: 0; padding: 12px; list-style: none; display: grid; gap: 12px; }
+.ai-check { display: flex; align-items: flex-start; gap: 8px; }
+.ai-check > svg { flex-shrink: 0; margin-top: 2px; color: var(--ink-3); }
+.ai-check.passed > svg, .ai-test-summary.passed > strong { color: var(--suc); }
+.ai-check.failed > svg, .ai-test-summary.failed > strong { color: var(--dng); }
+.ai-check.warning > svg { color: var(--wrn); }
+.ai-check > div { flex: 1; min-width: 0; }
+.ai-check strong { display: flex; align-items: center; gap: 12px; justify-content: space-between; font-size: 13px; }
+.ai-check strong span { font-weight: 400; color: var(--ink-3); font-size: 12px; }
+.ai-check p, .ai-test-summary p { margin: 4px 0; color: var(--ink-2); font-size: 12px; line-height: 1.7; overflow-wrap: anywhere; }
+.ai-check small, .ai-test-summary small { font-size: 11px; color: var(--ink-3); }
+.ai-test-summary { padding: 12px; border-top: 1px solid var(--border2); }
+.ai-test-summary > strong { font-size: 13px; }
 .board-picker-dialog { width: min(1180px, calc(100vw - 32px)); }
 .board-picker-intro { display: flex; justify-content: space-between; flex-wrap: wrap; gap: 8px; align-items: center; margin-bottom: 14px; }
 .board-picker-intro p { margin: 0; }

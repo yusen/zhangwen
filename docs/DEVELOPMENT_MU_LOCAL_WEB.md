@@ -66,6 +66,8 @@ AI回复4096 tokens，显式传thinking.type=disabled；不返回/保存reasonin
 
 ## API 路由
 
+2026-10-15新增 `POST /api/settings/ai/test`：复用AiSettingsInput校验，null Key读取运行配置，表单模型经已有规范化，只检测不持久化。check/done/error NDJSON事件定义于共享契约；模型列表10秒、账户8秒、最小实际生成30秒，不发送项目数据。单检测锁及aclosing保证取消/断开即关闭上游，422/供应商错误脱敏。前端API设置显示逐项结果/用时/首字/保活，支持取消和关闭，表单修改清除旧报告。实际五项与完整代码生成证据详见AI_DIAGNOSTICS.md。
+
 最新模型ID为deepseek-flash（默认）/deepseek-v4-pro，依据用户官方pricing链接核对，见DEEPSEEK_MODELS.md。前端共享常量，后端current_ai_model规范旧默认/退役别名；加载不重写原设置文件或Key，保存才持久化新名称，Pro仅用户明确选择。
 
 最新API设置扩展：工具栏/AI标题入口读取设置，保存后立即更新配置，无需重启；Key为password输入、不回填，不存入浏览器storage或项目。本机数据目录mu-settings.json为明文，启动时优先于环境默认值，包括显式空Key。POST先写临时文件再replace，成功后才更新运行配置，失败清理临时文件；异步路由内同步短写，避免并发保存交错。校验错误只返回通用提示，不回显Pydantic输入密钥。对话开始时固定当前Key/模型快照，后续设置不改变已经开始的请求。保存设置不触发模型访问。

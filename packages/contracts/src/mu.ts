@@ -17,6 +17,15 @@ export const DEEPSEEK_MODELS = [DEFAULT_AI_MODEL, 'deepseek-v4-pro'] as const;
 export interface AiSettings { aiConfigured: boolean; aiModel: string }
 /** null/omitted key preserves the saved key; empty string explicitly clears it. */
 export interface SaveAiSettings { apiKey?: string | null; model: string }
+export type AiCheckId = 'network' | 'key' | 'model' | 'balance' | 'generation';
+export interface AiDiagnosticCheck {
+  id: AiCheckId; label: string; status: 'running' | 'passed' | 'failed' | 'warning' | 'skipped';
+  detail: string; elapsedMs?: number; firstTokenMs?: number; keepAlives?: number;
+}
+export interface AiDiagnosticReport { model: string; checkedAt: string; healthy: boolean; checks: AiDiagnosticCheck[]; suggestion: string }
+/** Testing uses the form's values without saving them or submitting a project. */
+export type AiDiagnosticEvent = { type: 'check'; check: AiDiagnosticCheck }
+  | { type: 'done'; report: AiDiagnosticReport } | { type: 'error'; detail: string };
 export interface Project extends ProjectSummary { code: string; checksum: string; messages: ChatMessage[] }
 export interface ChatMessage { id: string; role: 'user' | 'assistant'; content: string; status: string }
 export interface ChatInput { message: string; code: string; boardId: string; componentIds: string[] }

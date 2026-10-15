@@ -285,6 +285,67 @@ def test_ai_settings_reject_cross_site_invalid_input_and_failed_save(client, tmp
     assert json.loads((tmp_path / "mu-settings.json").read_text(encoding="utf-8"))["apiKey"] == "secret-marker"
 
 
+def test_ai_diagnostic_uses_preview_without_saving_or_exposing_key(client, tmp_path, monkeypatch):
+    client.post("/api/settings/ai", json={"apiKey": "saved-local-key", "model": "deepseek-flash"})
+    settings_path = tmp_path / "mu-settings.json"
+    before = settings_path.read_bytes()
+    projects = client.get("/api/projects").json()
+    calls = []
+
+    async def diagnostic(**kwargs):
+        calls.append(kwargs)
+        yield {"type": "check", "check": {"id": "network", "label": "网络连接", "status": "passed", "detail": "可达"}}
+        yield {"type": "done", "report": {"model": kwargs["model"], "healthy": False, "checks": [], "suggestion": "供应商未输出", "checkedAt": "2026-10-15T05:00:00Z"}}
+
+    monkeypatch.setattr("zhangwen.mu_web.app.diagnose_ai", diagnostic)
+    path = "/api/settings/ai/test"
+    body = {"apiKey": "unsaved-test-key", "model": "deepseek-v4-pro"}
+    response = client.post(path, json=body)
+    assert response.status_code == 200
+    assert "application/x-ndjson" in response.headers["content-type"]
+    assert "unsaved-test-key" not in response.text
+    assert calls == [{"api_key": "unsaved-test-key", "model": "deepseek-v4-pro"}]
+    assert json.loads(response.text.splitlines()[-1])["report"]["healthy"] is False
+    assert settings_path.read_bytes() == before
+    assert client.get("/api/settings/ai").json()["aiModel"] == "deepseek-flash"
+    assert client.get("/api/projects").json() == projects
+    client.post(path, json={"apiKey": None, "model": "deepseek-chat"})
+    assert calls[-1] == {"api_key": "saved-local-key", "model": "deepseek-flash"}
+    assert client.post(path, json=body, headers={"origin": "https://attacker.test"}).status_code == 403
+    assert client.post(path, json=body, headers={"x-mu-session": "invalid"}).status_code == 403
+    invalid = client.post(path, json={"apiKey": "unsaved-test-key\ninvalid", "model": "deepseek-flash"})
+    assert invalid.status_code == 422
+    assert "unsaved-test-key" not in invalid.text
+
+
+def test_ai_diagnostic_cancel_closes_iterator_and_releases_single_flight_lock(client, monkeypatch):
+    endpoint = next(route.endpoint for route in client.app.routes if getattr(route, "path", None) == "/api/settings/ai/test")
+    closed = []
+
+    async def diagnostic(**_kwargs):
+        try:
+            yield {"type": "check", "check": {"id": "network", "label": "网络", "status": "running", "detail": "等待"}}
+            await asyncio.Event().wait()
+        finally:
+            closed.append(True)
+
+    monkeypatch.setattr("zhangwen.mu_web.app.diagnose_ai", diagnostic)
+
+    async def cancel():
+        from zhangwen.mu_web.models import AiSettingsInput
+        request = AiSettingsInput(apiKey="placeholder", model="deepseek-flash")
+        response = await endpoint(request)
+        await anext(response.body_iterator)
+        assert client.app.state.ai_test_lock.locked()
+        with pytest.raises(HTTPException) as conflict:
+            await endpoint(request)
+        assert conflict.value.status_code == 409
+        await response.body_iterator.aclose()
+        assert closed and not client.app.state.ai_test_lock.locked()
+
+    asyncio.run(cancel())
+
+
 def test_real_provider_adapter_contract_with_fake_response_only(client, monkeypatch):
     client.post("/api/settings/ai", json={"apiKey": "test-only-placeholder", "model": "deepseek-v4-pro"})
     reply = AsyncMock(return_value="```python\nprint('建议')\n```")

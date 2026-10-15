@@ -8,7 +8,7 @@ import os
 import secrets
 import time
 from collections.abc import Awaitable, Callable
-from contextlib import suppress
+from contextlib import aclosing, suppress
 from pathlib import Path
 from typing import Any
 
@@ -23,6 +23,7 @@ from zhangwen.hardware.hardware_skills import HardwareSkillNotFoundError, Hardwa
 from zhangwen.llm.contracts import ChatMessageStatus
 from zhangwen.mu_web.models import DEFAULT_AI_MODEL, AiSettingsInput, ChatInput, CodeInput, CreateInput, ManifestInput, SaveInput, current_ai_model
 from zhangwen.mu_web.repository import MuRepository
+from zhangwen.mu_web.diagnostics import diagnose_ai
 
 ROOT = Path(__file__).resolve().parents[4]
 AI_TOTAL_TIMEOUT = 300
@@ -135,6 +136,7 @@ def create_app(data_dir: Path | None = None, *, port: int = 3080, dev: bool = Fa
     app = FastAPI(title="掌问 Mu Web", version="0.1.0", docs_url=None, redoc_url=None)
     app.state.repo = repo
     app.state.chat_locks = {}
+    app.state.ai_test_lock = asyncio.Lock()
     app.state.ai_settings = ai_settings
     session = secrets.token_urlsafe(32)
     allowed_hosts = {f"127.0.0.1:{port}", f"localhost:{port}"}
@@ -177,7 +179,7 @@ def create_app(data_dir: Path | None = None, *, port: int = 3080, dev: bool = Fa
 
     @app.exception_handler(RequestValidationError)
     async def invalid_request(request: Request, exc: RequestValidationError):
-        if request.url.path == "/api/settings/ai":
+        if request.url.path in {"/api/settings/ai", "/api/settings/ai/test"}:
             # Pydantic normally includes submitted input in validation errors.
             return JSONResponse({"detail": "请核对 API Key 和模型名称：Key 最多500字符，不含空格或控制字符；模型名称须为1–100字符。"}, status_code=422)
         return await request_validation_exception_handler(request, exc)
@@ -216,6 +218,28 @@ def create_app(data_dir: Path | None = None, *, port: int = 3080, dev: bool = Fa
     @app.get("/api/settings/ai")
     def get_ai_settings():
         return {"aiConfigured": bool(app.state.ai_settings["apiKey"]), "aiModel": app.state.ai_settings["model"]}
+
+    @app.post("/api/settings/ai/test")
+    async def test_ai_settings(request: AiSettingsInput):
+        if app.state.ai_test_lock.locked():
+            raise HTTPException(409, "已有一个 AI 检测正在进行，请等待或取消。")
+        key = app.state.ai_settings["apiKey"] if request.apiKey is None else request.apiKey
+        model = request.model
+
+        async def events():
+            if app.state.ai_test_lock.locked():
+                yield json.dumps({"type": "error", "detail": "已有一个 AI 检测正在进行。"}) + "\n"
+                return
+            async with app.state.ai_test_lock:
+                try:
+                    async with aclosing(diagnose_ai(api_key=key, model=model)) as diagnostic:
+                        async for event in diagnostic:
+                            yield json.dumps(event, ensure_ascii=False) + "\n"
+                except Exception as exc:
+                    logger.warning("AI diagnostic failed kind=%s", type(exc).__name__)
+                    yield json.dumps({"type": "error", "detail": "检测中断，请稍后重新测试。"}, ensure_ascii=False) + "\n"
+
+        return StreamingResponse(events(), media_type="application/x-ndjson", headers={"X-Accel-Buffering": "no"})
 
     @app.get("/api/hardware")
     def hardware():

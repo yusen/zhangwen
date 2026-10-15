@@ -1,0 +1,15 @@
+{
+  "real_provider": true,
+  "model": "deepseek-flash",
+  "board": "hw_labplus_mpython_v2",
+  "isolated_data": true,
+  "device_accessed": false,
+  "completed": true,
+  "reply_chars": 443,
+  "first_content_seconds": 0.75,
+  "code_block": true,
+  "syntax_valid": true,
+  "uses_mpython_oled": true,
+  "has_circle_call": true,
+  "seconds": 1.65
+}
