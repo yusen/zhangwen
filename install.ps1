@@ -5,6 +5,7 @@ param(
     [string]$DesktopDir = [Environment]::GetFolderPath('Desktop')
 )
 $ErrorActionPreference = 'Stop'
+$windowsPowerShell = Join-Path $env:SystemRoot 'System32/WindowsPowerShell/v1.0/powershell.exe'
 [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
 if (![Environment]::Is64BitOperatingSystem -or $env:PROCESSOR_ARCHITECTURE -eq 'ARM64' -or $env:PROCESSOR_ARCHITEW6432 -eq 'ARM64') { throw 'Windows x64 is required.' }
 $InstallDir = [IO.Path]::GetFullPath($InstallDir)
@@ -70,7 +71,7 @@ try {
     } else { Write-Host 'Platform files are current; skipping source download.' }
     $env:ZHANGWEN_DATA_DIR = Join-Path $InstallDir 'data'
     $env:ZHANGWEN_RUNTIME_DIR = Join-Path $InstallDir 'runtime'
-    & (Join-Path $appDir 'scripts/bootstrap-windows.ps1') -PrepareOnly
+    & $windowsPowerShell -NoLogo -NoProfile -ExecutionPolicy Bypass -File (Join-Path $appDir 'scripts/bootstrap-windows.ps1') -PrepareOnly
     if ($LASTEXITCODE -ne 0) { throw 'Environment setup failed. The previous version remains selected.' }
     $launcher = Join-Path $InstallDir 'launch.ps1'
     $launcherText = @'
@@ -85,7 +86,8 @@ if ($LASTEXITCODE -ne 0) { Read-Host 'Startup failed. Press Enter to close' }
     [IO.File]::WriteAllText($launcher, $launcherText, (New-Object Text.UTF8Encoding($false)))
     [IO.File]::WriteAllText((Join-Path $InstallDir 'current.txt.tmp'), $Revision)
     Move-Item -LiteralPath (Join-Path $InstallDir 'current.txt.tmp') -Destination (Join-Path $InstallDir 'current.txt') -Force
-    & (Join-Path $appDir 'scripts/create-shortcut.ps1') -Launcher $launcher -Icon (Join-Path $appDir 'apps/web/src/assets/palm-logo.ico') -Desktop $DesktopDir
+    & $windowsPowerShell -NoLogo -NoProfile -ExecutionPolicy Bypass -File (Join-Path $appDir 'scripts/create-shortcut.ps1') -Launcher $launcher -Icon (Join-Path $appDir 'apps/web/src/assets/palm-logo.ico') -Desktop $DesktopDir
+    if ($LASTEXITCODE -ne 0) { throw 'Desktop shortcut creation failed; platform files and data were retained.' }
     Write-Host "Installed: $appDir`nData: $env:ZHANGWEN_DATA_DIR"
 } finally { $installLock.Dispose() }
-if (!$NoStart) { & $launcher }
+if (!$NoStart) { & $windowsPowerShell -NoLogo -NoProfile -ExecutionPolicy Bypass -File $launcher }
