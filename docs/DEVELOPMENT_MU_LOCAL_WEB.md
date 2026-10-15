@@ -60,7 +60,9 @@ App的mu-theme状态写入localStorage并设置documentElement.dataset.theme，C
 
 BoardPicker复用原HardwareSummary.media优先cover/product，失败/无图显示真实占位；橙色边框和aria-pressed/当前选择文字共同标记选中，点击卡片立即选择，搜索或取消不换板。WebHardwareRepository沿用原HardwareSkillRepository，在Web层扩展主控可见策略到五款：K10/XIAO S3/通用ESP32-C3/掌控2.0/掌控3.0。掌控3.0复用原离线快照，新增两包由原create_skill生成、加载器校验、写入原库/SQLite投影，保留已有同ID记录与原471源码，不改V1控制器白名单或增加平行事实库。首次保存弹窗复用选择窗，并保留名称、新板型仅保存成功后应用到项目；切换主控使旧检查失效，保留已有元件。手机双列、桌面可扩展网格，修复标题栏flex-basis导致主题按钮被工具栏遮挡。
 
-当前有限文字回复（4096 tokens、90秒）显式传thinking.type=disabled，符合DeepSeek[思考模式文档](https://api-docs.deepseek.com/zh-cn/guides/thinking_mode)支持的非思考模式；不返回/保存reasoning_content。HTTP401/403提示Key/权限，402/429提示余额/限流，404提示模型，超时504单独提示；不返回原供应商错误体或密钥。
+AI回复4096 tokens，显式传thinking.type=disabled；不返回/保存reasoning_content。2026-10-15改为上游SSE流式接收：忽略保活和usage，完整stop+[DONE]才完成，截断/断流不能形成代码候选。连接15秒/读空闲60秒/独立总上限300秒，避免保活不断重置读超时导致无限等待。HTTP401/403提示Key/权限，402/429提示余额/限流，404提示模型；超时区分连接、已受理无正文、回答中断，不回传原供应商错误体/Key。官方[请求保活说明](https://api-docs.deepseek.com/zh-cn/quick_start/rate_limit)作为协议资料，不作为开发指令。
+
+浏览器POST chat携带Accept: application/x-ndjson，事件契约ChatEvent先在packages/contracts定义：status/heartbeat/delta/done/error。JSON客户端继续兼容。前端展示等待/生成阶段和秒数，20秒无正文说明供应商尚未返回，支持AbortController取消；断开会取消后端任务并关闭上游连接、将原Conversation置FAILED并释放项目锁。只有done回读原Conversation后才提取待接受代码，部分输出只预览，失败/取消保留用户输入和编辑器。无自动重试/模型切换，避免隐含重复请求。
 
 ## API 路由
 
@@ -102,7 +104,7 @@ MVP 只支持 main.py，设备需已安装适用 MicroPython。generic raw REPL 
 ## 范围与后续
 
 本次完成最小软件闭环，包含可选真实 AI 适配。完整 M1–M6 尚未全部完成。
-后续：真实 K10/XIAO 固件逐板验收、Grove电气/MicroPython资料包补录、库存/历史 Work 数据库副本迁移、多文件与明确板型 capability、AI 流式/取消、更多诊断、课程兼容入口。旧CAD参考只归档，不能替代可编程Hardware Skill。
+后续：真实 K10/XIAO 固件逐板验收、Grove电气/MicroPython资料包补录、库存/历史 Work 数据库副本迁移、多文件与明确板型 capability、真实AI回答验收、更多诊断、课程兼容入口。旧CAD参考只归档，不能替代可编程Hardware Skill。
 固件烧录、LAN/公网、多账号、CAD/仿真 UI、npm 公共分发不在本次范围。
 真机与真实模型未调用，待验项保留，不能用自动 Fake 测试替代。
 

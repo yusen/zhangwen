@@ -1,0 +1,36 @@
+{
+  "layouts": [
+    {
+      "theme": "light",
+      "width": 1440,
+      "overflow": false,
+      "cancelVisible": true,
+      "slowProviderHint": true
+    },
+    {
+      "theme": "light",
+      "width": 375,
+      "overflow": false,
+      "cancelVisible": true,
+      "slowProviderHint": true
+    },
+    {
+      "theme": "dark",
+      "width": 1440,
+      "overflow": false,
+      "cancelVisible": true,
+      "slowProviderHint": true
+    },
+    {
+      "theme": "dark",
+      "width": 375,
+      "overflow": false,
+      "cancelVisible": true,
+      "slowProviderHint": true
+    }
+  ],
+  "pageErrors": [],
+  "productionWrites": 0,
+  "mockedWrites": 1,
+  "realProvider": false
+}

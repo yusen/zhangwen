@@ -1,5 +1,7 @@
 # 当前任务
 
+2026-10-15 AI超时排查：Key可访问/models，运行模型Flash正确；真实Pro短请求75秒仅保活，当前Flash规范ID圆形代码请求300.02秒无正文，阻塞在供应商生成阶段，真实代码生成尚未恢复。已修复本地非流式空等和读超时不等于总超时：SSE→NDJSON逐步预览、等待/生成秒数、20秒说明、取消，连接15/读空闲60/总300秒，断开取消上游并释放锁、准确FAILED原因、完整stop+[DONE]才形成待接受代码。39API/15浏览器及后续定向2API/1浏览器、strict构建通过；真实HTTP Fake上游取消/重试与3080浅深×1440/375通过，0生产API写入。原471/817摘要通过，未写设备/旧库/Key。详见tasks/AI_TIMEOUT.md、docs/AI_TIMEOUT_DIAGNOSIS.md；最新服务http://127.0.0.1:3080，工具会话2461。此前“未调用真实模型”仅为历史记录。
+
 2026-10-15 最新修订：按用户要求，启动前先离线检查实际 Node/npm/Python 与项目依赖。优先复用可用的项目运行环境和本机环境；Node22+/npm、Python3.11+ 执行检查通过才使用，缺失才准备项目内运行时。Python/前端依赖按锁定版本及导入/可执行入口检查，完整时跳过安装，丢失回执也不重装；缺包按需修复且优先下载缓存。5项启动器自动测试、Windows PowerShell5.1实际系统环境复用/项目环境复用/完整依赖/丢回执/缺包修复和复用后HTTP启动通过；详细证据 docs/environment-detection-smoke.json。原471源码/817资源摘要一致。GitHub与部署ZIP采用同一版本交付，详见tasks/DEPLOYMENT.md。
 
 2026-10-15 最新任务：用户授权以 V4 替换 GitHub yusen/zhangwen 旧桌面资料，并实现其他电脑一键部署。Windows start-web.bat 已支持自动下载并校验项目内 Node/uv、准备 Python、锁定安装、strict构建和启动，重复执行跳过成功步骤；macOS/Linux保留已有环境的源码命令。完整74包/817文件随源码 resources 发布，经原HardwareSkill安装器初始化，含新增主控共76包/74可见/5主控。原471文件不变。已在无本机依赖/imports/.data的隔离目录下载环境、部署、保存/检查/上传清单和摘要验证通过，未访问设备/真实模型。远程旧main 7e0b34e 已备份到 backup/desktop-before-mu-web-20261015，另有 .publish/desktop-before-mu-web-20261015.bundle。53项本地回归与main替换已完成，远程1444文件树回读与本地一致；初始发布提交a5d200d，Git传输异常时使用官方Git Data API，逐blob/子树/根树摘要一致后以force=false更新main。详见tasks/DEPLOYMENT.md、docs/DEPLOYMENT.md。

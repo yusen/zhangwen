@@ -53,7 +53,7 @@ cd zhangwen
 - 代码高亮、行号、缩进、查找、Ctrl+S；导出代码或历史版本，识别双标签保存冲突。
 - Python 语法检查和原库器件兼容规则检查。**不会执行代码**，也不能保证 MicroPython 专用 API、引脚或实际接线正确。
 - 用 Chrome/Edge 的 Web Serial 选择串口、识别 MicroPython、上传/备份/摘要回读、单独运行/中断、发送 REPL 和查看输出。
-- 可选 DeepSeek 真实对话：发送当前代码及所选硬件资料，返回建议；核对并接受后才改草稿。无 Key 明确显示未配置。
+- 可选 DeepSeek 真实对话：发送当前代码及所选硬件资料，逐步显示回答；核对并接受后才改草稿。显示等待时间，可点击「取消生成」；服务繁忙、断流和超时保留输入与代码。无 Key 明确显示未配置。
 
 首版只上传一个 UTF-8 `main.py`，最多 **64 KiB**；需要设备已经安装 MicroPython、提供 raw REPL、`machine`、`os`、`json/ujson`、`binascii` 和 `hashlib/uhashlib` SHA-256。不包含固件烧录、多文件部署、CAD/仿真界面或完整课堂迁移。
 

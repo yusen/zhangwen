@@ -3,8 +3,12 @@ from __future__ import annotations
 
 import asyncio
 import json
+import logging
 import os
 import secrets
+import time
+from collections.abc import Awaitable, Callable
+from contextlib import suppress
 from pathlib import Path
 from typing import Any
 
@@ -12,7 +16,7 @@ import httpx
 from fastapi import FastAPI, HTTPException, Request
 from fastapi.exceptions import RequestValidationError
 from fastapi.exception_handlers import request_validation_exception_handler
-from fastapi.responses import FileResponse, JSONResponse, Response
+from fastapi.responses import FileResponse, JSONResponse, Response, StreamingResponse
 from fastapi.staticfiles import StaticFiles
 
 from zhangwen.hardware.hardware_skills import HardwareSkillNotFoundError, HardwareSkillValidationError
@@ -21,9 +25,12 @@ from zhangwen.mu_web.models import DEFAULT_AI_MODEL, AiSettingsInput, ChatInput,
 from zhangwen.mu_web.repository import MuRepository
 
 ROOT = Path(__file__).resolve().parents[4]
+AI_TOTAL_TIMEOUT = 300
+logger = logging.getLogger(__name__)
 
 
-async def generate_reply(request: ChatInput, repo: MuRepository, history: list[dict[str, Any]], *, api_key: str, model: str) -> str:
+async def generate_reply(request: ChatInput, repo: MuRepository, history: list[dict[str, Any]], *, api_key: str, model: str,
+                         on_delta: Callable[[str], Awaitable[None]] | None = None) -> str:
     key = api_key.strip()
     if not key:
         raise HTTPException(503, "尚未配置 AI。请点击「API 设置」填写 Key；手工编程不受影响。")
@@ -36,19 +43,65 @@ async def generate_reply(request: ChatInput, repo: MuRepository, history: list[d
     messages = [{"role": "system", "content": system}]
     messages.extend({"role": item["role"], "content": item["content"][:8000]} for item in history[-8:] if item["status"] == "COMPLETED")
     messages.append({"role": "user", "content": f"当前 main.py：\n```python\n{request.code}\n```\n用户请求：{request.message}"})
+    parts: list[str] = []
+    size = 0
+    complete = False
+    finish = None
+    stage = "connect"
+    started = time.monotonic()
     try:
-        async with httpx.AsyncClient(timeout=90, trust_env=False) as client:
-            response = await client.post("https://api.deepseek.com/chat/completions", headers={"Authorization": f"Bearer {key}"},
+        # HTTPX read timeouts reset on provider keep-alives. An independent total
+        # deadline also bounds a healthy connection that never produces an answer.
+        async with asyncio.timeout(AI_TOTAL_TIMEOUT), httpx.AsyncClient(
+            timeout=httpx.Timeout(connect=15, read=60, write=30, pool=15), trust_env=False,
+        ) as client:
+            async with client.stream("POST", "https://api.deepseek.com/chat/completions", headers={"Authorization": f"Bearer {key}"},
                 json={"model": model, "messages": messages,
-                      "thinking": {"type": "disabled"}, "max_tokens": 4096, "stream": False})
-            response.raise_for_status()
-            payload = response.json()
-            content = payload["choices"][0]["message"]["content"]
-            if not isinstance(content, str) or not content.strip() or len(content) > 80_000:
-                raise ValueError("invalid response")
-            return content
-    except httpx.TimeoutException as exc:
-        raise HTTPException(504, "AI 请求超时。输入已保留，请稍后重试。") from exc
+                      "thinking": {"type": "disabled"}, "max_tokens": 4096, "stream": True}) as response:
+                response.raise_for_status()
+                stage = "waiting"
+                async for line in response.aiter_lines():
+                    if not line.startswith("data:"):
+                        continue  # Blank lines and : keep-alive are not model output.
+                    data = line[5:].strip()
+                    if data == "[DONE]":
+                        complete = True
+                        break
+                    payload = json.loads(data)
+                    if "error" in payload:
+                        raise ValueError("provider stream error")
+                    choices = payload.get("choices", [])
+                    if not choices:
+                        continue  # Optional usage-only event.
+                    choice = choices[0]
+                    finish = choice.get("finish_reason") or finish
+                    content = choice.get("delta", {}).get("content")
+                    if content is None:
+                        continue  # Do not expose reasoning_content.
+                    if not isinstance(content, str):
+                        raise ValueError("invalid content")
+                    size += len(content)
+                    if size > 80_000:
+                        raise ValueError("response too large")
+                    if content:
+                        stage = "answer"
+                        parts.append(content)
+                        if on_delta:
+                            await on_delta(content)
+        if finish == "length":
+            raise HTTPException(502, "AI 回答达到长度上限，代码可能不完整。请缩小本次需求后重试；未替换编辑器代码。")
+        if not complete or finish != "stop" or not "".join(parts).strip():
+            raise ValueError("incomplete response")
+        return "".join(parts)
+    except (TimeoutError, httpx.TimeoutException) as exc:
+        logger.warning("AI timeout stage=%s elapsed=%.1fs", stage, time.monotonic() - started)
+        if stage == "connect":
+            detail = "连接 DeepSeek 超时，请检查本机网络或代理。"
+        elif not parts:
+            detail = "DeepSeek 已受理请求，但长时间未返回回答。服务可能繁忙，请稍后重试或在「API 设置」中切换模型。"
+        else:
+            detail = "DeepSeek 回答中断或生成超时，本次内容不完整。请稍后重试。"
+        raise HTTPException(504, detail + " 输入已保留，代码未修改。") from exc
     except httpx.HTTPStatusError as exc:
         status = exc.response.status_code
         if status in {401, 403}:
@@ -60,8 +113,9 @@ async def generate_reply(request: ChatInput, repo: MuRepository, history: list[d
         else:
             detail = "DeepSeek 拒绝请求或暂时不可用，请核对 API 设置并稍后重试。"
         raise HTTPException(502, detail + " 输入已保留，代码未修改。") from exc
-    except (httpx.HTTPError, KeyError, IndexError, ValueError, TypeError) as exc:
-        raise HTTPException(502, "AI 请求失败，请检查网络、服务端 Key 和模型配置后重试。代码未修改。") from exc
+    except (httpx.HTTPError, KeyError, IndexError, ValueError, TypeError, AttributeError) as exc:
+        logger.warning("AI failure stage=%s kind=%s elapsed=%.1fs", stage, type(exc).__name__, time.monotonic() - started)
+        raise HTTPException(502, "DeepSeek 连接中断或返回了不完整的回答，请稍后重试。输入已保留，代码未修改。") from exc
 
 
 def create_app(data_dir: Path | None = None, *, port: int = 3080, dev: bool = False) -> FastAPI:
@@ -205,7 +259,7 @@ def create_app(data_dir: Path | None = None, *, port: int = 3080, dev: bool = Fa
         return repo.manifest(project_id, request.expectedRevision)
 
     @app.post("/api/projects/{project_id}/chat")
-    async def chat(project_id: str, request: ChatInput):
+    async def chat(project_id: str, request: ChatInput, http_request: Request):
         repo.hardware_revisions(request.boardId, request.componentIds)
         api_key = app.state.ai_settings["apiKey"]
         if not api_key:
@@ -213,18 +267,67 @@ def create_app(data_dir: Path | None = None, *, port: int = 3080, dev: bool = Fa
         lock = app.state.chat_locks.setdefault(project_id, asyncio.Lock())
         if lock.locked():
             raise HTTPException(409, "当前项目已有一个 AI 请求，请等待完成。")
-        async with lock:
-            current = repo.get(project_id)
-            model = app.state.ai_settings["model"]
-            _, _, assistant = repo.projects.append_user_and_assistant(project_id, request.message, model, user_metadata={"mu": True})
-            metadata = {**(assistant.metadata or {}), "mu": True}
+        repo.get(project_id)  # Reject invalid projects before starting a stream.
+        model = app.state.ai_settings["model"]
+
+        async def complete(on_delta=None):
+            if lock.locked():
+                raise HTTPException(409, "当前项目已有一个 AI 请求，请等待完成。")
+            async with lock:
+                current = repo.get(project_id)
+                _, _, assistant = repo.projects.append_user_and_assistant(project_id, request.message, model, user_metadata={"mu": True})
+                metadata = {**(assistant.metadata or {}), "mu": True}
+                try:
+                    options = {"on_delta": on_delta} if on_delta else {}
+                    content = await generate_reply(request, repo, current["messages"], api_key=api_key, model=model, **options)
+                    repo.projects.update_message(project_id, assistant.id, content=content, status=ChatMessageStatus.COMPLETED, metadata=metadata)
+                    return {"messages": repo.get(project_id)["messages"]}
+                except (HTTPException, asyncio.CancelledError) as exc:
+                    detail = exc.detail if isinstance(exc, HTTPException) else "已取消本次 AI 请求。输入已保留，代码未修改。"
+                    repo.projects.update_message(project_id, assistant.id, content=detail, status=ChatMessageStatus.FAILED, metadata=metadata)
+                    raise
+                except Exception as exc:
+                    logger.warning("AI request failed kind=%s", type(exc).__name__)
+                    detail = "AI 请求未完成，请稍后重试。输入已保留，代码未修改。"
+                    repo.projects.update_message(project_id, assistant.id, content=detail, status=ChatMessageStatus.FAILED, metadata=metadata)
+                    raise HTTPException(500, detail) from exc
+
+        if "application/x-ndjson" not in http_request.headers.get("accept", ""):
+            return await complete()
+
+        async def events():
+            queue: asyncio.Queue[dict[str, Any]] = asyncio.Queue(maxsize=32)
+
+            async def delta(content: str):
+                await queue.put({"type": "delta", "content": content})
+
+            async def run():
+                try:
+                    result = await complete(delta)
+                    await queue.put({"type": "done", **result})
+                except HTTPException as exc:
+                    await queue.put({"type": "error", "detail": exc.detail})
+                except Exception as exc:
+                    logger.warning("AI stream failed kind=%s", type(exc).__name__)
+                    await queue.put({"type": "error", "detail": "AI 请求未完成，请稍后重试。输入已保留，代码未修改。"})
+
+            task = asyncio.create_task(run())
             try:
-                content = await generate_reply(request, repo, current["messages"], api_key=api_key, model=model)
-                repo.projects.update_message(project_id, assistant.id, content=content, status=ChatMessageStatus.COMPLETED, metadata=metadata)
-                return {"messages": repo.get(project_id)["messages"]}
-            except (HTTPException, asyncio.CancelledError):
-                repo.projects.update_message(project_id, assistant.id, content="AI 请求中断或失败，请重试。", status=ChatMessageStatus.FAILED, metadata=metadata)
-                raise
+                yield json.dumps({"type": "status", "phase": "waiting"}) + "\n"
+                while True:
+                    try:
+                        event = await asyncio.wait_for(queue.get(), timeout=5)
+                    except TimeoutError:
+                        event = {"type": "heartbeat"}
+                    yield json.dumps(event, ensure_ascii=False) + "\n"
+                    if event["type"] in {"done", "error"}:
+                        break
+            finally:
+                task.cancel()
+                with suppress(asyncio.CancelledError):
+                    await task
+
+        return StreamingResponse(events(), media_type="application/x-ndjson", headers={"X-Accel-Buffering": "no"})
 
     # Route API misses before mounting SPA assets; never answer an API miss with HTML.
     @app.api_route("/api/{path:path}", methods=["GET", "POST", "PUT", "DELETE", "PATCH"])

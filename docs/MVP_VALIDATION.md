@@ -1,5 +1,7 @@
 # 掌问 Mu Web MVP 验证记录
 
+2026-10-15 AI超时：strict构建、39API（286.52秒）、15浏览器（54秒）全量通过；后续异常路径2API（19.02秒）与空状态1浏览器（14.4秒）定向通过。保活/分片/完整性/分阶段超时/独立总时限/取消/失败保存/锁/重试均覆盖，原471/817摘要保持。真实HTTP隔离Fake上游0.036秒收到未完成delta，断开取消/FAILED/释放锁/重试/原代码保留通过。实际3080浅深×1440/375等待21秒提示/取消无溢出/pageerror，0生产API写入，截图已目视检查。真实/models200，Pro75秒仅保活、规范Flash300.02秒无正文并504；真实AI生成仍未通过，不能把软件/Fake通过记成模型恢复。服务已重启为工具会话2461，详见AI_TIMEOUT_DIAGNOSIS.md、ai-provider-smoke.json、ai-stream-http-smoke.json、ai-stream-ui-smoke.json。未写设备/旧库/Key。
+
 2026-10-15 部署扩展：Windows一键环境准备及隔离目录真实安装/启动通过，完整硬件76包/74可见/5主控；strict构建、26API/14浏览器/13协议合计53项通过，原471源码和817资源摘要一致。部署范围及限制详见 DEPLOYMENT_VALIDATION.md、deployment-smoke.json。旧GitHub资料已有恢复标签，不改变既有设备/模型验收结论。
 
 最新日期：2026-10-15。工作区：D:/ZW_V4，来源：D:/ZW_V1。

@@ -1,0 +1,13 @@
+{
+  "real_provider": false,
+  "isolated_data": true,
+  "loopback_only": true,
+  "first_delta_before_completion": true,
+  "first_delta_seconds": 0.036,
+  "disconnect_cancels_provider": true,
+  "cancelled_message_failed": true,
+  "cancel_preserves_code": true,
+  "retry_after_cancel": true,
+  "saved_completed": true,
+  "complete_preserves_code": true
+}

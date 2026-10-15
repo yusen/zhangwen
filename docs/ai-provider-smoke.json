@@ -1,0 +1,11 @@
+{
+  "provider": "DeepSeek",
+  "model": "deepseek-flash",
+  "isolated_data": true,
+  "board": "hw_labplus_mpython_v2",
+  "completed": false,
+  "error_type": "HTTPException",
+  "status": 504,
+  "detail": "DeepSeek 已受理请求，但长时间未返回回答。服务可能繁忙，请稍后重试或在「API 设置」中切换模型。 输入已保留，代码未修改。",
+  "seconds": 300.02
+}

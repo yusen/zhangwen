@@ -2,7 +2,7 @@ import { useCallback, useEffect, useRef, useState } from 'react';
 import { ArrowUp, BookOpen, Check, CheckCheck, ChevronRight, CircuitBoard, Download, FileCode2, Files, FolderOpen, HelpCircle, LoaderCircle, Plus, Save, Search, Sparkles, Square, Terminal, Unplug, Usb, X, Play, ZoomIn, ZoomOut, Cable, AlignLeft, Moon, Sun, Power, Settings } from 'lucide-react';
 import type { AiSettings, ChatMessage, CheckResult, CreateProject, HardwareDetail, HardwareSummary, Project, ProjectSummary, UploadManifest, Version } from '../../../packages/contracts/src/mu';
 import { DEFAULT_AI_MODEL } from '../../../packages/contracts/src/mu';
-import { api, bootstrap } from './api';
+import { api, bootstrap, chat } from './api';
 import { MicroPythonDevice, serialApi } from './serial';
 import { latestBackup, persistBackup } from './backups';
 import { Editor, type EditorHandle } from './Editor';
@@ -70,9 +70,20 @@ export default function App() {
   const [loading, setLoading] = useState(true);
   const [busy, setBusy] = useState('');
   const [aiBusy, setAiBusy] = useState(false);
+  const [aiPhase, setAiPhase] = useState<'preparing' | 'waiting' | 'generating'>('preparing');
+  const [aiElapsed, setAiElapsed] = useState(0);
+  const [streamedReply, setStreamedReply] = useState('');
+  const aiController = useRef<AbortController | null>(null);
   const sendingMessage = useRef(false);
   const [pendingPrompt, setPendingPrompt] = useState('');
   const [chatError, setChatError] = useState('');
+  useEffect(() => {
+    if (!aiBusy) return;
+    const started = Date.now(); setAiElapsed(0);
+    const timer = setInterval(() => setAiElapsed(Math.floor((Date.now() - started) / 1000)), 1000);
+    return () => clearInterval(timer);
+  }, [aiBusy]);
+  useEffect(() => () => aiController.current?.abort(), []);
   const [logs, setLogs] = useState('尚未连接设备。使用桌面 Chrome / Edge 打开本机页面，然后点击「连接设备」。\n');
   const [repl, setRepl] = useState('');
   const [progress, setProgress] = useState<number | null>(null);
@@ -257,7 +268,7 @@ export default function App() {
     const prompt = message; const base = code; const chatBoard = board; const chatComponents = [...components];
     let id = project?.id;
     sendingMessage.current = true;
-    setAiBusy(true); setError(''); setChatError('');
+    setAiBusy(true); setAiPhase('preparing'); setStreamedReply(''); setError(''); setChatError('');
     try {
       // Refresh the token/config so a server restart or another tab cannot silently disable sending.
       const session = await bootstrap();
@@ -273,7 +284,11 @@ export default function App() {
         setProjects(value => [created, ...value.filter(item => item.id !== id)]);
         setNotice('已为首次对话保存当前项目。');
       }
-      const result = await api<{ messages: ChatMessage[] }>(`/projects/${id}/chat`, 'POST', { message: prompt, code: base, boardId: chatBoard, componentIds: chatComponents });
+      const controller = new AbortController(); aiController.current = controller;
+      setAiPhase('waiting'); setCandidate(null);
+      const result = await chat(id, { message: prompt, code: base, boardId: chatBoard, componentIds: chatComponents }, controller.signal, event => {
+        if (event.type === 'delta') { setAiPhase('generating'); setStreamedReply(value => value + event.content); }
+      });
       if (currentProject.current === id) {
         setMessages(result.messages); setMessage(value => value === prompt ? '' : value);
         const reply = result.messages.filter(item => item.role === 'assistant' && item.status === 'COMPLETED').at(-1)?.content ?? '';
@@ -281,11 +296,12 @@ export default function App() {
         if (suggestion) setCandidate({ code: suggestion[1].trimEnd() + '\n', base });
       }
     } catch (err) {
-      setError(errorText(err)); setChatError(errorText(err));
+      const detail = aiController.current?.signal.aborted ? '已取消本次 AI 请求。输入已保留，代码未修改。' : errorText(err);
+      setError(detail); setChatError(detail);
       if (id && currentProject.current === id) {
         try { const saved = await api<Project>('/projects/' + id); setMessages(saved.messages); } catch { /* keep the prompt and existing conversation for retry */ }
       }
-    } finally { sendingMessage.current = false; setAiBusy(false); setPendingPrompt(''); }
+    } finally { aiController.current = null; sendingMessage.current = false; setAiBusy(false); setPendingPrompt(''); setStreamedReply(''); }
   };
   const previewCandidate = useRef<{ code: string; base: string } | null>(null);
   const [acceptDialog, setAcceptDialog] = useState(false);
@@ -348,10 +364,11 @@ export default function App() {
       <section className={`ai-panel panel mobile-${mobileTab === 'ai' ? 'show' : 'hide'}`}>
         <div className="panel-head"><h2><Sparkles size={18} />掌问 AI</h2><button className="api-settings-entry" disabled={loading || !!busy || aiBusy} onClick={openAiSettings} aria-label="掌问 AI API 设置"><Settings size={14} /><span>{aiConfigured ? '已配置' : '未配置'}</span> · 设置</button></div>
         <div className="messages" role="log" aria-label="掌问对话记录">
-          {!messages.length && <div className="conversation-empty"><span><Sparkles size={24} strokeWidth={1.6} /></span><p>描述你的想法，或粘贴需要分析的代码与报错。</p></div>}
+          {!messages.length && !pendingPrompt && <div className="conversation-empty"><span><Sparkles size={24} strokeWidth={1.6} /></span><p>描述你的想法，或粘贴需要分析的代码与报错。</p></div>}
           {messages.map(item => <article className={`message ${item.role}`} key={item.id}><strong>{item.role === 'user' ? '你' : '掌问'}{item.status === 'FAILED' ? ' · 请求失败' : ''}</strong><pre>{item.content}</pre></article>)}
           {pendingPrompt && <article className="message user"><strong>你 · 正在发送</strong><pre>{pendingPrompt}</pre></article>}
-          {aiBusy && <p className="muted"><LoaderCircle size={16} className="spin" /> 正在请求模型，代码保持可编辑…</p>}
+          {aiBusy && streamedReply && <article className="message assistant"><strong>掌问 · 正在生成</strong><pre>{streamedReply}</pre></article>}
+          {aiBusy && <div className="ai-progress"><p className="muted" role="status"><LoaderCircle size={16} className="spin" /> {aiPhase === 'preparing' ? '正在准备对话' : aiPhase === 'waiting' ? '正在等待 DeepSeek 回答' : '正在生成回答'} · {aiElapsed} 秒</p>{aiPhase !== 'preparing' && <button type="button" onClick={() => aiController.current?.abort()}>取消生成</button>}{aiPhase === 'waiting' && aiElapsed >= 20 && <small>供应商暂未返回正文，可继续等待或取消后稍后重试。</small>}</div>}
           {candidate && <div className="candidate"><FileCode2 size={19} /><span>有一个 main.py 建议待核对</span><button onClick={() => { previewCandidate.current = candidate; setAcceptDialog(true); }}>查看代码</button></div>}
         </div>
         {chatError && <p className="chat-error" role="alert">{chatError}</p>}

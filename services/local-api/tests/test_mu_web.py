@@ -194,7 +194,9 @@ def test_provider_sends_current_model_with_final_answer_budget(client, monkeypat
     def respond(request):
         assert str(request.url) == "https://api.deepseek.com/chat/completions"
         sent.append(json.loads(request.content))
-        return httpx.Response(200, json={"choices": [{"message": {"content": "测试最终回答", "reasoning_content": "internal only"}}]})
+        chunks = [{"delta": {"reasoning_content": "internal only"}}, {"delta": {"content": "测试最终回答"}}, {"delta": {}, "finish_reason": "stop"}]
+        body = ": keep-alive\n\n" + "".join("data: " + json.dumps({"choices": [chunk]}) + "\n\n" for chunk in chunks) + "data: [DONE]\n\n"
+        return httpx.Response(200, text=body, headers={"content-type": "text/event-stream"})
     real_client = httpx.AsyncClient
     monkeypatch.setattr("zhangwen.mu_web.app.httpx.AsyncClient", lambda **kwargs: real_client(**kwargs, transport=httpx.MockTransport(respond)))
     request = ChatInput(message="帮助调试", code=project["code"], boardId=project["boardId"])
@@ -203,6 +205,7 @@ def test_provider_sends_current_model_with_final_answer_budget(client, monkeypat
     assert sent[0]["model"] == model
     assert sent[0]["thinking"] == {"type": "disabled"}
     assert sent[0]["max_tokens"] == 4096
+    assert sent[0]["stream"] is True
     assert "tools" not in sent[0]
 
 
@@ -299,6 +302,72 @@ def test_real_provider_adapter_contract_with_fake_response_only(client, monkeypa
     failed = client.post(path + "/chat", json={"message": "失败测试", "code": project["code"], "boardId": project["boardId"]})
     assert failed.status_code == 502
     assert client.get(path).json()["messages"][-1]["status"] == "FAILED"
+
+
+def test_streamed_chat_saves_only_complete_answers_and_preserves_error_detail(client, monkeypatch):
+    client.post("/api/settings/ai", json={"apiKey": "placeholder", "model": "deepseek-flash"})
+    project = new_project(client)
+    path = "/api/projects/" + project["id"]
+    body = {"message": "生成示例", "code": project["code"], "boardId": project["boardId"]}
+
+    async def reply(*_args, on_delta, **_kw):
+        await on_delta("```python\n")
+        await on_delta("print(1)\n```")
+        return "```python\nprint(1)\n```"
+
+    monkeypatch.setattr("zhangwen.mu_web.app.generate_reply", reply)
+    response = client.post(path + "/chat", json=body, headers={"accept": "application/x-ndjson"})
+    events = [json.loads(line) for line in response.text.splitlines()]
+    assert [e["type"] for e in events] == ["status", "delta", "delta", "done"]
+    assert events[-1]["messages"][-1]["status"] == "COMPLETED"
+    assert client.get(path).json()["code"] == project["code"]
+    detail = "DeepSeek 已受理请求，但长时间未返回回答。"
+    monkeypatch.setattr("zhangwen.mu_web.app.generate_reply", AsyncMock(side_effect=HTTPException(504, detail)))
+    failed = client.post(path + "/chat", json=body, headers={"accept": "application/x-ndjson"})
+    assert json.loads(failed.text.splitlines()[-1]) == {"type": "error", "detail": detail}
+    assert client.get(path).json()["messages"][-1]["content"] == detail
+    assert client.get(path).json()["messages"][-1]["status"] == "FAILED"
+    monkeypatch.setattr("zhangwen.mu_web.app.generate_reply", AsyncMock(side_effect=RuntimeError("private detail")))
+    unexpected = client.post(path + "/chat", json=body, headers={"accept": "application/x-ndjson"})
+    assert json.loads(unexpected.text.splitlines()[-1])["type"] == "error"
+    assert "private detail" not in unexpected.text
+    assert client.get(path).json()["messages"][-1]["status"] == "FAILED"
+
+
+def test_stream_disconnect_cancels_provider_marks_failure_and_releases_project_lock(client, monkeypatch):
+    from starlette.requests import Request
+    client.post("/api/settings/ai", json={"apiKey": "placeholder", "model": "deepseek-flash"})
+    project = new_project(client)
+    endpoint = next(route.endpoint for route in client.app.routes if getattr(route, "path", None) == "/api/projects/{project_id}/chat")
+
+    async def run():
+        ready = asyncio.Event()
+        cancelled = asyncio.Event()
+
+        async def reply(*_args, on_delta, **_kw):
+            ready.set()
+            try:
+                await asyncio.Event().wait()
+            finally:
+                cancelled.set()
+
+        monkeypatch.setattr("zhangwen.mu_web.app.generate_reply", reply)
+        request = Request({"type": "http", "headers": [(b"accept", b"application/x-ndjson")]})
+        response = await endpoint(project["id"], ChatInput(message="取消测试", code="", boardId=project["boardId"]), request)
+        await anext(response.body_iterator)
+        await asyncio.wait_for(ready.wait(), 1)
+        assert client.app.state.chat_locks[project["id"]].locked()
+        with pytest.raises(HTTPException) as conflict:
+            await endpoint(project["id"], ChatInput(message="并发", code="", boardId=project["boardId"]), request)
+        assert conflict.value.status_code == 409
+        await response.body_iterator.aclose()
+        assert cancelled.is_set()
+        assert not client.app.state.chat_locks[project["id"]].locked()
+
+    asyncio.run(run())
+    message = client.get("/api/projects/" + project["id"]).json()["messages"][-1]
+    assert message["status"] == "FAILED"
+    assert "已取消" in message["content"]
 
 
 def test_legacy_course_or_other_project_not_silently_converted(client):

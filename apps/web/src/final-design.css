@@ -159,6 +159,10 @@ dialog::backdrop { background: #0b182d70; backdrop-filter: blur(3px); }
 .settings-error { padding: 10px 12px; color: var(--dng); background: var(--dng-t); border-radius: 8px; }
 .chat-error { margin: 0 14px 8px; padding: 10px 12px; color: var(--dng); background: var(--dng-t); border-radius: 8px; font-size: 13px; overflow-wrap: anywhere; }
 .chat-hint { margin: 0 14px 8px; font-size: 12px; color: var(--ink-3); }
+.ai-progress { display: flex; align-items: center; flex-wrap: wrap; gap: 8px; font-size: 12px; }
+.ai-progress p { display: flex; align-items: center; gap: 6px; margin: 0; }
+.ai-progress button { min-height: 36px; padding: 6px 10px; border: 1px solid var(--border2); border-radius: 7px; }
+.ai-progress small { width: 100%; color: var(--ink-3); line-height: 1.7; }
 .board-picker-dialog { width: min(1180px, calc(100vw - 32px)); }
 .board-picker-intro { display: flex; justify-content: space-between; flex-wrap: wrap; gap: 8px; align-items: center; margin-bottom: 14px; }
 .board-picker-intro p { margin: 0; }

@@ -19,6 +19,14 @@ export interface AiSettings { aiConfigured: boolean; aiModel: string }
 export interface SaveAiSettings { apiKey?: string | null; model: string }
 export interface Project extends ProjectSummary { code: string; checksum: string; messages: ChatMessage[] }
 export interface ChatMessage { id: string; role: 'user' | 'assistant'; content: string; status: string }
+export interface ChatInput { message: string; code: string; boardId: string; componentIds: string[] }
+/** POST chat with Accept: application/x-ndjson. Only done contains a saved, complete answer. */
+export type ChatEvent =
+  | { type: 'status'; phase: 'waiting' }
+  | { type: 'heartbeat' }
+  | { type: 'delta'; content: string }
+  | { type: 'done'; messages: ChatMessage[] }
+  | { type: 'error'; detail: string };
 export interface Version { revision: number; code: string; checksum: string; createdAt: string }
 export interface CheckResult {
   valid: boolean; checksum: string;
