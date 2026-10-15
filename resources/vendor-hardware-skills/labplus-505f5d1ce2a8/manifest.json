@@ -1,0 +1,35 @@
+{
+  "schema": "zhangwen.hardware-skill-manifest/v1",
+  "schemaVersion": 1,
+  "skillName": "labplus-505f5d1ce2a8",
+  "componentId": "hw_labplus_505f5d1ce2a8",
+  "displayName": "盛思 满天星灯带",
+  "description": "盛思 满天星灯带的官方目录、产品图片与参考资料；MicroPython 驱动及跨主控接线待联调。",
+  "status": "ACTIVE",
+  "sourceKind": "BUNDLED",
+  "files": [
+    "SKILL.md",
+    "references/specifications.md",
+    "references/compatibility-rules.md",
+    "references/integration.md",
+    "references/safety.md",
+    "references/sources.md",
+    "examples/usage.md",
+    "tests/validation-cases.md"
+  ],
+  "media": [
+    {
+      "path": "assets/cover.webp",
+      "role": "cover",
+      "alt": "盛思 满天星灯带 官方产品图",
+      "contentType": "image/webp",
+      "sha256": "30b824e3a6640b98110d9430146b6154677768d5d38de43d06846369104f507f",
+      "sourceUrl": "https://labplus-ledong-module-documentation.readthedocs.io/zh-cn/latest/_images/%E4%B9%90%E5%8A%A8%E6%A8%A1%E5%9D%97-%E6%BB%A1%E5%A4%A9%E6%98%9F%E7%81%AF%E5%B8%A6.png",
+      "attribution": "盛思 官方产品文档",
+      "license": "© labplus；官方声明保留所有版权。图片权利归原作者；未声明开放许可。"
+    }
+  ],
+  "revision": "48ca0e6f5288d51b0a87adc5",
+  "createdAt": "2026-10-15T00:00:00+08:00",
+  "updatedAt": "2026-10-15T00:00:00+08:00"
+}

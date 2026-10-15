@@ -1,0 +1,35 @@
+{
+  "schema": "zhangwen.hardware-skill-manifest/v1",
+  "schemaVersion": 1,
+  "skillName": "labplus-a13d2a73b51e",
+  "componentId": "hw_labplus_a13d2a73b51e",
+  "displayName": "盛思 摇杆",
+  "description": "盛思 摇杆的官方目录、产品图片与参考资料；MicroPython 驱动及跨主控接线待联调。",
+  "status": "ACTIVE",
+  "sourceKind": "BUNDLED",
+  "files": [
+    "SKILL.md",
+    "references/specifications.md",
+    "references/compatibility-rules.md",
+    "references/integration.md",
+    "references/safety.md",
+    "references/sources.md",
+    "examples/usage.md",
+    "tests/validation-cases.md"
+  ],
+  "media": [
+    {
+      "path": "assets/cover.webp",
+      "role": "cover",
+      "alt": "盛思 摇杆 官方产品图",
+      "contentType": "image/webp",
+      "sha256": "c69078e76a707c4e8325b5d9616cdeb239cac1772c71bb340365b2bc862f7f25",
+      "sourceUrl": "https://labplus-ledong-module-documentation.readthedocs.io/zh-cn/latest/_images/%E6%91%87%E6%9D%86-H.png",
+      "attribution": "盛思 官方产品文档",
+      "license": "© labplus；官方声明保留所有版权。图片权利归原作者；未声明开放许可。"
+    }
+  ],
+  "revision": "a47976704d04a23930ac39e4",
+  "createdAt": "2026-10-15T00:00:00+08:00",
+  "updatedAt": "2026-10-15T00:00:00+08:00"
+}

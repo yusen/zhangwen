@@ -1,0 +1,35 @@
+{
+  "schema": "zhangwen.hardware-skill-manifest/v1",
+  "schemaVersion": 1,
+  "skillName": "nplus-fe83f6e5c369",
+  "componentId": "hw_nplus_fe83f6e5c369",
+  "displayName": "N+ 灯带",
+  "description": "N+ 灯带的官方目录、产品图片与参考资料；MicroPython 驱动及跨主控接线待联调。",
+  "status": "ACTIVE",
+  "sourceKind": "BUNDLED",
+  "files": [
+    "SKILL.md",
+    "references/specifications.md",
+    "references/compatibility-rules.md",
+    "references/integration.md",
+    "references/safety.md",
+    "references/sources.md",
+    "examples/usage.md",
+    "tests/validation-cases.md"
+  ],
+  "media": [
+    {
+      "path": "assets/cover.webp",
+      "role": "cover",
+      "alt": "N+ 灯带 官方产品图",
+      "contentType": "image/webp",
+      "sha256": "d274f08489cf5521380482bff6e1f47aa9e1bb6e648366805798474ebfe51da4",
+      "sourceUrl": "https://nplus-doc.readthedocs.io/zh-cn/latest/_images/3-1.jpg",
+      "attribution": "N+ 官方产品文档",
+      "license": "© 2020 nplus；图片权利归原作者；文档未声明图片开放许可。"
+    }
+  ],
+  "revision": "2a3b8dda41e16e19b7d9073b",
+  "createdAt": "2026-10-15T00:00:00+08:00",
+  "updatedAt": "2026-10-15T00:00:00+08:00"
+}

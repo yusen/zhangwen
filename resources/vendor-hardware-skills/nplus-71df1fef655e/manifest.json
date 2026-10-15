@@ -1,0 +1,35 @@
+{
+  "schema": "zhangwen.hardware-skill-manifest/v1",
+  "schemaVersion": 1,
+  "skillName": "nplus-71df1fef655e",
+  "componentId": "hw_nplus_71df1fef655e",
+  "displayName": "N+ 旋转电位器",
+  "description": "N+ 旋转电位器的官方目录、产品图片与参考资料；MicroPython 驱动及跨主控接线待联调。",
+  "status": "ACTIVE",
+  "sourceKind": "BUNDLED",
+  "files": [
+    "SKILL.md",
+    "references/specifications.md",
+    "references/compatibility-rules.md",
+    "references/integration.md",
+    "references/safety.md",
+    "references/sources.md",
+    "examples/usage.md",
+    "tests/validation-cases.md"
+  ],
+  "media": [
+    {
+      "path": "assets/cover.webp",
+      "role": "cover",
+      "alt": "N+ 旋转电位器 官方产品图",
+      "contentType": "image/webp",
+      "sha256": "8eab2796d01db952c3e20e481b5f9a92586a08878d4ab114f48148c1c766993f",
+      "sourceUrl": "https://nplus-doc.readthedocs.io/zh-cn/latest/_images/9-1.jpg",
+      "attribution": "N+ 官方产品文档",
+      "license": "© 2020 nplus；图片权利归原作者；文档未声明图片开放许可。"
+    }
+  ],
+  "revision": "7d5b148f30ad75c4822a9a81",
+  "createdAt": "2026-10-15T00:00:00+08:00",
+  "updatedAt": "2026-10-15T00:00:00+08:00"
+}

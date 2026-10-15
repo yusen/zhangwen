@@ -1,0 +1,35 @@
+{
+  "schema": "zhangwen.hardware-skill-manifest/v1",
+  "schemaVersion": 1,
+  "skillName": "seeed-d4c300ea87bc",
+  "componentId": "hw_seeed_d4c300ea87bc",
+  "displayName": "Grove - 温湿度传感器 (SHT31)",
+  "description": "Grove - 温湿度传感器 (SHT31)的官方目录、产品图片与参考资料；MicroPython 驱动及跨主控接线待联调。",
+  "status": "ACTIVE",
+  "sourceKind": "BUNDLED",
+  "files": [
+    "SKILL.md",
+    "references/specifications.md",
+    "references/compatibility-rules.md",
+    "references/integration.md",
+    "references/safety.md",
+    "references/sources.md",
+    "examples/usage.md",
+    "tests/validation-cases.md"
+  ],
+  "media": [
+    {
+      "path": "assets/cover.webp",
+      "role": "cover",
+      "alt": "Grove - 温湿度传感器 (SHT31) 官方产品图",
+      "contentType": "image/webp",
+      "sha256": "1009bcf66fe21b1947d229615d7733fbefcf5270cd51af9faafd1349e876c15c",
+      "sourceUrl": "https://files.seeedstudio.com/wiki/Grove-TempAndHumi_Sensor-SHT31/img/main_new.jpg",
+      "attribution": "Seeed Grove 官方产品文档",
+      "license": "© Seeed Studio；产品图片权利归原作者；未将文档代码许可视为图片许可。"
+    }
+  ],
+  "revision": "cf2d60c6b133d0d0e6378040",
+  "createdAt": "2026-10-15T00:00:00+08:00",
+  "updatedAt": "2026-10-15T00:00:00+08:00"
+}

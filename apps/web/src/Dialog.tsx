@@ -7,7 +7,7 @@ export function Dialog({ title, onClose, children, className }: { title: string;
     const node = ref.current;
     const prior = document.activeElement as HTMLElement | null;
     node?.showModal();
-    node?.querySelector<HTMLElement>('.dialog-body input, .dialog-body textarea, .dialog-body select')?.focus();
+    (node?.querySelector<HTMLElement>('[data-dialog-autofocus]') ?? node?.querySelector<HTMLElement>('.dialog-body input, .dialog-body textarea, .dialog-body select'))?.focus();
     return () => { node?.close(); prior?.focus(); };
   }, []);
   return <dialog className={className} ref={ref} onCancel={event => { event.preventDefault(); onClose(); }} aria-labelledby="dialog-title">

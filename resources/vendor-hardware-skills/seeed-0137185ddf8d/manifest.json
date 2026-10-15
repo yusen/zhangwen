@@ -1,0 +1,35 @@
+{
+  "schema": "zhangwen.hardware-skill-manifest/v1",
+  "schemaVersion": 1,
+  "skillName": "seeed-0137185ddf8d",
+  "componentId": "hw_seeed_0137185ddf8d",
+  "displayName": "Grove - 电容式湿度传感器（耐腐蚀）",
+  "description": "Grove - 电容式湿度传感器（耐腐蚀）的官方目录、产品图片与参考资料；MicroPython 驱动及跨主控接线待联调。",
+  "status": "ACTIVE",
+  "sourceKind": "BUNDLED",
+  "files": [
+    "SKILL.md",
+    "references/specifications.md",
+    "references/compatibility-rules.md",
+    "references/integration.md",
+    "references/safety.md",
+    "references/sources.md",
+    "examples/usage.md",
+    "tests/validation-cases.md"
+  ],
+  "media": [
+    {
+      "path": "assets/cover.webp",
+      "role": "cover",
+      "alt": "Grove - 电容式湿度传感器（耐腐蚀） 官方产品图",
+      "contentType": "image/webp",
+      "sha256": "ef2ce8ed9cd9f38a2e0c4ea67d6130f76d5d169b4da0e3d832ef875fa876a42f",
+      "sourceUrl": "https://files.seeedstudio.com/wiki/Grove-Capacitive_Moisture_Sensor_Corrosion_Resistant/img/main.jpg",
+      "attribution": "Seeed Grove 官方产品文档",
+      "license": "© Seeed Studio；产品图片权利归原作者；未将文档代码许可视为图片许可。"
+    }
+  ],
+  "revision": "fdb1de882516248e3e97d40d",
+  "createdAt": "2026-10-15T00:00:00+08:00",
+  "updatedAt": "2026-10-15T00:00:00+08:00"
+}

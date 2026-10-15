@@ -1,0 +1,35 @@
+{
+  "schema": "zhangwen.hardware-skill-manifest/v1",
+  "schemaVersion": 1,
+  "skillName": "labplus-eabda30c851e",
+  "componentId": "hw_labplus_eabda30c851e",
+  "displayName": "盛思 红外接收",
+  "description": "盛思 红外接收的官方目录、产品图片与参考资料；MicroPython 驱动及跨主控接线待联调。",
+  "status": "ACTIVE",
+  "sourceKind": "BUNDLED",
+  "files": [
+    "SKILL.md",
+    "references/specifications.md",
+    "references/compatibility-rules.md",
+    "references/integration.md",
+    "references/safety.md",
+    "references/sources.md",
+    "examples/usage.md",
+    "tests/validation-cases.md"
+  ],
+  "media": [
+    {
+      "path": "assets/cover.webp",
+      "role": "cover",
+      "alt": "盛思 红外接收 官方产品图",
+      "contentType": "image/webp",
+      "sha256": "e276850758cd1e7d8e1ded4cb28f837db275dad0eb3333c20118bd6acc9c811c",
+      "sourceUrl": "https://labplus-ledong-module-documentation.readthedocs.io/zh-cn/latest/_images/%E7%BA%A2%E5%A4%96%E6%8E%A5%E6%94%B6-H.png",
+      "attribution": "盛思 官方产品文档",
+      "license": "© labplus；官方声明保留所有版权。图片权利归原作者；未声明开放许可。"
+    }
+  ],
+  "revision": "d82a10481eeb52af1ceb7ee1",
+  "createdAt": "2026-10-15T00:00:00+08:00",
+  "updatedAt": "2026-10-15T00:00:00+08:00"
+}

@@ -1,10 +1,10 @@
 import type { AiDiagnosticEvent, AiDiagnosticReport, ChatEvent, ChatInput, ChatMessage, SaveAiSettings } from '../../../packages/contracts/src/mu';
 
 let token = '';
-export async function bootstrap(signal?: AbortSignal): Promise<{ aiConfigured: boolean; aiModel: string }> {
+export async function bootstrap(signal?: AbortSignal): Promise<{ aiConfigured: boolean; aiModel: string; aiBaseUrl?: string }> {
   const response = await fetch('/api/session', { signal });
   if (!response.ok) throw new Error('无法连接本机服务，请检查启动窗口。');
-  const result = await response.json() as { token: string; aiConfigured: boolean; aiModel: string };
+  const result = await response.json() as { token: string; aiConfigured: boolean; aiModel: string; aiBaseUrl?: string };
   token = result.token;
   return result;
 }

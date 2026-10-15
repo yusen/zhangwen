@@ -1,0 +1,35 @@
+{
+  "schema": "zhangwen.hardware-skill-manifest/v1",
+  "schemaVersion": 1,
+  "skillName": "seeed-96e749688c3c",
+  "componentId": "hw_seeed_96e749688c3c",
+  "displayName": "Grove - 耳夹式心率传感器",
+  "description": "Grove - 耳夹式心率传感器的官方目录、产品图片与参考资料；MicroPython 驱动及跨主控接线待联调。",
+  "status": "ACTIVE",
+  "sourceKind": "BUNDLED",
+  "files": [
+    "SKILL.md",
+    "references/specifications.md",
+    "references/compatibility-rules.md",
+    "references/integration.md",
+    "references/safety.md",
+    "references/sources.md",
+    "examples/usage.md",
+    "tests/validation-cases.md"
+  ],
+  "media": [
+    {
+      "path": "assets/cover.webp",
+      "role": "cover",
+      "alt": "Grove - 耳夹式心率传感器 官方产品图",
+      "contentType": "image/webp",
+      "sha256": "049525867782296b2921a36fb38865e2d996cbd94e58380f318c2917e53eb1ee",
+      "sourceUrl": "https://files.seeedstudio.com/wiki/Grove-Ear-clip_Heart_Rate_Sensor/img/Heart_rate_ear_clip_kit.jpg",
+      "attribution": "Seeed Grove 官方产品文档",
+      "license": "© Seeed Studio；产品图片权利归原作者；未将文档代码许可视为图片许可。"
+    }
+  ],
+  "revision": "ca696ec05598f487c78423d1",
+  "createdAt": "2026-10-15T00:00:00+08:00",
+  "updatedAt": "2026-10-15T00:00:00+08:00"
+}

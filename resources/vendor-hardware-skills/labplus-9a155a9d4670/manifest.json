@@ -1,0 +1,35 @@
+{
+  "schema": "zhangwen.hardware-skill-manifest/v1",
+  "schemaVersion": 1,
+  "skillName": "labplus-9a155a9d4670",
+  "componentId": "hw_labplus_9a155a9d4670",
+  "displayName": "盛思 循迹传感器（模拟）",
+  "description": "盛思 循迹传感器（模拟）的官方目录、产品图片与参考资料；MicroPython 驱动及跨主控接线待联调。",
+  "status": "ACTIVE",
+  "sourceKind": "BUNDLED",
+  "files": [
+    "SKILL.md",
+    "references/specifications.md",
+    "references/compatibility-rules.md",
+    "references/integration.md",
+    "references/safety.md",
+    "references/sources.md",
+    "examples/usage.md",
+    "tests/validation-cases.md"
+  ],
+  "media": [
+    {
+      "path": "assets/cover.webp",
+      "role": "cover",
+      "alt": "盛思 循迹传感器（模拟） 官方产品图",
+      "contentType": "image/webp",
+      "sha256": "e0642d9774223c9310c47ba2d37082132eb0e8b7eff3532797ef97fbf0f12f3b",
+      "sourceUrl": "https://labplus-ledong-module-documentation.readthedocs.io/zh-cn/latest/_images/%E5%BE%AA%E8%BF%B9%E4%BC%A0%E6%84%9F%E5%99%A8-%E6%A8%A1%E6%8B%9F.png",
+      "attribution": "盛思 官方产品文档",
+      "license": "© labplus；官方声明保留所有版权。图片权利归原作者；未声明开放许可。"
+    }
+  ],
+  "revision": "eb5c63a6e188aa93178eb7c0",
+  "createdAt": "2026-10-15T00:00:00+08:00",
+  "updatedAt": "2026-10-15T00:00:00+08:00"
+}

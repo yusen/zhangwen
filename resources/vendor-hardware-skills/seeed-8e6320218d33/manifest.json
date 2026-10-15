@@ -1,0 +1,35 @@
+{
+  "schema": "zhangwen.hardware-skill-manifest/v1",
+  "schemaVersion": 1,
+  "skillName": "seeed-8e6320218d33",
+  "componentId": "hw_seeed_8e6320218d33",
+  "displayName": "Grove - 六轴加速度计和陀螺仪",
+  "description": "Grove - 六轴加速度计和陀螺仪的官方目录、产品图片与参考资料；MicroPython 驱动及跨主控接线待联调。",
+  "status": "ACTIVE",
+  "sourceKind": "BUNDLED",
+  "files": [
+    "SKILL.md",
+    "references/specifications.md",
+    "references/compatibility-rules.md",
+    "references/integration.md",
+    "references/safety.md",
+    "references/sources.md",
+    "examples/usage.md",
+    "tests/validation-cases.md"
+  ],
+  "media": [
+    {
+      "path": "assets/cover.webp",
+      "role": "cover",
+      "alt": "Grove - 六轴加速度计和陀螺仪 官方产品图",
+      "contentType": "image/webp",
+      "sha256": "7477768c7d9eaa6adddbee8219a6e16a10e2c07eefbdc1790e90616cac535f8f",
+      "sourceUrl": "https://files.seeedstudio.com/wiki/Grove-6-Axis_AccelerometerAndGyroscope/img/Grove-6-Axis_AccelerometerAndGyroscope_product_view_1200_s.jpg",
+      "attribution": "Seeed Grove 官方产品文档",
+      "license": "© Seeed Studio；产品图片权利归原作者；未将文档代码许可视为图片许可。"
+    }
+  ],
+  "revision": "1aa6391770847466f9548e1b",
+  "createdAt": "2026-10-15T00:00:00+08:00",
+  "updatedAt": "2026-10-15T00:00:00+08:00"
+}

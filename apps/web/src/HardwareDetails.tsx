@@ -31,7 +31,8 @@ export function HardwareDetails({ detail, onClose }: { detail: HardwareDetail; o
       {detail.media[0] && <img src={detail.media[0].url} alt={detail.media[0].alt} />}
       <p>{detail.description}</p>
     </div>
-    <dl className="sensor-facts"><div><dt>建议供电</dt><dd>{electrical.voltage} V</dd></div><div><dt>信号电平</dt><dd>{electrical.logicLevel} V</dd></div><div><dt>接口</dt><dd>{interfaceNames[electrical.communicationProtocol] ?? electrical.communicationProtocol}</dd></div></dl>
+    {detail.catalog && <p className="module-catalog-info">{detail.catalog.brand} · {detail.catalog.moduleType}{detail.catalog.programmingSupport === 'reference' && ' · 资料已收录，编程待联调'}{detail.catalog.sourceUrl.startsWith('https://') && <> · <a href={detail.catalog.sourceUrl} target="_blank" rel="noopener noreferrer">查看官方资料 ↗</a></>}</p>}
+    <dl className="sensor-facts"><div><dt>建议供电</dt><dd>{electrical.voltage > 0 ? `${electrical.voltage} V` : '待核实'}</dd></div><div><dt>信号电平</dt><dd>{electrical.logicLevel > 0 ? `${electrical.logicLevel} V` : '待核实'}</dd></div><div><dt>接口</dt><dd>{electrical.communicationProtocol === 'UNKNOWN' ? '查阅官方资料' : interfaceNames[electrical.communicationProtocol] ?? electrical.communicationProtocol}</dd></div></dl>
     <section className="sensor-section" aria-label="接线参考"><h3>接线参考</h3>{wiring ? <Reference content={wiring.content} /> : <p className="muted">此资料包尚未提供接线说明。</p>}</section>
     {safety && <section className="sensor-section sensor-safety" aria-label="使用注意"><h3>使用注意</h3><Reference content={safety.content.replace(/^#\s+[^\n]+\r?\n/, '')} /></section>}
     <details className="sensor-full-docs"><summary>完整技术资料</summary>

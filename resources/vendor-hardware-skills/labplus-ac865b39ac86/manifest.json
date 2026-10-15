@@ -1,0 +1,35 @@
+{
+  "schema": "zhangwen.hardware-skill-manifest/v1",
+  "schemaVersion": 1,
+  "skillName": "labplus-ac865b39ac86",
+  "componentId": "hw_labplus_ac865b39ac86",
+  "displayName": "盛思 编码直流电机",
+  "description": "盛思 编码直流电机的官方目录、产品图片与参考资料；MicroPython 驱动及跨主控接线待联调。",
+  "status": "ACTIVE",
+  "sourceKind": "BUNDLED",
+  "files": [
+    "SKILL.md",
+    "references/specifications.md",
+    "references/compatibility-rules.md",
+    "references/integration.md",
+    "references/safety.md",
+    "references/sources.md",
+    "examples/usage.md",
+    "tests/validation-cases.md"
+  ],
+  "media": [
+    {
+      "path": "assets/cover.webp",
+      "role": "cover",
+      "alt": "盛思 编码直流电机 官方产品图",
+      "contentType": "image/webp",
+      "sha256": "9650e0c98117c6af4f6f63592da7eb06857d7821f417e871f2c5738989eed627",
+      "sourceUrl": "https://labplus-ledong-module-documentation.readthedocs.io/zh-cn/latest/_images/%E7%BC%96%E7%A0%81%E7%9B%B4%E6%B5%81%E7%94%B5%E6%9C%BA.png",
+      "attribution": "盛思 官方产品文档",
+      "license": "© labplus；官方声明保留所有版权。图片权利归原作者；未声明开放许可。"
+    }
+  ],
+  "revision": "17be0c9a81c7dc9340ba2d42",
+  "createdAt": "2026-10-15T00:00:00+08:00",
+  "updatedAt": "2026-10-15T00:00:00+08:00"
+}

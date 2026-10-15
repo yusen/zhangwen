@@ -1,0 +1,35 @@
+{
+  "schema": "zhangwen.hardware-skill-manifest/v1",
+  "schemaVersion": 1,
+  "skillName": "nplus-06196a60bde7",
+  "componentId": "hw_nplus_06196a60bde7",
+  "displayName": "N+ 霍尔传感器",
+  "description": "N+ 霍尔传感器的官方目录、产品图片与参考资料；MicroPython 驱动及跨主控接线待联调。",
+  "status": "ACTIVE",
+  "sourceKind": "BUNDLED",
+  "files": [
+    "SKILL.md",
+    "references/specifications.md",
+    "references/compatibility-rules.md",
+    "references/integration.md",
+    "references/safety.md",
+    "references/sources.md",
+    "examples/usage.md",
+    "tests/validation-cases.md"
+  ],
+  "media": [
+    {
+      "path": "assets/cover.webp",
+      "role": "cover",
+      "alt": "N+ 霍尔传感器 官方产品图",
+      "contentType": "image/webp",
+      "sha256": "c18af6b92831adfe531394346e62936c190684e01057281b0bf25e7afa87b041",
+      "sourceUrl": "https://nplus-doc.readthedocs.io/zh-cn/latest/_images/21-1.png",
+      "attribution": "N+ 官方产品文档",
+      "license": "© 2020 nplus；图片权利归原作者；文档未声明图片开放许可。"
+    }
+  ],
+  "revision": "377d3f0784208a6c34099c7c",
+  "createdAt": "2026-10-15T00:00:00+08:00",
+  "updatedAt": "2026-10-15T00:00:00+08:00"
+}

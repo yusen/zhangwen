@@ -1,0 +1,35 @@
+{
+  "schema": "zhangwen.hardware-skill-manifest/v1",
+  "schemaVersion": 1,
+  "skillName": "seeed-a76022d75858",
+  "componentId": "hw_seeed_a76022d75858",
+  "displayName": "Grove - 水传感器",
+  "description": "Grove - 水传感器的官方目录、产品图片与参考资料；MicroPython 驱动及跨主控接线待联调。",
+  "status": "ACTIVE",
+  "sourceKind": "BUNDLED",
+  "files": [
+    "SKILL.md",
+    "references/specifications.md",
+    "references/compatibility-rules.md",
+    "references/integration.md",
+    "references/safety.md",
+    "references/sources.md",
+    "examples/usage.md",
+    "tests/validation-cases.md"
+  ],
+  "media": [
+    {
+      "path": "assets/cover.webp",
+      "role": "cover",
+      "alt": "Grove - 水传感器 官方产品图",
+      "contentType": "image/webp",
+      "sha256": "2516d50f9a966baf333bbdb85d655e62b9c9a8c9cfc383069a3d1ecc4615c1d2",
+      "sourceUrl": "https://media-cdn.seeedstudio.com/media/catalog/product/cache/bb49d3ec4ee05b6f018e93f896b8a25d/h/t/httpsstatics3.seeedstudio.comseeedfile2017-11bazaar620080_1010200183.jpg",
+      "attribution": "Seeed Grove 官方产品文档",
+      "license": "© Seeed Studio；产品图片权利归原作者；未将文档代码许可视为图片许可。"
+    }
+  ],
+  "revision": "144b5f2599d3a347cb2223ff",
+  "createdAt": "2026-10-15T00:00:00+08:00",
+  "updatedAt": "2026-10-15T00:00:00+08:00"
+}

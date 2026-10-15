@@ -76,6 +76,13 @@ class AiSettingsInput(Boundary):
     """Local-only persisted settings; the API key is never returned by the service."""
     apiKey: str | None = Field(default=None, max_length=500, repr=False)
     model: str = Field(default=DEFAULT_AI_MODEL, min_length=1, max_length=100)
+    baseUrl: str | None = Field(default=None, max_length=500)
+
+    @field_validator("baseUrl")
+    @classmethod
+    def endpoint_text(cls, value: str | None) -> str | None:
+        from .endpoints import base_url
+        return base_url(value) if value is not None else None
 
     @field_validator("apiKey")
     @classmethod
@@ -91,6 +98,6 @@ class AiSettingsInput(Boundary):
     @classmethod
     def model_text(cls, value: str) -> str:
         value = value.strip()
-        if not value:
+        if not value or any(ord(c) < 33 or ord(c) > 126 for c in value):
             raise ValueError("模型名称不能为空。")
-        return current_ai_model(value)
+        return value

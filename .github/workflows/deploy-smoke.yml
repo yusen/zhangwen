@@ -1,0 +1,40 @@
+name: Deployment smoke (Windows and macOS)
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  clean-setup:
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [windows-latest, macos-15, macos-15-intel]
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: actions/checkout@v4
+      - name: Prepare on Windows
+        if: runner.os == 'Windows'
+        shell: powershell
+        run: ./scripts/bootstrap-windows.ps1 -PrepareOnly
+      - name: Prepare on macOS
+        if: runner.os == 'macOS'
+        run: bash start-web.sh --prepare-only
+      - name: Verify startup, catalog and local data
+        shell: bash
+        run: |
+          if [ "$RUNNER_OS" = Windows ]; then py=.venv/Scripts/python.exe; else py=.venv/bin/python; fi
+          PYTHONPATH=services/local-api "$py" - <<'PY'
+          import tempfile
+          from pathlib import Path
+          from fastapi.testclient import TestClient
+          from zhangwen.mu_web.app import create_app
+          with tempfile.TemporaryDirectory() as directory:
+              app = create_app(Path(directory), port=3080)
+              with TestClient(app, base_url='http://127.0.0.1:3080') as client:
+                  assert client.get('/api/health').json()['transport'] == 'web-serial'
+                  assert client.get('/').status_code == 200
+                  hardware = client.get('/api/hardware').json()['skills']
+                  assert len(hardware) >= 258, len(hardware)
+          PY

@@ -1,0 +1,48 @@
+# 盛思 门磁开关 规格
+
+```zhangwen:hardware-spec:v1
+{
+  "schema": "zhangwen.hardware-skill/v1",
+  "componentId": "hw_labplus_8e9496414ad6",
+  "name": "盛思 门磁开关",
+  "category": "SENSOR",
+  "electrical": {
+    "voltage": 0,
+    "logicLevel": 0,
+    "peakCurrent": 0,
+    "communicationProtocol": "UNKNOWN",
+    "supportedMCUs": [],
+    "firmwareRequirement": "待核对官方固件与驱动"
+  },
+  "verificationStatus": "UNVERIFIED",
+  "sourceIds": [
+    "https://labplus-ledong-module-documentation.readthedocs.io/zh-cn/latest/%E4%BC%A0%E6%84%9F%E5%99%A8%E7%B1%BB/%E9%97%A8%E7%A3%81%E5%BC%80%E5%85%B3.html",
+    "https://labplus-ledong-module-documentation.readthedocs.io/zh-cn/latest/%E4%BC%A0%E6%84%9F%E5%99%A8%E7%B1%BB/%E9%97%A8%E7%A3%81%E5%BC%80%E5%85%B3.html"
+  ],
+  "notes": "官方资料已收录，尚未针对当前主控/固件完成 MicroPython 驱动、引脚及实物联调。结构化电气字段的 0 仅为旧版格式的未知占位，绝非 0V 或已验证参数；不得据此接线或判断兼容。"
+}
+```
+
+## 官方原文节选
+
+当有磁铁靠近时,干簧管合拢,输出高电平,否则输出低电平。
+工作电压： VCC 3.3V -5V
+模块尺寸：24*48mm
+固定安装：2个兼容塑料积木通孔
+数据类型：触发–1 未触发–0
+引脚 定义
+引脚
+定义
+GND 地
+GND
+地
+VCC 电源
+VCC
+电源
+DO 数字输出
+DO
+数字输出
+NC 空
+NC
+空
+用具有磁性的物体（如磁铁）靠近磁控开关，即可触发。

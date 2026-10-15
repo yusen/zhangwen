@@ -2,6 +2,7 @@ param([switch]$PrepareOnly, [Parameter(ValueFromRemainingArguments=$true)][strin
 $ErrorActionPreference = 'Stop'
 $projectRoot = Split-Path -Parent $PSScriptRoot
 $runtimeRoot = Join-Path $projectRoot '.runtime'
+if ($env:ZHANGWEN_RUNTIME_DIR) { $runtimeRoot = [IO.Path]::GetFullPath($env:ZHANGWEN_RUNTIME_DIR) }
 New-Item -ItemType Directory -Force -Path $runtimeRoot | Out-Null
 Set-Location -LiteralPath $projectRoot
 [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
@@ -75,7 +76,9 @@ try {
             if (Test-Path -LiteralPath $venvDir) {
                 $venvItem = Get-Item -LiteralPath $venvDir -Force
                 if ($venvItem.Attributes -band [IO.FileAttributes]::ReparsePoint) { throw 'The invalid .venv is a link. Please fix or unlink it before retrying.' }
-                $backupVenv = Join-Path $runtimeRoot ('venv-invalid-' + [guid]::NewGuid().ToString('N'))
+                $localRecovery = Join-Path $projectRoot '.runtime'
+                New-Item -ItemType Directory -Force -Path $localRecovery | Out-Null
+                $backupVenv = Join-Path $localRecovery ('venv-invalid-' + [guid]::NewGuid().ToString('N'))
                 $workspacePrefix = [IO.Path]::GetFullPath($projectRoot).TrimEnd('\') + '\'
                 foreach ($checkedPath in @($venvDir, $backupVenv)) {
                     if (![IO.Path]::GetFullPath($checkedPath).StartsWith($workspacePrefix, [StringComparison]::OrdinalIgnoreCase)) { throw 'Refusing to move an environment outside the project.' }

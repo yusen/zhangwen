@@ -1,0 +1,35 @@
+{
+  "schema": "zhangwen.hardware-skill-manifest/v1",
+  "schemaVersion": 1,
+  "skillName": "seeed-f22c17defd6c",
+  "componentId": "hw_seeed_f22c17defd6c",
+  "displayName": "Grove - 二氧化碳 & 温湿度传感器 (SCD30)",
+  "description": "Grove - 二氧化碳 & 温湿度传感器 (SCD30)的官方目录、产品图片与参考资料；MicroPython 驱动及跨主控接线待联调。",
+  "status": "ACTIVE",
+  "sourceKind": "BUNDLED",
+  "files": [
+    "SKILL.md",
+    "references/specifications.md",
+    "references/compatibility-rules.md",
+    "references/integration.md",
+    "references/safety.md",
+    "references/sources.md",
+    "examples/usage.md",
+    "tests/validation-cases.md"
+  ],
+  "media": [
+    {
+      "path": "assets/cover.webp",
+      "role": "cover",
+      "alt": "Grove - 二氧化碳 & 温湿度传感器 (SCD30) 官方产品图",
+      "contentType": "image/webp",
+      "sha256": "3d6115312e7879e5c9ea33b6c15a76a163f6aeaddfb2d8310260ccd4b3cc0e42",
+      "sourceUrl": "https://files.seeedstudio.com/wiki/Grove-CO2-Temperature-Humidity-Sensor-SCD30/img/main.jpg",
+      "attribution": "Seeed Grove 官方产品文档",
+      "license": "© Seeed Studio；产品图片权利归原作者；未将文档代码许可视为图片许可。"
+    }
+  ],
+  "revision": "3187a309d028b01a7d7a2b1d",
+  "createdAt": "2026-10-15T00:00:00+08:00",
+  "updatedAt": "2026-10-15T00:00:00+08:00"
+}

@@ -24,6 +24,7 @@ from zhangwen.hardware.seeds import seed_default_components
 from zhangwen.projects.repository import ProjectRepository
 from zhangwen.mu_web.models import CodeInput, CreateInput, DEFAULT_CODE, SaveInput
 from zhangwen.mu_web.hardware import WebHardwareRepository
+from zhangwen.mu_web.replies import reply_code
 
 
 def checksum(code: str) -> str:
@@ -42,6 +43,7 @@ class MuRepository:
         self.skills.install_bundled_catalog()
         self.skills.migrate_legacy_rows()
         self.skills.install_web_boards()
+        self.skills.install_vendor_catalog()
         self.skills.refresh_active_catalog()
         with self.connect() as conn:
             conn.execute('''CREATE TABLE IF NOT EXISTS mu_workspaces (
@@ -50,6 +52,11 @@ class MuRepository:
                 hardware_revisions TEXT NOT NULL, artifact_version_id TEXT,
                 revision INTEGER NOT NULL DEFAULT 0,
                 updated_at TEXT NOT NULL
+            )''')
+            if 'portable_id' not in {row[1] for row in conn.execute('PRAGMA table_info(mu_workspaces)')}:
+                conn.execute('ALTER TABLE mu_workspaces ADD COLUMN portable_id TEXT')
+            conn.execute('''CREATE TABLE IF NOT EXISTS mu_code_metadata (
+                version_id TEXT PRIMARY KEY REFERENCES artifact_versions(id), board_id TEXT
             )''')
         # An interrupted provider request must never remain "generating" forever.
         self.projects.normalize_stale_streaming()
@@ -94,12 +101,13 @@ class MuRepository:
                 WHERE m.project_id=?''', (project_id,)).fetchone()
             if row is None:
                 raise HTTPException(404, "此项目不属于独立 Mu 工作区。历史课程项目未被转换。")
-            messages = conn.execute('''SELECT id, role, content, status FROM messages
+            messages = conn.execute('''SELECT id, role, content, status, created_at AS createdAt,
+                COALESCE(json_extract(metadata_json, '$.boardId'), ?) AS boardId FROM messages
                 WHERE project_id=? AND json_extract(metadata_json, '$.mu')=1
-                ORDER BY rowid''', (project_id,)).fetchall()
+                ORDER BY rowid''', (row['board_id'], project_id)).fetchall()
         return {**self.summary(row), "code": json.loads(row["preview_json"])["code"] if row["preview_json"] else DEFAULT_CODE,
                 "checksum": row["checksum"] or checksum(DEFAULT_CODE),
-                "messages": [dict(item) for item in messages]}
+                "messages": [{key: value for key, value in dict(item).items() if value is not None} for item in messages]}
 
     def create(self, request: CreateInput) -> dict[str, Any]:
         revisions = self.hardware_revisions(request.boardId, request.componentIds)
@@ -143,6 +151,10 @@ class MuRepository:
         )
         now = datetime.now(UTC).isoformat()
         with self.connect() as conn:
+            conn.execute('INSERT INTO mu_code_metadata(version_id, board_id) VALUES (?, ?)', (saved.id, request.boardId))
+            conn.execute("""UPDATE messages SET metadata_json=json_set(metadata_json, '$.boardId', ?)
+                WHERE project_id=? AND json_extract(metadata_json, '$.mu')=1
+                AND json_extract(metadata_json, '$.boardId') IS NULL""", (current['boardId'], project_id))
             conn.execute('''UPDATE mu_workspaces SET board_id=?, component_ids=?,
                 hardware_revisions=?, artifact_version_id=?, revision=?, updated_at=? WHERE project_id=?''',
                 (request.boardId, json.dumps(request.componentIds), json.dumps(revisions), saved.id, version, now, project_id))
@@ -152,10 +164,49 @@ class MuRepository:
     def versions(self, project_id: str) -> list[dict[str, Any]]:
         self.get(project_id)
         with self.connect() as conn:
-            rows = conn.execute('''SELECT version, preview_json, checksum, created_at FROM artifact_versions
-                WHERE artifact_id=? ORDER BY version DESC LIMIT 50''', (f"mu_code_{project_id}",)).fetchall()
+            rows = conn.execute('''SELECT v.version, v.preview_json, v.checksum, v.created_at,
+                v.source_entity_type, s.id AS message_id, m.board_id FROM artifact_versions v
+                LEFT JOIN mu_code_metadata m ON m.version_id=v.id
+                LEFT JOIN messages s ON s.id=v.source_entity_id AND s.project_id=v.project_id
+                WHERE v.artifact_id=? ORDER BY v.version DESC''', (f"mu_code_{project_id}",)).fetchall()
         return [{"revision": row["version"], "code": json.loads(row["preview_json"])["code"],
-                 "checksum": row["checksum"], "createdAt": row["created_at"]} for row in rows]
+                 "checksum": row["checksum"], "createdAt": row["created_at"],
+                 "source": "ai" if row["source_entity_type"] == 'mu_ai_code' else "saved",
+                 **({"messageId": row['message_id']} if row['source_entity_type'] == 'mu_ai_code' and row['message_id'] else {}),
+                 **({"boardId": row["board_id"]} if row["board_id"] else {})} for row in rows]
+
+    def record_ai_code(self, project_id: str, board_id: str, message_id: str, reply: str) -> None:
+        code = reply_code(reply)
+        if code is None:
+            return
+        if len(code.encode('utf-8')) > 65_536 or '\x00' in code:
+            return
+        with self.lock:
+            self.get(project_id)
+            artifact_id = f'mu_code_{project_id}'
+            with self.connect() as conn:
+                if conn.execute('SELECT 1 FROM artifact_versions WHERE artifact_id=? AND source_entity_id=?', (artifact_id, message_id)).fetchone():
+                    return
+                revision = conn.execute('SELECT COALESCE(MAX(version),0)+1 FROM artifact_versions WHERE artifact_id=?', (artifact_id,)).fetchone()[0]
+            saved = self.artifacts.upsert_text_artifact(
+                artifact_id=artifact_id, project_id=project_id, title='main.py', kind=ArtifactKind.CODE,
+                status=ArtifactStatus.NEEDS_REVIEW, source_agent_id='mu-ai', source_entity_type='mu_ai_code',
+                source_entity_id=message_id, source_version=revision, content=code,
+                summary='AI生成的待接受代码，未保存为当前程序、未上传或运行。', mime_type='text/x-python', language='python',
+            )
+            with self.connect() as conn:
+                conn.execute('INSERT INTO mu_code_metadata(version_id, board_id) VALUES (?, ?)', (saved.id, board_id))
+            # Workspace revision/pointer stays at the last explicitly saved code.
+
+    def export_project(self, project_id: str) -> dict[str, Any]:
+        from .portable import export_project
+        with self.lock:
+            return export_project(self, project_id)
+
+    def import_project(self, snapshot) -> dict[str, Any]:
+        from .portable import import_project
+        with self.lock:
+            return import_project(self, snapshot)
 
     def check(self, request: CodeInput) -> dict[str, Any]:
         self.hardware_revisions(request.boardId, request.componentIds)

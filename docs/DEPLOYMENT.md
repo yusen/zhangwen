@@ -1,48 +1,78 @@
-# 本地 Web 部署与更新
+# 安装、启动与更新
 
-## 新电脑：下载、解压、双击
+## 新电脑
 
-Windows 10/11 x64：从 https://github.com/yusen/zhangwen 下载完整 ZIP 并解压，双击根目录 `start-web.bat`。首次联网准备环境后自动打开 http://127.0.0.1:3080。后续双击复用缓存；不需要 Git、npm 命令或系统 Python。请放在当前用户有写权限的目录，勿直接在 ZIP 中运行。
-
-仓库目前私有，下载需要授权账号；也可以由仓库所有者分发下载的源码 ZIP。没有发布 npm 包，因此不提供尚不可用的 npx 命令。部署体验参考 DeepSeek Harness 的“本地服务 + 自动打开浏览器”，设备仍由浏览器 Web Serial 持有。
-
-使用桌面版 Chrome/Edge，设备需已安装 MicroPython；串口驱动取决于板卡，启动器不自动修改驱动。首次使用 AI 在网页「API 设置」填写自己的 Key。数据与 Key 均不随仓库分发。
-
-## 启动器做什么
-
-`start-web.bat` 调用本项目的 PowerShell 脚本；ExecutionPolicy Bypass 仅作用于本次进程，不修改系统执行策略。
-
-1. 离线执行版本检查：先查项目已有 Node，再查 PATH 中的 Node；要求 Node 22+ 且 npm 可运行。只有都不满足时才使用固定SHA校验的缓存压缩包或官方下载项目内 Node 24.14.0。
-2. 检查 `.venv/` 是否可执行且为 Python 3.11+ 的虚拟环境；否则寻找本机 Python、Python Launcher、项目已有托管 Python，及本机 uv 离线发现的解释器，用它创建隔离 `.venv/`。只有未找到可用 Python 时才按需准备 uv 0.8.22 / Python 3.13.7。无法使用的普通旧 `.venv` 保留到 `.runtime/venv-invalid-*` 后重建，不改系统Python或全局依赖。
-3. 每次检测真实安装：Python逐项对照 `requirements-web-lock.txt` 版本并检查关键导入；前端逐项对照 `package-lock.json` 的包版本、适用平台与可执行入口。依赖完整时跳过pip/npm安装，即使安装回执丢失也复用。依赖缺失/不匹配时，pip补齐锁定要求；前端用 `npm ci --prefer-offline` 恢复锁定依赖树，优先使用下载缓存。
-4. TypeScript strict 检查并构建页面，启动单一 FastAPI 服务，只绑定 `127.0.0.1`。
-5. 全新 `.data/` 使用原 Hardware Skill 加载器安装随包的 74 个原硬件包及新增 2 包。共 76 包，Web 可见 74 包 / 5 款主控 / K10 68 个模块。已有用户包保留，不覆盖。
-
-已有环境通过执行检查后直接复用，安装缓存标记不替代真实依赖检查；源码或锁文件变化按需重建。只有检测结果确实需要补充环境/依赖时，才访问 nodejs.org、GitHub、PyPI 或 registry.npmjs.org。运行环境、依赖和构建都完整时可离线启动，AI对话仍需网络。失败后可重新运行，不静默改国内镜像或系统凭据，不需要管理员权限。
+仓库当前公开。Windows 10/11 x64 的 PowerShell：
 
 ```powershell
-# 仅安装和构建，不启动
-powershell -NoProfile -ExecutionPolicy Bypass -File scripts/bootstrap-windows.ps1 -PrepareOnly
-# 指定端口或不打开浏览器
-.\start-web.bat --port 3082 --no-open
+irm https://raw.githubusercontent.com/yusen/zhangwen/main/install.ps1 | iex
 ```
 
-Ctrl+C 停止；同目录或端口已有服务时会提示，不会强杀其他程序。改端口会改变浏览器草稿/串口授权的 Origin；已保存项目仍来自相同数据目录。
+macOS 13.5+（Intel / Apple Silicon）：
 
-## 有开发环境时
+```bash
+curl -fsSL https://raw.githubusercontent.com/yusen/zhangwen/main/install.sh | bash
+```
 
-Node.js 22+、Python 3.11+。进入源码目录执行 `npm run setup`，再 `npm start`；`npm run web` 合并准备与启动。macOS/Linux 走此路径，启动器不自动安装其系统运行环境，当前尚无这两个系统的实机记录。
+命令下载并运行本仓库安装脚本；无需 Git、Homebrew、Node 或 Python。网络需访问 GitHub/raw/codeload、nodejs.org、PyPI 和 npm registry。浏览器使用桌面 Chrome / Edge，设备需合适的 MicroPython 固件及串口驱动；安装器不自动刷设备或安装系统驱动。AI Key 在网页设置，不写进安装命令。
 
-`npm start -- --no-open` 仅运行已有构建。开发命令与测试见 README。首次启动不用调用模型或连接设备。
+## 环境准备顺序
 
-## 更新和回退
+1. 读取 GitHub main 的不可变提交 SHA，复用通过文件清单校验的已安装版本；缺失才下载该 SHA 的源码 ZIP。Windows 检查压缩包路径和链接，macOS 检查路径；逐文件校验 DEPLOYMENT.sha256 后才执行包内脚本。
+2. 离线检查项目运行时和本机 Node 22+/npm、Python 3.11+；可用则复用。缺失时下载项目内 Node 24.14.0、uv 0.8.22（固定 SHA-256），由 uv 准备 Python 3.13.7。Windows x64、macOS arm64/x64 分别选择匹配运行时，不需要 sudo；安装器下载的 Node/uv/Python 放在安装根的 runtime，各程序版本共享并先检测复用。
+3. Python 依赖隔离在每版 `.venv`。实际包版本和关键导入均检查；前端核对锁文件、平台及命令入口。完整依赖跳过下载，缺失才补齐，npm 优先使用缓存。源码摘要不变时跳过构建。
+4. 安装与 strict 构建成功才原子切换 current.txt。失败保留原入口及数据；安装锁防止并发。下载中断留下的 download-* 目录仅供诊断，可在关闭安装器后手动清理。
+5. Windows 建立桌面 ZhangWen.lnk，图标是随包掌问 Logo；macOS 生成启动掌问.command。启动后自动打开本机浏览器；同数据目录再次启动时核对已有实例标记，再打开已有平台。端口被其他程序占用时提示，不杀进程。
 
-先 Ctrl+C 停服务，备份完整 `.data/`，再更新代码。Git checkout：`git pull --ff-only`，双击启动会安装变化的依赖并重建。ZIP 用户：解压新版到新目录，先保留旧目录，再将停止状态下的 `.data/` 副本放入新版。不要复制 `.venv/`、`node_modules/` 或 `.runtime/` 到新路径；它们可重新生成。
+macOS 锁目录若因强制关机留下，确认没有安装程序后再移除提示中的 install.lock 或 bootstrap-unix.lock 目录；Windows 文件锁进程结束自动释放。
 
-建议更新前也备份整个旧程序目录。回退旧代码时恢复相配套的数据备份，不让旧代码打开已经迁移过的新数据库。首次部署各电脑互相独立，没有云同步；跨电脑迁移已保存项目需搬运完整 `.data/`。浏览器未保存草稿、串口授权和 IndexedDB 设备备份不会随 `.data/` 搬迁，请先保存/导出。
+## 安装位置与数据
 
-旧桌面仓库由 Git 历史和 `backup/desktop-before-mu-web-20261015` 标签保留。可在独立目录克隆后切换该标签查看旧资料，勿直接覆盖正在使用的新版目录。旧 V1 用户数据库不在仓库中，新平台不自动读取它。
+| 系统 | 程序及启动器 | 项目、硬件库及 API 设置 |
+| --- | --- | --- |
+| Windows | `%LOCALAPPDATA%\ZhangWen` | 该目录下 `data` |
+| macOS | `~/Library/Application Support/ZhangWen` | 该目录下 `data` |
 
-## 范围
+`versions/<提交SHA>` 是独立版本。Python 环境不可跨路径或跨系统搬迁；新版本独立检查及准备依赖，旧版本保留以便回退。图标/启动文件只读 current.txt，不自行联网更新；离线可用，AI 请求仍取决于模型服务。
 
-本版仍为本机单用户 MVP，无公网/LAN 服务、桌面壳、固件烧录或多文件部署。原 471 项源码/资产摘要不变，`resources/hardware-skills/` 的 817 文件与离线快照摘要一致。资料可见不等于所有板卡、固件与接线已经实测；掌控 2.0 独立 COM 验收和浏览器 Fake 测试沿用既有记录。
+API 设置在 `data/mu-settings.json`，Key 为本机明文文件，不能共享或上传。项目存原 SQLite/Artifact，硬件包通过原安装器加载：74 个原包、2 个 Web 新主控包、184 个品牌包，Web 可见 258 项（5 主控、252 模块、1 供电）。现有用户包保留，未知电气参数和未联调驱动不会伪装成已验证。
+
+现有 D:/ZW_V4 源码运行的 `.data` 不会被安装器接管。要迁移，先停止两个服务，备份新旧完整数据目录（含 SQLite WAL/SHM），再明确复制用户选定的数据副本；不要连接 V1 生产库。也可用工作台文件夹保存/加载携带项目。不要只复制单个数据库或将完整安装目录含 Key 发给他人。
+
+## 自定义安装、测试与日常启动
+
+Windows 自定义路径，安装后不启动：
+
+```powershell
+& ([scriptblock]::Create((irm https://raw.githubusercontent.com/yusen/zhangwen/main/install.ps1))) -InstallDir 'D:\Apps\掌问平台' -NoStart
+```
+
+macOS 自定义路径，安装后不启动：
+
+```bash
+curl -fsSL https://raw.githubusercontent.com/yusen/zhangwen/main/install.sh | ZHANGWEN_INSTALL_DIR="$HOME/Apps/掌问平台" ZHANGWEN_NO_START=1 bash
+```
+
+Windows 以后双击桌面图标；macOS 可执行：
+
+```bash
+bash "$HOME/Library/Application Support/ZhangWen/启动掌问.command"
+```
+
+源码目录仍可双击 start-web.bat / 执行 bash start-web.sh，默认该目录 `.data`。只准备环境使用 Windows `powershell -NoProfile -ExecutionPolicy Bypass -File scripts/bootstrap-windows.ps1 -PrepareOnly`，macOS `bash start-web.sh --prepare-only`。服务器支持 `--no-open`、`--port 3082`。Ctrl+C 停服务。更改端口会改变浏览器授权和草稿所属 Origin。
+
+## 更新与回退
+
+先保存工作并关闭服务，再执行同一安装命令。已安装的同一提交校验通过时跳过源码下载；有更新则安装新目录，成功才切换入口，数据不移动、不重置。安装失败后修复网络再次执行。发现已安装源码被手工改动时会保留并报错，不覆盖；需要另行保存改动并移开该版本目录再试。
+
+回退前先停止服务、备份 data，再把 current.txt 改成 versions 内已成功安装的旧提交 SHA。数据库若已经迁移，应连同更新前的数据备份一起回退；仅保留旧程序目录不等于数据库可逆。旧版本不会自动删除。
+
+## 发布范围
+
+DEPLOYMENT.sha256 是部署文件摘要清单；源码仓库不上传 node_modules、.venv、dist、运行环境二进制、用户数据、Key、备份、演示材料、开发记录或截图。构建工具保留 TypeScript/Vite，Playwright/Vitest/pytest 等测试工具不在部署依赖中。少量 CAD/旧项目模型代码仍属于原硬件与项目仓库的导入依赖，保留源码不表示已开放 CAD 界面或安装 CAD 运行时。
+
+依赖及完整硬件包保留其来源/许可证。Git 历史中既有资料通过旧提交/备份标签可查，此次精简针对 main 当前文件树，不重写历史。
+
+## 验证边界
+
+Windows 的隔离安装、重复执行与启动结果见本轮开发验证记录。macOS 安装分支和 shell 语法在 Windows 检查，未以此宣称 Mac 实机验收；仓库 CI 会在 Windows、macOS Apple Silicon/Intel 上执行准备、构建及目录/服务冒烟。以对应提交的实际 Actions 结果为准。浏览器真机串口、固件刷写和模型调用属于独立验收。

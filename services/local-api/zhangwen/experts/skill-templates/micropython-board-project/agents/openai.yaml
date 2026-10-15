@@ -1,4 +1,0 @@
-interface:
-  display_name: "MicroPython Board Project"
-  short_description: "Build and validate BoardProfile-based MicroPython projects"
-  default_prompt: "Use $micropython-board-project to create a BoardProfile-based MicroPython implementation and validation plan."

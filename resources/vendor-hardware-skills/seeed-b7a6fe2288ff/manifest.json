@@ -1,0 +1,35 @@
+{
+  "schema": "zhangwen.hardware-skill-manifest/v1",
+  "schemaVersion": 1,
+  "skillName": "seeed-b7a6fe2288ff",
+  "componentId": "hw_seeed_b7a6fe2288ff",
+  "displayName": "Grove - VOC 和 eCO2 气体传感器 (SGP30)",
+  "description": "Grove - VOC 和 eCO2 气体传感器 (SGP30)的官方目录、产品图片与参考资料；MicroPython 驱动及跨主控接线待联调。",
+  "status": "ACTIVE",
+  "sourceKind": "BUNDLED",
+  "files": [
+    "SKILL.md",
+    "references/specifications.md",
+    "references/compatibility-rules.md",
+    "references/integration.md",
+    "references/safety.md",
+    "references/sources.md",
+    "examples/usage.md",
+    "tests/validation-cases.md"
+  ],
+  "media": [
+    {
+      "path": "assets/cover.webp",
+      "role": "cover",
+      "alt": "Grove - VOC 和 eCO2 气体传感器 (SGP30) 官方产品图",
+      "contentType": "image/webp",
+      "sha256": "446c18c3cbd17606727b37dbb9fc1dad7402ea9949981efcc92c42bdcf732a59",
+      "sourceUrl": "https://files.seeedstudio.com/wiki/Grove-VOC_and_eCO2_Gas_Sensor-SGP30/img/IMG_0012a.jpg",
+      "attribution": "Seeed Grove 官方产品文档",
+      "license": "© Seeed Studio；产品图片权利归原作者；未将文档代码许可视为图片许可。"
+    }
+  ],
+  "revision": "54fcd75de61a61f11953bd1f",
+  "createdAt": "2026-10-15T00:00:00+08:00",
+  "updatedAt": "2026-10-15T00:00:00+08:00"
+}

@@ -1,0 +1,35 @@
+{
+  "schema": "zhangwen.hardware-skill-manifest/v1",
+  "schemaVersion": 1,
+  "skillName": "nplus-84ece2b19dae",
+  "componentId": "hw_nplus_84ece2b19dae",
+  "displayName": "N+ 水位传感器",
+  "description": "N+ 水位传感器的官方目录、产品图片与参考资料；MicroPython 驱动及跨主控接线待联调。",
+  "status": "ACTIVE",
+  "sourceKind": "BUNDLED",
+  "files": [
+    "SKILL.md",
+    "references/specifications.md",
+    "references/compatibility-rules.md",
+    "references/integration.md",
+    "references/safety.md",
+    "references/sources.md",
+    "examples/usage.md",
+    "tests/validation-cases.md"
+  ],
+  "media": [
+    {
+      "path": "assets/cover.webp",
+      "role": "cover",
+      "alt": "N+ 水位传感器 官方产品图",
+      "contentType": "image/webp",
+      "sha256": "495911839351fb71fcdbf094d6d1a90b0fef870b9553d085a719c01a502d62a2",
+      "sourceUrl": "https://nplus-doc.readthedocs.io/zh-cn/latest/_images/18-2.jpg",
+      "attribution": "N+ 官方产品文档",
+      "license": "© 2020 nplus；图片权利归原作者；文档未声明图片开放许可。"
+    }
+  ],
+  "revision": "42842d5c72debaaea882081a",
+  "createdAt": "2026-10-15T00:00:00+08:00",
+  "updatedAt": "2026-10-15T00:00:00+08:00"
+}

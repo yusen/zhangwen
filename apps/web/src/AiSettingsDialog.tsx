@@ -10,6 +10,12 @@ export function AiSettingsDialog({ settings, onSaved, onClose }: {
 }) {
   const [key, setKey] = useState('');
   const [model, setModel] = useState(settings.aiModel);
+  const [baseUrl, setBaseUrl] = useState(settings.aiBaseUrl ?? 'https://api.deepseek.com');
+  const [noKey, setNoKey] = useState(false);
+  const changedEndpoint = baseUrl.replace(/\/+$/, '') !== (settings.aiBaseUrl ?? 'https://api.deepseek.com');
+  const localEndpoint = /^http:\/\/(?:localhost|127\.0\.0\.1|\[::1\])(?::\d+)?(?:\/|$)/.test(baseUrl);
+  const canRequest = !!baseUrl.trim() && !!model.trim() && (!!key.trim() || (noKey && localEndpoint) || (!changedEndpoint && settings.aiConfigured));
+  const requestBody = (): SaveAiSettings => ({ apiKey: noKey ? '' : key.trim() || null, model: model.trim(), baseUrl: baseUrl.trim() });
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState('');
   const [testing, setTesting] = useState(false);
@@ -26,7 +32,7 @@ export function AiSettingsDialog({ settings, onSaved, onClose }: {
     try {
       await bootstrap(request.signal);
       if (request.signal.aborted) return;
-      const result = await testAiSettings({ apiKey: key.trim() || null, model }, request.signal, event => {
+      const result = await testAiSettings(requestBody(), request.signal, event => {
         if (controller.current !== request) return;
         if (event.type === 'check') setChecks(value => [...value.filter(item => item.id !== event.check.id), event.check]);
       });
@@ -43,7 +49,7 @@ export function AiSettingsDialog({ settings, onSaved, onClose }: {
   const save = async (clear = false) => {
     if (saving || testing) return;
     setSaving(true); setError('');
-    const body: SaveAiSettings = { apiKey: clear ? '' : key.trim() || null, model: model.trim() };
+    const body: SaveAiSettings = { ...requestBody(), ...(clear ? { apiKey: '' } : {}) };
     try {
       const result = await api<AiSettings>('/settings/ai', 'POST', body);
       setKey(''); onSaved(result);
@@ -52,15 +58,14 @@ export function AiSettingsDialog({ settings, onSaved, onClose }: {
   };
   return <Dialog title="API 设置" onClose={close}>
     <form onSubmit={event => { event.preventDefault(); void save(); }}>
-      <p className="muted">使用 DeepSeek API。保存后立即生效，重启服务仍会保留。</p>
-      <div className="field">API 地址<code>https://api.deepseek.com</code></div>
-      <label className="field">API Key<input autoFocus type="password" value={key} maxLength={500} onChange={event => { setKey(event.target.value); resetTest(); }} placeholder={settings.aiConfigured ? '已配置，留空保持不变' : '输入你的 DeepSeek API Key'} autoComplete="off" spellCheck={false} disabled={saving || testing} /></label>
-      <label className="field">模型名称<select value={model} onChange={event => { setModel(event.target.value); resetTest(); }} disabled={saving || testing}>
-        {DEEPSEEK_MODELS.map(id => <option key={id} value={id}>{id}</option>)}
-        {!DEEPSEEK_MODELS.some(id => id === model) && <option value={model}>{model}</option>}
-      </select></label>
-      <p className="muted">{settings.aiConfigured ? '已配置 Key，完整密钥不会回显。' : '尚未配置 Key。'} 可先测试当前填写的 Key 和模型，检测不会保存设置。</p>
-      <div className="ai-test-controls"><button type="button" onClick={testing ? () => controller.current?.abort() : () => void test()} disabled={saving || (!settings.aiConfigured && !key.trim())}>{testing ? '取消检测' : '测试连接'}</button><span>包含一次简短生成测试，会产生少量 API 用量；不发送项目内容。</span></div>
+      <p className="muted">支持 DeepSeek 及 OpenAI 兼容的 Chat Completions 服务。保存后立即生效。</p>
+      <label className="field">API 地址<input value={baseUrl} maxLength={500} placeholder="https://api.example.com/v1" onChange={event => { setBaseUrl(event.target.value); setKey(''); setNoKey(false); resetTest(); }} disabled={saving || testing} spellCheck={false} /></label>
+      <p className="muted">填写基础地址（如 https://api.example.com/v1），不包含 /chat/completions。更换地址后须填写新 Key。</p>
+      <label className="field">API Key<input autoFocus data-dialog-autofocus type="password" value={key} maxLength={500} onChange={event => { setKey(event.target.value); setNoKey(false); resetTest(); }} placeholder={settings.aiConfigured ? '已配置，留空保持不变' : '输入当前服务的 API Key'} autoComplete="off" spellCheck={false} disabled={saving || testing} /></label>
+      <label className="field">模型名称<input list="ai-model-options" value={model} maxLength={100} onChange={event => { setModel(event.target.value); resetTest(); }} disabled={saving || testing} placeholder="填写服务商提供的模型 ID" spellCheck={false} /><datalist id="ai-model-options">{DEEPSEEK_MODELS.map(id => <option key={id} value={id} />)}</datalist></label>
+      {localEndpoint && <label className="confirm"><input type="checkbox" checked={noKey} disabled={saving || testing} onChange={event => { setNoKey(event.target.checked); setKey(''); resetTest(); }} />本机服务无需 Key（清除旧 Key）</label>}
+      <p className="muted">{settings.aiConfigured ? '当前服务已配置，完整密钥不会回显。' : '尚未配置模型服务。'} 可先测试当前填写的 Key 和模型，检测不会保存设置。</p>
+      <div className="ai-test-controls"><button type="button" onClick={testing ? () => controller.current?.abort() : () => void test()} disabled={saving || (!testing && !canRequest)}>{testing ? '取消检测' : '测试连接'}</button><span>包含一次简短生成测试，会产生少量 API 用量；不发送项目内容。</span></div>
       {!!checks.length && <section className="ai-diagnostics" aria-label="AI 检测结果" aria-live="polite">
         <ol>{checks.map(item => {
           const Icon = item.status === 'running' ? LoaderCircle : item.status === 'passed' ? CheckCircle2 : item.status === 'failed' ? XCircle : item.status === 'warning' ? TriangleAlert : CircleMinus;
@@ -69,12 +74,12 @@ export function AiSettingsDialog({ settings, onSaved, onClose }: {
         })}</ol>
         {report && <div className={`ai-test-summary ${report.healthy ? 'passed' : 'failed'}`}><strong>{report.healthy ? '实际生成检测通过' : '检测未通过'}</strong><p>{report.suggestion}</p><small>{report.model} · {new Date(report.checkedAt).toLocaleTimeString()}</small></div>}
       </section>}
-      <p className="muted">Key 保存在本机 .data/mu-settings.json（明文），不会存入浏览器草稿或项目。发送对话时，当前代码与所选硬件资料会提交给 DeepSeek。</p>
+      <p className="muted">Key 保存在本机 .data/mu-settings.json（明文），不会存入浏览器草稿或项目。发送对话时，当前代码与所选硬件资料会提交给所填服务。</p>
       {error && <p className="settings-error" role="alert">{error}</p>}
       <div className="dialog-actions">
         <button type="button" onClick={close} disabled={saving}>取消</button>
         <button type="button" onClick={() => void save(true)} disabled={saving || testing || !settings.aiConfigured}>清除 Key</button>
-        <button className="primary" disabled={saving || testing || (!settings.aiConfigured && !key.trim())}>{saving ? '保存中…' : '保存设置'}</button>
+        <button className="primary" disabled={saving || testing || !canRequest}>{saving ? '保存中…' : '保存设置'}</button>
       </div>
     </form>
   </Dialog>;

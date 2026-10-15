@@ -1,0 +1,35 @@
+{
+  "schema": "zhangwen.hardware-skill-manifest/v1",
+  "schemaVersion": 1,
+  "skillName": "labplus-8df95567ea4f",
+  "componentId": "hw_labplus_8df95567ea4f",
+  "displayName": "盛思 RGB灯带成品(7灯)",
+  "description": "盛思 RGB灯带成品(7灯)的官方目录、产品图片与参考资料；MicroPython 驱动及跨主控接线待联调。",
+  "status": "ACTIVE",
+  "sourceKind": "BUNDLED",
+  "files": [
+    "SKILL.md",
+    "references/specifications.md",
+    "references/compatibility-rules.md",
+    "references/integration.md",
+    "references/safety.md",
+    "references/sources.md",
+    "examples/usage.md",
+    "tests/validation-cases.md"
+  ],
+  "media": [
+    {
+      "path": "assets/cover.webp",
+      "role": "cover",
+      "alt": "盛思 RGB灯带成品(7灯) 官方产品图",
+      "contentType": "image/webp",
+      "sha256": "4247f038d30b83ef63548a69eb622b0d45a91d170bf1909a7e77d40b060dba76",
+      "sourceUrl": "https://labplus-ledong-module-documentation.readthedocs.io/zh-cn/latest/_images/%E7%81%AF%E5%B8%A6%E6%88%90%E5%93%817.png",
+      "attribution": "盛思 官方产品文档",
+      "license": "© labplus；官方声明保留所有版权。图片权利归原作者；未声明开放许可。"
+    }
+  ],
+  "revision": "51daca0d06e68cb2be2ff231",
+  "createdAt": "2026-10-15T00:00:00+08:00",
+  "updatedAt": "2026-10-15T00:00:00+08:00"
+}

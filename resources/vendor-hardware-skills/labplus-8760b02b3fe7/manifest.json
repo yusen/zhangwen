@@ -1,0 +1,35 @@
+{
+  "schema": "zhangwen.hardware-skill-manifest/v1",
+  "schemaVersion": 1,
+  "skillName": "labplus-8760b02b3fe7",
+  "componentId": "hw_labplus_8760b02b3fe7",
+  "displayName": "盛思 土壤湿度",
+  "description": "盛思 土壤湿度的官方目录、产品图片与参考资料；MicroPython 驱动及跨主控接线待联调。",
+  "status": "ACTIVE",
+  "sourceKind": "BUNDLED",
+  "files": [
+    "SKILL.md",
+    "references/specifications.md",
+    "references/compatibility-rules.md",
+    "references/integration.md",
+    "references/safety.md",
+    "references/sources.md",
+    "examples/usage.md",
+    "tests/validation-cases.md"
+  ],
+  "media": [
+    {
+      "path": "assets/cover.webp",
+      "role": "cover",
+      "alt": "盛思 土壤湿度 官方产品图",
+      "contentType": "image/webp",
+      "sha256": "aed6098cde8e824dce2195c26fce0bf5bd2bf40feda3a1e579576b173008507a",
+      "sourceUrl": "https://labplus-ledong-module-documentation.readthedocs.io/zh-cn/latest/_images/%E5%9C%9F%E5%A3%A4%E6%B9%BF%E5%BA%A6%E4%BC%A0%E6%84%9F%E5%99%A8.png",
+      "attribution": "盛思 官方产品文档",
+      "license": "© labplus；官方声明保留所有版权。图片权利归原作者；未声明开放许可。"
+    }
+  ],
+  "revision": "0d21badf0f9da2fb30e71bd8",
+  "createdAt": "2026-10-15T00:00:00+08:00",
+  "updatedAt": "2026-10-15T00:00:00+08:00"
+}

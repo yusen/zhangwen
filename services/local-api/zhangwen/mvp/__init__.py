@@ -1,1 +1,0 @@
-"""MVP integration readiness package."""
