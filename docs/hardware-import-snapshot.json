@@ -1,0 +1,4092 @@
+{
+  "source": "D:/ZW_V1/services/local-api/.data/hardware-skills",
+  "snapshot": "imports/v1-hardware-snapshot-20261013-093547",
+  "copiedAt": "2026-10-13T09:35:55.694553",
+  "files": [
+    {
+      "path": "d-robotics-rdk-x5/assets/40pin-pinout.webp",
+      "sha256": "f431f1a240181a966107f6a8fbb2142081e94cb1c599b1ffbd8c7c15ceddf687",
+      "size": 154726
+    },
+    {
+      "path": "d-robotics-rdk-x5/assets/cover.webp",
+      "sha256": "73ae0404f218218d242d7631be1e873d71a09a386a920d411d6da25e48b60395",
+      "size": 328000
+    },
+    {
+      "path": "d-robotics-rdk-x5/examples/usage.md",
+      "sha256": "3dfa5123f27427e322974974581d8744133dbc1a5726d04b7469f1c9b0fba3db",
+      "size": 2284
+    },
+    {
+      "path": "d-robotics-rdk-x5/manifest.json",
+      "sha256": "d2b6e3a3278f9167c3d61fe9b7330c59afb45fb5d240c34165b4241f829160cd",
+      "size": 1840
+    },
+    {
+      "path": "d-robotics-rdk-x5/models/cadquery.py",
+      "sha256": "96c21e7da711226a03f8d25c3ce608f22beba9c769da575815054a481caab276",
+      "size": 385
+    },
+    {
+      "path": "d-robotics-rdk-x5/README.md",
+      "sha256": "404c3e33578369a4f4f235285fbacd0e8cf705b4aee537334eb19e5bc310047a",
+      "size": 1439
+    },
+    {
+      "path": "d-robotics-rdk-x5/references/compatibility-rules.md",
+      "sha256": "d8d97d21c2d0018f3cec29b7abcb8733e0552c660b4b062b24e3e28d5d6b5d71",
+      "size": 1015
+    },
+    {
+      "path": "d-robotics-rdk-x5/references/integration.md",
+      "sha256": "9f4ca7565faea5192b3f5a3def794b900e6591adea50d378e52d5447fceb0c1b",
+      "size": 4026
+    },
+    {
+      "path": "d-robotics-rdk-x5/references/mechanical.md",
+      "sha256": "829452d9db406dfed1c1a66f0e68ae124a3c8953678e66adfa80576fb7abea90",
+      "size": 1872
+    },
+    {
+      "path": "d-robotics-rdk-x5/references/safety.md",
+      "sha256": "03a25977d284ced8175b0c71cd949360829f53c1d26d7c526de3d232e35e3e77",
+      "size": 2176
+    },
+    {
+      "path": "d-robotics-rdk-x5/references/sources.md",
+      "sha256": "3ba056ee0679aa80a90e88dea3dd958b5728adef60eb337f6aa12716fb360c0d",
+      "size": 2080
+    },
+    {
+      "path": "d-robotics-rdk-x5/references/specifications.md",
+      "sha256": "40c7f9f47ec80288a3cfdace3e1daba412ce59e7884fed911b2c88fb1653ace3",
+      "size": 2490
+    },
+    {
+      "path": "d-robotics-rdk-x5/SKILL.md",
+      "sha256": "1c34f5cdde68d18e0de8ef3801ac4a0f9ab455f6aed79bb2672a819bb9110057",
+      "size": 2018
+    },
+    {
+      "path": "d-robotics-rdk-x5/tests/validation-cases.md",
+      "sha256": "d254d289531bdb533430dbda5d442a8b7e3670100df2b096f2a21ca569b891a8",
+      "size": 1069
+    },
+    {
+      "path": "dfr0026-ambient-light-sensor/assets/cover.webp",
+      "sha256": "a30722212f9ba84a3f7f5fe3b8d90ceb89c13d77c44cafdbeb63af1b65746e43",
+      "size": 54918
+    },
+    {
+      "path": "dfr0026-ambient-light-sensor/CHANGELOG.md",
+      "sha256": "fd4731ffc0e865551e4bac66c00f89eb54209f23d51444289468f073acaa8bda",
+      "size": 752
+    },
+    {
+      "path": "dfr0026-ambient-light-sensor/examples/usage.md",
+      "sha256": "38f3e4b047bab0adfc0b58f62b312575bfbc4f30e1105f860fa8947902ab151c",
+      "size": 1700
+    },
+    {
+      "path": "dfr0026-ambient-light-sensor/manifest.json",
+      "sha256": "ffeda9a3d416bf164141149893181d96af952e5a3e28f9866a6a024a6ba0946c",
+      "size": 1535
+    },
+    {
+      "path": "dfr0026-ambient-light-sensor/models/cadquery.py",
+      "sha256": "0d7607eda90fa9d676d6a53defe6f95eed18f9e4ae261bd6c07261da76082972",
+      "size": 2193
+    },
+    {
+      "path": "dfr0026-ambient-light-sensor/README.md",
+      "sha256": "29b65b05f240ee613632d5cd2d221eda0f13ba06f034b6b0c326318382331c20",
+      "size": 1297
+    },
+    {
+      "path": "dfr0026-ambient-light-sensor/references/compatibility-rules.md",
+      "sha256": "b941f01c0856037138ecdf740c062b0232f2bd45cdb80ce53bb6c10eb2e903f8",
+      "size": 2407
+    },
+    {
+      "path": "dfr0026-ambient-light-sensor/references/integration.md",
+      "sha256": "017c9367a7a0f9338248e05eb50f4ae1309f33383ef882a3d35462f26733e85a",
+      "size": 2401
+    },
+    {
+      "path": "dfr0026-ambient-light-sensor/references/mechanical.md",
+      "sha256": "15a4ac8e69c80d3e0d92be51991915a61ea62d6294e401d48038f01b5cca7566",
+      "size": 5602
+    },
+    {
+      "path": "dfr0026-ambient-light-sensor/references/safety.md",
+      "sha256": "ca56df6a6dc00de24f9e875513add9e161d6a4f3b202198b186dd1066c862256",
+      "size": 1168
+    },
+    {
+      "path": "dfr0026-ambient-light-sensor/references/sources.md",
+      "sha256": "9e45aed188645dbad3655faf6e558855b55681d117e44285ce15ae22578fdcc9",
+      "size": 1780
+    },
+    {
+      "path": "dfr0026-ambient-light-sensor/references/specifications.md",
+      "sha256": "913dc3123311787a5c4f648eb8e33bb3ccb2d38f3215714c64a6e773ebc5d99f",
+      "size": 2388
+    },
+    {
+      "path": "dfr0026-ambient-light-sensor/SKILL.md",
+      "sha256": "4ef82063fb20d251b44cec2ec1a0cc888254e3f0bb11c65d0943f9fb1ed090d5",
+      "size": 1299
+    },
+    {
+      "path": "dfr0026-ambient-light-sensor/tests/validation-cases.md",
+      "sha256": "5a8929a0123a0fb915b1d29f911f437b1d10c3bc9b91a84d5cd6aa8fceba2fce",
+      "size": 883
+    },
+    {
+      "path": "dfr0029-button/CHANGELOG.md",
+      "sha256": "3ebcf7e18fc7bc4b70de95ad6f9f1b7ee3e98b870662b1c2fc45c2fc0b0ea923",
+      "size": 65
+    },
+    {
+      "path": "dfr0029-button/examples/usage.md",
+      "sha256": "72130fc83c29e9d90ff7f8cec59de55571b6513cac74c9244393129fc3192714",
+      "size": 329
+    },
+    {
+      "path": "dfr0029-button/manifest.json",
+      "sha256": "7dedda5c951ebc401d801d88f6f4e356aca571dbe18e236193c678481a8c82e4",
+      "size": 802
+    },
+    {
+      "path": "dfr0029-button/README.md",
+      "sha256": "a0d8f7561770b5e05f0efe806cdacb2f583cb42af822fe3e59294519019fa407",
+      "size": 157
+    },
+    {
+      "path": "dfr0029-button/references/compatibility-rules.md",
+      "sha256": "920941e39c20d4f15bf64af8d372b7241f70ac580d28b6e4364703b9019be955",
+      "size": 1602
+    },
+    {
+      "path": "dfr0029-button/references/integration.md",
+      "sha256": "a60809206079fa76158f70d5fec20155546dc0e577e3e04eed81c4229cd7a277",
+      "size": 279
+    },
+    {
+      "path": "dfr0029-button/references/safety.md",
+      "sha256": "85b0387598e729d54e6c44bd68486f2400ac8127fc5a8ef8b362a83a2079c9cb",
+      "size": 222
+    },
+    {
+      "path": "dfr0029-button/references/sources.md",
+      "sha256": "ab3c7603ce9bf2ba8aa7d47d6793670ab2856bac0eae9cfe80d7e2a405027116",
+      "size": 287
+    },
+    {
+      "path": "dfr0029-button/references/specifications.md",
+      "sha256": "ca0c7dc3154d189d554af5ca86f8eeeb817962fb3a712ab49356e2af3b434c68",
+      "size": 1024
+    },
+    {
+      "path": "dfr0029-button/SKILL.md",
+      "sha256": "1ed6a6494e3cb0c6046361d267ce8b4c2fb20284853c92e48f0d6c3b4290a437",
+      "size": 459
+    },
+    {
+      "path": "dfr0029-button/tests/validation-cases.md",
+      "sha256": "cb4a97f0501968e99dc83f0e49ba24811e019739ef2c995afea01f1060ea7222",
+      "size": 240
+    },
+    {
+      "path": "dfr0486/CHANGELOG.md",
+      "sha256": "3ebcf7e18fc7bc4b70de95ad6f9f1b7ee3e98b870662b1c2fc45c2fc0b0ea923",
+      "size": 65
+    },
+    {
+      "path": "dfr0486/examples/usage.md",
+      "sha256": "7bf186ad50a51526f9a147e84872580640ccd772b559589f03bab453e128b34f",
+      "size": 361
+    },
+    {
+      "path": "dfr0486/manifest.json",
+      "sha256": "3d339ed569f6ef00fd2e1491dfaaea0083f502fd6ea12b8612e6ff512b4835ae",
+      "size": 793
+    },
+    {
+      "path": "dfr0486/README.md",
+      "sha256": "220d30ea8d8a503b427bb053f9c508175a5e20f35ad56a97611ddc9766797ba3",
+      "size": 158
+    },
+    {
+      "path": "dfr0486/references/compatibility-rules.md",
+      "sha256": "76a0f1fe3817a9101034e7d46ea3f1a7419e93f4f326352977dfd7d3a4d43761",
+      "size": 1914
+    },
+    {
+      "path": "dfr0486/references/integration.md",
+      "sha256": "68f0420b03cb2c5d52a2bc797b65ae252e84ae4af7c07c80a19fbdd7ee8d0918",
+      "size": 305
+    },
+    {
+      "path": "dfr0486/references/safety.md",
+      "sha256": "04d498796482141444394a01e59131e2a60c58329fd99bad12be4193dad17fd1",
+      "size": 247
+    },
+    {
+      "path": "dfr0486/references/sources.md",
+      "sha256": "fcf7232b6a0f3738c3398e36b3e818fe06e2d127532f500f31b8e67cc6df64d0",
+      "size": 261
+    },
+    {
+      "path": "dfr0486/references/specifications.md",
+      "sha256": "db8192ae8c1e2f4ad9bfed087ef25501af16e3085e9fee0adaf31e297cc2a30a",
+      "size": 1033
+    },
+    {
+      "path": "dfr0486/SKILL.md",
+      "sha256": "dc7c1937d55776d07bbec8661d1826bbe92ec8953a32dfb1e83a26f95ffeab26",
+      "size": 435
+    },
+    {
+      "path": "dfr0486/tests/validation-cases.md",
+      "sha256": "073c95c8e189b02a73221ead9c0afa62e45e5e7530a63e3decbdae21a7581bd4",
+      "size": 240
+    },
+    {
+      "path": "dfr0523/CHANGELOG.md",
+      "sha256": "a74da4143f3f6e3495dde44d2dde63ef5dbe9c60abf9d1d2945b6c151098d103",
+      "size": 98
+    },
+    {
+      "path": "dfr0523/examples/usage.md",
+      "sha256": "2498004318c8e4f8f85822a1a4c74c73998b7eb96d86672f72b551ec8154bfdb",
+      "size": 942
+    },
+    {
+      "path": "dfr0523/manifest.json",
+      "sha256": "52bf4c6f4f5276770170e5d7998067d7d8213fc9f1fbeefb2e64aedcec98d0ee",
+      "size": 791
+    },
+    {
+      "path": "dfr0523/README.md",
+      "sha256": "42b661c4b82b9018ba77bba501bde56e8fc8f66102751b398c3fdae871997b63",
+      "size": 207
+    },
+    {
+      "path": "dfr0523/references/compatibility-rules.md",
+      "sha256": "9e9f9f18c7a73d1d2d33c64f5ab2eca5e82d19cf1b7015de67e296064ba1bf46",
+      "size": 1955
+    },
+    {
+      "path": "dfr0523/references/integration.md",
+      "sha256": "80bdb37fd7b66a952d30385aa0705238fca6f1d001a5e1854a79eb120ec7b05d",
+      "size": 612
+    },
+    {
+      "path": "dfr0523/references/safety.md",
+      "sha256": "c0ea941032f0ce09ddb685ced6f000cc38a2b7d35e0a9f1b3287e44aa9288147",
+      "size": 517
+    },
+    {
+      "path": "dfr0523/references/sources.md",
+      "sha256": "c9f67434af915afe262cb8e5575ff6993d3c4e61aac28dcc09893ab73c0494ca",
+      "size": 543
+    },
+    {
+      "path": "dfr0523/references/specifications.md",
+      "sha256": "3fc185ac98787527dc27f441e3f21ca99ef4311e5e63f49abc6560d615224432",
+      "size": 1070
+    },
+    {
+      "path": "dfr0523/SKILL.md",
+      "sha256": "aa35486fa94865dccef44c60cd5507cf576de04b5fee2ffea878ab2e161ee584",
+      "size": 576
+    },
+    {
+      "path": "dfr0523/tests/validation-cases.md",
+      "sha256": "0ce90392f3dff3cb7a8083215ee765c3d891827712b53cd1570852807367c30d",
+      "size": 216
+    },
+    {
+      "path": "dfrobot-dfr0017-k10/examples/usage.md",
+      "sha256": "4fefea71693251d262c3e516ce8950c2c8e3cb33c600f347bec05ac4f51f41a7",
+      "size": 905
+    },
+    {
+      "path": "dfrobot-dfr0017-k10/manifest.json",
+      "sha256": "160853e4ae748969cb152835e71459faa1d1e6fc13a30369f7b27cd49dc4692b",
+      "size": 833
+    },
+    {
+      "path": "dfrobot-dfr0017-k10/README.md",
+      "sha256": "6f6bfbb638be6b3c1a595958339c29681a155d729966b05426be4c9fa2318413",
+      "size": 544
+    },
+    {
+      "path": "dfrobot-dfr0017-k10/references/compatibility-rules.md",
+      "sha256": "240675a9f69d8e5286616704d9e29e2e3bd3a76065849d873c9bb776c17023c4",
+      "size": 2077
+    },
+    {
+      "path": "dfrobot-dfr0017-k10/references/integration.md",
+      "sha256": "e1d5ef1890e6ac0aba7f3d39e6b7b0a0c6826e157a9bbd7d17eccde9fe66e2cc",
+      "size": 1706
+    },
+    {
+      "path": "dfrobot-dfr0017-k10/references/safety.md",
+      "sha256": "21a6d1d0c7864386afad93156f97fa7b635b686f5d4c57aa814908d632849eb4",
+      "size": 961
+    },
+    {
+      "path": "dfrobot-dfr0017-k10/references/sources.md",
+      "sha256": "ac40b969306c445ae5253a0e7f39ff50a349b60c17f43728956c5271b2564416",
+      "size": 994
+    },
+    {
+      "path": "dfrobot-dfr0017-k10/references/specifications.md",
+      "sha256": "787907b4ba7b821717e19014807adb54236c50baba41eff58e90bb94dfc562de",
+      "size": 1632
+    },
+    {
+      "path": "dfrobot-dfr0017-k10/SKILL.md",
+      "sha256": "cac2c2edcdb57c906b05321eedce5673c76f4a1343a2baa301d19046213146f8",
+      "size": 880
+    },
+    {
+      "path": "dfrobot-dfr0017-k10/tests/validation-cases.md",
+      "sha256": "35c032ee777b903eb74e95a4d553f16da04063fc3de33a0e19bad492b6eb9155",
+      "size": 568
+    },
+    {
+      "path": "dfrobot-dfr0023-k10/assets/cover.webp",
+      "sha256": "0b28d56da8053fe9721a5750d020a4f3fdc884d770781ec753312d1a43dca5ba",
+      "size": 50024
+    },
+    {
+      "path": "dfrobot-dfr0023-k10/examples/usage.md",
+      "sha256": "a5a2ff756c954e616a3574097a99cd6a65f1d28674b18fba64a5313f1ed921ab",
+      "size": 905
+    },
+    {
+      "path": "dfrobot-dfr0023-k10/manifest.json",
+      "sha256": "8fdfa5ed2bcc43139cd65d5064276c96ddb8cd8c367a3b94c13ca92caf0c202c",
+      "size": 1422
+    },
+    {
+      "path": "dfrobot-dfr0023-k10/README.md",
+      "sha256": "240bbfd9a42604fd268f0fef548f74bedeffd9553e8a6506c34babf4622ed8d8",
+      "size": 561
+    },
+    {
+      "path": "dfrobot-dfr0023-k10/references/compatibility-rules.md",
+      "sha256": "cab904e0bebd488d3744f05dec0c4179c25583019c96bd26492dcd93d935338a",
+      "size": 2071
+    },
+    {
+      "path": "dfrobot-dfr0023-k10/references/integration.md",
+      "sha256": "df440d613fec1dbe15ae08e0ae14ff664abba3e7d1e3c44d2bc66dde099446e7",
+      "size": 1704
+    },
+    {
+      "path": "dfrobot-dfr0023-k10/references/safety.md",
+      "sha256": "21a6d1d0c7864386afad93156f97fa7b635b686f5d4c57aa814908d632849eb4",
+      "size": 961
+    },
+    {
+      "path": "dfrobot-dfr0023-k10/references/sources.md",
+      "sha256": "9b9eaef6c74068fe83095f0e09ba36548b96400cdd7b32671c57d69d9bc11286",
+      "size": 1016
+    },
+    {
+      "path": "dfrobot-dfr0023-k10/references/specifications.md",
+      "sha256": "33ad99b6f7fd08634757b610bae5b759bbb798779e31e0bbf0464a26bd143c98",
+      "size": 1621
+    },
+    {
+      "path": "dfrobot-dfr0023-k10/SKILL.md",
+      "sha256": "bfb5e18de165702075179cf392afeccbb4491574720a26a169447dfbd6dd853d",
+      "size": 894
+    },
+    {
+      "path": "dfrobot-dfr0023-k10/tests/validation-cases.md",
+      "sha256": "35c032ee777b903eb74e95a4d553f16da04063fc3de33a0e19bad492b6eb9155",
+      "size": 568
+    },
+    {
+      "path": "dfrobot-dfr0024-k10/assets/cover.webp",
+      "sha256": "425eb986fa657aeedc3a9c75344cd5b02ff50944faa6a4f63ced3cfc0a299c93",
+      "size": 39728
+    },
+    {
+      "path": "dfrobot-dfr0024-k10/examples/usage.md",
+      "sha256": "c74804a3129931ce45039f6a54507d9729d858b7df17ad189c54c292f8b69a5d",
+      "size": 857
+    },
+    {
+      "path": "dfrobot-dfr0024-k10/manifest.json",
+      "sha256": "fce0518082ae6ab83efcf118d8f3d673c17d87d6ecc8f3f41a609185fb11d343",
+      "size": 1396
+    },
+    {
+      "path": "dfrobot-dfr0024-k10/README.md",
+      "sha256": "0604d7d5542779d4625a84c3d7f6622ea3db8f385a89d609b450d6647f1534a8",
+      "size": 552
+    },
+    {
+      "path": "dfrobot-dfr0024-k10/references/compatibility-rules.md",
+      "sha256": "b32483a201d1760c44d278686a3feb5ee52f0aed2880deb20d4f06c4ff995546",
+      "size": 2071
+    },
+    {
+      "path": "dfrobot-dfr0024-k10/references/integration.md",
+      "sha256": "dc9e366f496f6d0173f13b937abc62f5ec85fdb1eae8bbf24dc495f75c7fb195",
+      "size": 1694
+    },
+    {
+      "path": "dfrobot-dfr0024-k10/references/safety.md",
+      "sha256": "21a6d1d0c7864386afad93156f97fa7b635b686f5d4c57aa814908d632849eb4",
+      "size": 961
+    },
+    {
+      "path": "dfrobot-dfr0024-k10/references/sources.md",
+      "sha256": "706554154e9638e8fa27fa7d01a2bab1bdbe72e98e55a2b11f911d8ed6ec9171",
+      "size": 1001
+    },
+    {
+      "path": "dfrobot-dfr0024-k10/references/specifications.md",
+      "sha256": "7a1c0611f38a85d91d84540389bb7678e0e5c3be681a821bdb2d2f3fb81e0658",
+      "size": 1614
+    },
+    {
+      "path": "dfrobot-dfr0024-k10/SKILL.md",
+      "sha256": "feae4e310185b0c10e764cd5815b2de2ca65bd074cdd3df2a751a80630e0e8b0",
+      "size": 881
+    },
+    {
+      "path": "dfrobot-dfr0024-k10/tests/validation-cases.md",
+      "sha256": "35c032ee777b903eb74e95a4d553f16da04063fc3de33a0e19bad492b6eb9155",
+      "size": 568
+    },
+    {
+      "path": "dfrobot-dfr0026-k10/assets/cover.webp",
+      "sha256": "a30722212f9ba84a3f7f5fe3b8d90ceb89c13d77c44cafdbeb63af1b65746e43",
+      "size": 54918
+    },
+    {
+      "path": "dfrobot-dfr0026-k10/examples/usage.md",
+      "sha256": "a5a2ff756c954e616a3574097a99cd6a65f1d28674b18fba64a5313f1ed921ab",
+      "size": 905
+    },
+    {
+      "path": "dfrobot-dfr0026-k10/manifest.json",
+      "sha256": "db1372442d3b9cbd7f6f8f936d8b7b2659f68233552f8da7cad302bec8353536",
+      "size": 1471
+    },
+    {
+      "path": "dfrobot-dfr0026-k10/README.md",
+      "sha256": "ab76a987bd9f37c4d8c62542249856357820c1499326b5e113c891c43cd1115f",
+      "size": 553
+    },
+    {
+      "path": "dfrobot-dfr0026-k10/references/compatibility-rules.md",
+      "sha256": "30f8f4fb2162cae3434d2df0972aefa958fc63960c0dec76fc80faad1400338a",
+      "size": 2071
+    },
+    {
+      "path": "dfrobot-dfr0026-k10/references/integration.md",
+      "sha256": "df440d613fec1dbe15ae08e0ae14ff664abba3e7d1e3c44d2bc66dde099446e7",
+      "size": 1704
+    },
+    {
+      "path": "dfrobot-dfr0026-k10/references/safety.md",
+      "sha256": "21a6d1d0c7864386afad93156f97fa7b635b686f5d4c57aa814908d632849eb4",
+      "size": 961
+    },
+    {
+      "path": "dfrobot-dfr0026-k10/references/sources.md",
+      "sha256": "0cc14a04b8f6dff98ba0752087354817a0ddbcddfa8ee4b30bcc5398ec51fed0",
+      "size": 1012
+    },
+    {
+      "path": "dfrobot-dfr0026-k10/references/specifications.md",
+      "sha256": "cfd58be60e3cd7738c9f0d88e44e8dde46b0ee9e0926ac99596c875932d9a91f",
+      "size": 1613
+    },
+    {
+      "path": "dfrobot-dfr0026-k10/SKILL.md",
+      "sha256": "366abea192cb5a032594917460c8a9532ee975f48d0f526ac39afcebfd7657fd",
+      "size": 886
+    },
+    {
+      "path": "dfrobot-dfr0026-k10/tests/validation-cases.md",
+      "sha256": "35c032ee777b903eb74e95a4d553f16da04063fc3de33a0e19bad492b6eb9155",
+      "size": 568
+    },
+    {
+      "path": "dfrobot-dfr0027-k10/assets/cover.webp",
+      "sha256": "88a9950955db05029470de15048db34dec2e0e1628264f78458ffc7d0463b374",
+      "size": 27394
+    },
+    {
+      "path": "dfrobot-dfr0027-k10/examples/usage.md",
+      "sha256": "4fefea71693251d262c3e516ce8950c2c8e3cb33c600f347bec05ac4f51f41a7",
+      "size": 905
+    },
+    {
+      "path": "dfrobot-dfr0027-k10/manifest.json",
+      "sha256": "1ccee675fcc21b01a27e50814ef630028147bb5a457c6ab611439f1867dfabcc",
+      "size": 1402
+    },
+    {
+      "path": "dfrobot-dfr0027-k10/README.md",
+      "sha256": "4f78a438e3aa6daa8c15b66da38ed1e50ccdf00af803685cf4517d66d50606a9",
+      "size": 550
+    },
+    {
+      "path": "dfrobot-dfr0027-k10/references/compatibility-rules.md",
+      "sha256": "a2b775a5b56e2abee73f056f8df423692c0f3037bc71f06c20efb7c20807eb78",
+      "size": 2071
+    },
+    {
+      "path": "dfrobot-dfr0027-k10/references/integration.md",
+      "sha256": "0735b9ad56897c3f58c253455b40684771804daa7667f8139a13fe5fa83f61e5",
+      "size": 1678
+    },
+    {
+      "path": "dfrobot-dfr0027-k10/references/safety.md",
+      "sha256": "21a6d1d0c7864386afad93156f97fa7b635b686f5d4c57aa814908d632849eb4",
+      "size": 961
+    },
+    {
+      "path": "dfrobot-dfr0027-k10/references/sources.md",
+      "sha256": "9cc579a3a37ebb34fe564dcf4559a400add03276eb97da16d387c8f3679e5b68",
+      "size": 994
+    },
+    {
+      "path": "dfrobot-dfr0027-k10/references/specifications.md",
+      "sha256": "ae19add46841dc835e44c5c7468af6661f96d97bde70fd9bee69295b7dacdbba",
+      "size": 1608
+    },
+    {
+      "path": "dfrobot-dfr0027-k10/SKILL.md",
+      "sha256": "c4c8051e300fb6acfa3a493ce586e04e169323fa86e4f802606aba891853833b",
+      "size": 879
+    },
+    {
+      "path": "dfrobot-dfr0027-k10/tests/validation-cases.md",
+      "sha256": "35c032ee777b903eb74e95a4d553f16da04063fc3de33a0e19bad492b6eb9155",
+      "size": 568
+    },
+    {
+      "path": "dfrobot-dfr0029-k10/assets/cover.webp",
+      "sha256": "6b4eec3862c9fde2b8dbcf95b0e32c91b853a8ac8ba76a8db948dc1d2e2fa466",
+      "size": 26350
+    },
+    {
+      "path": "dfrobot-dfr0029-k10/examples/usage.md",
+      "sha256": "4fefea71693251d262c3e516ce8950c2c8e3cb33c600f347bec05ac4f51f41a7",
+      "size": 905
+    },
+    {
+      "path": "dfrobot-dfr0029-k10/manifest.json",
+      "sha256": "8f85e68ed41240e1ec75711478d6b4382e745209e304fd4d458b035def59f8a1",
+      "size": 1410
+    },
+    {
+      "path": "dfrobot-dfr0029-k10/README.md",
+      "sha256": "7a500c3264fdf299af77ad3fbd89730f616536de5a62dde5434351cd854b2d41",
+      "size": 550
+    },
+    {
+      "path": "dfrobot-dfr0029-k10/references/compatibility-rules.md",
+      "sha256": "69e032729ff5a5b69e2356f0e6c1a21fba985b5d858ec3e5250fc46317a97b4b",
+      "size": 2071
+    },
+    {
+      "path": "dfrobot-dfr0029-k10/references/integration.md",
+      "sha256": "0735b9ad56897c3f58c253455b40684771804daa7667f8139a13fe5fa83f61e5",
+      "size": 1678
+    },
+    {
+      "path": "dfrobot-dfr0029-k10/references/safety.md",
+      "sha256": "21a6d1d0c7864386afad93156f97fa7b635b686f5d4c57aa814908d632849eb4",
+      "size": 961
+    },
+    {
+      "path": "dfrobot-dfr0029-k10/references/sources.md",
+      "sha256": "f3484fec3a598cb3c7238a4be88869e60a46bed5079a28ba2d1cb53efcaf9c59",
+      "size": 925
+    },
+    {
+      "path": "dfrobot-dfr0029-k10/references/specifications.md",
+      "sha256": "93c9944ab494447d7c68c6d75db486d04b1107c9e4b425e9ecf723d4e174dd78",
+      "size": 1608
+    },
+    {
+      "path": "dfrobot-dfr0029-k10/SKILL.md",
+      "sha256": "b41bdc9898104453a741321e0f31f6f71cca5dc5cbf36b396db94e80ded940e8",
+      "size": 879
+    },
+    {
+      "path": "dfrobot-dfr0029-k10/tests/validation-cases.md",
+      "sha256": "35c032ee777b903eb74e95a4d553f16da04063fc3de33a0e19bad492b6eb9155",
+      "size": 568
+    },
+    {
+      "path": "dfrobot-dfr0030-k10/assets/cover.webp",
+      "sha256": "57d88c89a0aa33b7e8fe2468b83abbdc3b08d993721c75c0a5d1685baa52cd85",
+      "size": 42502
+    },
+    {
+      "path": "dfrobot-dfr0030-k10/examples/usage.md",
+      "sha256": "4fefea71693251d262c3e516ce8950c2c8e3cb33c600f347bec05ac4f51f41a7",
+      "size": 905
+    },
+    {
+      "path": "dfrobot-dfr0030-k10/manifest.json",
+      "sha256": "d9d4b4ec628cea0dae2c168b34e98a7d0d2b0179869e97085a80fe53c377ec51",
+      "size": 1388
+    },
+    {
+      "path": "dfrobot-dfr0030-k10/README.md",
+      "sha256": "bf3cfe64f35b20ddfab40c50455628098653e06981a03555e0b711d648bcfdc9",
+      "size": 550
+    },
+    {
+      "path": "dfrobot-dfr0030-k10/references/compatibility-rules.md",
+      "sha256": "3099c401ea3ce7bfd546726b9799d07ad446328145b0860d93783232e1623bdd",
+      "size": 2071
+    },
+    {
+      "path": "dfrobot-dfr0030-k10/references/integration.md",
+      "sha256": "0735b9ad56897c3f58c253455b40684771804daa7667f8139a13fe5fa83f61e5",
+      "size": 1678
+    },
+    {
+      "path": "dfrobot-dfr0030-k10/references/safety.md",
+      "sha256": "21a6d1d0c7864386afad93156f97fa7b635b686f5d4c57aa814908d632849eb4",
+      "size": 961
+    },
+    {
+      "path": "dfrobot-dfr0030-k10/references/sources.md",
+      "sha256": "5108670dd96600a4974d4236f54e30ee79780e00a003845f818c3f6ae300a342",
+      "size": 995
+    },
+    {
+      "path": "dfrobot-dfr0030-k10/references/specifications.md",
+      "sha256": "07baec1b0d6d2ff11701b6751acd6f3870b8b54d54a2feacb07c5e68fa8a1352",
+      "size": 1608
+    },
+    {
+      "path": "dfrobot-dfr0030-k10/SKILL.md",
+      "sha256": "3c245f44eb9f770c09cfb0b995d05904ee1e2e904c356eb13635dc86d807694a",
+      "size": 879
+    },
+    {
+      "path": "dfrobot-dfr0030-k10/tests/validation-cases.md",
+      "sha256": "35c032ee777b903eb74e95a4d553f16da04063fc3de33a0e19bad492b6eb9155",
+      "size": 568
+    },
+    {
+      "path": "dfrobot-dfr0033-k10/assets/cover.webp",
+      "sha256": "3d0b7fd97534d9afe9567b3b4d7facffeaed1297dcb58a95b44675ad2ea377f2",
+      "size": 39114
+    },
+    {
+      "path": "dfrobot-dfr0033-k10/examples/usage.md",
+      "sha256": "4fefea71693251d262c3e516ce8950c2c8e3cb33c600f347bec05ac4f51f41a7",
+      "size": 905
+    },
+    {
+      "path": "dfrobot-dfr0033-k10/manifest.json",
+      "sha256": "b50b5a1fa81a64df660d9e805f8b9ba4cdd38bd98d98eb43f581bedec14bf33b",
+      "size": 1348
+    },
+    {
+      "path": "dfrobot-dfr0033-k10/README.md",
+      "sha256": "01e45d656d60fa5768616aae325146d43fe5a0af96697476b5ec2a4c27e95b00",
+      "size": 559
+    },
+    {
+      "path": "dfrobot-dfr0033-k10/references/compatibility-rules.md",
+      "sha256": "5c73176f6782b5f71bdb4e9eb725ea9fde8f31db9910d9d0ce5c4016ed7207ad",
+      "size": 2071
+    },
+    {
+      "path": "dfrobot-dfr0033-k10/references/integration.md",
+      "sha256": "0735b9ad56897c3f58c253455b40684771804daa7667f8139a13fe5fa83f61e5",
+      "size": 1678
+    },
+    {
+      "path": "dfrobot-dfr0033-k10/references/safety.md",
+      "sha256": "21a6d1d0c7864386afad93156f97fa7b635b686f5d4c57aa814908d632849eb4",
+      "size": 961
+    },
+    {
+      "path": "dfrobot-dfr0033-k10/references/sources.md",
+      "sha256": "bbfadb8504969c79841b78b8d4d991a2dd655a54959714073916fc60ab445a62",
+      "size": 923
+    },
+    {
+      "path": "dfrobot-dfr0033-k10/references/specifications.md",
+      "sha256": "f009b5bd7433070cc8ec6b688cde4d5176d102109c0960d2b41f70adef72cd68",
+      "size": 1617
+    },
+    {
+      "path": "dfrobot-dfr0033-k10/SKILL.md",
+      "sha256": "bc109040d7c5820d64e8e44741d63989b623a7f15436239b9273bd98b192a0b3",
+      "size": 888
+    },
+    {
+      "path": "dfrobot-dfr0033-k10/tests/validation-cases.md",
+      "sha256": "35c032ee777b903eb74e95a4d553f16da04063fc3de33a0e19bad492b6eb9155",
+      "size": 568
+    },
+    {
+      "path": "dfrobot-dfr0034-k10/assets/cover.webp",
+      "sha256": "dd24499a902fd12c2f8ca8c724e0bf332d801020d63a4d3ba7793b7f0828928e",
+      "size": 51080
+    },
+    {
+      "path": "dfrobot-dfr0034-k10/examples/usage.md",
+      "sha256": "a5a2ff756c954e616a3574097a99cd6a65f1d28674b18fba64a5313f1ed921ab",
+      "size": 905
+    },
+    {
+      "path": "dfrobot-dfr0034-k10/manifest.json",
+      "sha256": "0ee4efaa949db3532f89b566be4dc5f462de0a838ffd4f3723e2b945464ca596",
+      "size": 1392
+    },
+    {
+      "path": "dfrobot-dfr0034-k10/README.md",
+      "sha256": "245008cd3ecafceee86b593d3f709b640e98198dc756219a0a20be7079deb532",
+      "size": 550
+    },
+    {
+      "path": "dfrobot-dfr0034-k10/references/compatibility-rules.md",
+      "sha256": "51f30f510a827ac7e158584b4b66235b504e20846fafb62ee3c9cd8b296ca2ab",
+      "size": 2071
+    },
+    {
+      "path": "dfrobot-dfr0034-k10/references/integration.md",
+      "sha256": "df440d613fec1dbe15ae08e0ae14ff664abba3e7d1e3c44d2bc66dde099446e7",
+      "size": 1704
+    },
+    {
+      "path": "dfrobot-dfr0034-k10/references/safety.md",
+      "sha256": "21a6d1d0c7864386afad93156f97fa7b635b686f5d4c57aa814908d632849eb4",
+      "size": 961
+    },
+    {
+      "path": "dfrobot-dfr0034-k10/references/sources.md",
+      "sha256": "1a9eda8d3aae8d71bcbcbec1ca91d53d99d59cff10fe74de00fca32be1607af2",
+      "size": 997
+    },
+    {
+      "path": "dfrobot-dfr0034-k10/references/specifications.md",
+      "sha256": "1bd3bc5d8011d45a25c66e48373e835db24f34d75ea6d9f7c644f317b449269f",
+      "size": 1610
+    },
+    {
+      "path": "dfrobot-dfr0034-k10/SKILL.md",
+      "sha256": "90f8e4b39d4f26d085064bd674eb9b48eba4de48a98d49194b53c6afad48121e",
+      "size": 883
+    },
+    {
+      "path": "dfrobot-dfr0034-k10/tests/validation-cases.md",
+      "sha256": "35c032ee777b903eb74e95a4d553f16da04063fc3de33a0e19bad492b6eb9155",
+      "size": 568
+    },
+    {
+      "path": "dfrobot-dfr0051-k10/assets/cover.webp",
+      "sha256": "3cb7ec385e0feb6eaac8d6639b3a40a60bbf17d1588fd12e8ec69b7ca4ccb904",
+      "size": 40122
+    },
+    {
+      "path": "dfrobot-dfr0051-k10/examples/usage.md",
+      "sha256": "a5a2ff756c954e616a3574097a99cd6a65f1d28674b18fba64a5313f1ed921ab",
+      "size": 905
+    },
+    {
+      "path": "dfrobot-dfr0051-k10/manifest.json",
+      "sha256": "a8f3e2ffdc132cc22b78ef2bb274d1c5390cff690fc9aae6e967f70e197bd4fd",
+      "size": 1439
+    },
+    {
+      "path": "dfrobot-dfr0051-k10/README.md",
+      "sha256": "3b470b5cbed2da6d7a30c687c5a2e90c26611a0cb31b0d483bad26021955c598",
+      "size": 553
+    },
+    {
+      "path": "dfrobot-dfr0051-k10/references/compatibility-rules.md",
+      "sha256": "02f4d8be8a14130a74d81e5a3be12a88c0ad637e349bb03a8f7600214a0a177d",
+      "size": 2071
+    },
+    {
+      "path": "dfrobot-dfr0051-k10/references/integration.md",
+      "sha256": "df440d613fec1dbe15ae08e0ae14ff664abba3e7d1e3c44d2bc66dde099446e7",
+      "size": 1704
+    },
+    {
+      "path": "dfrobot-dfr0051-k10/references/safety.md",
+      "sha256": "21a6d1d0c7864386afad93156f97fa7b635b686f5d4c57aa814908d632849eb4",
+      "size": 961
+    },
+    {
+      "path": "dfrobot-dfr0051-k10/references/sources.md",
+      "sha256": "f9f1051c4a7f5eecd2c9cb133b46d803be570fd794ae0f5b64f32ec52eb2df64",
+      "size": 923
+    },
+    {
+      "path": "dfrobot-dfr0051-k10/references/specifications.md",
+      "sha256": "41fbb4962d16ec7ff1e3938fc2fab5d560223052a00aff7e32c2e6312fc1f65a",
+      "size": 1613
+    },
+    {
+      "path": "dfrobot-dfr0051-k10/SKILL.md",
+      "sha256": "c56a84c802fc3c55354527913b0551430a91e856f1bd978d020043124e04c605",
+      "size": 886
+    },
+    {
+      "path": "dfrobot-dfr0051-k10/tests/validation-cases.md",
+      "sha256": "35c032ee777b903eb74e95a4d553f16da04063fc3de33a0e19bad492b6eb9155",
+      "size": 568
+    },
+    {
+      "path": "dfrobot-dfr0052-k10/assets/cover.webp",
+      "sha256": "0476fdb614796cc20d84a6c8041418ea3f697fbbfa942b4539bf25e05fd23451",
+      "size": 31530
+    },
+    {
+      "path": "dfrobot-dfr0052-k10/examples/usage.md",
+      "sha256": "a5a2ff756c954e616a3574097a99cd6a65f1d28674b18fba64a5313f1ed921ab",
+      "size": 905
+    },
+    {
+      "path": "dfrobot-dfr0052-k10/manifest.json",
+      "sha256": "778c4b73f3dabc956ff0bef73865f830e2e8dfefc604244f32c5dd348fcc2ddf",
+      "size": 1437
+    },
+    {
+      "path": "dfrobot-dfr0052-k10/README.md",
+      "sha256": "9036e9a2f129e0bd83939db43020fc80549d5d3fb9d485224a164fee4a81d183",
+      "size": 562
+    },
+    {
+      "path": "dfrobot-dfr0052-k10/references/compatibility-rules.md",
+      "sha256": "524e5314d229411298d863715222b0157ce4e3015d3636d3167a5645f02b3ff0",
+      "size": 2071
+    },
+    {
+      "path": "dfrobot-dfr0052-k10/references/integration.md",
+      "sha256": "df440d613fec1dbe15ae08e0ae14ff664abba3e7d1e3c44d2bc66dde099446e7",
+      "size": 1704
+    },
+    {
+      "path": "dfrobot-dfr0052-k10/references/safety.md",
+      "sha256": "21a6d1d0c7864386afad93156f97fa7b635b686f5d4c57aa814908d632849eb4",
+      "size": 961
+    },
+    {
+      "path": "dfrobot-dfr0052-k10/references/sources.md",
+      "sha256": "ce27dad229078ed6edf474b1e3ef56459c892289d2c2b11c801f8efc5eff3f51",
+      "size": 1030
+    },
+    {
+      "path": "dfrobot-dfr0052-k10/references/specifications.md",
+      "sha256": "986907a5ea3e04ee62565ac6ea798e2b9463b29afc6112c2bfbf472c00755f76",
+      "size": 1622
+    },
+    {
+      "path": "dfrobot-dfr0052-k10/SKILL.md",
+      "sha256": "cc4b6e9c87310128847c8da698163d1aed55c694025377194ad8363963760849",
+      "size": 895
+    },
+    {
+      "path": "dfrobot-dfr0052-k10/tests/validation-cases.md",
+      "sha256": "35c032ee777b903eb74e95a4d553f16da04063fc3de33a0e19bad492b6eb9155",
+      "size": 568
+    },
+    {
+      "path": "dfrobot-dfr0058-k10/assets/cover.webp",
+      "sha256": "715d514a5e5f52e3810036429ecc29183c73181798200af4f2495bb1017fc8d7",
+      "size": 44510
+    },
+    {
+      "path": "dfrobot-dfr0058-k10/examples/usage.md",
+      "sha256": "a5a2ff756c954e616a3574097a99cd6a65f1d28674b18fba64a5313f1ed921ab",
+      "size": 905
+    },
+    {
+      "path": "dfrobot-dfr0058-k10/manifest.json",
+      "sha256": "e4a35af4cb116b0eab5724e5418b7d37ff16d366025e798ee473458354703dc7",
+      "size": 1436
+    },
+    {
+      "path": "dfrobot-dfr0058-k10/README.md",
+      "sha256": "f2aba96b13eca8b489d02497865cecc6378e381e0589e0a5932873efe9d91337",
+      "size": 562
+    },
+    {
+      "path": "dfrobot-dfr0058-k10/references/compatibility-rules.md",
+      "sha256": "378391540da552bf5301e4842e544a0f7868e6af9df4d0974ba1812e4c3ad5fa",
+      "size": 2071
+    },
+    {
+      "path": "dfrobot-dfr0058-k10/references/integration.md",
+      "sha256": "df440d613fec1dbe15ae08e0ae14ff664abba3e7d1e3c44d2bc66dde099446e7",
+      "size": 1704
+    },
+    {
+      "path": "dfrobot-dfr0058-k10/references/safety.md",
+      "sha256": "21a6d1d0c7864386afad93156f97fa7b635b686f5d4c57aa814908d632849eb4",
+      "size": 961
+    },
+    {
+      "path": "dfrobot-dfr0058-k10/references/sources.md",
+      "sha256": "14329ec92fa9829636fadeed94e58a52a09bf71c08f33eed8318275cf57db5f1",
+      "size": 923
+    },
+    {
+      "path": "dfrobot-dfr0058-k10/references/specifications.md",
+      "sha256": "b29ab4ad7b1a20d9eb2f91f74ac1e50bea7d90dca2f80d4b014c4e0c0a02281e",
+      "size": 1622
+    },
+    {
+      "path": "dfrobot-dfr0058-k10/SKILL.md",
+      "sha256": "8cfd2a377c22e4f3397f2fac5b5d4473be349ca020c5722a4ac6342d0e5f3ef9",
+      "size": 895
+    },
+    {
+      "path": "dfrobot-dfr0058-k10/tests/validation-cases.md",
+      "sha256": "35c032ee777b903eb74e95a4d553f16da04063fc3de33a0e19bad492b6eb9155",
+      "size": 568
+    },
+    {
+      "path": "dfrobot-dfr0061-k10/assets/cover.webp",
+      "sha256": "720515e587b7faf18c78c24f0a7c627bf475da0bbb10d77b94e3a4df9692b96f",
+      "size": 28418
+    },
+    {
+      "path": "dfrobot-dfr0061-k10/examples/usage.md",
+      "sha256": "a5a2ff756c954e616a3574097a99cd6a65f1d28674b18fba64a5313f1ed921ab",
+      "size": 905
+    },
+    {
+      "path": "dfrobot-dfr0061-k10/manifest.json",
+      "sha256": "223c925df83f45409d95a91575ebb388ccd67a836af7b380ea112737660fce30",
+      "size": 1370
+    },
+    {
+      "path": "dfrobot-dfr0061-k10/README.md",
+      "sha256": "dddefd5b0b94cd0c6edb4446503efabef89835bebd942e1de21952e8ca410cb9",
+      "size": 550
+    },
+    {
+      "path": "dfrobot-dfr0061-k10/references/compatibility-rules.md",
+      "sha256": "604e1a7f662c8e228381799b22c4f03306bb357dbb4d601e2b17edb4060a43fb",
+      "size": 2071
+    },
+    {
+      "path": "dfrobot-dfr0061-k10/references/integration.md",
+      "sha256": "df440d613fec1dbe15ae08e0ae14ff664abba3e7d1e3c44d2bc66dde099446e7",
+      "size": 1704
+    },
+    {
+      "path": "dfrobot-dfr0061-k10/references/safety.md",
+      "sha256": "21a6d1d0c7864386afad93156f97fa7b635b686f5d4c57aa814908d632849eb4",
+      "size": 961
+    },
+    {
+      "path": "dfrobot-dfr0061-k10/references/sources.md",
+      "sha256": "d888ae14d42c2428c2a998d25c6f0634c2eff2bc4ab21f103a7cf1df21eab6f6",
+      "size": 975
+    },
+    {
+      "path": "dfrobot-dfr0061-k10/references/specifications.md",
+      "sha256": "3111e110ea9217fd670bdbbf00db4f929a3d15d9b92664454fe63eafa24f4a4f",
+      "size": 1610
+    },
+    {
+      "path": "dfrobot-dfr0061-k10/SKILL.md",
+      "sha256": "04d46bf13039f2d8a9da77ef545986ffbc66e88e365bd13469caf9e68e3f01cb",
+      "size": 883
+    },
+    {
+      "path": "dfrobot-dfr0061-k10/tests/validation-cases.md",
+      "sha256": "35c032ee777b903eb74e95a4d553f16da04063fc3de33a0e19bad492b6eb9155",
+      "size": 568
+    },
+    {
+      "path": "dfrobot-dfr0067-k10/assets/cover.webp",
+      "sha256": "321fd49bc30ba97165baf722733a37de75f0004ab14c46ef86ee940d6249c610",
+      "size": 45006
+    },
+    {
+      "path": "dfrobot-dfr0067-k10/examples/usage.md",
+      "sha256": "09593c6c4bc20ee0e6584d9e6022db937d3e322da8d2edb605c24d3841f3321b",
+      "size": 919
+    },
+    {
+      "path": "dfrobot-dfr0067-k10/manifest.json",
+      "sha256": "a175f3d07fd005b27bb8629197434e779786aa5f3e96dc3379bd26892ca25e4d",
+      "size": 1458
+    },
+    {
+      "path": "dfrobot-dfr0067-k10/README.md",
+      "sha256": "b787a4b62da228c1cfa969e53dba0b60e71bd76429e03e1f343db20530e52425",
+      "size": 553
+    },
+    {
+      "path": "dfrobot-dfr0067-k10/references/compatibility-rules.md",
+      "sha256": "b8987b0de5ec64ca642f1abf427b05e7cc6fdfef3f65aacec349f07fa2a6d7ce",
+      "size": 2071
+    },
+    {
+      "path": "dfrobot-dfr0067-k10/references/integration.md",
+      "sha256": "af105c799df360e0397be6f0c9f918548d21802662b01b2d80004e2c31859da9",
+      "size": 1681
+    },
+    {
+      "path": "dfrobot-dfr0067-k10/references/safety.md",
+      "sha256": "21a6d1d0c7864386afad93156f97fa7b635b686f5d4c57aa814908d632849eb4",
+      "size": 961
+    },
+    {
+      "path": "dfrobot-dfr0067-k10/references/sources.md",
+      "sha256": "ed4b7b6a75474217c5fcdc4f131da909151d9136ac1a328b1e6a2039820d83ca",
+      "size": 967
+    },
+    {
+      "path": "dfrobot-dfr0067-k10/references/specifications.md",
+      "sha256": "0ee2bcb1ac7fb67213af85dc411083b15d94788927d3ac81157794a376f6414d",
+      "size": 1611
+    },
+    {
+      "path": "dfrobot-dfr0067-k10/SKILL.md",
+      "sha256": "85fb0231e9ded24996b1907a204fa963e0244f562aff5a4b43c3febc65196eeb",
+      "size": 882
+    },
+    {
+      "path": "dfrobot-dfr0067-k10/tests/validation-cases.md",
+      "sha256": "35c032ee777b903eb74e95a4d553f16da04063fc3de33a0e19bad492b6eb9155",
+      "size": 568
+    },
+    {
+      "path": "dfrobot-dfr0076-k10/assets/cover.webp",
+      "sha256": "22d9a71054a623049c7b4802366e3304ca24dddb5d6e70e04ad56fbd5ee40a41",
+      "size": 34548
+    },
+    {
+      "path": "dfrobot-dfr0076-k10/examples/usage.md",
+      "sha256": "a5a2ff756c954e616a3574097a99cd6a65f1d28674b18fba64a5313f1ed921ab",
+      "size": 905
+    },
+    {
+      "path": "dfrobot-dfr0076-k10/manifest.json",
+      "sha256": "30f6f32e615cb7d2e7c5d6974e6dcd43c6f492087a8286c081e1a562effd1e0b",
+      "size": 1322
+    },
+    {
+      "path": "dfrobot-dfr0076-k10/README.md",
+      "sha256": "a539c23a2fd1a2f23ebd5930361c37d3d18716d670f250fd6d5a64a5baccac15",
+      "size": 544
+    },
+    {
+      "path": "dfrobot-dfr0076-k10/references/compatibility-rules.md",
+      "sha256": "75ff61a490400342c4434ba8821f1bd769313f6e4ead669bc0abc0a749fcafe9",
+      "size": 2071
+    },
+    {
+      "path": "dfrobot-dfr0076-k10/references/integration.md",
+      "sha256": "df440d613fec1dbe15ae08e0ae14ff664abba3e7d1e3c44d2bc66dde099446e7",
+      "size": 1704
+    },
+    {
+      "path": "dfrobot-dfr0076-k10/references/safety.md",
+      "sha256": "21a6d1d0c7864386afad93156f97fa7b635b686f5d4c57aa814908d632849eb4",
+      "size": 961
+    },
+    {
+      "path": "dfrobot-dfr0076-k10/references/sources.md",
+      "sha256": "d7fe8fc88f8e40ae58cae8bf332e9e51eb08801a02eddff5e221a982dc3ded6d",
+      "size": 933
+    },
+    {
+      "path": "dfrobot-dfr0076-k10/references/specifications.md",
+      "sha256": "3fac580706e5b8b30565b8612bdf7679d35825b24cd6aeb6544905335b7ec9d8",
+      "size": 1604
+    },
+    {
+      "path": "dfrobot-dfr0076-k10/SKILL.md",
+      "sha256": "3bd08ca8453ea462c34bf34d153198e752fa51a4ac005a9f3aa30f501b09e93b",
+      "size": 877
+    },
+    {
+      "path": "dfrobot-dfr0076-k10/tests/validation-cases.md",
+      "sha256": "35c032ee777b903eb74e95a4d553f16da04063fc3de33a0e19bad492b6eb9155",
+      "size": 568
+    },
+    {
+      "path": "dfrobot-dfr0198-k10/assets/cover.webp",
+      "sha256": "43adca139f055452aa4aef2587ba09a23f8089986f4b51285636e51e624461f9",
+      "size": 23314
+    },
+    {
+      "path": "dfrobot-dfr0198-k10/examples/usage.md",
+      "sha256": "c74804a3129931ce45039f6a54507d9729d858b7df17ad189c54c292f8b69a5d",
+      "size": 857
+    },
+    {
+      "path": "dfrobot-dfr0198-k10/manifest.json",
+      "sha256": "c5b7d0da74ec4c57c7cc79ece4179b1d44e8b2f6fdb7adde291f77554f19e0a2",
+      "size": 1418
+    },
+    {
+      "path": "dfrobot-dfr0198-k10/README.md",
+      "sha256": "8b96901a44412794217b242256d3925601ee5563de46f3ef41bea66179847444",
+      "size": 559
+    },
+    {
+      "path": "dfrobot-dfr0198-k10/references/compatibility-rules.md",
+      "sha256": "8ae6a8bf976966f2bd48ca9dd09ea34bb5344fee2c85fe97d35832acffddb341",
+      "size": 2071
+    },
+    {
+      "path": "dfrobot-dfr0198-k10/references/integration.md",
+      "sha256": "dc9e366f496f6d0173f13b937abc62f5ec85fdb1eae8bbf24dc495f75c7fb195",
+      "size": 1694
+    },
+    {
+      "path": "dfrobot-dfr0198-k10/references/safety.md",
+      "sha256": "21a6d1d0c7864386afad93156f97fa7b635b686f5d4c57aa814908d632849eb4",
+      "size": 961
+    },
+    {
+      "path": "dfrobot-dfr0198-k10/references/sources.md",
+      "sha256": "bcddc574b798ee85991e1b6a2009d67316fdf6cae8dd4454cf3a12ed2de43db8",
+      "size": 923
+    },
+    {
+      "path": "dfrobot-dfr0198-k10/references/specifications.md",
+      "sha256": "70d8cb420bcca9577c3c23276a55cc5093158cbe756f12ad302366e75520ab3a",
+      "size": 1621
+    },
+    {
+      "path": "dfrobot-dfr0198-k10/SKILL.md",
+      "sha256": "2de085d830ecdf2f250a0ddb44f6fe433d74e7ba0ba31c8ca15744df873de01a",
+      "size": 888
+    },
+    {
+      "path": "dfrobot-dfr0198-k10/tests/validation-cases.md",
+      "sha256": "35c032ee777b903eb74e95a4d553f16da04063fc3de33a0e19bad492b6eb9155",
+      "size": 568
+    },
+    {
+      "path": "dfrobot-dfr0299-k10/examples/usage.md",
+      "sha256": "cc98d9e981d89ec96e6d336d7b538fdf2740c64c5c8550da68e0c0d06dd0d35f",
+      "size": 975
+    },
+    {
+      "path": "dfrobot-dfr0299-k10/manifest.json",
+      "sha256": "3c2baa95353e9bad7422854e1064839377320dadc1e7f7a9b806be1efe55eb02",
+      "size": 842
+    },
+    {
+      "path": "dfrobot-dfr0299-k10/README.md",
+      "sha256": "a99affc6182d969118267403e02fe34f7c8b30cd8f33c1be24b2e27815a01429",
+      "size": 553
+    },
+    {
+      "path": "dfrobot-dfr0299-k10/references/compatibility-rules.md",
+      "sha256": "8454ec6b481685199cd0193771c0db85748bfde047b0920dc393ee2f8d57f1ac",
+      "size": 2077
+    },
+    {
+      "path": "dfrobot-dfr0299-k10/references/integration.md",
+      "sha256": "46c54b46ef2a0638be2658e19edbd4c27c1f9f9239e01ec03b4dcdb9b0b6540d",
+      "size": 1769
+    },
+    {
+      "path": "dfrobot-dfr0299-k10/references/safety.md",
+      "sha256": "21a6d1d0c7864386afad93156f97fa7b635b686f5d4c57aa814908d632849eb4",
+      "size": 961
+    },
+    {
+      "path": "dfrobot-dfr0299-k10/references/sources.md",
+      "sha256": "35a1201de41b80d9912bb3e724a4f1cffdc4967b3df49449f5bba14a9d083a05",
+      "size": 944
+    },
+    {
+      "path": "dfrobot-dfr0299-k10/references/specifications.md",
+      "sha256": "72ecd35e7e1486bb155b0c5124e06476f55929e713fa0abc6f4c588719ff8e67",
+      "size": 1640
+    },
+    {
+      "path": "dfrobot-dfr0299-k10/SKILL.md",
+      "sha256": "224bf6a24f163c0b38e62790f7b8c8e477ff6c841ff00e316758b314512d0ab3",
+      "size": 897
+    },
+    {
+      "path": "dfrobot-dfr0299-k10/tests/validation-cases.md",
+      "sha256": "35c032ee777b903eb74e95a4d553f16da04063fc3de33a0e19bad492b6eb9155",
+      "size": 568
+    },
+    {
+      "path": "dfrobot-dfr0523-k10/examples/usage.md",
+      "sha256": "fcddecde488b5d7fbbfc184dfc6b54fcaba8f6e31fddf892a0eb1714dea6d6da",
+      "size": 975
+    },
+    {
+      "path": "dfrobot-dfr0523-k10/manifest.json",
+      "sha256": "2fa208a1e370ecbe1c1e5136b78ff964cd548592f87718a4664398ecaa2595ae",
+      "size": 826
+    },
+    {
+      "path": "dfrobot-dfr0523-k10/README.md",
+      "sha256": "d308d2e86a8421bcb44e53c639ce023c879f6638aad158c8929c525f2e24f102",
+      "size": 538
+    },
+    {
+      "path": "dfrobot-dfr0523-k10/references/compatibility-rules.md",
+      "sha256": "c8db4027560ef5152a9e353daf10da5c14ef5c5d6b2867facffb925a0e38bfd0",
+      "size": 2077
+    },
+    {
+      "path": "dfrobot-dfr0523-k10/references/integration.md",
+      "sha256": "8166b661474ed33fa1e4937efffd954a30c9609b1bdc43ffc955946eec7da8aa",
+      "size": 1700
+    },
+    {
+      "path": "dfrobot-dfr0523-k10/references/safety.md",
+      "sha256": "21a6d1d0c7864386afad93156f97fa7b635b686f5d4c57aa814908d632849eb4",
+      "size": 961
+    },
+    {
+      "path": "dfrobot-dfr0523-k10/references/sources.md",
+      "sha256": "df2cbcda86d6ede13ace162068144bab6222943dc2501b17bd9db3dfbcdd864e",
+      "size": 923
+    },
+    {
+      "path": "dfrobot-dfr0523-k10/references/specifications.md",
+      "sha256": "867a91f730489a499aa0da0c7c9bac12ebfc2b2ae7aec1c80a297f48a8992078",
+      "size": 1625
+    },
+    {
+      "path": "dfrobot-dfr0523-k10/SKILL.md",
+      "sha256": "fd37cdb807bbc05bb66ef5a6f7604338966d19f2e43f50a7ccb2b9510ad739d0",
+      "size": 878
+    },
+    {
+      "path": "dfrobot-dfr0523-k10/tests/validation-cases.md",
+      "sha256": "35c032ee777b903eb74e95a4d553f16da04063fc3de33a0e19bad492b6eb9155",
+      "size": 568
+    },
+    {
+      "path": "dfrobot-dfr0534-k10/examples/usage.md",
+      "sha256": "38667c101787fa1978a601408077db371ebd1f9e86569a813541db5fe86553cb",
+      "size": 975
+    },
+    {
+      "path": "dfrobot-dfr0534-k10/manifest.json",
+      "sha256": "3b8a370eef2ee7f751837d144bdba3f51a1215a766a9c9b4be2a3cbc01b4751e",
+      "size": 835
+    },
+    {
+      "path": "dfrobot-dfr0534-k10/README.md",
+      "sha256": "66e959d98d03a75fc3be30fc79a3ff58f1aeb5d0605f4eeb5e073633932472d4",
+      "size": 546
+    },
+    {
+      "path": "dfrobot-dfr0534-k10/references/compatibility-rules.md",
+      "sha256": "a825c0ccf548765a573027ac8156b9582fa83365a6d8dbf46ba854636e3a3348",
+      "size": 2077
+    },
+    {
+      "path": "dfrobot-dfr0534-k10/references/integration.md",
+      "sha256": "46c54b46ef2a0638be2658e19edbd4c27c1f9f9239e01ec03b4dcdb9b0b6540d",
+      "size": 1769
+    },
+    {
+      "path": "dfrobot-dfr0534-k10/references/safety.md",
+      "sha256": "21a6d1d0c7864386afad93156f97fa7b635b686f5d4c57aa814908d632849eb4",
+      "size": 961
+    },
+    {
+      "path": "dfrobot-dfr0534-k10/references/sources.md",
+      "sha256": "ff3a9e174959cfcab4f9e25de9832134b9e01b4251ef4b7d7020a3e34c24bb97",
+      "size": 940
+    },
+    {
+      "path": "dfrobot-dfr0534-k10/references/specifications.md",
+      "sha256": "1b6c06ed75486996db611fcc85e7e1b3678ae1635c7372332f6c099cbd1bc26c",
+      "size": 1633
+    },
+    {
+      "path": "dfrobot-dfr0534-k10/SKILL.md",
+      "sha256": "e6d432c6fcb815223348a395396661ee3a2c552b7f8bbc5a61f1ea64df8899c4",
+      "size": 890
+    },
+    {
+      "path": "dfrobot-dfr0534-k10/tests/validation-cases.md",
+      "sha256": "35c032ee777b903eb74e95a4d553f16da04063fc3de33a0e19bad492b6eb9155",
+      "size": 568
+    },
+    {
+      "path": "dfrobot-dfr0553-k10/assets/cover.webp",
+      "sha256": "f6125e786287f66df62b66527efa1651114fd4d7915fbbcc614562495dc01edb",
+      "size": 47260
+    },
+    {
+      "path": "dfrobot-dfr0553-k10/examples/usage.md",
+      "sha256": "a08ae287efcf59f84bae40f38bede64335796f01c01ec8c4353ce97c7e129732",
+      "size": 975
+    },
+    {
+      "path": "dfrobot-dfr0553-k10/manifest.json",
+      "sha256": "fbd422b92a5d63563e1e8af9a5c966b1434dbb6ed4690b9baf3458c4ec93a7c3",
+      "size": 1379
+    },
+    {
+      "path": "dfrobot-dfr0553-k10/README.md",
+      "sha256": "6da67e674540b1052bb92e41926f341eda573f283f8c676b0be82bf5fe52fdd4",
+      "size": 552
+    },
+    {
+      "path": "dfrobot-dfr0553-k10/references/compatibility-rules.md",
+      "sha256": "9b77b5ee6018537e48e2a3dc3121ca8b8fc64094fd8dd0926aa5f0d7fb8fa8f2",
+      "size": 2071
+    },
+    {
+      "path": "dfrobot-dfr0553-k10/references/integration.md",
+      "sha256": "c70917aea3a2881835389af3ed0f95e149b82da08a8350d63052f3e571a81254",
+      "size": 1766
+    },
+    {
+      "path": "dfrobot-dfr0553-k10/references/safety.md",
+      "sha256": "21a6d1d0c7864386afad93156f97fa7b635b686f5d4c57aa814908d632849eb4",
+      "size": 961
+    },
+    {
+      "path": "dfrobot-dfr0553-k10/references/sources.md",
+      "sha256": "a1881d4de593e34a1c5500ae020b9326e4a623460f153af520881a5aaeed5827",
+      "size": 923
+    },
+    {
+      "path": "dfrobot-dfr0553-k10/references/specifications.md",
+      "sha256": "9fa385b1f7e4cca464737d16a99cac941ee35743b13566a9be2a717e8d6db068",
+      "size": 1608
+    },
+    {
+      "path": "dfrobot-dfr0553-k10/SKILL.md",
+      "sha256": "400bd625bfb66ee6013a7217ac9ceceb1e604bfa34e38ebd41c5de8655b15a52",
+      "size": 879
+    },
+    {
+      "path": "dfrobot-dfr0553-k10/tests/validation-cases.md",
+      "sha256": "35c032ee777b903eb74e95a4d553f16da04063fc3de33a0e19bad492b6eb9155",
+      "size": 568
+    },
+    {
+      "path": "dfrobot-dfr0563-k10/assets/cover.webp",
+      "sha256": "ef735676b6fc6098df760472c1295d4b02049032f05dfb2be67ca7a6a76a121e",
+      "size": 43248
+    },
+    {
+      "path": "dfrobot-dfr0563-k10/examples/usage.md",
+      "sha256": "abba42a06e4e637f1045ee1e395068f30d2a7843bca4115d790a3993193c9711",
+      "size": 975
+    },
+    {
+      "path": "dfrobot-dfr0563-k10/manifest.json",
+      "sha256": "ff4c5c6345ec8a498ce2aaa35b36959689b5f80397bf8a1e685987f9f5e0cfd9",
+      "size": 1428
+    },
+    {
+      "path": "dfrobot-dfr0563-k10/README.md",
+      "sha256": "40eb7de274e5e32bd14de32588973d1c672c56b62f5e1f959fd61501188104c6",
+      "size": 693
+    },
+    {
+      "path": "dfrobot-dfr0563-k10/references/compatibility-rules.md",
+      "sha256": "67fcc44d2e3a0c5d2cd4d6ab84d2ffb0198247d4d3ad0522f50251dd5fbb32d6",
+      "size": 2445
+    },
+    {
+      "path": "dfrobot-dfr0563-k10/references/integration.md",
+      "sha256": "c70917aea3a2881835389af3ed0f95e149b82da08a8350d63052f3e571a81254",
+      "size": 1766
+    },
+    {
+      "path": "dfrobot-dfr0563-k10/references/safety.md",
+      "sha256": "21a6d1d0c7864386afad93156f97fa7b635b686f5d4c57aa814908d632849eb4",
+      "size": 961
+    },
+    {
+      "path": "dfrobot-dfr0563-k10/references/sources.md",
+      "sha256": "11d220c407c15e6e37fd6475440e52eafd8d5126b19574a4c91032e259fc24e5",
+      "size": 1076
+    },
+    {
+      "path": "dfrobot-dfr0563-k10/references/specifications.md",
+      "sha256": "9d7228339c6261c252b16fc79b67a20ed96c8c19a1cee195afc00296a6c2df41",
+      "size": 1780
+    },
+    {
+      "path": "dfrobot-dfr0563-k10/SKILL.md",
+      "sha256": "82b69b35f95c2fad3db0a0edca9d79d72b740ec4a1c4dbcdf32687d4d30924ae",
+      "size": 887
+    },
+    {
+      "path": "dfrobot-dfr0563-k10/tests/validation-cases.md",
+      "sha256": "35c032ee777b903eb74e95a4d553f16da04063fc3de33a0e19bad492b6eb9155",
+      "size": 568
+    },
+    {
+      "path": "dfrobot-dfr0646-k10/examples/usage.md",
+      "sha256": "5d4c61ee2f42a47a12f5ad32c9aaecb620a227d1591a1fd1ecb4818014a45884",
+      "size": 975
+    },
+    {
+      "path": "dfrobot-dfr0646-k10/manifest.json",
+      "sha256": "4b19e642d791b9fd7750c9b7a25e57033af54d7b0724615f13be998b6ff2c1cc",
+      "size": 839
+    },
+    {
+      "path": "dfrobot-dfr0646-k10/README.md",
+      "sha256": "28c922ff6fc6b48fc6450de528c844ac0a9940b4c4bba09ccc15f7792289375b",
+      "size": 551
+    },
+    {
+      "path": "dfrobot-dfr0646-k10/references/compatibility-rules.md",
+      "sha256": "14be129a2b767ab09fc1bfcad4aa1166a4be28235b435ad0bbe392eed826d285",
+      "size": 2074
+    },
+    {
+      "path": "dfrobot-dfr0646-k10/references/integration.md",
+      "sha256": "1cd02b5ea322fe5f2d365691d00bc0f06011fa65cef56b7e1479b8b6693249fb",
+      "size": 1748
+    },
+    {
+      "path": "dfrobot-dfr0646-k10/references/safety.md",
+      "sha256": "21a6d1d0c7864386afad93156f97fa7b635b686f5d4c57aa814908d632849eb4",
+      "size": 961
+    },
+    {
+      "path": "dfrobot-dfr0646-k10/references/sources.md",
+      "sha256": "8c7e8cfe34ccbe169fd523fd00a6713817c072380a5cd91c87c755903da98a7a",
+      "size": 925
+    },
+    {
+      "path": "dfrobot-dfr0646-k10/references/specifications.md",
+      "sha256": "f1834528e63f4e96ef9ebd98f01507466ff6ee25312afc3f7eefdce9cc1c8ec0",
+      "size": 1636
+    },
+    {
+      "path": "dfrobot-dfr0646-k10/SKILL.md",
+      "sha256": "87c5d7aee7c22a1afc57dbc5397a7d022a9279dfba85c80b87b4c5a469e1db7d",
+      "size": 880
+    },
+    {
+      "path": "dfrobot-dfr0646-k10/tests/validation-cases.md",
+      "sha256": "35c032ee777b903eb74e95a4d553f16da04063fc3de33a0e19bad492b6eb9155",
+      "size": 568
+    },
+    {
+      "path": "dfrobot-dfr0715-k10/assets/cover.webp",
+      "sha256": "669f88a7fbdfe168180de57e205a0d5e201c5eda53bfffd4bd2ad345d4389742",
+      "size": 74306
+    },
+    {
+      "path": "dfrobot-dfr0715-k10/examples/usage.md",
+      "sha256": "b0e9987918bc10d374819054a0ec0115a4b448c4e7c28a693140d430e98b2ad5",
+      "size": 975
+    },
+    {
+      "path": "dfrobot-dfr0715-k10/manifest.json",
+      "sha256": "f7e7d83de744af3102355e3c8f33014771f68adf044d8f5b6fb774a819ec79d0",
+      "size": 1434
+    },
+    {
+      "path": "dfrobot-dfr0715-k10/README.md",
+      "sha256": "3c92c6769cbcb22ae3e153f6ae3a40868255546c4e5f6a68bd5a633188cd94f9",
+      "size": 547
+    },
+    {
+      "path": "dfrobot-dfr0715-k10/references/compatibility-rules.md",
+      "sha256": "4e3aa9a85b627765862e5efac198428d6b5c850699077656675c8bcf7fa16c89",
+      "size": 2071
+    },
+    {
+      "path": "dfrobot-dfr0715-k10/references/integration.md",
+      "sha256": "c70917aea3a2881835389af3ed0f95e149b82da08a8350d63052f3e571a81254",
+      "size": 1766
+    },
+    {
+      "path": "dfrobot-dfr0715-k10/references/safety.md",
+      "sha256": "21a6d1d0c7864386afad93156f97fa7b635b686f5d4c57aa814908d632849eb4",
+      "size": 961
+    },
+    {
+      "path": "dfrobot-dfr0715-k10/references/sources.md",
+      "sha256": "f91f8813c119265c9ee2b4702c2479c37dd9322b6ff3f6ad93273e19e6c94ce3",
+      "size": 1015
+    },
+    {
+      "path": "dfrobot-dfr0715-k10/references/specifications.md",
+      "sha256": "0385be278de9e73d5eaf0b38f86d607bbf02f180e16b8a3f410c3b0c79b6bc22",
+      "size": 1603
+    },
+    {
+      "path": "dfrobot-dfr0715-k10/SKILL.md",
+      "sha256": "66be70b08555848e300e5af504d0f8b4d2c46ed1866fb792a589990f71baf32c",
+      "size": 874
+    },
+    {
+      "path": "dfrobot-dfr0715-k10/tests/validation-cases.md",
+      "sha256": "35c032ee777b903eb74e95a4d553f16da04063fc3de33a0e19bad492b6eb9155",
+      "size": 568
+    },
+    {
+      "path": "dfrobot-dfr0760-k10/examples/usage.md",
+      "sha256": "7e0f6a19987ded81d435f41ef87a02018f89433496989316aee11caca00e1b17",
+      "size": 975
+    },
+    {
+      "path": "dfrobot-dfr0760-k10/manifest.json",
+      "sha256": "5e84e54a9d05e81f920c58724cc949aa551e6f54ca5ccd311ba46f3df5d7ce86",
+      "size": 835
+    },
+    {
+      "path": "dfrobot-dfr0760-k10/README.md",
+      "sha256": "60fe6c11d79fcb26ea91565ff7ac0df216b14ff128bef601466b7e62adfde1e6",
+      "size": 547
+    },
+    {
+      "path": "dfrobot-dfr0760-k10/references/compatibility-rules.md",
+      "sha256": "6bec0dfce5aeb60a34216a376bcac5cd27fa0b1030e586d1556afb5cb5fef9b7",
+      "size": 2451
+    },
+    {
+      "path": "dfrobot-dfr0760-k10/references/integration.md",
+      "sha256": "c70917aea3a2881835389af3ed0f95e149b82da08a8350d63052f3e571a81254",
+      "size": 1766
+    },
+    {
+      "path": "dfrobot-dfr0760-k10/references/safety.md",
+      "sha256": "21a6d1d0c7864386afad93156f97fa7b635b686f5d4c57aa814908d632849eb4",
+      "size": 961
+    },
+    {
+      "path": "dfrobot-dfr0760-k10/references/sources.md",
+      "sha256": "e5f4da42a185b23f0fad08c228fa60d7ecfc96708e472a7d35b9fb16440ecf04",
+      "size": 962
+    },
+    {
+      "path": "dfrobot-dfr0760-k10/references/specifications.md",
+      "sha256": "da996d45500c9722f09dca20be17b14079107662b5dc88e80af1de210891a378",
+      "size": 1635
+    },
+    {
+      "path": "dfrobot-dfr0760-k10/SKILL.md",
+      "sha256": "a8e8f26d96b0461281aadc545c82da4b4bf9621d4a5cd8e52ebb444f0bbe6a36",
+      "size": 874
+    },
+    {
+      "path": "dfrobot-dfr0760-k10/tests/validation-cases.md",
+      "sha256": "35c032ee777b903eb74e95a4d553f16da04063fc3de33a0e19bad492b6eb9155",
+      "size": 568
+    },
+    {
+      "path": "dfrobot-dfr0888-k10/examples/usage.md",
+      "sha256": "f32993976f6c52dcfff6d515ecf948b0082afc46ed61672b5c7d3469eba06cfd",
+      "size": 964
+    },
+    {
+      "path": "dfrobot-dfr0888-k10/manifest.json",
+      "sha256": "6c638fb93908cb4112d3585b87225bd50caf8c0d14e8263d35398eef067b3599",
+      "size": 832
+    },
+    {
+      "path": "dfrobot-dfr0888-k10/README.md",
+      "sha256": "d3b08931c580435978ba7845b11457e2c531445e4bb6b176206cff94ab1351dc",
+      "size": 543
+    },
+    {
+      "path": "dfrobot-dfr0888-k10/references/compatibility-rules.md",
+      "sha256": "1148ed4118cdbf10bb0dde03387d82b7a5f02acfbf08971fca7a18256a9bb999",
+      "size": 2074
+    },
+    {
+      "path": "dfrobot-dfr0888-k10/references/integration.md",
+      "sha256": "4167e0ccc0d9c9bbe41a752937c0440baa4cb6cef7899b85793438233bd4ca8c",
+      "size": 1684
+    },
+    {
+      "path": "dfrobot-dfr0888-k10/references/safety.md",
+      "sha256": "21a6d1d0c7864386afad93156f97fa7b635b686f5d4c57aa814908d632849eb4",
+      "size": 961
+    },
+    {
+      "path": "dfrobot-dfr0888-k10/references/sources.md",
+      "sha256": "6ab47521f848b7d17e53993299fe89d4190fd5ce0fd36fb0136f9b1933cc049e",
+      "size": 945
+    },
+    {
+      "path": "dfrobot-dfr0888-k10/references/specifications.md",
+      "sha256": "dfdf555e98e97371f64ed54e56097750c91a43edcb7f26d42773a3228e9b8daf",
+      "size": 1635
+    },
+    {
+      "path": "dfrobot-dfr0888-k10/SKILL.md",
+      "sha256": "5e9110439f935990ae3f3499a046f09ca097d6045d24ffb6e196dd98baac6378",
+      "size": 862
+    },
+    {
+      "path": "dfrobot-dfr0888-k10/tests/validation-cases.md",
+      "sha256": "35c032ee777b903eb74e95a4d553f16da04063fc3de33a0e19bad492b6eb9155",
+      "size": 568
+    },
+    {
+      "path": "dfrobot-fit0352-k10/examples/usage.md",
+      "sha256": "f32993976f6c52dcfff6d515ecf948b0082afc46ed61672b5c7d3469eba06cfd",
+      "size": 964
+    },
+    {
+      "path": "dfrobot-fit0352-k10/manifest.json",
+      "sha256": "6a3fdb5d7fdfd50b763e1bad48a2d4dc0f99cd563bd5df57183ec8dc26a0facc",
+      "size": 832
+    },
+    {
+      "path": "dfrobot-fit0352-k10/README.md",
+      "sha256": "df6482b1020d2df18766fa513d69b57fd6956a7d1bc151702249ce5bf99826c9",
+      "size": 543
+    },
+    {
+      "path": "dfrobot-fit0352-k10/references/compatibility-rules.md",
+      "sha256": "56f416a47a360c5a6a7605da3c16ddabf0a35584ecb2bb045d4998efbcf2f21a",
+      "size": 2074
+    },
+    {
+      "path": "dfrobot-fit0352-k10/references/integration.md",
+      "sha256": "4167e0ccc0d9c9bbe41a752937c0440baa4cb6cef7899b85793438233bd4ca8c",
+      "size": 1684
+    },
+    {
+      "path": "dfrobot-fit0352-k10/references/safety.md",
+      "sha256": "21a6d1d0c7864386afad93156f97fa7b635b686f5d4c57aa814908d632849eb4",
+      "size": 961
+    },
+    {
+      "path": "dfrobot-fit0352-k10/references/sources.md",
+      "sha256": "174080c657532da7e15795186e5150b30f7a716a9595c83d5311cb28c4f06eb5",
+      "size": 951
+    },
+    {
+      "path": "dfrobot-fit0352-k10/references/specifications.md",
+      "sha256": "7304947dbdfa58bb010f9e0ad68c8b5baf64167478507556db9b083a275fe060",
+      "size": 1635
+    },
+    {
+      "path": "dfrobot-fit0352-k10/SKILL.md",
+      "sha256": "13ee8a61d710cdd255b276a43a008a0d9eeafb411c0912fadca6e8f23ff9d83a",
+      "size": 862
+    },
+    {
+      "path": "dfrobot-fit0352-k10/tests/validation-cases.md",
+      "sha256": "35c032ee777b903eb74e95a4d553f16da04063fc3de33a0e19bad492b6eb9155",
+      "size": 568
+    },
+    {
+      "path": "dfrobot-fit0656-k10/examples/usage.md",
+      "sha256": "f32993976f6c52dcfff6d515ecf948b0082afc46ed61672b5c7d3469eba06cfd",
+      "size": 964
+    },
+    {
+      "path": "dfrobot-fit0656-k10/manifest.json",
+      "sha256": "4f1a9e47b7f135d585b76e7677f0489d5e29c6951adb7d29c03791352e219b12",
+      "size": 832
+    },
+    {
+      "path": "dfrobot-fit0656-k10/README.md",
+      "sha256": "052a0f6c5e91ba0521061fd14e151fceac29c7a5356d6e14a7da18562860b26f",
+      "size": 543
+    },
+    {
+      "path": "dfrobot-fit0656-k10/references/compatibility-rules.md",
+      "sha256": "711ca79f461354d0c09d0a01d257e9033a147be0da1fdb77e65a897c7c29521e",
+      "size": 2074
+    },
+    {
+      "path": "dfrobot-fit0656-k10/references/integration.md",
+      "sha256": "4167e0ccc0d9c9bbe41a752937c0440baa4cb6cef7899b85793438233bd4ca8c",
+      "size": 1684
+    },
+    {
+      "path": "dfrobot-fit0656-k10/references/safety.md",
+      "sha256": "21a6d1d0c7864386afad93156f97fa7b635b686f5d4c57aa814908d632849eb4",
+      "size": 961
+    },
+    {
+      "path": "dfrobot-fit0656-k10/references/sources.md",
+      "sha256": "bb8e68092bd9b2e94ff1f919220297b6f1a5f8b19376fa85f02935a1fc5982f0",
+      "size": 933
+    },
+    {
+      "path": "dfrobot-fit0656-k10/references/specifications.md",
+      "sha256": "748d0c3e950c46b27cdd17b7ee19f0eee3bb02e2a866579e3ddc514154c00782",
+      "size": 1635
+    },
+    {
+      "path": "dfrobot-fit0656-k10/SKILL.md",
+      "sha256": "d815dd196a64546ceb45a7b468af8927f8ffc02d94d60ce9451f92e75fd67551",
+      "size": 862
+    },
+    {
+      "path": "dfrobot-fit0656-k10/tests/validation-cases.md",
+      "sha256": "35c032ee777b903eb74e95a4d553f16da04063fc3de33a0e19bad492b6eb9155",
+      "size": 568
+    },
+    {
+      "path": "dfrobot-kit0021-k10/assets/cover.webp",
+      "sha256": "bd15cdd0798ccee814b1f10e838126894d1a8986ff361ff7294923bee6b4b7fc",
+      "size": 32662
+    },
+    {
+      "path": "dfrobot-kit0021-k10/examples/usage.md",
+      "sha256": "c74804a3129931ce45039f6a54507d9729d858b7df17ad189c54c292f8b69a5d",
+      "size": 857
+    },
+    {
+      "path": "dfrobot-kit0021-k10/manifest.json",
+      "sha256": "37c87332dd857f12c71d955a6f61900154e553dc935f1884a64bc7271418cf79",
+      "size": 1396
+    },
+    {
+      "path": "dfrobot-kit0021-k10/README.md",
+      "sha256": "c8b7eaa6b95d9a00b5d4694958ac48c7d12c8591f77dc4a69a02aa4c8bc35089",
+      "size": 559
+    },
+    {
+      "path": "dfrobot-kit0021-k10/references/compatibility-rules.md",
+      "sha256": "20940b10ccf7342b2d120ea6d078dfea5f5529f1eceb6c08ceb72247860fbd89",
+      "size": 2071
+    },
+    {
+      "path": "dfrobot-kit0021-k10/references/integration.md",
+      "sha256": "dc9e366f496f6d0173f13b937abc62f5ec85fdb1eae8bbf24dc495f75c7fb195",
+      "size": 1694
+    },
+    {
+      "path": "dfrobot-kit0021-k10/references/safety.md",
+      "sha256": "21a6d1d0c7864386afad93156f97fa7b635b686f5d4c57aa814908d632849eb4",
+      "size": 961
+    },
+    {
+      "path": "dfrobot-kit0021-k10/references/sources.md",
+      "sha256": "a85c0a2453fd4acdc6ebb3d9907afde38013e1efb4c2da5150ecbe64e05bf15d",
+      "size": 994
+    },
+    {
+      "path": "dfrobot-kit0021-k10/references/specifications.md",
+      "sha256": "6f7d14319ca68556708bede3950737bc6bd26758bd7c9e3745134ced2c57a98e",
+      "size": 1621
+    },
+    {
+      "path": "dfrobot-kit0021-k10/SKILL.md",
+      "sha256": "ee241ca771906457e5a26921d7dd68ceed642fbc826076f9a07c1fa2ff24a795",
+      "size": 888
+    },
+    {
+      "path": "dfrobot-kit0021-k10/tests/validation-cases.md",
+      "sha256": "35c032ee777b903eb74e95a4d553f16da04063fc3de33a0e19bad492b6eb9155",
+      "size": 568
+    },
+    {
+      "path": "dfrobot-kit0176-k10/assets/cover.webp",
+      "sha256": "6559b2601a0c039a89a48b4478769883d4ede4778113a24f78271cb18743a71e",
+      "size": 68698
+    },
+    {
+      "path": "dfrobot-kit0176-k10/examples/usage.md",
+      "sha256": "fb536914ffa9118501353cb72dc50fbe9847a4ec831ad619cb0cb0457decc274",
+      "size": 910
+    },
+    {
+      "path": "dfrobot-kit0176-k10/manifest.json",
+      "sha256": "b817382737b74c1d11603d9dec3658ff5f419bb2cf45d0963e2a374a96b4ff64",
+      "size": 1388
+    },
+    {
+      "path": "dfrobot-kit0176-k10/README.md",
+      "sha256": "4fb7bc95f79644d7440a7c77368a18194fe17fb41e59c108f0767d2f5f2576a1",
+      "size": 548
+    },
+    {
+      "path": "dfrobot-kit0176-k10/references/compatibility-rules.md",
+      "sha256": "1ffa601dcd78d22c9505de1f424c0ab975daf55627396328507f2fdfc69333c2",
+      "size": 2071
+    },
+    {
+      "path": "dfrobot-kit0176-k10/references/integration.md",
+      "sha256": "a6f96bddedb652475afed58460ffdd7aaca8c17d7e0851af9053f3e8bef9985c",
+      "size": 1694
+    },
+    {
+      "path": "dfrobot-kit0176-k10/references/safety.md",
+      "sha256": "21a6d1d0c7864386afad93156f97fa7b635b686f5d4c57aa814908d632849eb4",
+      "size": 961
+    },
+    {
+      "path": "dfrobot-kit0176-k10/references/sources.md",
+      "sha256": "a4234cda46d20348427bd5c2209fa574b85343111a4be2180bc63f028c5d7511",
+      "size": 998
+    },
+    {
+      "path": "dfrobot-kit0176-k10/references/specifications.md",
+      "sha256": "6d182c3b566414fe44547c8c3ae0b9f65727824f51d084156a22410e18ddb899",
+      "size": 1607
+    },
+    {
+      "path": "dfrobot-kit0176-k10/SKILL.md",
+      "sha256": "d1adc0f2883fbc9d1635e8cdd782ca4394a9df259f77a5d5a08dda3437d6e1d9",
+      "size": 875
+    },
+    {
+      "path": "dfrobot-kit0176-k10/tests/validation-cases.md",
+      "sha256": "35c032ee777b903eb74e95a4d553f16da04063fc3de33a0e19bad492b6eb9155",
+      "size": 568
+    },
+    {
+      "path": "dfrobot-sen0114-k10/assets/cover.webp",
+      "sha256": "ca47982a102a09b764da5714b133e1e92e3310846fc4ce9a2168aefc704e6d7b",
+      "size": 28928
+    },
+    {
+      "path": "dfrobot-sen0114-k10/examples/usage.md",
+      "sha256": "a5a2ff756c954e616a3574097a99cd6a65f1d28674b18fba64a5313f1ed921ab",
+      "size": 905
+    },
+    {
+      "path": "dfrobot-sen0114-k10/manifest.json",
+      "sha256": "3d6bd713427ce45905312b90bd2bd891584b02a5dcab3cee8a740e025b272b1b",
+      "size": 1404
+    },
+    {
+      "path": "dfrobot-sen0114-k10/README.md",
+      "sha256": "ff03a0f1e61447e23f467ade29756015307c125687cd582026c1a8017ca30727",
+      "size": 550
+    },
+    {
+      "path": "dfrobot-sen0114-k10/references/compatibility-rules.md",
+      "sha256": "c0bc33c021a77f18ca993b0193bcaf232f892a0ea4f3a1b53a80c6d4aa333e5a",
+      "size": 2071
+    },
+    {
+      "path": "dfrobot-sen0114-k10/references/integration.md",
+      "sha256": "df440d613fec1dbe15ae08e0ae14ff664abba3e7d1e3c44d2bc66dde099446e7",
+      "size": 1704
+    },
+    {
+      "path": "dfrobot-sen0114-k10/references/safety.md",
+      "sha256": "21a6d1d0c7864386afad93156f97fa7b635b686f5d4c57aa814908d632849eb4",
+      "size": 961
+    },
+    {
+      "path": "dfrobot-sen0114-k10/references/sources.md",
+      "sha256": "50a42cd0616d9e961f9ab3e468dda47e00c28c2bf0d9939a02821154d6dd8f6d",
+      "size": 1009
+    },
+    {
+      "path": "dfrobot-sen0114-k10/references/specifications.md",
+      "sha256": "89a0571d903c806479e7bc518f621b1f0bdd687d2d6668d8c6fe243e08a40591",
+      "size": 1610
+    },
+    {
+      "path": "dfrobot-sen0114-k10/SKILL.md",
+      "sha256": "6a97014d8dbd350a36e2be0e6ed24831974a7d5ea3c78f89eda3f0a6a327ee9c",
+      "size": 883
+    },
+    {
+      "path": "dfrobot-sen0114-k10/tests/validation-cases.md",
+      "sha256": "35c032ee777b903eb74e95a4d553f16da04063fc3de33a0e19bad492b6eb9155",
+      "size": 568
+    },
+    {
+      "path": "dfrobot-sen0121-k10/assets/cover.webp",
+      "sha256": "c2857699a4ed6b5cc57e437459b5d1054856bc50096fc2146a16acde52f8afd4",
+      "size": 32658
+    },
+    {
+      "path": "dfrobot-sen0121-k10/examples/usage.md",
+      "sha256": "a5a2ff756c954e616a3574097a99cd6a65f1d28674b18fba64a5313f1ed921ab",
+      "size": 905
+    },
+    {
+      "path": "dfrobot-sen0121-k10/manifest.json",
+      "sha256": "b2992e3c4471c5fb2d65d18716835205e69c7976e2cf2c08f6e48b347cf61f16",
+      "size": 1365
+    },
+    {
+      "path": "dfrobot-sen0121-k10/README.md",
+      "sha256": "d9e2be693dc7fec4945cfaf0b5fd1b92ae627f0045eb3c91306fab3cfb0cb5cf",
+      "size": 544
+    },
+    {
+      "path": "dfrobot-sen0121-k10/references/compatibility-rules.md",
+      "sha256": "f20908e7975fa9bf3053b2fdb5abba05f90c778bc1980132f950719b9055a506",
+      "size": 2071
+    },
+    {
+      "path": "dfrobot-sen0121-k10/references/integration.md",
+      "sha256": "df440d613fec1dbe15ae08e0ae14ff664abba3e7d1e3c44d2bc66dde099446e7",
+      "size": 1704
+    },
+    {
+      "path": "dfrobot-sen0121-k10/references/safety.md",
+      "sha256": "21a6d1d0c7864386afad93156f97fa7b635b686f5d4c57aa814908d632849eb4",
+      "size": 961
+    },
+    {
+      "path": "dfrobot-sen0121-k10/references/sources.md",
+      "sha256": "fdf36095307362c812c5378459177280157aa291dcb9ced1067cb5ca17d2a00a",
+      "size": 976
+    },
+    {
+      "path": "dfrobot-sen0121-k10/references/specifications.md",
+      "sha256": "970d23e048385b97c9f9a3522d1dc6bb78ba35940890bee8397cb2c01c04c3a6",
+      "size": 1604
+    },
+    {
+      "path": "dfrobot-sen0121-k10/SKILL.md",
+      "sha256": "47c44c2c6330357caac4e9ae06fb49381613f7862e1f095cf0c41ea432baae1f",
+      "size": 877
+    },
+    {
+      "path": "dfrobot-sen0121-k10/tests/validation-cases.md",
+      "sha256": "35c032ee777b903eb74e95a4d553f16da04063fc3de33a0e19bad492b6eb9155",
+      "size": 568
+    },
+    {
+      "path": "dfrobot-sen0137-k10/assets/cover.webp",
+      "sha256": "187485fcf5fb5c2b34dd10599bd292d285d960cfb2388f764c067f3b52cfff4f",
+      "size": 30016
+    },
+    {
+      "path": "dfrobot-sen0137-k10/examples/usage.md",
+      "sha256": "09593c6c4bc20ee0e6584d9e6022db937d3e322da8d2edb605c24d3841f3321b",
+      "size": 919
+    },
+    {
+      "path": "dfrobot-sen0137-k10/manifest.json",
+      "sha256": "51aca7577c339030a668ce1e5c3f0d647430c0e6a142f309a4f8e7ca31783dc4",
+      "size": 1413
+    },
+    {
+      "path": "dfrobot-sen0137-k10/README.md",
+      "sha256": "14b3483de3e1b6e2ac74ef6c53ea307fcca84aef45d8a01a8ecdbcbc9f2f8593",
+      "size": 553
+    },
+    {
+      "path": "dfrobot-sen0137-k10/references/compatibility-rules.md",
+      "sha256": "46e9728efb863c8c8d440f06476dd63ce3cdac4672588b4f4a3d4beece3f7b51",
+      "size": 2071
+    },
+    {
+      "path": "dfrobot-sen0137-k10/references/integration.md",
+      "sha256": "af105c799df360e0397be6f0c9f918548d21802662b01b2d80004e2c31859da9",
+      "size": 1681
+    },
+    {
+      "path": "dfrobot-sen0137-k10/references/safety.md",
+      "sha256": "21a6d1d0c7864386afad93156f97fa7b635b686f5d4c57aa814908d632849eb4",
+      "size": 961
+    },
+    {
+      "path": "dfrobot-sen0137-k10/references/sources.md",
+      "sha256": "2fe147c04ad1a035d9ed4226c3ff16be24906e3c08dc0d51dd9743db4e3f3a62",
+      "size": 1017
+    },
+    {
+      "path": "dfrobot-sen0137-k10/references/specifications.md",
+      "sha256": "c8f86c2bb11fcb35a8d988b62523a507550ae307c755338263bbcd46f700d25f",
+      "size": 1611
+    },
+    {
+      "path": "dfrobot-sen0137-k10/SKILL.md",
+      "sha256": "3467da7c6611e0d346ddb16f0cdb916b753028deded1466cd81dbe64f84336de",
+      "size": 882
+    },
+    {
+      "path": "dfrobot-sen0137-k10/tests/validation-cases.md",
+      "sha256": "35c032ee777b903eb74e95a4d553f16da04063fc3de33a0e19bad492b6eb9155",
+      "size": 568
+    },
+    {
+      "path": "dfrobot-sen0203-k10/assets/cover.webp",
+      "sha256": "a84e93b5c649c1f4a1f44ddb923c0378addd4a64d8647f1b96c60837df0830f6",
+      "size": 51762
+    },
+    {
+      "path": "dfrobot-sen0203-k10/examples/usage.md",
+      "sha256": "a5a2ff756c954e616a3574097a99cd6a65f1d28674b18fba64a5313f1ed921ab",
+      "size": 905
+    },
+    {
+      "path": "dfrobot-sen0203-k10/manifest.json",
+      "sha256": "577dff53d2bdc4b6499be67db1f09a87770cfe06385e83ebc0583f880f28df55",
+      "size": 1395
+    },
+    {
+      "path": "dfrobot-sen0203-k10/README.md",
+      "sha256": "0846e989f452896eb42f760da66c25f503636f707a9be23ab9b0f96c413f0954",
+      "size": 557
+    },
+    {
+      "path": "dfrobot-sen0203-k10/references/compatibility-rules.md",
+      "sha256": "7366bf31ebb396c1db8b42b790d9babd29995e3f1276aa25a9cdd4050a05ee76",
+      "size": 2071
+    },
+    {
+      "path": "dfrobot-sen0203-k10/references/integration.md",
+      "sha256": "df440d613fec1dbe15ae08e0ae14ff664abba3e7d1e3c44d2bc66dde099446e7",
+      "size": 1704
+    },
+    {
+      "path": "dfrobot-sen0203-k10/references/safety.md",
+      "sha256": "21a6d1d0c7864386afad93156f97fa7b635b686f5d4c57aa814908d632849eb4",
+      "size": 961
+    },
+    {
+      "path": "dfrobot-sen0203-k10/references/sources.md",
+      "sha256": "2839a67ccdc12df14e7cf4ba4af60448123de248bea5dbbbe0d6bb3ae1ccf85c",
+      "size": 993
+    },
+    {
+      "path": "dfrobot-sen0203-k10/references/specifications.md",
+      "sha256": "ba40eea574c8722b850a35b6af623884465637bd1602e3f0e1014383a0c41ea8",
+      "size": 1617
+    },
+    {
+      "path": "dfrobot-sen0203-k10/SKILL.md",
+      "sha256": "244cc15711bd6d405c7269f1f0310f225765e3e20ca564f7435adc0300743933",
+      "size": 890
+    },
+    {
+      "path": "dfrobot-sen0203-k10/tests/validation-cases.md",
+      "sha256": "35c032ee777b903eb74e95a4d553f16da04063fc3de33a0e19bad492b6eb9155",
+      "size": 568
+    },
+    {
+      "path": "dfrobot-sen0206-k10/assets/cover.webp",
+      "sha256": "16a1101616ce3914699f432ac458eaa5b55df5880e4063121c3eb59ee66a78da",
+      "size": 52180
+    },
+    {
+      "path": "dfrobot-sen0206-k10/examples/usage.md",
+      "sha256": "f06f32d570ef358978938a65a577693d8d7185dc28c495519cb21bc4558f0036",
+      "size": 975
+    },
+    {
+      "path": "dfrobot-sen0206-k10/manifest.json",
+      "sha256": "d594ff1483ea893d563917998db2a7cec964e159ce0b6d66fc21263fef9ea6a3",
+      "size": 1443
+    },
+    {
+      "path": "dfrobot-sen0206-k10/README.md",
+      "sha256": "dc5e93771ddd1b9a1f7fdd20245380cfec82accc1949ca81a8c0d2c6da1edaa1",
+      "size": 568
+    },
+    {
+      "path": "dfrobot-sen0206-k10/references/compatibility-rules.md",
+      "sha256": "9a424956f3ce9f7f9ff195236c84dcc725efdf18244adb22825f8a702aca4175",
+      "size": 2445
+    },
+    {
+      "path": "dfrobot-sen0206-k10/references/integration.md",
+      "sha256": "c70917aea3a2881835389af3ed0f95e149b82da08a8350d63052f3e571a81254",
+      "size": 1766
+    },
+    {
+      "path": "dfrobot-sen0206-k10/references/safety.md",
+      "sha256": "21a6d1d0c7864386afad93156f97fa7b635b686f5d4c57aa814908d632849eb4",
+      "size": 961
+    },
+    {
+      "path": "dfrobot-sen0206-k10/references/sources.md",
+      "sha256": "a75b18517755f1935ec50fb59fd3bd5e39fb8aa14c9044db934cd1a1356a6634",
+      "size": 1033
+    },
+    {
+      "path": "dfrobot-sen0206-k10/references/specifications.md",
+      "sha256": "74be228d3a7806fa107c63a8317f450657907d79de82873b385f0cfab4b504b6",
+      "size": 1626
+    },
+    {
+      "path": "dfrobot-sen0206-k10/SKILL.md",
+      "sha256": "7b60ec9551174efb41931e5518772a2ef03b922a5ccef3861e11c735e3a614da",
+      "size": 895
+    },
+    {
+      "path": "dfrobot-sen0206-k10/tests/validation-cases.md",
+      "sha256": "35c032ee777b903eb74e95a4d553f16da04063fc3de33a0e19bad492b6eb9155",
+      "size": 568
+    },
+    {
+      "path": "dfrobot-sen0224-k10/assets/cover.webp",
+      "sha256": "7c9724531e9928ffd2365ba4906a8890753d1a4d037c16025b6131106347e0c2",
+      "size": 48672
+    },
+    {
+      "path": "dfrobot-sen0224-k10/examples/usage.md",
+      "sha256": "788ba7918268a45f2c8f56edacb55e39101e236cc0e4385976ff193b74da182d",
+      "size": 975
+    },
+    {
+      "path": "dfrobot-sen0224-k10/manifest.json",
+      "sha256": "d09e199416fc780051df0319c91270c69fcfb6a200663b088be08922a3f043cc",
+      "size": 1419
+    },
+    {
+      "path": "dfrobot-sen0224-k10/README.md",
+      "sha256": "1d544203fd393a53eb81ac6fca628b8ecf8c855edf8db4862db84798e6d460b3",
+      "size": 554
+    },
+    {
+      "path": "dfrobot-sen0224-k10/references/compatibility-rules.md",
+      "sha256": "92c8ccb0c2db734fb1becdce4651019c951f60c8f64ee2d9e6060a1812757f44",
+      "size": 2445
+    },
+    {
+      "path": "dfrobot-sen0224-k10/references/integration.md",
+      "sha256": "c70917aea3a2881835389af3ed0f95e149b82da08a8350d63052f3e571a81254",
+      "size": 1766
+    },
+    {
+      "path": "dfrobot-sen0224-k10/references/safety.md",
+      "sha256": "21a6d1d0c7864386afad93156f97fa7b635b686f5d4c57aa814908d632849eb4",
+      "size": 961
+    },
+    {
+      "path": "dfrobot-sen0224-k10/references/sources.md",
+      "sha256": "29b38f9857dcfbb021da0c116ecccf61996491f7e9c2809846360e9d41954a09",
+      "size": 1023
+    },
+    {
+      "path": "dfrobot-sen0224-k10/references/specifications.md",
+      "sha256": "7104d916d26992c783f0ebe57e9f9b1bb6724211fe2cad8c8718e50535c5120e",
+      "size": 1612
+    },
+    {
+      "path": "dfrobot-sen0224-k10/SKILL.md",
+      "sha256": "1809f28bc5aff88bdff261f7c264188b0d2857c37bf7f39df9c476addef24423",
+      "size": 881
+    },
+    {
+      "path": "dfrobot-sen0224-k10/tests/validation-cases.md",
+      "sha256": "35c032ee777b903eb74e95a4d553f16da04063fc3de33a0e19bad492b6eb9155",
+      "size": 568
+    },
+    {
+      "path": "dfrobot-sen0228-k10/assets/cover.webp",
+      "sha256": "6956d60fe652bcf37437882f63a0f79b9732858280a6f6582b83ea2aef57866c",
+      "size": 45916
+    },
+    {
+      "path": "dfrobot-sen0228-k10/examples/usage.md",
+      "sha256": "3151050ae33abba419b78aa0b19596dc65cb9a17e3383df24260d3aa8a5a9562",
+      "size": 975
+    },
+    {
+      "path": "dfrobot-sen0228-k10/manifest.json",
+      "sha256": "d6cb08cf5fef542aff0588b2a2080c44abf0c852fb85644f413972b95bbad154",
+      "size": 1405
+    },
+    {
+      "path": "dfrobot-sen0228-k10/README.md",
+      "sha256": "9b9128cb6a371d9ae9b4da748d9d39445122a6ca3faa8935910512f33c405278",
+      "size": 556
+    },
+    {
+      "path": "dfrobot-sen0228-k10/references/compatibility-rules.md",
+      "sha256": "3a97eb5ef11394a549bd06e314fd93f39a15d6575a663ea25280c14fdcd46512",
+      "size": 2445
+    },
+    {
+      "path": "dfrobot-sen0228-k10/references/integration.md",
+      "sha256": "c70917aea3a2881835389af3ed0f95e149b82da08a8350d63052f3e571a81254",
+      "size": 1766
+    },
+    {
+      "path": "dfrobot-sen0228-k10/references/safety.md",
+      "sha256": "21a6d1d0c7864386afad93156f97fa7b635b686f5d4c57aa814908d632849eb4",
+      "size": 961
+    },
+    {
+      "path": "dfrobot-sen0228-k10/references/sources.md",
+      "sha256": "dfd97b88c3895bb4c245a31b00137cb5c2021c7fe302d5ff359d7f20e4e82080",
+      "size": 923
+    },
+    {
+      "path": "dfrobot-sen0228-k10/references/specifications.md",
+      "sha256": "f425d4945965d5451786e0f308b3bf5628f1514589e1e827379951be3c244a18",
+      "size": 1614
+    },
+    {
+      "path": "dfrobot-sen0228-k10/SKILL.md",
+      "sha256": "12e4a202408d2502c2fc7a0d789ba326410f31618764ba9e95fb92335f4aceb4",
+      "size": 883
+    },
+    {
+      "path": "dfrobot-sen0228-k10/tests/validation-cases.md",
+      "sha256": "35c032ee777b903eb74e95a4d553f16da04063fc3de33a0e19bad492b6eb9155",
+      "size": 568
+    },
+    {
+      "path": "dfrobot-sen0236-k10/assets/cover.webp",
+      "sha256": "d41657b8b8dc2a6304d9e650ac6728cb255f8cc95e481e020869ac99ae29f214",
+      "size": 63674
+    },
+    {
+      "path": "dfrobot-sen0236-k10/examples/usage.md",
+      "sha256": "e6bf2cd44ad89e71274a271648a7628656b306e02336c0ba788ee365f01383e4",
+      "size": 975
+    },
+    {
+      "path": "dfrobot-sen0236-k10/manifest.json",
+      "sha256": "4554011737712a469182244c86c8e49b7465d57f764f7f825310717cbd3e47aa",
+      "size": 1351
+    },
+    {
+      "path": "dfrobot-sen0236-k10/README.md",
+      "sha256": "8ee3e4fe75002383c30a39b30b989a1fb137e674fa728973ce7c1e70e20633c5",
+      "size": 551
+    },
+    {
+      "path": "dfrobot-sen0236-k10/references/compatibility-rules.md",
+      "sha256": "45d0843738a26bae10f877ea5db9da40bca646ba63cbbb62b7e4bff63fc0029a",
+      "size": 2071
+    },
+    {
+      "path": "dfrobot-sen0236-k10/references/integration.md",
+      "sha256": "c70917aea3a2881835389af3ed0f95e149b82da08a8350d63052f3e571a81254",
+      "size": 1766
+    },
+    {
+      "path": "dfrobot-sen0236-k10/references/safety.md",
+      "sha256": "21a6d1d0c7864386afad93156f97fa7b635b686f5d4c57aa814908d632849eb4",
+      "size": 961
+    },
+    {
+      "path": "dfrobot-sen0236-k10/references/sources.md",
+      "sha256": "ddb4612b97b797dd5a0858103ecdaa9a8afe9a191b90f57ad8ad964e016a07f7",
+      "size": 958
+    },
+    {
+      "path": "dfrobot-sen0236-k10/references/specifications.md",
+      "sha256": "f9129c6c8b3996f639e513007b647d63d04cad515497f841be4affbdd70b9b4d",
+      "size": 1607
+    },
+    {
+      "path": "dfrobot-sen0236-k10/SKILL.md",
+      "sha256": "42eee2a00e467ee84620d793a48efb1088179e3d218e3a1342ecb10c1ad61b45",
+      "size": 878
+    },
+    {
+      "path": "dfrobot-sen0236-k10/tests/validation-cases.md",
+      "sha256": "35c032ee777b903eb74e95a4d553f16da04063fc3de33a0e19bad492b6eb9155",
+      "size": 568
+    },
+    {
+      "path": "dfrobot-sen0248-k10/assets/cover.webp",
+      "sha256": "21a5a78d213078d9c1c369c4edd861a1bc2da23fbb35d8409400c7ca901000e0",
+      "size": 59226
+    },
+    {
+      "path": "dfrobot-sen0248-k10/examples/usage.md",
+      "sha256": "f3ffc4ac78d49f2d704e2244753d388f374c25614c5b076622b00e0c998676e0",
+      "size": 975
+    },
+    {
+      "path": "dfrobot-sen0248-k10/manifest.json",
+      "sha256": "44ddf4589be3d758588d254cf8735bdddb44810ce1f4e6a9af44927fe9682998",
+      "size": 1394
+    },
+    {
+      "path": "dfrobot-sen0248-k10/README.md",
+      "sha256": "44ef456593ce56648276f826d432e329f53a234d03c51e8f6d3df21c0229b21a",
+      "size": 551
+    },
+    {
+      "path": "dfrobot-sen0248-k10/references/compatibility-rules.md",
+      "sha256": "be54a5fb9499c9234203fd858ba5e77977d2aa3820c885611562c5a57217e4c2",
+      "size": 2071
+    },
+    {
+      "path": "dfrobot-sen0248-k10/references/integration.md",
+      "sha256": "c70917aea3a2881835389af3ed0f95e149b82da08a8350d63052f3e571a81254",
+      "size": 1766
+    },
+    {
+      "path": "dfrobot-sen0248-k10/references/safety.md",
+      "sha256": "21a6d1d0c7864386afad93156f97fa7b635b686f5d4c57aa814908d632849eb4",
+      "size": 961
+    },
+    {
+      "path": "dfrobot-sen0248-k10/references/sources.md",
+      "sha256": "a8a841aae293efe8d13bc07931f9f9ae7610168e72501e4c3427109347a8f19e",
+      "size": 923
+    },
+    {
+      "path": "dfrobot-sen0248-k10/references/specifications.md",
+      "sha256": "74e4f06deccbf7d4145fe7981f5f76193b1752d743ea7e6f0c4aedd7e4da5c69",
+      "size": 1607
+    },
+    {
+      "path": "dfrobot-sen0248-k10/SKILL.md",
+      "sha256": "0267927aa0c5eed3123e6a8fbe171b8f9fdd9a6e2a4ca1039018c58d41261507",
+      "size": 878
+    },
+    {
+      "path": "dfrobot-sen0248-k10/tests/validation-cases.md",
+      "sha256": "35c032ee777b903eb74e95a4d553f16da04063fc3de33a0e19bad492b6eb9155",
+      "size": 568
+    },
+    {
+      "path": "dfrobot-sen0250-k10/assets/cover.webp",
+      "sha256": "e59f48db6e189e1bfa7212604c36d7c58b1f2c0eac2e0153d0957436aff81040",
+      "size": 56120
+    },
+    {
+      "path": "dfrobot-sen0250-k10/examples/usage.md",
+      "sha256": "b656f24ae6de198da2bf9ed1a57684f957ce609717c5e1f3d0f346691b81f8b8",
+      "size": 975
+    },
+    {
+      "path": "dfrobot-sen0250-k10/manifest.json",
+      "sha256": "d6d98fb564f64363d486a52eecb9f486f5959eb2514460bff3a5dc47da15141e",
+      "size": 1338
+    },
+    {
+      "path": "dfrobot-sen0250-k10/README.md",
+      "sha256": "3a8620204671720630ef9f1c494c309eb894ef1e83283422907603e81403b1bf",
+      "size": 563
+    },
+    {
+      "path": "dfrobot-sen0250-k10/references/compatibility-rules.md",
+      "sha256": "59f915139dcdb162d6c8f46a81782dd392384ada0cf56695a9e5084f487386a2",
+      "size": 2071
+    },
+    {
+      "path": "dfrobot-sen0250-k10/references/integration.md",
+      "sha256": "c70917aea3a2881835389af3ed0f95e149b82da08a8350d63052f3e571a81254",
+      "size": 1766
+    },
+    {
+      "path": "dfrobot-sen0250-k10/references/safety.md",
+      "sha256": "21a6d1d0c7864386afad93156f97fa7b635b686f5d4c57aa814908d632849eb4",
+      "size": 961
+    },
+    {
+      "path": "dfrobot-sen0250-k10/references/sources.md",
+      "sha256": "05a93004ac5fa875c7486945dec2114aded5b174449478b37bc1f698594ad0c3",
+      "size": 933
+    },
+    {
+      "path": "dfrobot-sen0250-k10/references/specifications.md",
+      "sha256": "bb2b027c07d965c1cb6b21f7e9f628556f0cc5ed2d3a1c68763f02a2f004f0f3",
+      "size": 1619
+    },
+    {
+      "path": "dfrobot-sen0250-k10/SKILL.md",
+      "sha256": "49204fa9bd02800afd4fb7564a37e2242e9389d1f1e9db9a239c7d61beb108b0",
+      "size": 890
+    },
+    {
+      "path": "dfrobot-sen0250-k10/tests/validation-cases.md",
+      "sha256": "35c032ee777b903eb74e95a4d553f16da04063fc3de33a0e19bad492b6eb9155",
+      "size": 568
+    },
+    {
+      "path": "dfrobot-sen0251-k10/assets/cover.webp",
+      "sha256": "988948a5b80106d4a2824d81c94f3c65f17d929ddcbc2b457def618fcf400967",
+      "size": 44720
+    },
+    {
+      "path": "dfrobot-sen0251-k10/examples/usage.md",
+      "sha256": "cf97ccc2801c396b259dbc42415c1e15ead11e7e2f0cdb962cf3a0f18dfb949c",
+      "size": 975
+    },
+    {
+      "path": "dfrobot-sen0251-k10/manifest.json",
+      "sha256": "58355ae296192a4ba3c8631a2b2ef1824260cb03279b4376957a157e2ea067f2",
+      "size": 1332
+    },
+    {
+      "path": "dfrobot-sen0251-k10/README.md",
+      "sha256": "dff93b1a6fd68bf5360d26e046aadde9bf48638a542d7e28211a77852c03b991",
+      "size": 557
+    },
+    {
+      "path": "dfrobot-sen0251-k10/references/compatibility-rules.md",
+      "sha256": "c17465bd48b818855f710702bc09fa4eed03e1743c6582a963ff160def122c85",
+      "size": 2071
+    },
+    {
+      "path": "dfrobot-sen0251-k10/references/integration.md",
+      "sha256": "c70917aea3a2881835389af3ed0f95e149b82da08a8350d63052f3e571a81254",
+      "size": 1766
+    },
+    {
+      "path": "dfrobot-sen0251-k10/references/safety.md",
+      "sha256": "21a6d1d0c7864386afad93156f97fa7b635b686f5d4c57aa814908d632849eb4",
+      "size": 961
+    },
+    {
+      "path": "dfrobot-sen0251-k10/references/sources.md",
+      "sha256": "8361178575de8afe1be200e26e131e7274fdf427ada13774e70b8c18bfa5e1bf",
+      "size": 933
+    },
+    {
+      "path": "dfrobot-sen0251-k10/references/specifications.md",
+      "sha256": "6b18e02bc9123902bba516ee653afb5e2893aab28024cd6685c0dcfefb11de47",
+      "size": 1613
+    },
+    {
+      "path": "dfrobot-sen0251-k10/SKILL.md",
+      "sha256": "937a42e731546bd3fe610df0cefb14a8d45aeb1b27680276255484f67a5751d5",
+      "size": 884
+    },
+    {
+      "path": "dfrobot-sen0251-k10/tests/validation-cases.md",
+      "sha256": "35c032ee777b903eb74e95a4d553f16da04063fc3de33a0e19bad492b6eb9155",
+      "size": 568
+    },
+    {
+      "path": "dfrobot-sen0263-k10/assets/cover.webp",
+      "sha256": "327fe5a214b8efdcecfbd72c77866d9f569c8e9970b449247045bfd7dcfbcf61",
+      "size": 29722
+    },
+    {
+      "path": "dfrobot-sen0263-k10/examples/usage.md",
+      "sha256": "6615fe637a6ada8001b0539f43b57bb8d6acbef6375ac3ef302296ecc24b2c47",
+      "size": 975
+    },
+    {
+      "path": "dfrobot-sen0263-k10/manifest.json",
+      "sha256": "55adf0765c27b0beee16a95001ce65046f048180b8ad64bfaa2c330885856bce",
+      "size": 1443
+    },
+    {
+      "path": "dfrobot-sen0263-k10/README.md",
+      "sha256": "34ac494a430f5d547a7ebb56f386d0a60cc972547bc15780ba7d53e996cad1c9",
+      "size": 568
+    },
+    {
+      "path": "dfrobot-sen0263-k10/references/compatibility-rules.md",
+      "sha256": "dab010ed0ae35c1e9350ceed1e93468506e2498d1683ca101fd20aca869c4efb",
+      "size": 2445
+    },
+    {
+      "path": "dfrobot-sen0263-k10/references/integration.md",
+      "sha256": "c70917aea3a2881835389af3ed0f95e149b82da08a8350d63052f3e571a81254",
+      "size": 1766
+    },
+    {
+      "path": "dfrobot-sen0263-k10/references/safety.md",
+      "sha256": "21a6d1d0c7864386afad93156f97fa7b635b686f5d4c57aa814908d632849eb4",
+      "size": 961
+    },
+    {
+      "path": "dfrobot-sen0263-k10/references/sources.md",
+      "sha256": "bdd6eb6ec043bb54b53c3731dfa4903cbeba95984513b646be5d302d93a87c9c",
+      "size": 1033
+    },
+    {
+      "path": "dfrobot-sen0263-k10/references/specifications.md",
+      "sha256": "4544bc4f1e706222276c236a459fe3b569ca888574d1bea7dcc345f2ce5776fd",
+      "size": 1626
+    },
+    {
+      "path": "dfrobot-sen0263-k10/SKILL.md",
+      "sha256": "fed99e993b8e9b19f3890b55da494ff17cc63d596acef392bdd287b2b2ab8095",
+      "size": 895
+    },
+    {
+      "path": "dfrobot-sen0263-k10/tests/validation-cases.md",
+      "sha256": "35c032ee777b903eb74e95a4d553f16da04063fc3de33a0e19bad492b6eb9155",
+      "size": 568
+    },
+    {
+      "path": "dfrobot-sen0291-k10/assets/cover.webp",
+      "sha256": "700df7d8c0d79f12be6f4ebb967d75455a9f6f8f6d9b38706e7ea48b403e68e1",
+      "size": 39060
+    },
+    {
+      "path": "dfrobot-sen0291-k10/examples/usage.md",
+      "sha256": "bfdb08d961ca9acace8a0ec4154092fdd5817f33b249e64f5301bfd1971b021a",
+      "size": 975
+    },
+    {
+      "path": "dfrobot-sen0291-k10/manifest.json",
+      "sha256": "2b55ccc82d0290030983b3c86b164be693cbc43f01b76f339645ee40277bef46",
+      "size": 1378
+    },
+    {
+      "path": "dfrobot-sen0291-k10/README.md",
+      "sha256": "be2c373a3bd7b6078eed41ecbdea1e422444dc3e17cbe2f53c9607084eb7eb7d",
+      "size": 548
+    },
+    {
+      "path": "dfrobot-sen0291-k10/references/compatibility-rules.md",
+      "sha256": "ff245a308886aeac7c793b0d532ca0df7c83a46f502c4a71a68a58a738dc0467",
+      "size": 2071
+    },
+    {
+      "path": "dfrobot-sen0291-k10/references/integration.md",
+      "sha256": "c70917aea3a2881835389af3ed0f95e149b82da08a8350d63052f3e571a81254",
+      "size": 1766
+    },
+    {
+      "path": "dfrobot-sen0291-k10/references/safety.md",
+      "sha256": "21a6d1d0c7864386afad93156f97fa7b635b686f5d4c57aa814908d632849eb4",
+      "size": 961
+    },
+    {
+      "path": "dfrobot-sen0291-k10/references/sources.md",
+      "sha256": "88996f708b3bb662d30c6a490dbd9012d4a51a7c573067e3c133a7a049c9d6eb",
+      "size": 988
+    },
+    {
+      "path": "dfrobot-sen0291-k10/references/specifications.md",
+      "sha256": "d62c6c02f5e6799769d07b46ed89c464f25ddcda482e5ae199bd7ddb72376694",
+      "size": 1604
+    },
+    {
+      "path": "dfrobot-sen0291-k10/SKILL.md",
+      "sha256": "4387718097b50cfd75cbab563a9e6e2c8c192ff7b6cab542283bc8f398a14543",
+      "size": 875
+    },
+    {
+      "path": "dfrobot-sen0291-k10/tests/validation-cases.md",
+      "sha256": "35c032ee777b903eb74e95a4d553f16da04063fc3de33a0e19bad492b6eb9155",
+      "size": 568
+    },
+    {
+      "path": "dfrobot-sen0305-k10/assets/cover.webp",
+      "sha256": "c205adca8ca73a76f30138ed3aa940ea85b85eaed38d0a7aa1c7b422b26d561f",
+      "size": 64646
+    },
+    {
+      "path": "dfrobot-sen0305-k10/examples/usage.md",
+      "sha256": "b2c082fd19e8b0983c19e338465aa6c2547fdc66413915798098d2aa0b802cc5",
+      "size": 975
+    },
+    {
+      "path": "dfrobot-sen0305-k10/manifest.json",
+      "sha256": "9bfe92db82bce33da3e7ab38268791706031eacfd3535ecf43636b551279bc0d",
+      "size": 1411
+    },
+    {
+      "path": "dfrobot-sen0305-k10/README.md",
+      "sha256": "dfa76223eff3d83dc9e8926007db4ca5bcc095eb94f87c9099beae37a9055931",
+      "size": 558
+    },
+    {
+      "path": "dfrobot-sen0305-k10/references/compatibility-rules.md",
+      "sha256": "118aaf217e972505c9bb0b3d37dbae4e5172354587609bce53cb32f5fe43519a",
+      "size": 2071
+    },
+    {
+      "path": "dfrobot-sen0305-k10/references/integration.md",
+      "sha256": "5743deb7e71ea9517bd170b140296cf0d03b6eb8c1bae0c159cfe5c4e319bc61",
+      "size": 1794
+    },
+    {
+      "path": "dfrobot-sen0305-k10/references/safety.md",
+      "sha256": "21a6d1d0c7864386afad93156f97fa7b635b686f5d4c57aa814908d632849eb4",
+      "size": 961
+    },
+    {
+      "path": "dfrobot-sen0305-k10/references/sources.md",
+      "sha256": "29b7fc92b0446fb7dc26430dbf6921a6497cceb11400d173c88de60cc3c2f3ba",
+      "size": 1011
+    },
+    {
+      "path": "dfrobot-sen0305-k10/references/specifications.md",
+      "sha256": "d0d82f6e26cd4bfcc6208fde633cb1b1ec15c2f7308117f015135b362f9067e0",
+      "size": 1642
+    },
+    {
+      "path": "dfrobot-sen0305-k10/SKILL.md",
+      "sha256": "036b10366a54ea6cc8168b5f5043398956bd03b773ba34599b7e6835c20452fe",
+      "size": 903
+    },
+    {
+      "path": "dfrobot-sen0305-k10/tests/validation-cases.md",
+      "sha256": "35c032ee777b903eb74e95a4d553f16da04063fc3de33a0e19bad492b6eb9155",
+      "size": 568
+    },
+    {
+      "path": "dfrobot-sen0315-k10/assets/cover.webp",
+      "sha256": "90b8388408b57986a5b8d198285e5864c169ce050c0d1e68365b34fec72c4d73",
+      "size": 51862
+    },
+    {
+      "path": "dfrobot-sen0315-k10/examples/usage.md",
+      "sha256": "5e193ffb11926936f5692719bc0d0b866cdd070ae64ac137073c97ab8ee7f278",
+      "size": 975
+    },
+    {
+      "path": "dfrobot-sen0315-k10/manifest.json",
+      "sha256": "6fd16a9b6b701b8d8208dc247fda7ddc404cbddad7e357a9d83b296fd162d6eb",
+      "size": 1438
+    },
+    {
+      "path": "dfrobot-sen0315-k10/README.md",
+      "sha256": "ae8853dd6a20daacfa3fe30750fc96c4a20ee8a6aa9e552da8117312c4647fdf",
+      "size": 560
+    },
+    {
+      "path": "dfrobot-sen0315-k10/references/compatibility-rules.md",
+      "sha256": "bf1ede22abc6bacd83743bb2535d55d76093e744be392d1d440e675ae115563b",
+      "size": 2071
+    },
+    {
+      "path": "dfrobot-sen0315-k10/references/integration.md",
+      "sha256": "c70917aea3a2881835389af3ed0f95e149b82da08a8350d63052f3e571a81254",
+      "size": 1766
+    },
+    {
+      "path": "dfrobot-sen0315-k10/references/safety.md",
+      "sha256": "21a6d1d0c7864386afad93156f97fa7b635b686f5d4c57aa814908d632849eb4",
+      "size": 961
+    },
+    {
+      "path": "dfrobot-sen0315-k10/references/sources.md",
+      "sha256": "8cb1aa94f9ba1a6b46d5b8b449af13d8f1c933f9f5125c8a367a47b162625128",
+      "size": 1036
+    },
+    {
+      "path": "dfrobot-sen0315-k10/references/specifications.md",
+      "sha256": "199768c0bfc4da41595b0eae36f08504c9019525a5774a9ac792a241069022e9",
+      "size": 1616
+    },
+    {
+      "path": "dfrobot-sen0315-k10/SKILL.md",
+      "sha256": "81774237f6ff9d1c531d3788ba812ebb12e9e349582fca18eed582b426b07018",
+      "size": 887
+    },
+    {
+      "path": "dfrobot-sen0315-k10/tests/validation-cases.md",
+      "sha256": "35c032ee777b903eb74e95a4d553f16da04063fc3de33a0e19bad492b6eb9155",
+      "size": 568
+    },
+    {
+      "path": "dfrobot-sen0321-k10/assets/cover.webp",
+      "sha256": "a0df28eeeef3cf9a6928c84e5723a93520914525ff2b25e37f43a46b5fb47f98",
+      "size": 54966
+    },
+    {
+      "path": "dfrobot-sen0321-k10/examples/usage.md",
+      "sha256": "28b18260ff52de5965ec1e74c5a93ef52cb619c525bfd21cabdf58ddb78ae92f",
+      "size": 975
+    },
+    {
+      "path": "dfrobot-sen0321-k10/manifest.json",
+      "sha256": "b4b4bf4b6e2e86245f18e250345d98a3c22cafb57a44ff8a3c79bdadd9b8a82b",
+      "size": 1401
+    },
+    {
+      "path": "dfrobot-sen0321-k10/README.md",
+      "sha256": "a1da82fb7672d618919c0804df089004bf0beaa57aa010c92a9e2f4dab4389fc",
+      "size": 548
+    },
+    {
+      "path": "dfrobot-sen0321-k10/references/compatibility-rules.md",
+      "sha256": "5b04f848d628e65bfc09c4db65f8aa330efac04c38b1526ddf140289905c8a69",
+      "size": 2071
+    },
+    {
+      "path": "dfrobot-sen0321-k10/references/integration.md",
+      "sha256": "c70917aea3a2881835389af3ed0f95e149b82da08a8350d63052f3e571a81254",
+      "size": 1766
+    },
+    {
+      "path": "dfrobot-sen0321-k10/references/safety.md",
+      "sha256": "21a6d1d0c7864386afad93156f97fa7b635b686f5d4c57aa814908d632849eb4",
+      "size": 961
+    },
+    {
+      "path": "dfrobot-sen0321-k10/references/sources.md",
+      "sha256": "a2e2e5cd0cd0b231d7f50faf021c7df77fc4b529be2e8cee848990d848fa204a",
+      "size": 1011
+    },
+    {
+      "path": "dfrobot-sen0321-k10/references/specifications.md",
+      "sha256": "eebaab7683fe7b1a92e741882c8a8f002dbbd95e65fbef45577e9202a3f119ef",
+      "size": 1604
+    },
+    {
+      "path": "dfrobot-sen0321-k10/SKILL.md",
+      "sha256": "c502619fee818aaf093589e202198b55c3782ed3b778fe5629c74bcb67a523e7",
+      "size": 875
+    },
+    {
+      "path": "dfrobot-sen0321-k10/tests/validation-cases.md",
+      "sha256": "35c032ee777b903eb74e95a4d553f16da04063fc3de33a0e19bad492b6eb9155",
+      "size": 568
+    },
+    {
+      "path": "dfrobot-sen0322-k10/assets/cover.webp",
+      "sha256": "65243f6726c0ddb70490cd83b96a39582e957440dccfffb5c39f359565e04187",
+      "size": 45444
+    },
+    {
+      "path": "dfrobot-sen0322-k10/examples/usage.md",
+      "sha256": "6eeed87612dd64150d2df8a690118864526b917f6e528690db3b31a1252fd456",
+      "size": 975
+    },
+    {
+      "path": "dfrobot-sen0322-k10/manifest.json",
+      "sha256": "dab6031473f44225e4882dff7e7b7a1c84218628ab43803bf282a13106b52f37",
+      "size": 1393
+    },
+    {
+      "path": "dfrobot-sen0322-k10/README.md",
+      "sha256": "55b4b2d929d32e1764ff11380650c711f5fc08037bc99383fec7b21b45c8c52e",
+      "size": 554
+    },
+    {
+      "path": "dfrobot-sen0322-k10/references/compatibility-rules.md",
+      "sha256": "280e3fb48faddea9fb9e9e595046609e615363acbcca08d1e89c96d0220f3465",
+      "size": 2071
+    },
+    {
+      "path": "dfrobot-sen0322-k10/references/integration.md",
+      "sha256": "c70917aea3a2881835389af3ed0f95e149b82da08a8350d63052f3e571a81254",
+      "size": 1766
+    },
+    {
+      "path": "dfrobot-sen0322-k10/references/safety.md",
+      "sha256": "21a6d1d0c7864386afad93156f97fa7b635b686f5d4c57aa814908d632849eb4",
+      "size": 961
+    },
+    {
+      "path": "dfrobot-sen0322-k10/references/sources.md",
+      "sha256": "0084532f8c1e807528ef29a11171ca36018223640aed5446470af3982a440d66",
+      "size": 923
+    },
+    {
+      "path": "dfrobot-sen0322-k10/references/specifications.md",
+      "sha256": "bdebf7be3539de1958ed9b5ebc9ebabbb0ec4aab4acc521a46eb56140661de60",
+      "size": 1610
+    },
+    {
+      "path": "dfrobot-sen0322-k10/SKILL.md",
+      "sha256": "7e7005e29a5234ab94fb376935dc0b140fbe2cf7dfa6ca8b7aab9b69e05d1f69",
+      "size": 881
+    },
+    {
+      "path": "dfrobot-sen0322-k10/tests/validation-cases.md",
+      "sha256": "35c032ee777b903eb74e95a4d553f16da04063fc3de33a0e19bad492b6eb9155",
+      "size": 568
+    },
+    {
+      "path": "dfrobot-sen0334-k10/assets/cover.webp",
+      "sha256": "ac2ce73449aa108eb91c7461deb74b72764b5fd6c79ff24adaa746381de4dd79",
+      "size": 52322
+    },
+    {
+      "path": "dfrobot-sen0334-k10/examples/usage.md",
+      "sha256": "da6544bb76511882897bdfbd907c9ace0febd5fe85d5e59d3e20ce279598dd1c",
+      "size": 975
+    },
+    {
+      "path": "dfrobot-sen0334-k10/manifest.json",
+      "sha256": "a1ae5f9096c9cc19f645730e4fdbffec6395b8849f054573a09e7cd43ddad863",
+      "size": 1421
+    },
+    {
+      "path": "dfrobot-sen0334-k10/README.md",
+      "sha256": "f19e556c908f16bc3067590a7845ae7e3e3898ab16cf9dc63af3b9dce5966d5c",
+      "size": 561
+    },
+    {
+      "path": "dfrobot-sen0334-k10/references/compatibility-rules.md",
+      "sha256": "da564f6062cf1c7f805999c6f2dfe480d9c565127b4964878023119c8370d201",
+      "size": 2071
+    },
+    {
+      "path": "dfrobot-sen0334-k10/references/integration.md",
+      "sha256": "c70917aea3a2881835389af3ed0f95e149b82da08a8350d63052f3e571a81254",
+      "size": 1766
+    },
+    {
+      "path": "dfrobot-sen0334-k10/references/safety.md",
+      "sha256": "21a6d1d0c7864386afad93156f97fa7b635b686f5d4c57aa814908d632849eb4",
+      "size": 961
+    },
+    {
+      "path": "dfrobot-sen0334-k10/references/sources.md",
+      "sha256": "ef35a9fd1c3848a125833c2c8d5257eba1556912ad137713ac1aa4f3de5a413f",
+      "size": 1018
+    },
+    {
+      "path": "dfrobot-sen0334-k10/references/specifications.md",
+      "sha256": "2006714ac468063a598081090b620e2ab88b61a1442b80475260b05bc2626b86",
+      "size": 1617
+    },
+    {
+      "path": "dfrobot-sen0334-k10/SKILL.md",
+      "sha256": "3aa2680e8b72dcb2c84727548889ae0746b4910b7cf5be611f408a3918922ed9",
+      "size": 888
+    },
+    {
+      "path": "dfrobot-sen0334-k10/tests/validation-cases.md",
+      "sha256": "35c032ee777b903eb74e95a4d553f16da04063fc3de33a0e19bad492b6eb9155",
+      "size": 568
+    },
+    {
+      "path": "dfrobot-sen0336-k10/assets/cover.webp",
+      "sha256": "e09010ecdfb5af158e244b5e14018affc57fbac0841f14a1456ef3e2aad0c4c1",
+      "size": 64920
+    },
+    {
+      "path": "dfrobot-sen0336-k10/examples/usage.md",
+      "sha256": "ce5ef19fc69d281cd7dbb695ab604dd3e3e7fcdd77734c36b6b4194b13255779",
+      "size": 975
+    },
+    {
+      "path": "dfrobot-sen0336-k10/manifest.json",
+      "sha256": "0f179cb1f87ecd5725b1eafd57e953e4f39c9931cce80b62025f9cf8e755caff",
+      "size": 1386
+    },
+    {
+      "path": "dfrobot-sen0336-k10/README.md",
+      "sha256": "ecab7def3ad8ffd8b24934570622cc0cde923c663b1160984a3d7012c63895e6",
+      "size": 558
+    },
+    {
+      "path": "dfrobot-sen0336-k10/references/compatibility-rules.md",
+      "sha256": "0c21d821c45d2f4a35a76c2286d0a6a0b91468006014eea8b2e510ecea255917",
+      "size": 2071
+    },
+    {
+      "path": "dfrobot-sen0336-k10/references/integration.md",
+      "sha256": "5743deb7e71ea9517bd170b140296cf0d03b6eb8c1bae0c159cfe5c4e319bc61",
+      "size": 1794
+    },
+    {
+      "path": "dfrobot-sen0336-k10/references/safety.md",
+      "sha256": "21a6d1d0c7864386afad93156f97fa7b635b686f5d4c57aa814908d632849eb4",
+      "size": 961
+    },
+    {
+      "path": "dfrobot-sen0336-k10/references/sources.md",
+      "sha256": "6e914cc7413a9a5a4a39484321fab0cf62b68597d91fd17b7c946d8f2129ba85",
+      "size": 923
+    },
+    {
+      "path": "dfrobot-sen0336-k10/references/specifications.md",
+      "sha256": "a87cc996fb2526b72e69e1e6fbf1e919d7d200ed5565c44f36e5016e95bd25ad",
+      "size": 1642
+    },
+    {
+      "path": "dfrobot-sen0336-k10/SKILL.md",
+      "sha256": "adb803867046820a6c135bc2fcc0081e74f8601faf44096aa2f2651396c19a23",
+      "size": 903
+    },
+    {
+      "path": "dfrobot-sen0336-k10/tests/validation-cases.md",
+      "sha256": "35c032ee777b903eb74e95a4d553f16da04063fc3de33a0e19bad492b6eb9155",
+      "size": 568
+    },
+    {
+      "path": "dfrobot-sen0359-k10/assets/cover.webp",
+      "sha256": "b70b215861e59faaa9522077b3e2140a98179ecc7336c90eb1d5058163924a0a",
+      "size": 39110
+    },
+    {
+      "path": "dfrobot-sen0359-k10/examples/usage.md",
+      "sha256": "5609ee37896606fad8f78bcad9019ef858e2e7e044bfd53d0eb15f8a2484177d",
+      "size": 975
+    },
+    {
+      "path": "dfrobot-sen0359-k10/manifest.json",
+      "sha256": "146ff39c34b9c256a606f0e4f1d953e406b5af104186add012fe8afa172579d5",
+      "size": 1320
+    },
+    {
+      "path": "dfrobot-sen0359-k10/README.md",
+      "sha256": "7187ced658c10ed0b01d2a5a0ef69acf1202c6d6bbdc045739bbb8d5d03da123",
+      "size": 544
+    },
+    {
+      "path": "dfrobot-sen0359-k10/references/compatibility-rules.md",
+      "sha256": "03b2d1ac453fd87dc89ccc474d523a3e45437fb30f289c631eb403ef879e19dd",
+      "size": 2071
+    },
+    {
+      "path": "dfrobot-sen0359-k10/references/integration.md",
+      "sha256": "46c54b46ef2a0638be2658e19edbd4c27c1f9f9239e01ec03b4dcdb9b0b6540d",
+      "size": 1769
+    },
+    {
+      "path": "dfrobot-sen0359-k10/references/safety.md",
+      "sha256": "21a6d1d0c7864386afad93156f97fa7b635b686f5d4c57aa814908d632849eb4",
+      "size": 961
+    },
+    {
+      "path": "dfrobot-sen0359-k10/references/sources.md",
+      "sha256": "da77b8e0b478638aed1938d3f7abe927a70745290cf4e20cf9f2d8cc15d29137",
+      "size": 933
+    },
+    {
+      "path": "dfrobot-sen0359-k10/references/specifications.md",
+      "sha256": "98243c0f9ab80f0da432fec32c6db5a50efe954b0891bf12c29c2ed37c10657d",
+      "size": 1629
+    },
+    {
+      "path": "dfrobot-sen0359-k10/SKILL.md",
+      "sha256": "cf443a6700a85b18d2c3b55040a479e33906619a7052c3cb0cfcf65283b0bc5a",
+      "size": 888
+    },
+    {
+      "path": "dfrobot-sen0359-k10/tests/validation-cases.md",
+      "sha256": "35c032ee777b903eb74e95a4d553f16da04063fc3de33a0e19bad492b6eb9155",
+      "size": 568
+    },
+    {
+      "path": "dfrobot-sen0364-k10/assets/cover.webp",
+      "sha256": "2f20292c32887e272a1b1b02404b4a6d6bef528a6755ff17386312481965a2fa",
+      "size": 40280
+    },
+    {
+      "path": "dfrobot-sen0364-k10/examples/usage.md",
+      "sha256": "4e8892676394aa8901c55e5cc1070f4094c369b6223f17c9ba860804a5ffb81b",
+      "size": 975
+    },
+    {
+      "path": "dfrobot-sen0364-k10/manifest.json",
+      "sha256": "3beb2393830984288a36717922ab382d7846a2c05fd9760c12bf1921c2ac70be",
+      "size": 1325
+    },
+    {
+      "path": "dfrobot-sen0364-k10/README.md",
+      "sha256": "b5e5c60408131c11d5110f3ed9f02df8973b82c7e36c93d098c42b651df2fd73",
+      "size": 550
+    },
+    {
+      "path": "dfrobot-sen0364-k10/references/compatibility-rules.md",
+      "sha256": "8215d4e67a096886421c5d1d034e399e633160cbc10291265ee40fc5fc99d3dc",
+      "size": 2445
+    },
+    {
+      "path": "dfrobot-sen0364-k10/references/integration.md",
+      "sha256": "c70917aea3a2881835389af3ed0f95e149b82da08a8350d63052f3e571a81254",
+      "size": 1766
+    },
+    {
+      "path": "dfrobot-sen0364-k10/references/safety.md",
+      "sha256": "21a6d1d0c7864386afad93156f97fa7b635b686f5d4c57aa814908d632849eb4",
+      "size": 961
+    },
+    {
+      "path": "dfrobot-sen0364-k10/references/sources.md",
+      "sha256": "b4d749733b1e40d023d9303d7cd6b89bdc3e3716697d86ed911285b0489eede5",
+      "size": 933
+    },
+    {
+      "path": "dfrobot-sen0364-k10/references/specifications.md",
+      "sha256": "d03b99c33ee57041654c8ebb4f928ff25ff373b2706341cb5901d90f70771801",
+      "size": 1608
+    },
+    {
+      "path": "dfrobot-sen0364-k10/SKILL.md",
+      "sha256": "bbc0d2832b25407a7c33f6865f1a28ec17ed1cc8b3c0a6af8a972674bbf5066d",
+      "size": 877
+    },
+    {
+      "path": "dfrobot-sen0364-k10/tests/validation-cases.md",
+      "sha256": "35c032ee777b903eb74e95a4d553f16da04063fc3de33a0e19bad492b6eb9155",
+      "size": 568
+    },
+    {
+      "path": "dfrobot-sen0376-k10/assets/cover.webp",
+      "sha256": "dd01eb88fc4fba7fa4f72c6b53ffd7842e021100e5148a9019bd6ecb10cecb51",
+      "size": 55602
+    },
+    {
+      "path": "dfrobot-sen0376-k10/examples/usage.md",
+      "sha256": "254274ed6d9ca323e0dbbeded83375c5724b1782d206057cfacbe590127af00c",
+      "size": 975
+    },
+    {
+      "path": "dfrobot-sen0376-k10/manifest.json",
+      "sha256": "fa0d25dfe4b8828ce7d90305e94aadd69b6c89c4c091376cfa24ac2bfd3f2b4c",
+      "size": 1319
+    },
+    {
+      "path": "dfrobot-sen0376-k10/README.md",
+      "sha256": "1f896c728e23a58a59a9e4d5b9748562b2a067a4fb3291d21c942085c4ec03bc",
+      "size": 544
+    },
+    {
+      "path": "dfrobot-sen0376-k10/references/compatibility-rules.md",
+      "sha256": "da411e64c096cb9881ec6d3dd9b2158d42c2e8908e2f858ad52143d62c7789e0",
+      "size": 2071
+    },
+    {
+      "path": "dfrobot-sen0376-k10/references/integration.md",
+      "sha256": "c70917aea3a2881835389af3ed0f95e149b82da08a8350d63052f3e571a81254",
+      "size": 1766
+    },
+    {
+      "path": "dfrobot-sen0376-k10/references/safety.md",
+      "sha256": "21a6d1d0c7864386afad93156f97fa7b635b686f5d4c57aa814908d632849eb4",
+      "size": 961
+    },
+    {
+      "path": "dfrobot-sen0376-k10/references/sources.md",
+      "sha256": "225c85e65ae4382554cd33defbc5e94715534db2e9d6a02ee0d3ffc9cc090921",
+      "size": 933
+    },
+    {
+      "path": "dfrobot-sen0376-k10/references/specifications.md",
+      "sha256": "38eaac3da706b11eb27cfc8a6e2391934353282e80fee87de5ec1f53834f2365",
+      "size": 1600
+    },
+    {
+      "path": "dfrobot-sen0376-k10/SKILL.md",
+      "sha256": "4a9ce28e94843d049d277f2f31820568adef0cbb997587d5dcaa1135d93bf765",
+      "size": 871
+    },
+    {
+      "path": "dfrobot-sen0376-k10/tests/validation-cases.md",
+      "sha256": "35c032ee777b903eb74e95a4d553f16da04063fc3de33a0e19bad492b6eb9155",
+      "size": 568
+    },
+    {
+      "path": "dfrobot-sen0388-urm09-k10-micropython/assets/cover.png",
+      "sha256": "5aab6381930b6e274050ccbacdc28bee3beed57be5647e691b2fd1b76d742c8e",
+      "size": 550861
+    },
+    {
+      "path": "dfrobot-sen0388-urm09-k10-micropython/examples/usage.md",
+      "sha256": "89c337717e52362903f6252f012c697f586658be9d30297aaab0437210c129ab",
+      "size": 1937
+    },
+    {
+      "path": "dfrobot-sen0388-urm09-k10-micropython/manifest.json",
+      "sha256": "6578e955dd09e5f97cffc7d6c1419bc7a8f0c90cef6ccb7b746359576a4603be",
+      "size": 1727
+    },
+    {
+      "path": "dfrobot-sen0388-urm09-k10-micropython/models/cadquery.py",
+      "sha256": "a20e186a6414d0b2eb329f4746edbbbd5f728748fd1c91fc124a6b0dfde840af",
+      "size": 2114
+    },
+    {
+      "path": "dfrobot-sen0388-urm09-k10-micropython/README.md",
+      "sha256": "6ebd7a8b9d5dbf23ad046c8220fce980f0215a674f3081b5b05631ba2d6bbd00",
+      "size": 1268
+    },
+    {
+      "path": "dfrobot-sen0388-urm09-k10-micropython/references/compatibility-rules.md",
+      "sha256": "6307838f11ac2d3cae00ae19403d36052993ce8de91467c1b7ac18f0cc3e6b7d",
+      "size": 2444
+    },
+    {
+      "path": "dfrobot-sen0388-urm09-k10-micropython/references/integration.md",
+      "sha256": "c988613ebaf008cb5c68db9eb4ec4e3c4debbe56d6f9d7ec9d34befb38f89ac6",
+      "size": 2697
+    },
+    {
+      "path": "dfrobot-sen0388-urm09-k10-micropython/references/mechanical.md",
+      "sha256": "fd048db6cac6517bf2f2633f2526223f17ffb27dda5c9bafebdfbd2cf3d5da73",
+      "size": 7366
+    },
+    {
+      "path": "dfrobot-sen0388-urm09-k10-micropython/references/safety.md",
+      "sha256": "fbc725e416d14a824b693d78c352a2369566d64b86cd44db7261ab1fb0adebe7",
+      "size": 1651
+    },
+    {
+      "path": "dfrobot-sen0388-urm09-k10-micropython/references/sources.md",
+      "sha256": "016268ee3f9a9e190e66268b482f72ee220f8ef8bba027a42bd41ab10aa238d9",
+      "size": 1862
+    },
+    {
+      "path": "dfrobot-sen0388-urm09-k10-micropython/references/specifications.md",
+      "sha256": "1de2235b3d3530c9264d2c3253117bf2d74b50fa0a0e3992d4adc93c1bb1e00e",
+      "size": 2042
+    },
+    {
+      "path": "dfrobot-sen0388-urm09-k10-micropython/SKILL.md",
+      "sha256": "f687b802507794a70e87f4998f057569d7b1ada5babc1893a451f3e447fd3d14",
+      "size": 1970
+    },
+    {
+      "path": "dfrobot-sen0388-urm09-k10-micropython/tests/validation-cases.md",
+      "sha256": "2ac95a58ca527bfff5e1421ece365d18b7a846875850855cab5b21233d7cccde",
+      "size": 1425
+    },
+    {
+      "path": "dfrobot-sen0514-k10/assets/cover.webp",
+      "sha256": "5862d44755ddfa517fcc98c41f4583343e06747868b58fddbdae050f2b60343c",
+      "size": 53168
+    },
+    {
+      "path": "dfrobot-sen0514-k10/examples/usage.md",
+      "sha256": "2af539b40f9fe12d17ea2ba3676a9ab74f94ea66d34c50f0823e5b7791473923",
+      "size": 975
+    },
+    {
+      "path": "dfrobot-sen0514-k10/manifest.json",
+      "sha256": "8f3f39bb91e4dabb5903475f6c4a9b57e7f2dc610ed538d7c021a9c5be678ab6",
+      "size": 1364
+    },
+    {
+      "path": "dfrobot-sen0514-k10/README.md",
+      "sha256": "a42e387be64f901cc0af7e56f4b66fef99ab4c696a944482cb51c1a2517ff6f4",
+      "size": 557
+    },
+    {
+      "path": "dfrobot-sen0514-k10/references/compatibility-rules.md",
+      "sha256": "9422e85c65a51d1a7813a60c2efeb97312350c47bdf5451a060ec093285cd370",
+      "size": 2445
+    },
+    {
+      "path": "dfrobot-sen0514-k10/references/integration.md",
+      "sha256": "c70917aea3a2881835389af3ed0f95e149b82da08a8350d63052f3e571a81254",
+      "size": 1766
+    },
+    {
+      "path": "dfrobot-sen0514-k10/references/safety.md",
+      "sha256": "21a6d1d0c7864386afad93156f97fa7b635b686f5d4c57aa814908d632849eb4",
+      "size": 961
+    },
+    {
+      "path": "dfrobot-sen0514-k10/references/sources.md",
+      "sha256": "a6d9a58787582f4dc4100adca92af33da6189525e30f92c50764d24c25e8f6b7",
+      "size": 965
+    },
+    {
+      "path": "dfrobot-sen0514-k10/references/specifications.md",
+      "sha256": "3ecf96799687d2bd921595a7a2b693d8d3cd468617e3dd34abbf6a0359eaaefb",
+      "size": 1615
+    },
+    {
+      "path": "dfrobot-sen0514-k10/SKILL.md",
+      "sha256": "af760c00f02cdc20790d03adea627f7281ed57ac94b60206dc146df166841525",
+      "size": 884
+    },
+    {
+      "path": "dfrobot-sen0514-k10/tests/validation-cases.md",
+      "sha256": "35c032ee777b903eb74e95a4d553f16da04063fc3de33a0e19bad492b6eb9155",
+      "size": 568
+    },
+    {
+      "path": "dfrobot-sen0517-k10/assets/cover.webp",
+      "sha256": "22fa9e6f4f2286a064086297afd7622075d912a6fcd763123be6163eaa51eb18",
+      "size": 47152
+    },
+    {
+      "path": "dfrobot-sen0517-k10/examples/usage.md",
+      "sha256": "1c56a23d3d91b2c38719de83ab0ea050bd51f02714ae0fbac76c203fbc43a76d",
+      "size": 975
+    },
+    {
+      "path": "dfrobot-sen0517-k10/manifest.json",
+      "sha256": "65c656dcfcd6116f14c86169957ba9eca410806bca5fa10ef68398ef6c7892fd",
+      "size": 1359
+    },
+    {
+      "path": "dfrobot-sen0517-k10/README.md",
+      "sha256": "58b68b2a99781ce6cdb5b00b27205b5998d8772d2814e891d1a94c75fcf8df43",
+      "size": 553
+    },
+    {
+      "path": "dfrobot-sen0517-k10/references/compatibility-rules.md",
+      "sha256": "4aa244ddd13aa8122ef22139cfdd44f6f65318249ab45987577952c6fc0927ea",
+      "size": 2071
+    },
+    {
+      "path": "dfrobot-sen0517-k10/references/integration.md",
+      "sha256": "c70917aea3a2881835389af3ed0f95e149b82da08a8350d63052f3e571a81254",
+      "size": 1766
+    },
+    {
+      "path": "dfrobot-sen0517-k10/references/safety.md",
+      "sha256": "21a6d1d0c7864386afad93156f97fa7b635b686f5d4c57aa814908d632849eb4",
+      "size": 961
+    },
+    {
+      "path": "dfrobot-sen0517-k10/references/sources.md",
+      "sha256": "eabfc3bc6f7b9452328e4ed63e28425310c787311aa884ad3443085dec0e9304",
+      "size": 964
+    },
+    {
+      "path": "dfrobot-sen0517-k10/references/specifications.md",
+      "sha256": "68850874292aed54154ce797f044805348e54adb66402b5356ba9780db358cd2",
+      "size": 1609
+    },
+    {
+      "path": "dfrobot-sen0517-k10/SKILL.md",
+      "sha256": "4ca7cd3157a2683535195db2ff68f7731c194e18b93c443386f4cf2ed087a008",
+      "size": 880
+    },
+    {
+      "path": "dfrobot-sen0517-k10/tests/validation-cases.md",
+      "sha256": "35c032ee777b903eb74e95a4d553f16da04063fc3de33a0e19bad492b6eb9155",
+      "size": 568
+    },
+    {
+      "path": "dfrobot-sen0518-k10/assets/cover.webp",
+      "sha256": "c0d4272265b2ce695358c2b810056ef512729b464fdb85249ce80388a51e6449",
+      "size": 53892
+    },
+    {
+      "path": "dfrobot-sen0518-k10/examples/usage.md",
+      "sha256": "e74b0d6d13bf979a4761f951d79942741be205c68c74654a2be0c3449c390a20",
+      "size": 975
+    },
+    {
+      "path": "dfrobot-sen0518-k10/manifest.json",
+      "sha256": "3c38ed701da82cc6d0dda7a2292d5aaa594f6523282e18b01bc258e04f977f8e",
+      "size": 1379
+    },
+    {
+      "path": "dfrobot-sen0518-k10/README.md",
+      "sha256": "cac8626385ca881c7ad9d5f9f731786143bf7950eb2b6e017bb1e0bb30a2c281",
+      "size": 559
+    },
+    {
+      "path": "dfrobot-sen0518-k10/references/compatibility-rules.md",
+      "sha256": "46dfc308658ab414ca59f466b7be51e5ef3217c9d52fb9094900f9b2acfb5d95",
+      "size": 2071
+    },
+    {
+      "path": "dfrobot-sen0518-k10/references/integration.md",
+      "sha256": "c70917aea3a2881835389af3ed0f95e149b82da08a8350d63052f3e571a81254",
+      "size": 1766
+    },
+    {
+      "path": "dfrobot-sen0518-k10/references/safety.md",
+      "sha256": "21a6d1d0c7864386afad93156f97fa7b635b686f5d4c57aa814908d632849eb4",
+      "size": 961
+    },
+    {
+      "path": "dfrobot-sen0518-k10/references/sources.md",
+      "sha256": "aa0ed8cacde5c9841bf4e8f879e1b51d63d9afded6bd34750933aebcce2ce425",
+      "size": 978
+    },
+    {
+      "path": "dfrobot-sen0518-k10/references/specifications.md",
+      "sha256": "b0e8d02949c931d878aa1f88e5f9d2590d3a4bd927c233f22dd3edcf25487728",
+      "size": 1615
+    },
+    {
+      "path": "dfrobot-sen0518-k10/SKILL.md",
+      "sha256": "b952eb3cfcd0a56b18c5db324863b1671c20865d319ab6c9a8716779fc1e58ae",
+      "size": 886
+    },
+    {
+      "path": "dfrobot-sen0518-k10/tests/validation-cases.md",
+      "sha256": "35c032ee777b903eb74e95a4d553f16da04063fc3de33a0e19bad492b6eb9155",
+      "size": 568
+    },
+    {
+      "path": "dfrobot-sen0536-k10/assets/cover.webp",
+      "sha256": "2a51557f6da8a19043ad6135932b1bc4562c916b9a334486d02e2e11d76b9b12",
+      "size": 53878
+    },
+    {
+      "path": "dfrobot-sen0536-k10/examples/usage.md",
+      "sha256": "88c320b1ea759a6c582dfe1b24365220d3d225b3504a21f0e5da994b685db8be",
+      "size": 975
+    },
+    {
+      "path": "dfrobot-sen0536-k10/manifest.json",
+      "sha256": "de370a093b9abc155640f2a67b7093e8e1e64e344a1821ddecbb686810a87e63",
+      "size": 1391
+    },
+    {
+      "path": "dfrobot-sen0536-k10/README.md",
+      "sha256": "bfb7b73e5a56bb0cc2cc767ee5e9494d1009b1e35adb67d899b22104c9be34ca",
+      "size": 550
+    },
+    {
+      "path": "dfrobot-sen0536-k10/references/compatibility-rules.md",
+      "sha256": "fce5862d3148a6c70466915efac33feaf16b94e783326f0b22e0148be83237e7",
+      "size": 2071
+    },
+    {
+      "path": "dfrobot-sen0536-k10/references/integration.md",
+      "sha256": "c70917aea3a2881835389af3ed0f95e149b82da08a8350d63052f3e571a81254",
+      "size": 1766
+    },
+    {
+      "path": "dfrobot-sen0536-k10/references/safety.md",
+      "sha256": "21a6d1d0c7864386afad93156f97fa7b635b686f5d4c57aa814908d632849eb4",
+      "size": 961
+    },
+    {
+      "path": "dfrobot-sen0536-k10/references/sources.md",
+      "sha256": "5448ebc2cfdcafb50b2588f41b97c70039d8e8608ce8d2d18c58b2e06be6c07b",
+      "size": 923
+    },
+    {
+      "path": "dfrobot-sen0536-k10/references/specifications.md",
+      "sha256": "8e7480ee5e5de4c3deb812117f5ad692cb7fee8539af5e9c3d95309b7bf418b7",
+      "size": 1606
+    },
+    {
+      "path": "dfrobot-sen0536-k10/SKILL.md",
+      "sha256": "2dcd2bb7f510e349cc0878b316133cb7b1f38ac9200ce765751324e9a991f128",
+      "size": 877
+    },
+    {
+      "path": "dfrobot-sen0536-k10/tests/validation-cases.md",
+      "sha256": "35c032ee777b903eb74e95a4d553f16da04063fc3de33a0e19bad492b6eb9155",
+      "size": 568
+    },
+    {
+      "path": "dfrobot-sen0540-k10/assets/cover.webp",
+      "sha256": "cf8ebe7ea9fd5eab90ce62b10eb7c8a44db20ffdd47d6a4da644ab2894219c4e",
+      "size": 50872
+    },
+    {
+      "path": "dfrobot-sen0540-k10/examples/usage.md",
+      "sha256": "9dbc91d486cb3969d74b178fec66f1fbde1060ecd4e92ed8c2a7536ead0f9314",
+      "size": 975
+    },
+    {
+      "path": "dfrobot-sen0540-k10/manifest.json",
+      "sha256": "c8940201858dd1e7040849bf7237f0e97794ccff5cf593241ceb376c1f6b4d5e",
+      "size": 1346
+    },
+    {
+      "path": "dfrobot-sen0540-k10/README.md",
+      "sha256": "52f6f1ad987cb90527fb21ff1805c2a050a5bb4776ed5ff90a7b80752f492e1f",
+      "size": 557
+    },
+    {
+      "path": "dfrobot-sen0540-k10/references/compatibility-rules.md",
+      "sha256": "9b03b753847ac82d06f609410455ab85ae01de42d488281e2edeb77b6c333830",
+      "size": 2071
+    },
+    {
+      "path": "dfrobot-sen0540-k10/references/integration.md",
+      "sha256": "c70917aea3a2881835389af3ed0f95e149b82da08a8350d63052f3e571a81254",
+      "size": 1766
+    },
+    {
+      "path": "dfrobot-sen0540-k10/references/safety.md",
+      "sha256": "21a6d1d0c7864386afad93156f97fa7b635b686f5d4c57aa814908d632849eb4",
+      "size": 961
+    },
+    {
+      "path": "dfrobot-sen0540-k10/references/sources.md",
+      "sha256": "edb4b29dc3b15f50b74e6ba11a6d42539d4c8c7e8663ef774ff6fee5deb0e563",
+      "size": 947
+    },
+    {
+      "path": "dfrobot-sen0540-k10/references/specifications.md",
+      "sha256": "87cfee31acf43e6c3c5a1d7350740299d95f02bb1c8c9a51f0630a6e2aae89f3",
+      "size": 1613
+    },
+    {
+      "path": "dfrobot-sen0540-k10/SKILL.md",
+      "sha256": "c261d5a94d08d83a7729ddb253a7a83892ef60359013fc46aacfaa469d17d008",
+      "size": 884
+    },
+    {
+      "path": "dfrobot-sen0540-k10/tests/validation-cases.md",
+      "sha256": "35c032ee777b903eb74e95a4d553f16da04063fc3de33a0e19bad492b6eb9155",
+      "size": 568
+    },
+    {
+      "path": "dfrobot-sen0575-k10/assets/cover.webp",
+      "sha256": "75b6281da2ebe15f11ef6f25b0832956c3a16aae8c2fd30a4a416fdfe942779b",
+      "size": 16998
+    },
+    {
+      "path": "dfrobot-sen0575-k10/examples/usage.md",
+      "sha256": "0511449572a07ef1c05b7cb49a5b29d7fc37e193ea701b476f20d80bfc98b6ec",
+      "size": 975
+    },
+    {
+      "path": "dfrobot-sen0575-k10/manifest.json",
+      "sha256": "2e04649af5a55821d95fe6e5bd0e6e90da32cf451308900d43ca84790a5d80dd",
+      "size": 1337
+    },
+    {
+      "path": "dfrobot-sen0575-k10/README.md",
+      "sha256": "d385d1c1cc770bcde91dac72e8ebc2c5105b570910ff7a769372eb006903024f",
+      "size": 541
+    },
+    {
+      "path": "dfrobot-sen0575-k10/references/compatibility-rules.md",
+      "sha256": "3fb56d8682c4bb0048ec0429d6ef74aba98b841a10a39a210d80e168375bbe9e",
+      "size": 2071
+    },
+    {
+      "path": "dfrobot-sen0575-k10/references/integration.md",
+      "sha256": "c70917aea3a2881835389af3ed0f95e149b82da08a8350d63052f3e571a81254",
+      "size": 1766
+    },
+    {
+      "path": "dfrobot-sen0575-k10/references/safety.md",
+      "sha256": "21a6d1d0c7864386afad93156f97fa7b635b686f5d4c57aa814908d632849eb4",
+      "size": 961
+    },
+    {
+      "path": "dfrobot-sen0575-k10/references/sources.md",
+      "sha256": "46abacfd9b2df8c995cc6b510b70c7efa2ef53ab782541ae3837d093b410828b",
+      "size": 954
+    },
+    {
+      "path": "dfrobot-sen0575-k10/references/specifications.md",
+      "sha256": "d47d8406e9e09432e0fa5b4ecfa6734dda153837e7803c7613a050b1daa523b0",
+      "size": 1597
+    },
+    {
+      "path": "dfrobot-sen0575-k10/SKILL.md",
+      "sha256": "45536a23ca2426f3b2fe2b47edc028baff6aa9c491bd58a667cb361ae4f8951d",
+      "size": 868
+    },
+    {
+      "path": "dfrobot-sen0575-k10/tests/validation-cases.md",
+      "sha256": "35c032ee777b903eb74e95a4d553f16da04063fc3de33a0e19bad492b6eb9155",
+      "size": 568
+    },
+    {
+      "path": "dfrobot-sen0619-k10/assets/cover.webp",
+      "sha256": "34b6ee54e8bb6db2fe6669b683325156a64659a69a0eda349f1e89e06bc46e01",
+      "size": 60458
+    },
+    {
+      "path": "dfrobot-sen0619-k10/examples/usage.md",
+      "sha256": "d4ed802f230c6f8ef418aa6f8ab3249da724f90e951600b26bd8c28190deb1a5",
+      "size": 975
+    },
+    {
+      "path": "dfrobot-sen0619-k10/manifest.json",
+      "sha256": "4250f67afbee00197142596f0575a788d837153930f2eba831156ec1913ca7fb",
+      "size": 1332
+    },
+    {
+      "path": "dfrobot-sen0619-k10/README.md",
+      "sha256": "f92116b35532f4b4bebacb9a3386f4264bb136123c53d12d52effb1bb2037e1e",
+      "size": 557
+    },
+    {
+      "path": "dfrobot-sen0619-k10/references/compatibility-rules.md",
+      "sha256": "feb7bfbc9b5e501b096c7655972bcbc8e5175e2500c485e90d04fa3efd96dd9a",
+      "size": 2071
+    },
+    {
+      "path": "dfrobot-sen0619-k10/references/integration.md",
+      "sha256": "c70917aea3a2881835389af3ed0f95e149b82da08a8350d63052f3e571a81254",
+      "size": 1766
+    },
+    {
+      "path": "dfrobot-sen0619-k10/references/safety.md",
+      "sha256": "21a6d1d0c7864386afad93156f97fa7b635b686f5d4c57aa814908d632849eb4",
+      "size": 961
+    },
+    {
+      "path": "dfrobot-sen0619-k10/references/sources.md",
+      "sha256": "75c1862d4a276dbc4852e4997786ab88f4be8e2557a55ebe821474e54cb32f81",
+      "size": 933
+    },
+    {
+      "path": "dfrobot-sen0619-k10/references/specifications.md",
+      "sha256": "5314cbd8adbefe70ca9c5e8897c22f95d524939c43f811bd657a6ef338022e23",
+      "size": 1613
+    },
+    {
+      "path": "dfrobot-sen0619-k10/SKILL.md",
+      "sha256": "d15dbf623e706da572780528307dc01b2f127f464413b1d774594aad7412e315",
+      "size": 884
+    },
+    {
+      "path": "dfrobot-sen0619-k10/tests/validation-cases.md",
+      "sha256": "35c032ee777b903eb74e95a4d553f16da04063fc3de33a0e19bad492b6eb9155",
+      "size": 568
+    },
+    {
+      "path": "dfrobot-ser0006-k10/examples/usage.md",
+      "sha256": "d3e1b9d7615dbe94b9d40165ce64970a3d0a5554a341a10dadffcc51375aff44",
+      "size": 921
+    },
+    {
+      "path": "dfrobot-ser0006-k10/manifest.json",
+      "sha256": "5912be8bb573a023056cf252725cee7d8b0851e12ea5f95fcf3ec1b65216ee92",
+      "size": 829
+    },
+    {
+      "path": "dfrobot-ser0006-k10/README.md",
+      "sha256": "07eb08a3277adbfd1fe4473c056e4439cd3931cea9734f5a20dd13f35dc962c9",
+      "size": 541
+    },
+    {
+      "path": "dfrobot-ser0006-k10/references/compatibility-rules.md",
+      "sha256": "8542cc91dc5212e5b338a3437a7bdde3ee8e9d6517c5e1b0348c17bf8ba2f77d",
+      "size": 2077
+    },
+    {
+      "path": "dfrobot-ser0006-k10/references/integration.md",
+      "sha256": "7f5ec7eb44f3f490d524ccd71767d9c938e41ff3af8c01fe3a8654945f4c0f7e",
+      "size": 1699
+    },
+    {
+      "path": "dfrobot-ser0006-k10/references/safety.md",
+      "sha256": "21a6d1d0c7864386afad93156f97fa7b635b686f5d4c57aa814908d632849eb4",
+      "size": 961
+    },
+    {
+      "path": "dfrobot-ser0006-k10/references/sources.md",
+      "sha256": "32b334cf01e66ea360685c86615ecca6d0ee613ed36bec42735585690b72a4d1",
+      "size": 984
+    },
+    {
+      "path": "dfrobot-ser0006-k10/references/specifications.md",
+      "sha256": "2b3ea99c1b6b27c7b342c6f0ae0b39b648580cc09d57dfb561119370871cf8be",
+      "size": 1630
+    },
+    {
+      "path": "dfrobot-ser0006-k10/SKILL.md",
+      "sha256": "32435a7d89c25d4f01f0993243cf36be9ad257f9232cd62583812002c34c491d",
+      "size": 877
+    },
+    {
+      "path": "dfrobot-ser0006-k10/tests/validation-cases.md",
+      "sha256": "35c032ee777b903eb74e95a4d553f16da04063fc3de33a0e19bad492b6eb9155",
+      "size": 568
+    },
+    {
+      "path": "dfrobot-ser0035-k10/examples/usage.md",
+      "sha256": "d3e1b9d7615dbe94b9d40165ce64970a3d0a5554a341a10dadffcc51375aff44",
+      "size": 921
+    },
+    {
+      "path": "dfrobot-ser0035-k10/manifest.json",
+      "sha256": "8392d1c229aaf29a3b6af5d28cf85709d479a2f5bccda4fc0c04f3c683d74a4d",
+      "size": 836
+    },
+    {
+      "path": "dfrobot-ser0035-k10/README.md",
+      "sha256": "7d0d3bf95b64b6e3e3619b024079ba04d6c36573d7a8af9eb8143c856254f2dd",
+      "size": 548
+    },
+    {
+      "path": "dfrobot-ser0035-k10/references/compatibility-rules.md",
+      "sha256": "fb33b0714e67230b2fc17263090b42b71505c4932338f1020b2c09e1762b1a96",
+      "size": 2077
+    },
+    {
+      "path": "dfrobot-ser0035-k10/references/integration.md",
+      "sha256": "7f5ec7eb44f3f490d524ccd71767d9c938e41ff3af8c01fe3a8654945f4c0f7e",
+      "size": 1699
+    },
+    {
+      "path": "dfrobot-ser0035-k10/references/safety.md",
+      "sha256": "21a6d1d0c7864386afad93156f97fa7b635b686f5d4c57aa814908d632849eb4",
+      "size": 961
+    },
+    {
+      "path": "dfrobot-ser0035-k10/references/sources.md",
+      "sha256": "1449c063494f1b53342b4edc92d6769ea03b78dea41db4ae507cc665c055d9cf",
+      "size": 983
+    },
+    {
+      "path": "dfrobot-ser0035-k10/references/specifications.md",
+      "sha256": "b3005b3885ea29a471851894c9b6d3ee22880b59236d7742acb2b051246b2015",
+      "size": 1637
+    },
+    {
+      "path": "dfrobot-ser0035-k10/SKILL.md",
+      "sha256": "eacb7e0ee9b86c10b2fa78fa82753dcbacc0512718cf325bad34122610a7a0a9",
+      "size": 884
+    },
+    {
+      "path": "dfrobot-ser0035-k10/tests/validation-cases.md",
+      "sha256": "35c032ee777b903eb74e95a4d553f16da04063fc3de33a0e19bad492b6eb9155",
+      "size": 568
+    },
+    {
+      "path": "dfrobot-ser0043-k10/examples/usage.md",
+      "sha256": "d3e1b9d7615dbe94b9d40165ce64970a3d0a5554a341a10dadffcc51375aff44",
+      "size": 921
+    },
+    {
+      "path": "dfrobot-ser0043-k10/manifest.json",
+      "sha256": "544d22045c33ba9d6e1d8351960077f85d48db7bd2279524b84d849463c1c6f4",
+      "size": 836
+    },
+    {
+      "path": "dfrobot-ser0043-k10/README.md",
+      "sha256": "06cb169c92b23ebee4d13f36f733bccba309feaeb1893472d7e0940f05348d9e",
+      "size": 548
+    },
+    {
+      "path": "dfrobot-ser0043-k10/references/compatibility-rules.md",
+      "sha256": "aa372a60d621b2275bb15df0d9ed20acb9b9cb3f67ff5c065623f60d790c85b9",
+      "size": 2077
+    },
+    {
+      "path": "dfrobot-ser0043-k10/references/integration.md",
+      "sha256": "7f5ec7eb44f3f490d524ccd71767d9c938e41ff3af8c01fe3a8654945f4c0f7e",
+      "size": 1699
+    },
+    {
+      "path": "dfrobot-ser0043-k10/references/safety.md",
+      "sha256": "21a6d1d0c7864386afad93156f97fa7b635b686f5d4c57aa814908d632849eb4",
+      "size": 961
+    },
+    {
+      "path": "dfrobot-ser0043-k10/references/sources.md",
+      "sha256": "1b92b6be9589fd8b2cee219452358a40f11317cb4b847703c7d1ef89090b9598",
+      "size": 1009
+    },
+    {
+      "path": "dfrobot-ser0043-k10/references/specifications.md",
+      "sha256": "5228b8fe9e852fbf8fef7c0daee891ecee69d8e6de2556fae2ed2a38c0d24c07",
+      "size": 1637
+    },
+    {
+      "path": "dfrobot-ser0043-k10/SKILL.md",
+      "sha256": "23fc5991ae2185fd1fa35da2599a3e5e5fe0a25be6ff8e6a01be114b01e91f81",
+      "size": 884
+    },
+    {
+      "path": "dfrobot-ser0043-k10/tests/validation-cases.md",
+      "sha256": "35c032ee777b903eb74e95a4d553f16da04063fc3de33a0e19bad492b6eb9155",
+      "size": 568
+    },
+    {
+      "path": "k10/assets/cover.webp",
+      "sha256": "fcae7395e90bcef49f7c727366b12e1d3073705c0f8b36643e04466624e310e1",
+      "size": 19310
+    },
+    {
+      "path": "k10/CHANGELOG.md",
+      "sha256": "f18227db796da32e65be4f617df695828edd0bb71e34deb4ef874ec3348f9564",
+      "size": 692
+    },
+    {
+      "path": "k10/examples/usage.md",
+      "sha256": "5938c1f4d5064c983b58a057715adc46f33b59cddeef2cb400466ba74690d351",
+      "size": 14182
+    },
+    {
+      "path": "k10/manifest.json",
+      "sha256": "076bb1ec9463081b5b49f1b0875e252527beaad8691d4f6d73462c6782f2da6e",
+      "size": 1317
+    },
+    {
+      "path": "k10/models/cadquery.py",
+      "sha256": "ea55ca3d986a2c36478048f0afd7a27b9b25a7986bb4b6d3ec85258bdcb7c914",
+      "size": 4785
+    },
+    {
+      "path": "k10/README.md",
+      "sha256": "cb25901a2c54d75dfe722d1eb2610a1ac8ca22780ca48aef86cdaa031ffde56d",
+      "size": 616
+    },
+    {
+      "path": "k10/references/compatibility-rules.md",
+      "sha256": "8b03d606866140776ad1bbbcdd6d06e4c18ade63ca5a35bed5498d32e62a6e7c",
+      "size": 1112
+    },
+    {
+      "path": "k10/references/integration.md",
+      "sha256": "5658dad11d7ce4d1dd494767d4e69c27c7733e6e09d86b2532e9328f7133a0a4",
+      "size": 842
+    },
+    {
+      "path": "k10/references/mechanical.md",
+      "sha256": "151fb7c58c93ca17b4ed195510d858c9b1bbfe91cc521f287915422ad61a4cb3",
+      "size": 3572
+    },
+    {
+      "path": "k10/references/safety.md",
+      "sha256": "c76012611c5f71c870ef48a3edd783d143f261b8a8b2ec1885bc517962dc65c2",
+      "size": 540
+    },
+    {
+      "path": "k10/references/sources.md",
+      "sha256": "8b4cccb925d84603493d5b9fe9d2e45981371e2b37f1ed83474d27ad57e116e3",
+      "size": 598
+    },
+    {
+      "path": "k10/references/specifications.md",
+      "sha256": "38688bfc495b194561d17b0ae8bcb63cee55a9d01988d5b7ae645318ca9f0a9c",
+      "size": 2027
+    },
+    {
+      "path": "k10/SKILL.md",
+      "sha256": "6619847dd94b48b8aacc39f9a3cfdae9d7663bb4af973d6c443925abdee3bcc4",
+      "size": 1421
+    },
+    {
+      "path": "k10/tests/validation-cases.md",
+      "sha256": "01453b0fafc8cd75cb6d26a64095e56111d257ddc939b918249442476c034a54",
+      "size": 541
+    },
+    {
+      "path": "labplus-mpython-esp32s3-v3/assets/cover.webp",
+      "sha256": "0fda69ede7f625a255c5451b26fb869d9ef9f24092d2d5e035a24dc2af09829b",
+      "size": 101712
+    },
+    {
+      "path": "labplus-mpython-esp32s3-v3/assets/pinout.webp",
+      "sha256": "253c10b63012f5bc973a0622dc0d1076b93a9a94b535113c6cc593a8bcb9549b",
+      "size": 27898
+    },
+    {
+      "path": "labplus-mpython-esp32s3-v3/assets/structural-dimensions.webp",
+      "sha256": "0d4d4bf46fd665a717c6e54d7485c1616c393f9e0d076f7a0b7f6b1ac6d221a0",
+      "size": 28612
+    },
+    {
+      "path": "labplus-mpython-esp32s3-v3/examples/usage.md",
+      "sha256": "a69f6aab36ee363516767319d2a702957a24fca7b934ba3e28a69ddbfafe399e",
+      "size": 6689
+    },
+    {
+      "path": "labplus-mpython-esp32s3-v3/manifest.json",
+      "sha256": "611e4cf6ec0a630cab1aca77abafd7a93ad561348a3d63eca110b885009c81c4",
+      "size": 2568
+    },
+    {
+      "path": "labplus-mpython-esp32s3-v3/models/cadquery.py",
+      "sha256": "749022bd6cdeab905cd9f615f39af12b2495c4470bae78b88d6075e98da51f0a",
+      "size": 387
+    },
+    {
+      "path": "labplus-mpython-esp32s3-v3/README.md",
+      "sha256": "f9eddaac6f7c1f0f48e943a358f422fd47668c8e794b81d6357e598964ee4045",
+      "size": 941
+    },
+    {
+      "path": "labplus-mpython-esp32s3-v3/references/compatibility-rules.md",
+      "sha256": "7a6380cf552fd35f6c3855f68bbac721370cd4d8a2c8bf8dcaf99616eceecc74",
+      "size": 909
+    },
+    {
+      "path": "labplus-mpython-esp32s3-v3/references/integration.md",
+      "sha256": "9939064cb049a96fea64ea7e76dee8ace77477ba272b72d9d492915e60a1f0fe",
+      "size": 52302
+    },
+    {
+      "path": "labplus-mpython-esp32s3-v3/references/mechanical.md",
+      "sha256": "70798d0e89cc4853914a0efc3de553228d65e3f6082962cf8771bb4252ed3506",
+      "size": 2845
+    },
+    {
+      "path": "labplus-mpython-esp32s3-v3/references/safety.md",
+      "sha256": "2620c9f474929b48e7a41011f1ad3ae255bbd1d839144c1e3e59cc2febcd546b",
+      "size": 1341
+    },
+    {
+      "path": "labplus-mpython-esp32s3-v3/references/sources.md",
+      "sha256": "88ff94252da07496d54a17a37058c7f8cc7a73083ce8eb0b2cf76b972b4a35dc",
+      "size": 1953
+    },
+    {
+      "path": "labplus-mpython-esp32s3-v3/references/specifications.md",
+      "sha256": "0efca01058a375ae3b1fac0d38e682c42a1464b29446c509b183be5464697555",
+      "size": 2504
+    },
+    {
+      "path": "labplus-mpython-esp32s3-v3/SKILL.md",
+      "sha256": "5fdc1fa1f6e6a406fc4314feed2a51f7b2618fd57cae683c423d68e98b9713fe",
+      "size": 1164
+    },
+    {
+      "path": "labplus-mpython-esp32s3-v3/tests/validation-cases.md",
+      "sha256": "c1a1dc2c364fabea61db59dd61134974052fbf58dac3940e3370683bf77b87d0",
+      "size": 740
+    },
+    {
+      "path": "regulated-5v-3a-power/CHANGELOG.md",
+      "sha256": "30f11a3f2bc39f767791f9633a00b25301dc7411b12cf7c78d7fe7f20ab5c133",
+      "size": 89
+    },
+    {
+      "path": "regulated-5v-3a-power/examples/usage.md",
+      "sha256": "356397d31cb63d9f84c1fa56894622ca3c34b753e1c7c1d59e6833d4bd0836cc",
+      "size": 260
+    },
+    {
+      "path": "regulated-5v-3a-power/manifest.json",
+      "sha256": "eb02833d2735da58255e2846270cf9eea06890b8621bba1a5454b5ee8510d504",
+      "size": 805
+    },
+    {
+      "path": "regulated-5v-3a-power/README.md",
+      "sha256": "303277fe66e1fe3b0236b3d3e9b875c26cd412d43920c136f9546791f2bd5777",
+      "size": 210
+    },
+    {
+      "path": "regulated-5v-3a-power/references/compatibility-rules.md",
+      "sha256": "45b530493f349cc9fd0eb1d24bf123684a4d9238f67b410db307e9386662b3ec",
+      "size": 949
+    },
+    {
+      "path": "regulated-5v-3a-power/references/integration.md",
+      "sha256": "678ffe853eb9391551a444749cc614eeaa1912a762be9728c3963dbe5a78c93f",
+      "size": 295
+    },
+    {
+      "path": "regulated-5v-3a-power/references/safety.md",
+      "sha256": "a07e613a9dda545d992e5d8bbacbf3eb3b3633e9fe279d016feb68397cc08b03",
+      "size": 313
+    },
+    {
+      "path": "regulated-5v-3a-power/references/sources.md",
+      "sha256": "ab781db19cebd0ab497b403167dcbdd53c3ad4f12fc7176b94327001b7201ed0",
+      "size": 235
+    },
+    {
+      "path": "regulated-5v-3a-power/references/specifications.md",
+      "sha256": "a5cc2a998118384ccec27df0fe8de4f7e5925966731ca37e6427c37ed578d541",
+      "size": 990
+    },
+    {
+      "path": "regulated-5v-3a-power/SKILL.md",
+      "sha256": "1ee8e64d01958cf6eaf46e8ec08eb0f9f1b48595c56be00825b51c559ec0fb06",
+      "size": 337
+    },
+    {
+      "path": "regulated-5v-3a-power/tests/validation-cases.md",
+      "sha256": "b8d47f3fa9f9be8ecb343a1e91f2ab1eea1bfd3c9467f699d50559aa86d8eb8a",
+      "size": 213
+    },
+    {
+      "path": "seeed-studio-xiao-esp32s3-sense/examples/usage.md",
+      "sha256": "7e8008445c8368aaedc8e449ef281ebd4afa89b8473d8899d20da1235171e3fc",
+      "size": 143
+    },
+    {
+      "path": "seeed-studio-xiao-esp32s3-sense/manifest.json",
+      "sha256": "2ad8a52fa8b0a62423adad58716097f707985db8d0f7b72743cf0a73b7e62d1e",
+      "size": 917
+    },
+    {
+      "path": "seeed-studio-xiao-esp32s3-sense/references/compatibility-rules.md",
+      "sha256": "88fbd3bd8b903482b31f356903b6da6092e87cc014cb5ca0379677fa2145a04c",
+      "size": 536
+    },
+    {
+      "path": "seeed-studio-xiao-esp32s3-sense/references/integration.md",
+      "sha256": "64f9366c875923f91e813555ed7b017f7bc9c9fb9f7146c7b26d167a0a77ddcf",
+      "size": 160
+    },
+    {
+      "path": "seeed-studio-xiao-esp32s3-sense/references/safety.md",
+      "sha256": "5301d6e64146fdbd3b4398c01c2efd26693fd429501814b4acf2bb01f1b2a899",
+      "size": 134
+    },
+    {
+      "path": "seeed-studio-xiao-esp32s3-sense/references/sources.md",
+      "sha256": "69a1dd564e756bbf67218c7f0595fdfd54a42f5d8e19c137d3a7b469299bed78",
+      "size": 55
+    },
+    {
+      "path": "seeed-studio-xiao-esp32s3-sense/references/specifications.md",
+      "sha256": "47fc5eb4692d7a98ed27da0a6a3dc7a727253bc9a173f0772cb3a725b78db6ad",
+      "size": 1254
+    },
+    {
+      "path": "seeed-studio-xiao-esp32s3-sense/SKILL.md",
+      "sha256": "acbdcee53283e32931c667d24b4c062e71885ce3bab3cfb18814aa31e46b0274",
+      "size": 930
+    },
+    {
+      "path": "seeed-studio-xiao-esp32s3-sense/tests/validation-cases.md",
+      "sha256": "52b76d3b6d066e94b2d37bbb783b77744393528d97559e0a0a46382e7e5b77cc",
+      "size": 309
+    },
+    {
+      "path": "seeed-xiao-esp32s3-micropython/assets/back-pinout.webp",
+      "sha256": "2353b3ea3cdc3796bf56255f2003f40d9722c05f771777f76b4e6ac5797f25d8",
+      "size": 28456
+    },
+    {
+      "path": "seeed-xiao-esp32s3-micropython/assets/cover.webp",
+      "sha256": "a68b5f5194bcfd9f27c8f1976abee40e90aff6c70c86e02ada456cb6c3d7ffd4",
+      "size": 59598
+    },
+    {
+      "path": "seeed-xiao-esp32s3-micropython/assets/front-pinout.webp",
+      "sha256": "bc27aee2a6fc69dff9441a81d0b8b8d3b753246014f84b820648c5d8b5229910",
+      "size": 78622
+    },
+    {
+      "path": "seeed-xiao-esp32s3-micropython/examples/usage.md",
+      "sha256": "63bcfc1fba24cc6969984c050d8dc1088e7c1f2da0b08a7e6a1c503a76dd830c",
+      "size": 3854
+    },
+    {
+      "path": "seeed-xiao-esp32s3-micropython/manifest.json",
+      "sha256": "c2bd8b1c6d8708b731222a496bd3fe0e13b8dec1d6e96abdd0562ab9f6cb3d1a",
+      "size": 2102
+    },
+    {
+      "path": "seeed-xiao-esp32s3-micropython/README.md",
+      "sha256": "add99144e019b2ffb3fab413bf95eec7f089aea0f7e8a90b1cf584085a3e8e85",
+      "size": 1780
+    },
+    {
+      "path": "seeed-xiao-esp32s3-micropython/references/compatibility-rules.md",
+      "sha256": "8ea1573edfb7ad31e334fda0afcc2881a8e7752b62c2ff4f23359111495a9d4a",
+      "size": 1019
+    },
+    {
+      "path": "seeed-xiao-esp32s3-micropython/references/integration.md",
+      "sha256": "f4e77bfed1de9ffc3b6ab931d44c1c0be785b9544ae87d2d96005cc3c98a0a63",
+      "size": 4940
+    },
+    {
+      "path": "seeed-xiao-esp32s3-micropython/references/safety.md",
+      "sha256": "586e5a4bc00da70bf066197a46becd7b6122120f7b9d4d467249ce7e38c49d44",
+      "size": 2557
+    },
+    {
+      "path": "seeed-xiao-esp32s3-micropython/references/sources.md",
+      "sha256": "a29e4c288cef87276f3608c8920e243e1785d49c0b5da458ac76ae20c0641030",
+      "size": 1306
+    },
+    {
+      "path": "seeed-xiao-esp32s3-micropython/references/specifications.md",
+      "sha256": "97983cbc673cf165f928716b1cb3acda2941968855b2a64e412ff3e6a83d0450",
+      "size": 2201
+    },
+    {
+      "path": "seeed-xiao-esp32s3-micropython/SKILL.md",
+      "sha256": "1c077309b1815a2bfb26b6d95c7401e94f9993ba0c35ebb279c8b85238ea7ded",
+      "size": 1918
+    },
+    {
+      "path": "seeed-xiao-esp32s3-micropython/tests/validation-cases.md",
+      "sha256": "613780945efa1a30bdc893622f00626fc36c32a6d5cc73264c6ff4975a238113",
+      "size": 1241
+    },
+    {
+      "path": "sen0193/CHANGELOG.md",
+      "sha256": "e59a54bdcbf13433b7a66081b7805eb83e30e59dc8d3ba8f73e2608b238894f3",
+      "size": 71
+    },
+    {
+      "path": "sen0193/examples/usage.md",
+      "sha256": "d2557314d54e25c136f0d3a4150166d04cb1cb12d7e41d6af31e8d690e32b16c",
+      "size": 735
+    },
+    {
+      "path": "sen0193/manifest.json",
+      "sha256": "c92f7124e86ab4e17d1da94ca7787f3025b52896f0979a05c3fd18627dbb50b6",
+      "size": 815
+    },
+    {
+      "path": "sen0193/README.md",
+      "sha256": "c4c2bc1a228c93ac0e1b469f6b370551aa894172d8fc16b3ad379d2c9628edae",
+      "size": 214
+    },
+    {
+      "path": "sen0193/references/compatibility-rules.md",
+      "sha256": "d79a50c507d57c76333ba52f1a7f994c83402b0c978654d609991b4649fe27de",
+      "size": 1602
+    },
+    {
+      "path": "sen0193/references/integration.md",
+      "sha256": "7f52d759a464d72fa8389c25db91387da38496869747a1d8a757b5b505c33aec",
+      "size": 582
+    },
+    {
+      "path": "sen0193/references/safety.md",
+      "sha256": "88959861a707de7d92f5a81ddef263b0be8b6e2d9b3d6e950a33963ca5c645f4",
+      "size": 368
+    },
+    {
+      "path": "sen0193/references/sources.md",
+      "sha256": "53004b003dd9eec2edc038bb749223625eec55c884400a1b143d2845654abd70",
+      "size": 545
+    },
+    {
+      "path": "sen0193/references/specifications.md",
+      "sha256": "fe4f2452f5717e8e66680a56cdec96ddf1ff7afa767d28b76fbdf4d635976b81",
+      "size": 1063
+    },
+    {
+      "path": "sen0193/SKILL.md",
+      "sha256": "f399462ea3da2cb458df7d4a0b8458dc8b11df84c5f8893ec7fba0e95c8d43cc",
+      "size": 537
+    },
+    {
+      "path": "sen0193/tests/validation-cases.md",
+      "sha256": "837d5b0fe5fb9c451fbe1ded3046d9970792c8c4404de0d12148cea58dfe7611",
+      "size": 229
+    },
+    {
+      "path": "sen0388/CHANGELOG.md",
+      "sha256": "3ebcf7e18fc7bc4b70de95ad6f9f1b7ee3e98b870662b1c2fc45c2fc0b0ea923",
+      "size": 65
+    },
+    {
+      "path": "sen0388/examples/usage.md",
+      "sha256": "e05cf469f385994317a95b943383e45fb35d9e8c6365915acf4d557451d25741",
+      "size": 370
+    },
+    {
+      "path": "sen0388/manifest.json",
+      "sha256": "51360c8308da0b6ce79a7e989ef1ce966b6887e40d583fe43ff7be08a82e8ea8",
+      "size": 808
+    },
+    {
+      "path": "sen0388/README.md",
+      "sha256": "92aa8d8eeffca04dd4b510e47fd90528d1e249b1f1ebcc05758a71a1a2ad86d9",
+      "size": 205
+    },
+    {
+      "path": "sen0388/references/compatibility-rules.md",
+      "sha256": "5bffd306b2b927ab5304a2f8eb568a9b0890686149b3f24845e2891bf1a4e11f",
+      "size": 1574
+    },
+    {
+      "path": "sen0388/references/integration.md",
+      "sha256": "292dee6a9c16a3d0ffffefcb14f251b5230b018efc6dc3626e12fa0029464db8",
+      "size": 321
+    },
+    {
+      "path": "sen0388/references/safety.md",
+      "sha256": "03ad2bb343626b9ab142f2b931f15ca20c914c26cbc92687363b1a66522a1159",
+      "size": 246
+    },
+    {
+      "path": "sen0388/references/sources.md",
+      "sha256": "32eda55694db82b208f964ef1686de63f1dd5cf50f2ccd2040bca9680f7127e5",
+      "size": 261
+    },
+    {
+      "path": "sen0388/references/specifications.md",
+      "sha256": "4f8b088753e3acbfbca7d9e7e6db00991e18049a4580549fd18190d2311fba13",
+      "size": 1000
+    },
+    {
+      "path": "sen0388/SKILL.md",
+      "sha256": "0b8ae42cf47a3a5b85451f3cfb7794548d92cb553f21b84705575307f876d419",
+      "size": 476
+    },
+    {
+      "path": "sen0388/tests/validation-cases.md",
+      "sha256": "e6dbacaabac8194e3c03d62b6d100db80a9c38b5729a4ec830587adaf37a418b",
+      "size": 240
+    }
+  ]
+}

@@ -9,9 +9,11 @@ from zipfile import ZIP_DEFLATED, ZipFile
 from zhangwen.proposals.models import ProposalVersion
 
 
-def render_markdown(proposal: ProposalVersion) -> bytes:
+def render_markdown(
+    proposal: ProposalVersion, *, document_title: str = "项目立项书"
+) -> bytes:
     lines = [
-        f"# 项目立项书 v{proposal.version}",
+        f"# {document_title} v{proposal.version}",
         "",
         f"- 方案版本：v{proposal.solutionVersion}",
         f"- 状态：{proposal.status.value}",
@@ -28,9 +30,11 @@ def render_markdown(proposal: ProposalVersion) -> bytes:
     return "\n".join(lines).encode("utf-8")
 
 
-def render_docx(proposal: ProposalVersion) -> bytes:
+def render_docx(
+    proposal: ProposalVersion, *, document_title: str = "项目立项书"
+) -> bytes:
     body = [
-        _paragraph(f"项目立项书 v{proposal.version}", style="Title"),
+        _paragraph(f"{document_title} v{proposal.version}", style="Title"),
         _paragraph(f"方案版本：v{proposal.solutionVersion}"),
         _paragraph(f"状态：{proposal.status.value}"),
         _proposal_table(proposal),
@@ -62,8 +66,10 @@ def render_docx(proposal: ProposalVersion) -> bytes:
     return output.getvalue()
 
 
-def render_pdf(proposal: ProposalVersion) -> bytes:
-    text = [f"Project Proposal v{proposal.version}", f"Solution v{proposal.solutionVersion}"]
+def render_pdf(
+    proposal: ProposalVersion, *, document_title: str = "Project Proposal"
+) -> bytes:
+    text = [f"{document_title} v{proposal.version}", f"Solution v{proposal.solutionVersion}"]
     text.extend(section.title for section in proposal.sections)
     stream_lines = ["BT", "/F1 12 Tf", "72 760 Td"]
     for line in text[:28]:

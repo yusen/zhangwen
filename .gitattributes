@@ -1,2 +1,8 @@
-# Immutable external source snapshots must remain byte-for-byte reproducible.
-references/source-packages/** -text -whitespace
+* text=auto
+# Preserve the original bytes and recorded SHA-256 of imported hardware/source.
+services/local-api/zhangwen/** -text
+resources/hardware-skills/** -text
+*.png binary
+*.jpg binary
+*.webp binary
+*.bat text eol=crlf

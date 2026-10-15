@@ -1,0 +1,441 @@
+<!DOCTYPE html>
+<html data-page-node-id="KdNyIbmrmKeC9s2S9wkUBW" data-theme="light" lang="zh-CN">
+<head data-page-node-id="qo0zYCLGBX6U6GNEjVapN4">
+<meta data-page-node-id="AZnQzX5w0GzTjXythMWRlK" charset="UTF-8">
+<meta data-page-node-id="KYmMxrOdkui5l4PlR7nThP" content="width=device-width, initial-scale=1.0" name="viewport">
+<title data-page-node-id="MFZ2RjVSLXfiZN2kVnPo7v" data-pnid-children="heeT8yqtQJr1eeoqrFR32w">掌问 IDE · 最终设计定稿</title>
+<style data-page-node-id="J8cxqeeneZdkoiBB96C7zF" data-pnid-children="2OtDiqkznxS1tk2kmG1uAz">
+/* ============================================================
+   设计 Token · 亮 / 暗 双主题
+   ============================================================ */
+:root{
+  --canvas:#F2F4F7;   --panel:#FBFCFE;    --raised:#FFFFFF;
+  --border:#E2E7ED;   --border2:#D5DCE5;
+
+  --ink-1:#1E3A5F;    --ink-2:#42597A;    --ink-3:#8494A8;   --ink-4:#AEB6C0;
+  --sw:#2F5F96;       --sw-hi:#3E73B0;
+  --hw:#B4560C;       --hw-hi:#C96A1E;
+  --brand:#B8933C;    --brand-ink:#2E2412;
+
+  --suc:#15803D;      --suc-t:#E7F4EC;
+  --dng:#B91C1C;      --dng-t:#FCECEC;
+  --wrn:#A16207;      --wrn-t:#FCF3E3;
+
+  --code-bg:#FFFFFF;  --kw:#1E5FA8;  --str:#9A5B00;  --bi:#7B3FB8;  --cm:#5F7A66;
+  --sel:#E3ECF8;
+}
+[data-theme="dark"]{
+  --canvas:#17191C;   --panel:#1E2125;    --raised:#24272C;
+  --border:#2E3238;   --border2:#3A3F47;
+
+  --ink-1:#E8ECF2;    --ink-2:#B6C2D4;    --ink-3:#7E8CA0;   --ink-4:#5A6572;
+  --sw:#4A79B4;       --sw-hi:#5A8CC9;
+  --hw:#D87A2E;       --hw-hi:#E68A40;
+  --brand:#D4AE5C;    --brand-ink:#2E2412;
+
+  --suc:#4ADE80;      --suc-t:#14301F;
+  --dng:#F87171;      --dng-t:#3A1A1A;
+  --wrn:#FBBF24;      --wrn-t:#362A10;
+
+  --code-bg:#1A1D21;  --kw:#6FA8E8;  --str:#D9A34A;  --bi:#B48FE0;  --cm:#7FA08A;
+  --sel:#25324A;
+}
+
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:-apple-system,BlinkMacSystemFont,"PingFang SC","Helvetica Neue",sans-serif;
+     background:#E9EAEC;color:#1a1a1a;padding:26px 22px 60px;line-height:1.65;
+     -webkit-font-smoothing:antialiased}
+.wrap{max-width:1160px;margin:0 auto}
+header{margin-bottom:22px;padding-bottom:18px;border-bottom:1px solid rgba(0,0,0,.1)}
+h1{font-size:20px;font-weight:500;margin-bottom:5px}
+.sub{font-size:13px;color:#6b6b6b}
+h2{font-size:15px;font-weight:500;margin:32px 0 13px}
+.card{background:#fff;border:1px solid rgba(0,0,0,.08);border-radius:13px;padding:19px 21px;margin-bottom:14px}
+.note{background:#fff;border:1px solid rgba(0,0,0,.08);border-radius:13px;padding:18px 20px;font-size:13px;color:#3a3a3a;line-height:1.72}
+.note b{font-weight:500;color:#1a1a1a}
+ul{margin:7px 0 0 18px}li{margin-bottom:5px}
+code{background:#F1EFE8;padding:1px 6px;border-radius:4px;font-family:ui-monospace,Menlo,monospace;font-size:12px}
+.mono{font-family:ui-monospace,Menlo,monospace;font-size:12px}
+
+.switch{display:flex;gap:8px;margin:14px 0 20px;flex-wrap:wrap;align-items:center}
+.sw-btn{height:34px;padding:0 15px;border-radius:9px;border:1px solid rgba(0,0,0,.14);
+        background:#fff;font-size:12.5px;cursor:pointer;display:inline-flex;align-items:center;gap:8px;
+        font-family:inherit;color:#3a3a3a}
+.sw-btn.on{background:#1a1a1a;color:#fff;border-color:#1a1a1a}
+.sw-btn i{width:14px;height:14px;border-radius:5px;display:block;flex:0 0 14px}
+
+/* ===== IDE ===== */
+.ide{border-radius:12px;overflow:hidden;border:1px solid rgba(0,0,0,.16);display:flex;flex-direction:column;
+     background:var(--canvas);box-shadow:0 2px 12px rgba(0,0,0,.06);transition:background .2s}
+.titlebar{height:42px;display:flex;align-items:center;gap:12px;padding:0 14px;
+          background:var(--panel);border-bottom:1px solid var(--border)}
+.dots{display:flex;gap:7px}.dot{width:11px;height:11px;border-radius:50%}
+.brandmark{display:flex;align-items:center;gap:8px}
+.bmlogo{width:22px;height:22px;border-radius:6px;background:var(--brand);display:grid;place-items:center;flex:0 0 22px}
+.bmname{font-size:13px;font-weight:600;color:var(--ink-1);letter-spacing:.01em}
+.fname{font-size:12px;color:var(--ink-2);font-weight:500}
+.fsub{font-size:11px;color:var(--ink-3)}
+.tb-space{flex:1}
+.pillbtn{height:25px;padding:0 11px;border-radius:7px;background:var(--raised);border:1px solid var(--border2);
+         font-size:11px;color:var(--ink-2);display:inline-flex;align-items:center;gap:6px;font-family:inherit}
+
+.tbar{background:var(--panel);border-bottom:1px solid var(--border);padding:9px 12px 8px}
+.tbrow{display:flex;align-items:flex-start;overflow-x:auto}
+.u{display:flex;flex-direction:column;align-items:center;gap:5px;flex:0 0 auto;padding:0 2px}
+.u svg{width:40px;height:40px;display:block}
+.u b{font-size:10.5px;font-weight:400;line-height:1.2;white-space:nowrap}
+.dv{width:1px;height:42px;flex:0 0 1px;margin:0 10px;align-self:flex-start;background:var(--border2)}
+
+.main{display:flex;flex:1;min-height:0}
+.panel{width:236px;border-right:1px solid var(--border);display:flex;flex-direction:column;
+       background:var(--panel);flex:0 0 236px}
+.ph{height:36px;display:flex;align-items:center;gap:7px;padding:0 13px;
+    border-bottom:1px solid var(--border);font-size:12px;font-weight:500;color:var(--ink-1)}
+.pbody{flex:1;padding:11px;overflow:hidden}
+.mcard{border:1px solid var(--border);border-radius:9px;padding:9px;margin-bottom:9px;background:var(--raised)}
+.mthumb{height:48px;background:var(--canvas);border-radius:6px;display:grid;place-items:center;margin-bottom:7px}
+.mname{font-size:10.5px;color:var(--ink-2);line-height:1.4;margin-bottom:6px;min-height:28px}
+.mfoot{display:flex;gap:5px}
+.ch{border-radius:5px;font-size:9.5px;padding:2px 7px;border:none;font-family:inherit}
+
+.aipane{flex:1;display:flex;flex-direction:column;background:var(--raised);min-width:0}
+.aiph{height:36px;display:flex;align-items:center;gap:7px;padding:0 14px;
+      border-bottom:1px solid var(--border);font-size:12px;font-weight:500;color:var(--ink-1)}
+.aibody{flex:1;padding:15px;display:flex;flex-direction:column;align-items:center;
+        justify-content:center;gap:9px;color:var(--ink-3);font-size:12px}
+.ph-icon{width:46px;height:46px;border-radius:13px;background:var(--canvas);display:grid;place-items:center}
+.aifoot{padding:12px 14px;border-top:1px solid var(--border);background:var(--panel)}
+.ainput{border:1px solid var(--border2);border-radius:9px;padding:9px 11px;background:var(--raised);
+        font-size:11.5px;color:var(--ink-3);display:flex;align-items:center;gap:9px}
+.kbd{margin-left:auto;font-size:10px;color:var(--ink-3);background:var(--canvas);border-radius:4px;padding:2px 6px;
+     font-family:ui-monospace,Menlo,monospace}
+
+.editor{flex:1.32;display:flex;flex-direction:column;background:var(--code-bg);border-left:1px solid var(--border);min-width:0}
+.etabs{height:33px;display:flex;align-items:stretch;background:var(--panel);border-bottom:1px solid var(--border);font-size:12px}
+.etab{padding:0 14px;display:flex;align-items:center;gap:6px;color:var(--ink-3);border-right:1px solid var(--border)}
+.etab.on{background:var(--code-bg);color:var(--ink-1);font-weight:500;box-shadow:inset 0 -2px 0 var(--sw)}
+.code{flex:1;padding:11px 0;font-family:ui-monospace,Menlo,monospace;font-size:11.5px;line-height:19px;overflow:hidden}
+.ln{display:flex;padding:0 13px 0 0}
+.ln .n{width:36px;text-align:right;padding-right:13px;color:var(--ink-4);flex:0 0 auto}
+.ln .c{white-space:pre}
+.kw{color:var(--kw)}.st{color:var(--str)}.bi{color:var(--bi)}.cm{color:var(--cm)}
+.ln.sel{background:var(--sel);box-shadow:inset 2px 0 0 var(--sw)}
+.sbar{height:26px;display:flex;align-items:center;gap:14px;padding:0 13px;background:var(--panel);
+      border-top:1px solid var(--border);font-size:10.5px;color:var(--ink-2)}
+.sbar .sp{flex:1}
+
+/* ===== 图标家族网格 ===== */
+.fam{background:#fff;border:1px solid rgba(0,0,0,.08);border-radius:13px;padding:19px 21px;margin-bottom:14px}
+.grid-icons{display:grid;grid-template-columns:repeat(auto-fill,minmax(76px,1fr));gap:14px}
+.fcell{display:flex;flex-direction:column;align-items:center;gap:7px}
+.fcell svg{width:40px;height:40px;display:block}
+.fcell b{font-size:10.5px;font-weight:400;color:#6B7684;line-height:1.2;text-align:center}
+.fcell i{font-size:9px;color:#A0A8B2;font-style:normal;font-family:ui-monospace,Menlo,monospace}
+.states{display:flex;gap:20px;flex-wrap:wrap;padding:16px;background:#F7F9FB;border-radius:10px;border:0.5px solid rgba(0,0,0,.06)}
+.stx{display:flex;flex-direction:column;align-items:center;gap:6px}
+.stx svg{width:40px;height:40px}
+.stx span{font-size:10px;color:#8a8a8a}
+
+table{width:100%;border-collapse:collapse;font-size:12.5px;table-layout:fixed}
+th,td{text-align:left;padding:8px;border-bottom:1px solid rgba(0,0,0,.07);vertical-align:top}
+th{font-size:10.5px;color:#8a8a8a;font-weight:500;letter-spacing:.03em}
+td:first-child,th:first-child{width:118px;color:#6b6b6b}
+.ok{color:#15803D;font-weight:500}.bad{color:#B91C1C;font-weight:500}.warn{color:#A16207;font-weight:500}
+.tk{display:flex;gap:8px;flex-wrap:wrap}
+.tk div{text-align:center;font-size:9.5px;color:#8a8a8a;font-family:ui-monospace,Menlo,monospace}
+.tk i{display:block;height:30px;border-radius:8px;margin-bottom:4px;border:1px solid rgba(0,0,0,.09)}
+
+.anat{display:flex;gap:22px;flex-wrap:wrap;align-items:center;background:#F7F9FB;border-radius:10px;padding:18px;border:0.5px solid rgba(0,0,0,.06)}
+.anat-spec{flex:1;min-width:240px}
+.anat-row{display:flex;justify-content:space-between;font-size:11.5px;padding:6px 0;border-bottom:1px dashed rgba(0,0,0,.08)}
+.anat-row:last-child{border:0}
+.anat-row b{color:#6b6b6b;font-weight:400}
+.anat-row span{font-family:ui-monospace,Menlo,monospace;font-size:11px;color:#1a1a1a}
+</style>
+</head>
+<body data-page-node-id="SqF0ym3z41P9N2sJ1UNDGH">
+<div data-page-node-id="1w8Y8rUxR0lb5oBXAEeuNZ" class="wrap">
+
+<header data-page-node-id="rRUSN7j4D2KA1BKWaL609x">
+  <h1 data-page-node-id="k9XWKwQo8CVwSv0H21fJTN"><!--pnid:ahyW9qUznG1oYwQNeW1YCJ-->掌问 IDE · 最终设计定稿</h1>
+  <div data-page-node-id="KR2VIG4q5GaOD4kRVFfQ31" class="sub"><!--pnid:rFqv8gtIfZNy7JPn7GCnC8-->收敛 12 轮讨论的全部决策 · 图标家族 + 双域色彩 + 品牌收口 &nbsp;|&nbsp; 亮 / 暗双主题</div>
+</header>
+
+<!--pnid:tQeMvn9pAY2IeqG6oRtwJ2--><!-- ========== 完整界面 ========== -->
+<div data-page-node-id="NSaLJhQlsLJhG9lqUIDx9N" class="switch">
+  <span data-page-node-id="xHTe4cJpmJSUQTKa9QqUjy" style="font-size:12px; color:#8a8a8a; margin-right:2px"><!--pnid:3EurIXN6CjlvV03IefZj9H-->主题</span>
+  <button data-page-node-id="oMMFoz1SfGDYbnaKUIE8q3" class="sw-btn on" data-t="light"><i data-page-node-id="GGyw7a2sMuBoFr8jOjJmpk" style="background:#F2F4F7; border:1px solid #ccc"></i><!--pnid:Mvl679SDy0Jtba9VkpTgqf-->浅色</button>
+  <button data-page-node-id="K36nNR4GKPSTlyiPWAa9By" class="sw-btn" data-t="dark"><i data-page-node-id="yozfNA04mn4BU0FT5pOWyc" style="background:#1E2125"></i><!--pnid:NthyJTl7NjOmvsdtONqLiR-->深色</button>
+</div>
+
+<div data-page-node-id="3W65OuPF8xUlt4nNJQgekQ" class="ide" id="ide">
+  <div data-page-node-id="2P4ebng6fEgKTorhmOcocw" class="titlebar">
+    <div data-page-node-id="o4UsJIgxBUPBW1ptlUDkEB" class="dots">
+      <span data-page-node-id="ZuolQN1XFTGZ2ciDk485S3" class="dot" style="background:#E24B4A"></span>
+      <span data-page-node-id="sPPEKhlb3hK5anLkH9j1zf" class="dot" style="background:#EF9F27"></span>
+      <span data-page-node-id="UbWBDHNRavaXkfNjE1vAJ0" class="dot" style="background:#97C459"></span>
+    </div>
+    <div data-page-node-id="89vGSguUnnqV9V8rgl3xfi" class="brandmark">
+      <span data-page-node-id="UpNPdzFXZ7Ezmd955BYREa" class="bmlogo">
+        <svg data-page-node-id="ndRXsHjwDDqDtI0wyxH0hc" fill="none" height="14" stroke="#2E2412" stroke-linecap="round" stroke-linejoin="round" stroke-width="2.4" viewBox="0 0 24 24" width="14"><path data-page-node-id="Hv2FfrtkW3rigZ3nI1j24H" d="M12 4l1.6 3.9 3.9 1.6-3.9 1.6L12 15l-1.6-3.9L6.5 9.5l3.9-1.6L12 4z"/></svg>
+      </span>
+      <span data-page-node-id="7cctdrRjfaIw0I72azwPfk" class="bmname"><!--pnid:w5b5S3ldrAxkeJUBaIKksG-->掌问</span>
+    </div>
+    <span data-page-node-id="C6Pl5cITc3lspj1yE2LVeP" class="fname"><!--pnid:PV4cR513uHSwWWXYAo4dWI-->main.py</span>
+    <span data-page-node-id="6ufiHl4iT5gqg1oGyVSF8O" class="fsub"><!--pnid:dJx49kk6qIQe6ouSr75Tpc-->未命名项目</span>
+    <div data-page-node-id="bFSJftQEC25jU8cEv9tYv3" class="tb-space"></div>
+    <span data-page-node-id="O7zCqi0EnAysSXOFrL7eAG" class="pillbtn">
+      <svg data-page-node-id="63OwAPLRpxzZeYIPBJXeOy" fill="none" height="12" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" viewBox="0 0 24 24" width="12"><circle data-page-node-id="UXVGqZ1adxfZPUCP7rjX3W" cx="12" cy="12" r="9"/><path data-page-node-id="xWiKpjYGYxG2uA6GBFW4Z6" d="M12 8v4l2.5 2.5"/></svg><!--pnid:Q3stiVdPgeevifnZk9klA7-->
+      未保存 · 100%
+    </span>
+  </div>
+
+  <div data-page-node-id="m00K9gQn8U5zl6h9bYlQhp" class="tbar"><div data-page-node-id="OBRkfXjUIBAG465Te617pH" class="tbrow" id="tb"></div></div>
+
+  <div data-page-node-id="cLda4am9bCLfzK5fCix3BP" class="main">
+    <div data-page-node-id="qigpEBU06ugLHc8hhXKMWj" class="panel">
+      <div data-page-node-id="pIV8y9y4SaTgbrlwDQYNiI" class="ph">
+        <svg data-page-node-id="eZvJeMtiZWSOxGudhk0aUJ" fill="none" height="14" stroke="currentColor" stroke-linecap="round" stroke-width="2" viewBox="0 0 24 24" width="14"><path data-page-node-id="BhXeQCTeP9O5gkK1POghaf" d="M12 5v14M5 12h14"/></svg><!--pnid:0OctCZbsltChVZvYEDGJxi-->
+        已加入的模块<span data-page-node-id="a06eT8ZU9EDM5dd6VZwpHS" style="margin-left:auto; font-size:10.5px; color:var(--ink-3); font-weight:400"><!--pnid:dIZxh4xzcacdBCf3kXgypL-->2 个</span>
+      </div>
+      <div data-page-node-id="olrCPttzp3y0RXaBvC9fnR" class="pbody">
+        <div data-page-node-id="7EkOf0tbmT9iNnKVIhQzQP" style="font-size:10.5px; color:var(--ink-3); margin-bottom:8px"><!--pnid:zCXNKnDVRP0w41JLMo5alE-->行空板 K10</div>
+        <div data-page-node-id="mx139V7x2hSspE51MrUd1l" class="mcard">
+          <div data-page-node-id="obiC0o9aybLcpN2VWCxz0e" class="mthumb"><svg data-page-node-id="OpQV713x7mGftEA1IsmEUp" fill="none" height="26" stroke="var(--ink-3)" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" viewBox="0 0 24 24" width="26"><rect data-page-node-id="CVWsiI9iaBqVyq9KWSArel" height="12" rx="2" width="18" x="3" y="6"/><path data-page-node-id="E681adMNSm1ot3Yns0Myl7" d="M7 10v4M10 10v4M14 9v6M17 10v4"/></svg></div>
+          <div data-page-node-id="3TTaiot5LQsTUQPhtWUOwB" class="mname"><!--pnid:coinf5NNksGKh4ERaIktfF-->DFRobot DFR0034 数码噪声传感器</div>
+          <div data-page-node-id="ilqzwbE0tKExeX3sWZriI7" class="mfoot"><button data-page-node-id="OTZFwaAuGXUGbSIYSfy73A" class="ch" style="background:#EAF0F7; color:#3C5A80"><!--pnid:B9hN9EvjPrt7q2SMinziyd-->载入模块</button><button data-page-node-id="VOaTKbjSkCRp0q4Jy6Ysoc" class="ch" style="background:#F4F6F9; color:#8494A8"><!--pnid:ZOvXYp4V1WRT8qp86n4j6t-->移除</button></div>
+        </div>
+        <div data-page-node-id="vKqmHx3rKZCA8piuwIwGdF" class="mcard">
+          <div data-page-node-id="i7B0HqGawa6C7euG2GLc1j" class="mthumb"><svg data-page-node-id="j9wm9TDdfVw8pXMvz0qTaT" fill="none" height="26" stroke="var(--ink-3)" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" viewBox="0 0 24 24" width="26"><rect data-page-node-id="IcrnGNfeZ0Itt8QKg5Or0E" height="12" rx="2" width="18" x="3" y="6"/><path data-page-node-id="aibUZtz72eW5komACCMm75" d="M7 12h10M9 9v6M15 9v6"/></svg></div>
+          <div data-page-node-id="Mge2hk0dkYCfE7ulSkytf1" class="mname"><!--pnid:22ucjbFCo04PwEMreoKGfT-->DFRobot DFR0029 数字大全向按键模块</div>
+          <div data-page-node-id="86FyDUZcFR3OJVELvrc7il" class="mfoot"><button data-page-node-id="uEQQpTxUfDwwJ4djqj3iJe" class="ch" style="background:#EAF0F7; color:#3C5A80"><!--pnid:3eV59qmSCNqvuHRoocZueu-->载入模块</button><button data-page-node-id="vGQAZ0CzrGjWYkAxP8pyxA" class="ch" style="background:#F4F6F9; color:#8494A8"><!--pnid:x9ZYYk5yM8ndDZvcB70oX3-->移除</button></div>
+        </div>
+        <div data-page-node-id="4fMwQQuJcckprad5CSzBLm" style="font-size:10.5px; color:var(--ink-3); padding:9px; background:var(--canvas); border-radius:8px; line-height:1.6; border-left:2px solid var(--border2)"><!--pnid:fewYpFKTmTiqscPHLgK1lk-->
+          输入端口 · 输出控制<br data-page-node-id="YqO8qNT0N8poAJgyqNwsKG"><!--pnid:QRuBWKCjWdlXyhyqYIEEH0-->点击左侧图标查看模块资料
+        </div>
+      </div>
+    </div>
+
+    <div data-page-node-id="VlRNmQ4JKKWBpTXUv5fxWh" class="aipane">
+      <div data-page-node-id="Wag7XAM1yLF41Q8XikqUhH" class="aiph">
+        <svg data-page-node-id="02OapUJ8froFapTamYuIDu" fill="none" height="15" stroke="var(--brand)" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" viewBox="0 0 24 24" width="15"><path data-page-node-id="0ar4Tz7GVPkAcBRzT5iwZl" d="M12 3l1.9 4.6L18.5 9.5 13.9 11.4 12 16l-1.9-4.6L5.5 9.5l4.6-1.9L12 3zM18.5 15l.9 2.1 2.1.9-2.1.9-.9 2.1-.9-2.1-2.1-.9 2.1-.9.9-2.1z"/></svg><!--pnid:pB7bvhArUsOJzcCtQsGdoY-->
+        问问 AI
+        <span data-page-node-id="iPF2TcdcKU1GLTRWXHKnBV" style="margin-left:auto; font-size:10px; color:var(--ink-3); background:var(--canvas); border-radius:4px; padding:2px 6px"><!--pnid:yysbzll4qHrb4vuVmqTOA8-->未配置</span>
+      </div>
+      <div data-page-node-id="1xyY7eqnNQ6NG7XhPY0viP" class="aibody">
+        <div data-page-node-id="HVIcGEkezzL3jLJzvXlUg9" class="ph-icon"><svg data-page-node-id="fy2HJ58oPjPnpmGzhWE58B" fill="none" height="22" stroke="var(--ink-4)" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" viewBox="0 0 24 24" width="22"><path data-page-node-id="2EuwnapMhjrv5AdhxHTf6Y" d="M12 3l1.9 4.6L18.5 9.5 13.9 11.4 12 16l-1.9-4.6L5.5 9.5l4.6-1.9L12 3z"/></svg></div>
+        <div data-page-node-id="bigji27nVTfbErla66Zj0l"><!--pnid:DNw997sPaIcpf7H3iCD1E1-->描述你的想法，或粘贴需要分析的代码与报错</div>
+      </div>
+      <div data-page-node-id="T8QAzRq6cN1HmnQYYFlNE6" class="aifoot">
+        <div data-page-node-id="bFreq71zfzgRCR5JefqCto" class="ainput"><!--pnid:t4cOf2zHGmU11IqVoARxxX-->先保存项目，再开始对话...<span data-page-node-id="UlIQzUUtkStgcUyo9E8VLW" class="kbd"><!--pnid:05OXzAfnNJM5uqjN52Se8e-->⌘↩</span></div>
+        <div data-page-node-id="3TR1jpHkuI58UYy5GKaT0u" style="font-size:10px; color:var(--ink-3); margin-top:8px"><!--pnid:NRNdTKCnRzuZP5OH7NJMSc-->AI 未配置 · 可在帮助中查看设置</div>
+      </div>
+    </div>
+
+    <div data-page-node-id="H7LqRgobnBw9FovN3caXl6" class="editor">
+      <div data-page-node-id="7E0wyLXoo9NzMWEUGfJnV2" class="etabs">
+        <div data-page-node-id="XdQsg5SlUEcZHaLpxAvKf5" class="etab on"><!--pnid:GusrAk6Kta0SQasJXVuZEQ-->main.py<span data-page-node-id="wsvWSqJxmXcHZ6ni92wurg" style="width:5px; height:5px; border-radius:50%; background:var(--hw); display:block"></span></div>
+        <div data-page-node-id="wOoNSaR7tXyP77XetsrYiZ" class="etab"><!--pnid:R4TPbNEJfmFeSYTwjfwVc3-->sensor.py</div>
+      </div>
+      <div data-page-node-id="pLk2i17rzfJDZ5J3QUkaCn" class="code">
+        <div data-page-node-id="7y3ivDIElMo4Kzk9EuqIRI" class="ln"><span data-page-node-id="W5EqS2XAhZCd5y14bye3p1" class="n"><!--pnid:ZAx87k1Jds6ywIXYNSGi9q-->1</span><span data-page-node-id="MYm5gvUDCTqSaTgROYec7f" class="c cm"><!--pnid:yyvqDDDUNOVH1xdgDp5NH6-->from machine import Pin</span></div>
+        <div data-page-node-id="5LjqLxHJavcALJHDoqmyDC" class="ln"><span data-page-node-id="ehEnEYchvlwBe2mL4ziWPW" class="n"><!--pnid:042ikuwjGKaze5V0P1KIeN-->2</span><span data-page-node-id="hV5dg6R47ETTRtnrs66RFp" class="c"><span data-page-node-id="snhCSWRQ4J7CNubJihfIyc" class="kw"><!--pnid:omzRzRMixUvjlplq3MpEqh-->import</span> <span data-page-node-id="J7q2kEdEwuiPNdu5JMS53R" class="kw"><!--pnid:JmqSsMa7TBuPAhtY3aof1Q-->time</span></span></div>
+        <div data-page-node-id="WReXTSNx5xAflt2yuuP5ed" class="ln"><span data-page-node-id="EnY9ArJw1jwF39p5fLMrC5" class="n"><!--pnid:E69hdZ19BhykEKz64jiypn-->3</span><span data-page-node-id="2sq2tq0fP017L7DktYi0XV" class="c"></span></div>
+        <div data-page-node-id="iwUqJeojcLkoUCqA5zO1kM" class="ln"><span data-page-node-id="hNgUeIDq8A9jkvsXpZXYUX" class="n"><!--pnid:FvrBlgk1AHwMJwVcSnBXUk-->4</span><span data-page-node-id="pzt2cLUESs6UxdZnIgMGFP" class="c"><span data-page-node-id="ib8Czyun3nKzk96VYvFGzt" class="bi"><!--pnid:fEnkkxNu9TTS1wiWQwzxIW-->led</span><!--pnid:7jTmIbQfOgd691uH6lFRJn--> = Pin(<span data-page-node-id="Wcp76tu9Le8jvKi2x2PkA0" class="st"><!--pnid:BHr8BHBqlyKy4FJHhHuyAg-->2</span><!--pnid:SQmNz159fW6qI87IbZ7G0B-->, Pin.OUT)</span></div>
+        <div data-page-node-id="BQXIYgLNaD1S2xRKw654FK" class="ln"><span data-page-node-id="o217CJCPsdX8JpkP6nCX8O" class="n"><!--pnid:tyqOb3dui0tZYYM1v1Yq6S-->5</span><span data-page-node-id="a04kBqfHPTnEhfoxll0u72" class="c"></span></div>
+        <div data-page-node-id="PQ6XzKR1C900J65KPe9vYJ" class="ln"><span data-page-node-id="smBYYyQEKvs8p6EaorY9XF" class="n"><!--pnid:nZgffYwHdc0OIkylRk3X5y-->6</span><span data-page-node-id="tXt6I9zOIrRtekeIIkd2GN" class="c"><span data-page-node-id="sNrrYjveWKe3IJ9Inag8Pd" class="kw"><!--pnid:hMNtK4qajFVDtrpoBQhku0-->def</span> <span data-page-node-id="BeN9UwbWdJP6rPeZCEqHSq" class="bi"><!--pnid:FCX8WfUZW0Qz4FfvY3dsBw-->blink</span><!--pnid:Xk4xRI8yDrzYvF5LBbGghc-->(<span data-page-node-id="p2Tjn2G5kV5KpJZSvOZ1As" class="st"><!--pnid:D45ZvePZZn53aRyS3unYnl-->times</span><!--pnid:efBFdS04GITpxhRqyW1NWH-->, <span data-page-node-id="8OWpSonzpFBLi3laC6QNzP" class="st"><!--pnid:qDaJeI6ytiOGSktYTnFr7d-->gap</span><!--pnid:KsDmfGiR3R85hbGfWaHUcJ-->):</span></div>
+        <div data-page-node-id="oabjiRjuMpwiLYSHR0e09r" class="ln sel"><span data-page-node-id="JpDqjNrlrYxYm4RbuGmy7m" class="n"><!--pnid:U6ympf3oaKUIt2114tVoWG-->7</span><span data-page-node-id="9iKXDzXGw0L02ijbpkZere" class="c">    <span data-page-node-id="VGkqJiOJTgWA2EeYjEq0tB" class="kw"><!--pnid:bxjniLKFLpxO7idLLe5P10-->for</span><!--pnid:378vWPGgNcqe6ROVCNVpqD--> i <span data-page-node-id="rlyUXFtPLbiKfEHk4SaQvB" class="kw"><!--pnid:gW15jLYxDpV1DUP463vXTh-->in</span><!--pnid:KtKGUCVU18CzK7SngSFTRO--> range(<span data-page-node-id="9GomutIqb6xJwMKjJm1ef2" class="st"><!--pnid:ManreZ088eQ6z4UNKOJ0hP-->times</span><!--pnid:V1268ey6ZvjajVgWn4DShj-->):</span></div>
+        <div data-page-node-id="6HMnJgDft88CoaZHyiCTPK" class="ln"><span data-page-node-id="hJlsB2hEyki5x1F0lN0o2a" class="n"><!--pnid:acFzgdwcu9ckQiPu1RtC9N-->8</span><span data-page-node-id="YTTjw7vE693nFDiTwT4Xa7" class="c"><!--pnid:4UWxcbBxeBqJYFRjoriWfP-->        led.value(<span data-page-node-id="Q1c1RXQtEHqPjXehhlTsR5" class="st"><!--pnid:9JZG8d7aV3QgVETNRXjSMx-->1</span><!--pnid:OlL5gmMOuuMIJebrXKnfM5-->)</span></div>
+        <div data-page-node-id="YsY0ptlOhuwoyxvJf3nBKc" class="ln"><span data-page-node-id="bWLXdJF3hK9f5s1ezklnrR" class="n"><!--pnid:uGsW1KFuWBrxgFPfXWgwfN-->9</span><span data-page-node-id="8ArVnZca0zLhxldpZ3xIyv" class="c"><!--pnid:IubtiTNdTsglTfmgiLqMxi-->        time.sleep(<span data-page-node-id="dkFkDPc1lFqTswMHswltsC" class="st"><!--pnid:ADofz9GKYTCpZ2fb6MSZQx-->gap</span><!--pnid:ZXjakynRCzf75gitAda01k-->)</span></div>
+        <div data-page-node-id="0REAtMmJimVEi9L1nG1KR4" class="ln"><span data-page-node-id="sPDfcFhuZALFWdHd4qMR5G" class="n"><!--pnid:UAJLtAa0GOkfl1Ej9AcUAb-->10</span><span data-page-node-id="ge8Syl9bEKnkdElDfLlIQV" class="c"><!--pnid:KZBU57ofE73MlMY9zMb0zw-->        time.sleep(<span data-page-node-id="T1e97SBfz4Tz19iADKWKp7" class="st"><!--pnid:7TxlH1slyEXs9s3YrbRWpk-->gap</span><!--pnid:2Ov4YQ8sSDw0SyL4REJgqC-->)</span></div>
+        <div data-page-node-id="1pizVf0p1AufTFckrPAql9" class="ln"><span data-page-node-id="hNhAw2Tk3c0YUfuTJeVb06" class="n"><!--pnid:uwyNW8HtWuLZOR6zQjeiwB-->11</span><span data-page-node-id="EUflMYDYkG0AzlY054eKeH" class="c"></span></div>
+        <div data-page-node-id="4GZRTgapQHMv5ZVfIeCedt" class="ln"><span data-page-node-id="ED704b7pKENf5skXVAOoPg" class="n"><!--pnid:zY1um2JQwoqn34EgboVjky-->12</span><span data-page-node-id="2LLzyEjqzeC4v2VZBeK65S" class="c"><!--pnid:aNX2aTEGiR7189itxfrTCL-->blink(<span data-page-node-id="L4OhApQ4BwNqT6fu4HdekI" class="st"><!--pnid:Tw5dI2WG8OGgPfpUYgySej-->3</span><!--pnid:s782ncDyzkiC8CKkiFGSIu-->, <span data-page-node-id="Kl7vzgp9Sb2lmWadGvtMoP" class="st"><!--pnid:lVUKK0fWztYmeToVuNqtfD-->0.3</span><!--pnid:g6433przCZe4rHWT1BFRmq-->)</span></div>
+      </div>
+    </div>
+  </div>
+
+  <div data-page-node-id="5lnhw7UjI1lnFPZBWpLRQi" class="sbar">
+    <span data-page-node-id="7hXseZrZze7XwaBoDbcDOy"><!--pnid:YplJT52gDj5J3tDF4BKdwh-->MicroPython · Web Serial</span><span data-page-node-id="QByRah2CiUODYVecXzBd23"><!--pnid:3rOKGObhVOEkGlmi5b1vUz-->3 个事件 · main.py</span>
+    <span data-page-node-id="bWNcFVfLIjtBqc9ktTMMNp" style="color:var(--wrn)"><!--pnid:burpOr4odtq2cC9XErYJMi-->设备未连接</span>
+    <span data-page-node-id="a2TfhWvN5kET8wnMTeT4Or" class="sp"></span><span data-page-node-id="OdPbJBEpYMJpS7t5k5SobZ"><!--pnid:xV7hCGktuiGN9sqrTiaTMe-->本机保存 · 设备操作需确认</span>
+  </div>
+</div>
+
+<!--pnid:rDDwi8tDYxKWEmMM6TQR7o--><!-- ========== 图标家族 ========== -->
+<h2 data-page-node-id="Dqe7yWez85KQoUObnVsTS3"><!--pnid:JdIRCOgTRT4YIGDKd1DTij-->图标家族 · 13 项</h2>
+<div data-page-node-id="J9GZ4XxyiQdyQrPbvwkYbb" class="fam">
+  <div data-page-node-id="xv9v7lE5NR6BImeYWfFMD1" class="grid-icons" id="fam"></div>
+</div>
+
+<h2 data-page-node-id="jqnHRNg43sGyR1E791GqmT"><!--pnid:HCZt2JiLIrEUktu8ZFhFXM-->状态变体</h2>
+<div data-page-node-id="CxdwXPjgZF6uMmqbiSRW6s" class="fam">
+  <div data-page-node-id="j6VV7wxvl9zFR6e6Tu0XXJ" class="states">
+    <div data-page-node-id="sNLDe2JClYw2UsF2nH41lG" class="stx"><svg data-page-node-id="ega64zPIosgSZ54lQrDbUF" viewBox="0 0 40 40"><rect data-page-node-id="YwA2QxSHd2rBimjwmWabKb" fill="#2F5F96" height="38" rx="9" width="38" x="1" y="1"/><rect data-page-node-id="SVcBTUiC0VRgRXCkruh3nb" fill="none" height="37" rx="8.5" stroke="rgba(255,255,255,.22)" width="37" x="1.5" y="1.5"/><g data-page-node-id="lb1Wbr61RLgkPIxIbhAsoL" fill="none" stroke="#fff" stroke-linecap="round" stroke-width="2.6" transform="translate(9,9) scale(0.92)"><path data-page-node-id="Kc00Ch0rd2blCdsuH8PFcP" d="M12 5.5v13M5.5 12h13"/></g></svg><span data-page-node-id="RtOHjv92vFxHXGZMUc8K2a"><!--pnid:oic15xXo8JFWk5jtIA8i1f-->默认</span></div>
+    <div data-page-node-id="jYvJSWzDk3qlyv0QK1Q2WB" class="stx"><svg data-page-node-id="29FkjChSWGt7z0XjHhAPIq" viewBox="0 0 40 40" style="filter:brightness(1.08)"><rect data-page-node-id="zlPdo0G2puzxPE4iIN38RV" fill="#2F5F96" height="38" rx="9" width="38" x="1" y="1"/><rect data-page-node-id="Fy7WNlrKaNLRsBR4tGMJFG" fill="none" height="37" rx="8.5" stroke="rgba(255,255,255,.22)" width="37" x="1.5" y="1.5"/><g data-page-node-id="iturb0wXHSsoLU2i12mXuh" fill="none" stroke="#fff" stroke-linecap="round" stroke-width="2.6" transform="translate(9,9) scale(0.92)"><path data-page-node-id="hkUd9InpZNYfBcE8zPTYCl" d="M12 5.5v13M5.5 12h13"/></g></svg><span data-page-node-id="tMlRUXxQk8SFXhSkd3t1gz"><!--pnid:xGmZLxN0WzeAUAsz9RFkrW-->悬停</span></div>
+    <div data-page-node-id="zIl1uLUWRPZVYtalFoubLw" class="stx"><svg data-page-node-id="Rr2djfyEDorlpJQsdtVQSs" viewBox="0 0 40 40" style="filter:brightness(.94); transform:translateY(1px)"><rect data-page-node-id="Qg3SGwMAL4mfXz38KyMAZK" fill="#2F5F96" height="38" rx="9" width="38" x="1" y="1"/><rect data-page-node-id="3Y2Gk1DYRuotzIQaVB30fG" fill="none" height="37" rx="8.5" stroke="rgba(255,255,255,.22)" width="37" x="1.5" y="1.5"/><g data-page-node-id="smx3IGl6rNtI15RBjt1Tau" fill="none" stroke="#fff" stroke-linecap="round" stroke-width="2.6" transform="translate(9,9) scale(0.92)"><path data-page-node-id="11MNwYZA8TQxYDxZfxidQB" d="M12 5.5v13M5.5 12h13"/></g></svg><span data-page-node-id="0gw2TRD0DbhyxhpPo9oM5o"><!--pnid:R9GigTUvBbqxubkjmF4H9o-->按下</span></div>
+    <div data-page-node-id="eRWDa020mXey6zJrVsFUjd" class="stx"><svg data-page-node-id="cvV2KX35u0wO7ludeCy0zm" viewBox="0 0 40 40"><rect data-page-node-id="LMUMqL1MqKxQrH8lfCAI1I" fill="#2F5F96" height="38" rx="9" width="38" x="1" y="1"/><rect data-page-node-id="cbQ32CrsKrRD95kAvxqyWp" fill="none" height="37" rx="8.5" stroke="rgba(255,255,255,.22)" width="37" x="1.5" y="1.5"/><rect data-page-node-id="T6ZMFtxrazMVbcPgZxpogP" fill="none" height="46" rx="12" stroke="#B8933C" stroke-width="2" width="46" x="-3" y="-3"/><g data-page-node-id="oKTlVNZJc6zbaIlmOXdmx6" fill="none" stroke="#fff" stroke-linecap="round" stroke-width="2.6" transform="translate(9,9) scale(0.92)"><path data-page-node-id="RYto4JgpggyWSodwDgHM3o" d="M12 5.5v13M5.5 12h13"/></g></svg><span data-page-node-id="uyPum4mWXyzGYhclKvLk1H"><!--pnid:nLs4Tsx5uCDBDdteb33XEM-->焦点</span></div>
+    <div data-page-node-id="SxF3lIxpchzqL2mCrqFjzj" class="stx"><svg data-page-node-id="HIg9V7IbwWlXrjt2iuY90o" viewBox="0 0 40 40" style="opacity:.4"><rect data-page-node-id="sKPbX59C5B5vjozymYTu5z" fill="#AEB6C0" height="38" rx="9" width="38" x="1" y="1"/><rect data-page-node-id="MITVgBkOKJN5zV3CQPACDZ" fill="none" height="37" rx="8.5" stroke="rgba(255,255,255,.22)" width="37" x="1.5" y="1.5"/><g data-page-node-id="PmJAtQsJhgAbrfqmVkMMAY" fill="none" stroke="#fff" stroke-linecap="round" stroke-width="2.6" transform="translate(9,9) scale(0.92)"><path data-page-node-id="XCIHbeCXus5FtfrKzNqQYe" d="M12 5.5v13M5.5 12h13"/></g></svg><span data-page-node-id="6kDmGjuYFWGq8hGx6jJRqH"><!--pnid:4RdYs1CyXhR4dTD0nV1rn0-->禁用</span></div>
+    <div data-page-node-id="tPjwtnJvFLR0UOr6r34LzA" class="stx"><svg data-page-node-id="6l6JDMksnx66UbBGXzwIre" viewBox="0 0 40 40"><rect data-page-node-id="EoZCEfQgY8dY5Kxh8Z1VrI" fill="#B8933C" height="38" rx="9" width="38" x="1" y="1"/><rect data-page-node-id="MnR1CWeaFGBkiy6JW5R7sl" fill="none" height="37" rx="8.5" stroke="rgba(255,255,255,.3)" width="37" x="1.5" y="1.5"/><g data-page-node-id="ElG4S0PPn2URPuGxacfD0M" fill="#2E2412" transform="translate(9,9) scale(0.92)"><path data-page-node-id="Ua3G0Rtch9XhY0gfRYblTy" d="M8.5 5.5 18 12l-9.5 6.5z"/></g></svg><span data-page-node-id="zXckN4UFkRoweca5AJTwJy"><!--pnid:DKMvEuxYaYFJZmz6k2wWvx-->品牌金 · 运行</span></div>
+  </div>
+</div>
+
+<!--pnid:LyaNGyVpyiBIXZqgKC1cjx--><!-- ========== 容器解剖 ========== -->
+<h2 data-page-node-id="9cBSeOGj3mhYNNF5E3PzbI"><!--pnid:P3TScdgxxXXBbHkWPx8leo-->容器解剖</h2>
+<div data-page-node-id="nq91lFfzdnyGyE4ukp2EPr" class="card">
+  <div data-page-node-id="jVjgO0oOlPDeRFHIgdqhfc" class="anat">
+    <svg data-page-node-id="3LZWtO75z8Ubsixf6IPmLL" height="120" viewBox="0 0 120 120" width="120">
+      <rect data-page-node-id="RoyuD6CTzuXkq7iHXZ5hRj" fill="#2F5F96" height="100" rx="22.5" width="100" x="10" y="10"/>
+      <rect data-page-node-id="38VP30UAXtfXnJ81gs2xZ3" fill="none" height="97" rx="21" stroke="rgba(255,255,255,.22)" stroke-width="2" width="97" x="11.5" y="11.5"/>
+      <g data-page-node-id="vgvEr3ZT2eTvi3l9NFo3W9" fill="none" stroke="#fff" stroke-linecap="round" stroke-width="2.6" transform="translate(35,35) scale(2.3)"><path data-page-node-id="jZYIO09VexcD6JItgzrOP6" d="M12 5.5v13M5.5 12h13"/></g>
+      <line data-page-node-id="0J96hFs5lBEx4lGakB2j3L" stroke="#B4560C" stroke-width="1.5" x1="10" x2="0" y1="60" y2="60"/>
+      <line data-page-node-id="2fWCXnpdPwot9XmE84NN0u" stroke="#B4560C" stroke-width="1.5" x1="110" x2="120" y1="60" y2="60"/>
+    </svg>
+    <div data-page-node-id="kcvv8RQZKa2uC0NeBoeszL" class="anat-spec">
+      <div data-page-node-id="vHJJDaxbVj7EmjWU8EV5xg" class="anat-row"><b data-page-node-id="Xjng18bTc5uXk3ZWctAxOr"><!--pnid:q8H3HYt5wUTWvuSFUkbmgT-->容器</b><span data-page-node-id="1TzhDLFiuDE9r7huibgZtg"><!--pnid:kImBIynKG9LOt1SnVe6wJS-->40 × 40 px</span></div>
+      <div data-page-node-id="HGjUYYjZB4eFa3e6uwMI4a" class="anat-row"><b data-page-node-id="0v3owYySHh3MGQVfdTC9dG"><!--pnid:ZornnsOqTDtmERhk24D0UQ-->圆角</b><span data-page-node-id="U6I5x3sdJZjhdsVBNFOasP"><!--pnid:g56dOBYXDgKpuPVhKbLiBz-->9 px · 边长 22.5%</span></div>
+      <div data-page-node-id="biBqwkgpffTR4i4XV0XVOA" class="anat-row"><b data-page-node-id="Cit65yCXgX6vmE8s4wwCIP"><!--pnid:rcQg7moZaZCddSAWZR6rkO-->内高光</b><span data-page-node-id="YBAUvkg1t3TgqrnmudnJcM"><!--pnid:99C7n3ygHN2KAe9vMo06E3-->inset 0 1px 0 rgba(255,255,255,.22)</span></div>
+      <div data-page-node-id="o317bUIUJXI0FlrIdniIY9" class="anat-row"><b data-page-node-id="9TwCqCFBG8i21kgQXEhwIK"><!--pnid:H1y5b7POaYMpuYm2Vjluwi-->字形</b><span data-page-node-id="haWa6M4iPZMDYkmK2dNgSy"><!--pnid:Gtp4ZIHwVt5spK54dKSV0c-->22 px · 线宽 2.6 · 圆头</span></div>
+      <div data-page-node-id="aAj8Ry4FlWMoj36AQ8aeaJ" class="anat-row"><b data-page-node-id="PiQZXJLedSG9GUCZvvdJNg"><!--pnid:2WFuAXcB7NhKOGzOBL3GzD-->投影</b><span data-page-node-id="peFUWtT8U0VtaaDfAXEhel"><!--pnid:ih0wVqOoh2jSSBg5eZKtou-->0 1px 2px rgba(0,0,0,.08)</span></div>
+      <div data-page-node-id="ATpxVVKW1PfA4stuyurDKC" class="anat-row"><b data-page-node-id="zLpg4ACY4jS9mJvfSFteg3"><!--pnid:2SgECP22TLuIetQoAAyZUc-->标签</b><span data-page-node-id="yZTYTOSKdYAQzxa3W104qW"><!--pnid:pFYU6Btmggq4Bp7JMCzlaR-->10.5 px · 同域低饱和深色</span></div>
+    </div>
+  </div>
+</div>
+
+<!--pnid:VsCfmFB8WRnKianEdkC0xK--><!-- ========== 色彩语义 ========== -->
+<h2 data-page-node-id="PU25kRjIzC29Fqssld68Tj"><!--pnid:fdL58l29anPTSPyf8FoRFs-->色彩语义系统</h2>
+<div data-page-node-id="4ooDpz5Boy2MigSifWkReV" class="card">
+  <table data-page-node-id="DGJPhNFdgfjU37k7PbyLoz">
+    <tr data-page-node-id="as8MxoCOgVma6WjnNBKde3"><th data-page-node-id="woQ2MfU00B1SixxLtZqlaU"><!--pnid:C4dhCHbedquucesm1p3pjm-->角色</th><th data-page-node-id="OqBbQFPTFkEZWIByg1w30l"><!--pnid:rPlrQIZWga7pQFmgeo9Yj4-->色值</th><th data-page-node-id="M7rDAehnjL5SX35HB8oz0P"><!--pnid:RUKOdLRfN5RRy340tH7oFL-->语义</th><th data-page-node-id="JKdPVY4yEPQexmRrhjO4Zo"><!--pnid:rEKlAnPsOtQYeO17dVydgy-->承载</th><th data-page-node-id="LDoWe2pc5sp5Mt651JobqR"><!--pnid:nE4se3wGLDsp0CEfrygTuS-->对比度</th></tr>
+    <tr data-page-node-id="b3E2G8PGfFdmfSvd3oDbRY"><td data-page-node-id="8uLJdHvTgkXOrOIxHois6C"><b data-page-node-id="8xYJlZORUjmw98vBM7kl8Y"><!--pnid:LXCW2lnrCgdDLtnv7HlPBk-->软件域</b></td><td data-page-node-id="yqBSxxbUBOIzvau2dJnfu1" class="mono"><!--pnid:IziZuqeQBG8d26FbbruXBi-->#2F5F96</td><td data-page-node-id="kTiID5W5duxFKu1krfiBc8"><!--pnid:NLdheBlxDkMu2Ztv9DF6qz-->只影响本机软件</td><td data-page-node-id="XY6A2s0qieYrhYsGjIhJkA"><!--pnid:XG9ujTXwcH9CuIZqBdNaAb-->新建·加载·保存·文件·REPL·检查·格式化·放大·缩小</td><td data-page-node-id="kgiUHiRfJ2l1eenzubdO3w" class="ok"><!--pnid:BWwbSjMqYcm5w1H6XzHe9K-->6.6 : 1</td></tr>
+    <tr data-page-node-id="1qJYAxqVjzbeUDYTQw6mCG"><td data-page-node-id="Kcu0Zda6txx5KanQD6pkcW"><b data-page-node-id="5XKwmIL9iryjQJD39NF1l7"><!--pnid:ri3Egu4VRYk2W2zoXbsNo8-->硬件域</b></td><td data-page-node-id="kLdUXg5akF26IPOALTLAl7" class="mono"><!--pnid:rUndgQ8scPKbyBlzfjAjmC-->#B4560C</td><td data-page-node-id="cX2yDsBzscPIM3A2y9bq18"><!--pnid:TyhawYfVs95VcNnm7NfTHO-->会影响连接设备</td><td data-page-node-id="IfiSA0nqT819Hs7k2NKXUK"><!--pnid:vVysrb84CyAeiOgljC6uQA-->上传·接线</td><td data-page-node-id="NXUUX9O5pX5Nsbt7btjHZ7" class="ok"><!--pnid:Q8qnKw0WAAOyQhnRCorOWW-->5.2 : 1</td></tr>
+    <tr data-page-node-id="gRZ0IzHbbIHsmUOVkbupKz"><td data-page-node-id="tUcabx1bCrFTGvzf27HEMb"><b data-page-node-id="O701kK91ri40MYwGsesGRZ"><!--pnid:1XZG111DixdUBqWQN5XKWR-->品牌金</b></td><td data-page-node-id="bkJi3CyrR7dBT1A1ELu1FS" class="mono"><!--pnid:WLzFeinYW0dwdkDgYG630n-->#B8933C</td><td data-page-node-id="KsynfsSPaCVIniQy0qZQcB"><!--pnid:wFuzMYTHuycbmgcLBDD4Do-->品牌收口 · 唯一主操作</td><td data-page-node-id="fNyZj1b5VjRju7om5gC9w6"><!--pnid:6Nd8DD3iNcXY454B2Qnq4j-->运行 · 启动图标 · 焦点环</td><td data-page-node-id="L1bDXZaon2meB0EicAknOY" class="ok"><!--pnid:3wT3GD26u1T0vr3ulSarZC-->5.4 : 1 配深墨字</td></tr>
+    <tr data-page-node-id="LKKDzWwKJ8OdsC8qybz7iJ"><td data-page-node-id="46XJbhP1xGeuWnBvlMilLA"><!--pnid:LNSEEgiLmCjgyJ5G26d62n-->弱化</td><td data-page-node-id="EGpnIHBSdbPFGa1MH93InT" class="mono"><!--pnid:DrF7QARpTOqypCPNBouH88-->#AEB6C0</td><td data-page-node-id="oBh0fyQ28Rhdtpzt0g2yzt"><!--pnid:7Jp5pWG7zMtYJN4P8wfqvw-->低频 / 破坏性</td><td data-page-node-id="XoiK5L3C5QMwLXSGXTLw2R"><!--pnid:Z1LlRePZRM7d7JPgvVdxXZ-->帮助·退出</td><td data-page-node-id="ZeJMajWxzlg6jZ2XXwDauf" class="warn"><!--pnid:tPUZf8ZxV6RX6DJ4C59zlQ-->浅底可用</td></tr>
+    <tr data-page-node-id="7Nejl9MExBah3sfBeWjlfJ"><td data-page-node-id="HMgI1VIkxxhtXQ9cXrdTGi"><!--pnid:gZ1Mt5Cht4aX4xzgRhEvGJ-->品牌入口</td><td data-page-node-id="fKuzzetxGUXBr6zUo8OTU5" class="mono"><!--pnid:N5vFjSm5EKNUDAncwrhMJZ-->#C9A96E</td><td data-page-node-id="VAmb8E3oMQTuUswHBfV4yq"><!--pnid:2oddClQMYPKk6Nui73sQmO-->掌问 Logo 专属</td><td data-page-node-id="xShnP3DdfQOHPLk5UJfSKl"><!--pnid:ujQIfaXV96s3atHIuBTznk-->标题栏 Logo · 启动页</td><td data-page-node-id="9IPM8vrrNiRZvavlQ95LIv" class="bad"><!--pnid:GOtXJwHWAp6iiDSf283wtU-->不用于实心按钮</td></tr>
+  </table>
+</div>
+
+<!--pnid:4JhYnlN17AVmwN3oAwMMZr--><!-- ========== 对比度 ========== -->
+<h2 data-page-node-id="0eeYkWpk6uUFEeFk64ybgw"><!--pnid:tb2YaePj3BO9yZbNjZeQlN-->对比度实测</h2>
+<div data-page-node-id="gyqNXhec1PAZmspljZJg4e" class="card">
+  <table data-page-node-id="MlOEdzQpmucLNrvJO0cdrx">
+    <tr data-page-node-id="YprsIYCb4VXpBpKmgnwrvT"><th data-page-node-id="vOkVKjWfzoAQBC6WlBZAKT"><!--pnid:OLxl5HB8UR4nii3DSlfWRo-->组合</th><th data-page-node-id="qN5gH9toK4LEgw8wAmWqrh"><!--pnid:INUllA3zpybBMdhvEqZ1Hz-->色值</th><th data-page-node-id="n4RWHIAPtVbsbvEfoeU6i0"><!--pnid:r5SPsPvlq9vmucE7jZfKdF-->比值</th><th data-page-node-id="k3JV5YUVVITJRt8XwbCZiy"><!--pnid:i7qu7uuFm4khsqEHdEJySz-->等级</th></tr>
+    <tr data-page-node-id="9CRzxHcTzI1IPTNrJzVr2S"><td data-page-node-id="13yVtocskfN6gxFHZn5Qnc"><!--pnid:sFo9PDuPPkrLA4ry1FiAI6-->软件域 + 白字</td><td data-page-node-id="aQmeq9r3vYXu6PlDvRPkxr" class="mono"><!--pnid:Z9aJLK5Qmy5d9wSG2hhmpg-->#2F5F96 / #FFF</td><td data-page-node-id="zjfhjITFSrJe3AqqkCkHe0" class="ok"><!--pnid:NVPes5hnA08wqrNLl5QGlP-->6.6 : 1</td><td data-page-node-id="NswCY5eMKKMe0W2mQaIQny" class="ok"><!--pnid:qnzcVNDNVLqjUID6VAHeFf-->AA+</td></tr>
+    <tr data-page-node-id="6UR4BTmK8MvFCggivz3FmH"><td data-page-node-id="suZW6uhGIIHPa3Ui3Uo8ln"><!--pnid:gSOEL9H057HeK4DodmZRZ9-->硬件域 + 白字</td><td data-page-node-id="WJaxvHEEo2Sshrau3VBXOn" class="mono"><!--pnid:ND2p2GMWWVsFO5lsaI32e1-->#B4560C / #FFF</td><td data-page-node-id="xZQJFxDvqwQco1c9ihETrs" class="ok"><!--pnid:bqCMgisFkm5Mz0VfEnk7eb-->5.2 : 1</td><td data-page-node-id="Yb1WdNCB0SKasy6uSqHCFz" class="ok"><!--pnid:wojQx5FCPL5tQ7Qmf0T39b-->AA+</td></tr>
+    <tr data-page-node-id="sSWLMAeJCYsM39MmHz5aAr"><td data-page-node-id="mNGlowRUrp7Q7LvZPS8KHN"><!--pnid:LmuAxucQgdN3n9Osta7oqO-->品牌金 + 深墨字</td><td data-page-node-id="Kbo0hKRO4ttLytvdn6ZXqi" class="mono"><!--pnid:LglFR1eefcuMd6FlHUO18v-->#B8933C / #2E2412</td><td data-page-node-id="UpZux7HOFK70n3lczVzxSJ" class="ok"><!--pnid:n7oBzuMzxvSaByRQocu8xb-->5.4 : 1</td><td data-page-node-id="7PkNnGAxGEYCCwqJ3sYDwz" class="ok"><!--pnid:SrNdj6LpTLhSUoXqo3aQ6G-->AA+</td></tr>
+    <tr data-page-node-id="7A1PrA21z1LvrzTmUmMqQA"><td data-page-node-id="dVt3cDJ0nzdtTdnLA6mtQt"><!--pnid:N6QO6yV1A6Btx1tOJIU0mY-->品牌金 + 白字</td><td data-page-node-id="nCEDzLtHNMGxTvTQMAHoV5" class="mono"><!--pnid:ohinuqvawOLEXQXN8AQUcz-->#C9A96E / #FFF</td><td data-page-node-id="dqhbx3zv0s3CUo5bkLapcl" class="bad"><!--pnid:EzYr87JGsIXCRHT6bJsLsm-->2.4 : 1</td><td data-page-node-id="3SRtvWikSvX2p3CP4GY0ZU" class="bad"><!--pnid:qan6qj283A6GqFIow40SjI-->不达标 · 勿用</td></tr>
+    <tr data-page-node-id="gKRwbHO4d8D6mWxw0561zm"><td data-page-node-id="pkeS7Bv1rNMLUJ7du8Uops"><!--pnid:i1lvEKVrjoFwfu9QLh84mb-->标签 / 工具栏底</td><td data-page-node-id="zj6TQ5FXAH93nQeko90pS8" class="mono"><!--pnid:q1J27vX75ckUXdKoOPuThh-->#5A6675 / #F4F6F9</td><td data-page-node-id="5SJQcP99qxL9Uras3RQ6F6" class="ok"><!--pnid:dZMzinzAPcC94Qgt7C4c1N-->6.0 : 1</td><td data-page-node-id="eeCR5cZJzBqxTPgLMYWN7J" class="ok"><!--pnid:ysASCC5eCStdW12oK8pPzC-->AA+</td></tr>
+    <tr data-page-node-id="AB3hN0FHTyzsIPiRvN6LLJ"><td data-page-node-id="tnoGRPPFaTbiP8s4DYmuT5"><!--pnid:ZEGvxberqZ5N9vFJbtJMcO-->原版 Mu 黄环</td><td data-page-node-id="sHECSKdGuPXabvdc1UyD85" class="mono"><!--pnid:f5aKWdToQNzqR5kN363uML-->#F5C518 / #FFF</td><td data-page-node-id="jjERl5EYURGnr3CvslO3zj" class="bad"><!--pnid:dk6zNY5UwVvW5ltW15BOTi-->1.5 : 1</td><td data-page-node-id="hcF6FqXektAbFSzdiuNX0q" class="bad"><!--pnid:qo4qsmGrJFKnGf5oy2tjtd-->不达标</td></tr>
+  </table>
+</div>
+
+<!--pnid:rdbps58LNcXtOQRRfdgE4G--><!-- ========== 硬约束 ========== -->
+<h2 data-page-node-id="5un3olQKBXpmIsRBDY5A9M"><!--pnid:3knghWeYkh2RQziUlN1WHY-->七条硬约束</h2>
+<div data-page-node-id="tW2EwstrCnsRTt0Qqh1qaY" class="note">
+  <ul data-page-node-id="0aFPBDX3xExvy2josJL8Ei">
+    <li data-page-node-id="JTS86IZVBvgo6kACauxUNK"><b data-page-node-id="JYYS5GMLAd3r5LsBPMvhmc"><!--pnid:HDBUlOLV3I90TGMBlcyzSv-->容器家族完全统一。</b><!--pnid:GZvhtpc7F9UJOrmTK8zk5Y-->13 个图标用同一套：40px · 圆角 9px · 内高光 · 字形 22px / 线宽 2.6 / 圆头。禁止任何图标单独偏离。</li>
+    <li data-page-node-id="8IEhscCzoEl146K66u8bsB"><b data-page-node-id="GE9lHR7nHxV5xty5aS481B"><!--pnid:TALy5xLo41vOYIAE8vp03W-->圆角恒定为边长 22.5%。</b><!--pnid:OKkkaOJw1d0H1Iz7Vke8o6-->尺寸变体（40→34→30）圆角按比例缩放，线宽反向加粗（2.6→2.9→3.2）。</li>
+    <li data-page-node-id="pQfxwpfxHybjtMubuJLM4K"><b data-page-node-id="A9uoGyr9mcBPyaAcdNz3GF"><!--pnid:5zgdgGyHLoPK2ltCEEMVgD-->内高光不可省略。</b><code data-page-node-id="MPpafh4MfCgDlFFatpqmhV" data-pnid-children="LWfueKROtj4pQruvNNZ4TV">inset 0 1px 0 rgba(255,255,255,.22)</code><!--pnid:3JGy9TyTCGl8tHLlJ4qnZu--> 是"图标感"与"色块感"的分界线。</li>
+    <li data-page-node-id="tab0ucqZPg7BmPFDm2twGS"><b data-page-node-id="8KiojLfScbiqSpNsiI86lI"><!--pnid:skXi5S5VqAQy7ju3TR8Td4-->悬停只提亮不改色相。</b><code data-page-node-id="Wr2NWwvQHdZuRnyuJsDrVG" data-pnid-children="M15wdcYuJK8DB8tBiWM2Hf">filter: brightness(1.08)</code><!--pnid:BCOESops5GaUlVVGhfNiOa-->，保持色彩语义稳定。</li>
+    <li data-page-node-id="0HcnnWgwiPlDTgsq3k3Ooy"><b data-page-node-id="pSwmXCdHsAeXofdJ1D0xzJ"><!--pnid:5trmSRbNUzWisScwl5DgM8-->「运行」是唯一品牌金。</b><!--pnid:BKD9tNNKTQVl3t8cWpP5AC-->全应用唯一一处品牌色出现在最高频操作上。必须用 <code data-page-node-id="TpCsySNNLPdC4prFEtfxO9" data-pnid-children="rCNFPI7KXlHy3m7crTIFXE">#B8933C</code><!--pnid:ZlAaZNVMxx18AlWIL9YDcT--> 配<b data-page-node-id="H2ryASdunm1wmp8bele0s5"><!--pnid:QsUOP0qTD4yaIRVJT3NMT5-->深墨字</b><!--pnid:DYEBj6gn3uu3cFdmoFsW3A-->，不能用浅金配白字（2.4:1 不达标）。</li>
+    <li data-page-node-id="ILgg0zMpIDtEA0gHFXU9JH"><b data-page-node-id="epsmW4bhKse1YFUPakLSBt"><!--pnid:HIZLkFZsVQYvMFTGioxkRi-->品牌金不进工具栏其余位置。</b><!--pnid:24ct2xPYinxOGjpud828hL-->13 个图标全染金 = 品牌墙，失去工具克制。品牌感的其他落点：启动图标、AI 面板标题、焦点环、选中态。</li>
+    <li data-page-node-id="Vem2wWQGFOpfKQYwRtzTHj"><b data-page-node-id="CynPJeZMmPRiDNpEJZrpcU"><!--pnid:6szeEQXmhIC8PurqAoZYrP-->状态色语义锁定。</b><!--pnid:QCiTGxpTGCdY76tSvAvzW1-->绿=成功 / 红=错误 / 黄=警告，永不挪作装饰。diff 的绿红是行业惯例，不随主题变化。</li>
+  </ul>
+</div>
+
+<!--pnid:owZDjwizowpAKrEtmQ5kSt--><!-- ========== 实施 CSS ========== -->
+<h2 data-page-node-id="9gSXVuBUNAXub1XJFIA0dQ"><!--pnid:z3S8rM7tlR6wjFEXYgjJLx-->可直接使用的 CSS</h2>
+<div data-page-node-id="cdO5ulBM3lE31m5s4uOIPh" class="card">
+<pre data-page-node-id="2xMYHBP7NbB6Dkk0Iq1EI8" data-pnid-children="XUwwwiebFW2eUempdU6FW3" style="font-family:ui-monospace,Menlo,monospace; font-size:11.5px; line-height:1.7; color:#2C3E55; overflow-x:auto; margin:0">.icon-btn {
+  width: 40px; height: 40px;
+  border-radius: 9px;            /* 边长 22.5% */
+  border: none;
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,.22),   /* 内高光 · 关键 */
+    0 1px 2px rgba(0,0,0,.08);
+  display: grid; place-items: center;
+  transition: filter 120ms ease, transform 80ms ease;
+  cursor: pointer;
+}
+.icon-btn svg { width: 22px; height: 22px; stroke-width: 2.6;
+  stroke-linecap: round; stroke-linejoin: round; }
+.icon-btn:hover  { filter: brightness(1.08); }
+.icon-btn:active { filter: brightness(.94); transform: translateY(1px); }
+.icon-btn:focus-visible { outline: 2px solid var(--brand); outline-offset: 2px; }
+
+.icon-btn--sw  { background: var(--sw);  color: #fff; }
+.icon-btn--hw  { background: var(--hw);  color: #fff; }
+.icon-btn--run { background: var(--brand); color: var(--brand-ink); }
+.icon-btn--mute{ background: #E4E8ED; color: #AEB6C0; box-shadow: none; }
+
+.icon-label { font-size: 10.5px; margin-top: 5px; }
+.icon-btn--sw + .icon-label { color: #5A6675; }
+.icon-btn--hw + .icon-label { color: #8A4A0D; }
+.icon-btn--run + .icon-label { color: #8A6A22; font-weight: 600; }</pre>
+</div>
+
+</div>
+
+<script data-page-node-id="VP35m4vCGRofWpYUpquTSk" data-pnid-children="6KNbDblOmkkILdckynUY97">
+const ICONS=[
+ ['掌问','M12 4l1.6 3.9 3.9 1.6-3.9 1.6L12 15l-1.6-3.9L6.5 9.5l3.9-1.6L12 4z','brandlogo'],
+ ['新建','M12 5.5v13M5.5 12h13','sw'],
+ ['加载','M12 15.5V3.5M8 7l4-3.8L16 7','sw'],
+ ['保存','M12 3.5v11M8 11l4 3.8 4-3.8M4.5 14.5v4a2 2 0 0 0 2 2h11a2 2 0 0 0 2-2v-4','sw'],
+ ['上传','M12 19V7M8 11l4-4 4 4M6 19h12','hw'],
+ ['运行','M8.5 5.5 18 12l-9.5 6.5z','run'],
+ ['接线','M7 11.5v8H4.8a1.2 1.2 0 0 1-1.2-1.2v-5.6a1.2 1.2 0 0 1 1.2-1.2H7zM7 11.5l3.8-6.6a2 2 0 0 1 2.3 2.5l-.9 3.6h5a2 2 0 0 1 2 2.3l-1 4.6a2 2 0 0 1-2 1.6H7','hw'],
+ ['文件','M3.5 7A1.5 1.5 0 0 1 5 5.5h4l2 2h8A1.5 1.5 0 0 1 20.5 9v9a1.5 1.5 0 0 1-1.5 1.5H5A1.5 1.5 0 0 1 3.5 18z','sw'],
+ ['REPL','M3.5 5.5h17v13h-17zM7 10.2l2.4 2.3-2.4 2.3','sw'],
+ ['检查','M8.5 12.5l2.2 2.2 4.8-4.8M9 4.5h6M8 6.5H5v14h14v-14h-3','sw'],
+ ['格式化','M4 7h16M4 12h11.5M4 17h14','sw'],
+ ['缩小','M10.5 4.5a6 6 0 1 1 0 12 6 6 0 0 1 0-12M15 15l4.6 4.6M8.3 10.5h4.4','sw'],
+ ['帮助','M12.5 3.5a8.5 8.5 0 1 1 0 17 8.5 8.5 0 0 1 0-17zM9.6 9.4a2.5 2.5 0 0 1 4.9.6c0 1.7-2.5 2-2.5 3.7M12.5 16.8h.01','mute'],
+ ['退出','M12 3.5v7.6M7.7 6.7a7.2 7.2 0 1 0 8.6 0','mute']
+];
+const DIV=[1,4,9,13];
+const C={
+ sw:{bg:'#2F5F96',g:'#fff',lab:'#5A6675',hl:'rgba(255,255,255,.22)'},
+ hw:{bg:'#B4560C',g:'#fff',lab:'#8A4A0D',hl:'rgba(255,255,255,.22)'},
+ run:{bg:'#B8933C',g:'#2E2412',lab:'#8A6A22',hl:'rgba(255,255,255,.3)',fill:true},
+ mute:{bg:'#E4E8ED',g:'#AEB6C0',lab:'#AEB6C0',hl:'rgba(255,255,255,.55)'},
+ brandlogo:{bg:'#C9A96E',g:'#2E2412',lab:'#8A6A22',hl:'rgba(255,255,255,.3)'}
+};
+function cell(lb,d,k){
+  const c=C[k];
+  const isFill = c.fill || k==='brandlogo';
+  return `<span class="u">
+    <svg viewBox="0 0 40 40">
+      <rect x="1" y="1" width="38" height="38" rx="9" fill="${c.bg}"/>
+      <rect x="1.5" y="1.5" width="37" height="37" rx="8.5" fill="none" stroke="${c.hl}" stroke-width="1"/>
+      <g transform="translate(9,9) scale(0.92)" fill="${isFill?c.g:'none'}"
+         stroke="${isFill?'none':c.g}" stroke-width="${k==='brandlogo'?2.4:2.6}" stroke-linecap="round" stroke-linejoin="round">
+        <path d="${d}"/></g>
+    </svg>
+    <b style="color:${c.lab};${k==='run'?'font-weight:600':''}">${lb}</b>
+  </span>`;
+}
+document.getElementById('tb').innerHTML = ICONS.map(([lb,d,k],i)=>
+  (DIV.includes(i)?'<span class="dv"></span>':'')+cell(lb,d,k)).join('');
+
+document.getElementById('fam').innerHTML = ICONS.map(([lb,d,k])=>{
+  const c=C[k];
+  const isFill = c.fill || k==='brandlogo';
+  return `<div class="fcell">
+    <svg viewBox="0 0 40 40">
+      <rect x="1" y="1" width="38" height="38" rx="9" fill="${c.bg}"/>
+      <rect x="1.5" y="1.5" width="37" height="37" rx="8.5" fill="none" stroke="${c.hl}" stroke-width="1"/>
+      <g transform="translate(9,9) scale(0.92)" fill="${isFill?c.g:'none'}"
+         stroke="${isFill?'none':c.g}" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round">
+        <path d="${d}"/></g>
+    </svg>
+    <b>${lb}</b><i>${c.bg}</i>
+  </div>`;
+}).join('');
+
+document.querySelectorAll('.sw-btn').forEach(b=>b.addEventListener('click',()=>{
+  document.documentElement.dataset.theme=b.dataset.t;
+  document.querySelectorAll('.sw-btn').forEach(x=>x.classList.toggle('on',x===b));
+}));
+</script>
+</body>
+</html>

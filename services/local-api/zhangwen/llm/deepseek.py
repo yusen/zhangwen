@@ -3,6 +3,8 @@
 from __future__ import annotations
 
 import json
+import socket
+import ssl
 import time
 from collections.abc import AsyncIterator
 from typing import Any
@@ -86,11 +88,11 @@ class DeepSeekProvider:
                 config,
                 error=make_llm_error(code=LLMErrorCode.TIMEOUT),
             )
-        except httpx.HTTPError:
+        except httpx.HTTPError as exc:
             return _connection_result(
                 False,
                 config,
-                error=make_llm_error(code=LLMErrorCode.NETWORK_UNAVAILABLE),
+                error=make_llm_error(code=_network_error_code(exc)),
             )
 
         if response.status_code >= 400:
@@ -207,12 +209,12 @@ class DeepSeekProvider:
                 error=make_llm_error(LLMErrorCode.TIMEOUT),
             )
             return
-        except httpx.HTTPError:
+        except httpx.HTTPError as exc:
             yield StreamChunk(
                 requestId=request_id,
                 messageId=message_id,
                 type=StreamChunkType.ERROR,
-                error=make_llm_error(LLMErrorCode.NETWORK_UNAVAILABLE),
+                error=make_llm_error(_network_error_code(exc)),
             )
             return
 
@@ -231,6 +233,7 @@ class DeepSeekProvider:
             base_url=config.baseUrl.rstrip("/"),
             timeout=config.timeoutSeconds,
             headers={"Authorization": f"Bearer {api_key}"},
+            follow_redirects=False,
             transport=self._transport,
         )
 
@@ -312,6 +315,7 @@ def _provider_label(provider: LLMProviderId) -> str:
         LLMProviderId.QWEN: "千问",
         LLMProviderId.GLM: "GLM",
         LLMProviderId.KIMI: "Kimi",
+        LLMProviderId.OPENAI_COMPATIBLE: "OpenAI-compatible",
     }[provider]
 
 
@@ -337,3 +341,16 @@ def _apply_thinking_options(payload: dict[str, Any], config: LLMConfig) -> None:
     if enabled and config.reasoningEffort:
         thinking["reasoning_effort"] = config.reasoningEffort
     payload["thinking"] = thinking
+
+
+def _network_error_code(exc: BaseException) -> LLMErrorCode:
+    current: BaseException | None = exc
+    seen: set[int] = set()
+    while current is not None and id(current) not in seen:
+        seen.add(id(current))
+        if isinstance(current, ssl.SSLError):
+            return LLMErrorCode.TLS_FAILED
+        if isinstance(current, socket.gaierror):
+            return LLMErrorCode.DNS_UNAVAILABLE
+        current = current.__cause__ or current.__context__
+    return LLMErrorCode.NETWORK_UNAVAILABLE

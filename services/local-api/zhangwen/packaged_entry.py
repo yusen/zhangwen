@@ -16,6 +16,8 @@ def main(argv: list[str] | None = None) -> int:
     handlers: dict[str, Callable[[list[str]], int]] = {
         "serve": _serve,
         "validation-worker": _validation_worker,
+        "simulation-reference-worker": _simulation_reference_worker,
+        "simulation-runtime-smoke": _simulation_runtime_smoke,
         "mpremote": _mpremote,
         "esptool": _esptool,
         "context-smoke": _context_smoke,
@@ -83,6 +85,65 @@ def _validation_worker(args: list[str]) -> int:
     from zhangwen.code_agent.validation_worker import main as worker_main
 
     return worker_main(["validation_worker", *args])
+
+
+def _simulation_reference_worker(args: list[str]) -> int:
+    if args:
+        return 64
+    from zhangwen.domains.simulation.runtime.reference_worker import main as worker_main
+
+    return worker_main()
+
+
+def _simulation_runtime_smoke(args: list[str]) -> int:
+    """Verify packaged manifest, catalog, fixed dispatch and reference boundary."""
+    if args:
+        return 64
+    from zhangwen.config import settings
+    from zhangwen.domains.simulation.models import (
+        CircuitBoardInstance,
+        CircuitDraftV1,
+        SimulationCodeBundleDraft,
+        SimulationCodeFile,
+    )
+    from zhangwen.domains.simulation.runtime.host import SimulationRuntimeHost
+    from zhangwen.domains.simulation.runtime.models import (
+        RuntimeEngineMode,
+        RuntimeExecutionRequest,
+        RuntimeExecutionStatus,
+        RuntimeResourceLimits,
+    )
+
+    host = SimulationRuntimeHost(settings.data_dir)
+    limits = host.runtime_package.manifest.default_limits
+    result = host.execute(
+        RuntimeExecutionRequest(
+            engineMode=RuntimeEngineMode.BEHAVIORAL_REFERENCE,
+            boardPackageRevisionId="board/esp32s3-reference@1",
+            runtimePackageRevisionId="runtime/zw-mpy-sim@1",
+            circuit=CircuitDraftV1(
+                boardInstance=CircuitBoardInstance(
+                    id="board",
+                    boardPackageRevisionId="board/esp32s3-reference@1",
+                    position={"x": 0, "y": 0},
+                )
+            ),
+            codeBundle=SimulationCodeBundleDraft(
+                files=[SimulationCodeFile(path="main.py", content="print('runtime-smoke')\n")]
+            ),
+            seed=1,
+            limits=RuntimeResourceLimits.model_validate(limits.model_dump()),
+        )
+    )
+    if (
+        result.status is not RuntimeExecutionStatus.COMPLETED
+        or result.serial_output != "runtime-smoke\n"
+        or result.native_core_verified
+        or result.evidence_eligible
+    ):
+        raise RuntimeError("packaged simulation runtime smoke failed")
+    _runtime_log("simulation-runtime-smoke:passed reference-only")
+    return 0
 
 
 def _context_smoke(args: list[str]) -> int:

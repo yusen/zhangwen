@@ -8,6 +8,7 @@ from typing import Annotated, Any, Literal
 from pydantic import BaseModel, ConfigDict, Field
 
 from zhangwen.device_lab.models import SupportedDeviceBoardId
+from zhangwen.domains.orchestration.models import ExecutionRevisionSet
 
 
 class DeviceSessionStatus(StrEnum):
@@ -217,6 +218,8 @@ class DeviceOperation(BaseModel):
     verification: DeviceVerification | None = None
     cancelable: bool = False
     metadata: dict[str, Any] = Field(default_factory=dict)
+    deviceBindingId: str | None = None
+    executionRevisionSet: ExecutionRevisionSet | None = None
 
 
 class ListDevicePortsResponse(BaseModel):

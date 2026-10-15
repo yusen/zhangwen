@@ -1,0 +1,24 @@
+{
+  "schema": "zhangwen.hardware-skill-manifest/v1",
+  "schemaVersion": 1,
+  "skillName": "esp32-generic-c3",
+  "componentId": "hw_esp32_generic_c3",
+  "displayName": "ESP32-C3（通用 MicroPython）",
+  "description": "ESP32-C3 通用 MicroPython 主控；具体开发板引脚和板载外设请按实物核对。",
+  "status": "ACTIVE",
+  "sourceKind": "MANUAL",
+  "files": [
+    "SKILL.md",
+    "references/specifications.md",
+    "references/compatibility-rules.md",
+    "references/integration.md",
+    "references/safety.md",
+    "references/sources.md",
+    "examples/usage.md",
+    "tests/validation-cases.md"
+  ],
+  "media": [],
+  "revision": "25c22f332fa6ba7ed92cad43",
+  "createdAt": "2026-10-14T15:59:47.258844+00:00",
+  "updatedAt": "2026-10-14T15:59:47.258844+00:00"
+}

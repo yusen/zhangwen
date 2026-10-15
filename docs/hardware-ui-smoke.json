@@ -1,0 +1,24 @@
+{
+  "sensorCount": 54,
+  "scratchSelection": true,
+  "scratchReload": true,
+  "search": true,
+  "groveIsolation": true,
+  "pageErrors": [],
+  "layouts": [
+    {
+      "width": 1440,
+      "overflow": false,
+      "listScrolls": true,
+      "searchVisible": true,
+      "actionVisible": true
+    },
+    {
+      "width": 375,
+      "overflow": false,
+      "listScrolls": true,
+      "searchVisible": true,
+      "actionVisible": true
+    }
+  ]
+}

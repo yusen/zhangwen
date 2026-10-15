@@ -3099,7 +3099,7 @@ class ProjectRepository:
             createdAt=row["created_at"],
             updatedAt=row["updated_at"],
             lastOpenedAt=row["last_opened_at"],
-            schemaVersion=ProjectPersistenceVersion.V31,
+            schemaVersion=ProjectPersistenceVersion(CURRENT_SCHEMA_VERSION),
         )
 
     def _summary(self, row: sqlite3.Row) -> ProjectSummary:

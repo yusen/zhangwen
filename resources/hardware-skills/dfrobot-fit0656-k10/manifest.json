@@ -1,0 +1,25 @@
+{
+  "schema": "zhangwen.hardware-skill-manifest/v1",
+  "schemaVersion": 1,
+  "skillName": "dfrobot-fit0656-k10",
+  "componentId": "hw_dfrobot_fit0656_k10",
+  "displayName": "DFRobot FIT0656 WS2812 RGB 灯",
+  "description": "为行空板 K10 MicroPython 项目提供 FIT0656 的GPIO接入、兼容和安全边界；API 与电气值仍需按当前固件和实物复核。",
+  "status": "ACTIVE",
+  "sourceKind": "MANUAL",
+  "files": [
+    "README.md",
+    "SKILL.md",
+    "references/specifications.md",
+    "references/compatibility-rules.md",
+    "references/integration.md",
+    "references/safety.md",
+    "references/sources.md",
+    "examples/usage.md",
+    "tests/validation-cases.md"
+  ],
+  "media": [],
+  "revision": "3a8d75b159b824bf04591d31",
+  "createdAt": "2026-07-17T06:57:53Z",
+  "updatedAt": "2026-07-17T10:42:11Z"
+}

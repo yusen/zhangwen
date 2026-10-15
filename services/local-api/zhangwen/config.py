@@ -23,6 +23,11 @@ def _configured_bridge_origins() -> list[str]:
     ]
 
 
+def _configured_mqtt_broker_executable() -> Path | None:
+    value = os.environ.get("ZHANGWEN_MQTT_BROKER_EXECUTABLE", "").strip()
+    return Path(value).resolve() if value else None
+
+
 class LLMTestMode:
     STANDARD = "standard"
     FAKE = "fake"
@@ -59,6 +64,9 @@ class Settings(BaseModel):
     credential_account: str = "default"
     cloud_auth_base_url: str = os.environ.get("ZHANGWEN_CLOUD_AUTH_BASE_URL", "").strip()
     cloud_auth_credential_service: str = "zhangwen.cloud-auth.refresh"
+    mqtt_broker_executable: Path | None = _configured_mqtt_broker_executable()
+    mqtt_broker_sha256: str = os.environ.get("ZHANGWEN_MQTT_BROKER_SHA256", "").strip().lower()
+    mqtt_credential_service: str = "zhangwen.mqtt"
 
 
 settings = Settings()

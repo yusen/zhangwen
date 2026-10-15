@@ -12,6 +12,7 @@ class LLMProviderId(StrEnum):
     QWEN = "qwen"
     GLM = "glm"
     KIMI = "kimi"
+    OPENAI_COMPATIBLE = "openai-compatible"
 
 
 class LLMModelId(StrEnum):
@@ -247,6 +248,9 @@ class LLMErrorCode(StrEnum):
     SERVER_ERROR = "SERVER_ERROR"
     SERVICE_BUSY = "SERVICE_BUSY"
     NETWORK_UNAVAILABLE = "NETWORK_UNAVAILABLE"
+    DNS_UNAVAILABLE = "DNS_UNAVAILABLE"
+    TLS_FAILED = "TLS_FAILED"
+    MODEL_NOT_FOUND = "MODEL_NOT_FOUND"
     TIMEOUT = "TIMEOUT"
     CANCELED = "CANCELED"
     SIDECAR_UNAVAILABLE = "SIDECAR_UNAVAILABLE"
@@ -404,6 +408,9 @@ class LLMConfig(BaseModel):
     keySaved: bool = False
     maskedApiKey: str | None = None
     updatedAt: str | None = None
+    providerConfigurationId: str | None = None
+    providerConfigurationRevisionId: str | None = None
+    routingProfileRevisionId: str | None = None
 
     @model_validator(mode="after")
     def _validate_model_provider(self) -> "LLMConfig":

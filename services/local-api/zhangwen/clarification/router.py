@@ -10,6 +10,7 @@ from zhangwen.config import settings
 from zhangwen.llm.deepseek import DeepSeekProvider
 from zhangwen.llm.http import llm_http_exception
 from zhangwen.llm.runtime import require_llm_config
+from zhangwen.settings.models import ModelWorkload
 from zhangwen.llm.structured import StructuredLLMError
 from zhangwen.projects.repository import ProjectRepository
 from zhangwen.security.credentials import BackendCredentialStore
@@ -239,4 +240,5 @@ def _get_llm_config():
         credential_store=credential_store_factory(),
         credential_service=settings.credential_service,
         credential_account=settings.credential_account,
+        workload=ModelWorkload.CREATION,
     )

@@ -1,0 +1,24 @@
+{
+  "environment": "Windows / isolated source checkout / downloaded Node 24.14.0 + Python 3.13.7",
+  "bootstrap": "passed; no .venv/node_modules/imports/.data copied",
+  "repeatStartup": "passed; no install or build output",
+  "health": {
+    "status": "ok",
+    "version": "0.1.0",
+    "transport": "web-serial"
+  },
+  "freshProjects": 0,
+  "aiKeyConfigured": false,
+  "installedPackages": 76,
+  "visibleSkills": 74,
+  "categories": {
+    "MCU": 5,
+    "SENSOR": 54,
+    "ACTUATOR": 9,
+    "DISPLAY": 5
+  },
+  "saveReadCheckUploadManifest": "passed (test data only)",
+  "protectedSourceHashes": 471,
+  "hardwareSnapshotHashes": 817,
+  "hardwareOrModelCalls": 0
+}

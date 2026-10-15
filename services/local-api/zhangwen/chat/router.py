@@ -46,6 +46,7 @@ from zhangwen.llm.contracts import (
 from zhangwen.llm.development_fake import create_provider
 from zhangwen.llm.errors import make_llm_error
 from zhangwen.llm.runtime import require_llm_config
+from zhangwen.settings.models import ModelWorkload
 from zhangwen.llm.structured import StructuredLLMError
 from zhangwen.host import require_desktop_host
 from zhangwen.security.credentials import BackendCredentialStore
@@ -105,7 +106,10 @@ async def stream_chat(request: ChatRequest) -> StreamingResponse:
     async def events() -> AsyncIterator[str]:
         try:
             try:
-                config, api_key = _get_llm_config()
+                config, api_key = _get_llm_config(
+                    owner_kind="EPHEMERAL_CHAT",
+                    owner_id=request_id,
+                )
             except StructuredLLMError as exc:
                 yield _sse(
                     "chat.error",
@@ -355,7 +359,10 @@ async def stream_project_chat(
         try:
             repository.update_turn_status(request_turn_id, "STREAMING")
             try:
-                config, api_key = _get_llm_config()
+                config, api_key = _get_llm_config(
+                    owner_kind="CONVERSATION_TURN",
+                    owner_id=request_turn_id,
+                )
             except StructuredLLMError as exc:
                 error = exc.error
                 repository.update_message(
@@ -1483,12 +1490,19 @@ def _project_error_to_llm_error(exc: ProjectError):
     return make_llm_error(LLMErrorCode.UNKNOWN)
 
 
-def _get_llm_config():
+def _get_llm_config(
+    *,
+    owner_kind: str | None = None,
+    owner_id: str | None = None,
+):
     return require_llm_config(
         data_dir=settings.data_dir,
         credential_store=credential_store_factory(),
         credential_service=settings.credential_service,
         credential_account=settings.credential_account,
+        workload=ModelWorkload.CREATION,
+        owner_kind=owner_kind,
+        owner_id=owner_id,
     )
 
 

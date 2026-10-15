@@ -10,7 +10,7 @@ from datetime import UTC, datetime
 
 from zhangwen.projects.errors import UnsupportedProjectSchemaError
 
-CURRENT_SCHEMA_VERSION = 31
+CURRENT_SCHEMA_VERSION = 46
 
 
 def migrate(conn: sqlite3.Connection) -> None:
@@ -129,12 +129,71 @@ def migrate(conn: sqlite3.Connection) -> None:
     if version < 31:
         _migrate_v31(conn)
         version = 31
+    if version < 32:
+        _migrate_v32(conn)
+        version = 32
+    if version < 33:
+        _migrate_v33(conn)
+        version = 33
+    if version < 34:
+        _migrate_v34(conn)
+        version = 34
+    if version < 35:
+        _migrate_v35(conn)
+        version = 35
+    if version < 36:
+        _migrate_v36(conn)
+        version = 36
+    if version < 37:
+        _migrate_v37(conn)
+        version = 37
+    if version < 38:
+        _migrate_v38(conn)
+        version = 38
+    if version < 39:
+        _migrate_v39(conn)
+        version = 39
+    if version < 40:
+        _migrate_v40(conn)
+        version = 40
+    if version < 41:
+        _migrate_v41(conn)
+        version = 41
+    if version < 42:
+        _migrate_v42(conn)
+        version = 42
+    if version < 43:
+        _migrate_v43(conn)
+        version = 43
+    if version < 44:
+        _migrate_v44(conn)
+        version = 44
+    if version < 45:
+        _migrate_v45(conn)
+        version = 45
+    if version < 46:
+        _migrate_v46(conn)
+        version = 46
     _repair_v30_creator_core_projections(conn)
     _repair_v30_creator_physical_runs(conn)
     _repair_v30_creator_deliveries(conn)
     _repair_v29_device_lab_scene_table(conn)
     _repair_v30_creator_idempotency(conn)
     _repair_v31_creator_code_variants(conn)
+    _repair_v32_work_projection_tables(conn)
+    _repair_v33_realtime_tables(conn)
+    _repair_v34_orchestration_tables(conn)
+    _repair_v35_package_platform_tables(conn)
+    _repair_v36_device_platform_tables(conn)
+    _repair_v37_mqtt_service_tables(conn)
+    _repair_v38_canvas_tables(conn)
+    _repair_v39_model_provider_tables(conn)
+    _repair_v41_project_learning_tables(conn)
+    _repair_v42_simulation_tables(conn)
+    _repair_v43_simulation_run_tables(conn)
+    _repair_v44_project_deployment_tables(conn)
+    _repair_v45_project_making_tables(conn)
+    _repair_v46_project_submission_tables(conn)
     _repair_v29_espclaw_tables(conn)
     _repair_code_run_runtime_columns(conn)
     _repair_artifact_domain_status_consistency(conn)
@@ -2351,6 +2410,2106 @@ def _repair_v31_creator_code_variants(conn: sqlite3.Connection) -> None:
           ON creator_code_variant_bindings(project_id, updated_at DESC);
         """
     )
+
+
+def _migrate_v32(conn: sqlite3.Connection) -> None:
+    """Add rebuildable unified Work projections without copying project facts."""
+
+    _repair_v32_work_projection_tables(conn)
+    conn.execute(
+        """
+        INSERT OR IGNORE INTO schema_migration_audit (
+          id, from_version, to_version, status, backup_path, applied_at
+        ) VALUES ('migration_v31_v32', 31, 32, 'applied', NULL, ?)
+        """,
+        (datetime.now(UTC).isoformat(),),
+    )
+    conn.execute("PRAGMA user_version=32")
+
+
+def _repair_v32_work_projection_tables(conn: sqlite3.Connection) -> None:
+    """Keep the new tables rebuildable and empty until a projection is persisted."""
+
+    conn.executescript(
+        """
+        CREATE TABLE IF NOT EXISTS work_snapshots (
+          id TEXT PRIMARY KEY,
+          work_id TEXT NOT NULL REFERENCES projects(id) ON DELETE CASCADE,
+          revision INTEGER NOT NULL CHECK (revision >= 0),
+          source_project_version INTEGER NOT NULL CHECK (source_project_version >= 0),
+          snapshot_json TEXT NOT NULL,
+          created_at TEXT NOT NULL,
+          UNIQUE(work_id, revision)
+        );
+
+        CREATE INDEX IF NOT EXISTS idx_work_snapshots_current
+          ON work_snapshots(work_id, revision DESC);
+
+        CREATE TABLE IF NOT EXISTS work_state_transitions (
+          id TEXT PRIMARY KEY,
+          work_id TEXT NOT NULL REFERENCES projects(id) ON DELETE CASCADE,
+          revision INTEGER NOT NULL CHECK (revision >= 1),
+          from_state TEXT NULL,
+          to_state TEXT NOT NULL,
+          trigger_type TEXT NOT NULL,
+          trigger_id TEXT NOT NULL,
+          occurred_at TEXT NOT NULL,
+          UNIQUE(work_id, revision),
+          UNIQUE(work_id, trigger_type, trigger_id)
+        );
+
+        CREATE INDEX IF NOT EXISTS idx_work_state_transitions_work
+          ON work_state_transitions(work_id, revision DESC);
+        """
+    )
+
+
+def _migrate_v33(conn: sqlite3.Connection) -> None:
+    """Add one durable event store and transactional local outbox."""
+
+    _repair_v33_realtime_tables(conn)
+    conn.execute(
+        """
+        INSERT OR IGNORE INTO schema_migration_audit (
+          id, from_version, to_version, status, backup_path, applied_at
+        ) VALUES ('migration_v32_v33', 32, 33, 'applied', NULL, ?)
+        """,
+        (datetime.now(UTC).isoformat(),),
+    )
+    conn.execute("PRAGMA user_version=33")
+
+
+def _repair_v33_realtime_tables(conn: sqlite3.Connection) -> None:
+    conn.executescript(
+        """
+        CREATE TABLE IF NOT EXISTS realtime_events (
+          position INTEGER PRIMARY KEY AUTOINCREMENT,
+          id TEXT NOT NULL UNIQUE,
+          scope TEXT NOT NULL CHECK (
+            scope IN ('WORK', 'PACKAGE', 'DEVICE', 'SERVICE', 'SYSTEM')
+          ),
+          scope_id TEXT NOT NULL,
+          seq INTEGER NOT NULL CHECK (seq >= 1),
+          type TEXT NOT NULL,
+          revision INTEGER NOT NULL CHECK (revision >= 1),
+          occurred_at TEXT NOT NULL,
+          durable INTEGER NOT NULL CHECK (durable IN (0, 1)),
+          payload_json TEXT NOT NULL CHECK (json_valid(payload_json)),
+          source_event_id TEXT NULL UNIQUE,
+          UNIQUE(scope, scope_id, seq)
+        );
+
+        CREATE INDEX IF NOT EXISTS idx_realtime_events_scope_position
+          ON realtime_events(scope, scope_id, position ASC);
+
+        CREATE TABLE IF NOT EXISTS realtime_outbox (
+          event_id TEXT PRIMARY KEY
+            REFERENCES realtime_events(id) ON DELETE CASCADE,
+          attempts INTEGER NOT NULL DEFAULT 0 CHECK (attempts >= 0),
+          available_at TEXT NOT NULL,
+          published_at TEXT NULL,
+          last_error TEXT NULL
+        );
+
+        CREATE INDEX IF NOT EXISTS idx_realtime_outbox_pending
+          ON realtime_outbox(published_at, available_at);
+        """
+    )
+
+
+def _migrate_v34(conn: sqlite3.Connection) -> None:
+    """Add immutable per-Turn invocation plans and package revision sets."""
+
+    _repair_v34_orchestration_tables(conn)
+    conn.execute(
+        """
+        INSERT OR IGNORE INTO schema_migration_audit (
+          id, from_version, to_version, status, backup_path, applied_at
+        ) VALUES ('migration_v33_v34', 33, 34, 'applied', NULL, ?)
+        """,
+        (datetime.now(UTC).isoformat(),),
+    )
+    conn.execute("PRAGMA user_version=34")
+
+
+def _repair_v34_orchestration_tables(conn: sqlite3.Connection) -> None:
+    conn.executescript(
+        """
+        CREATE TABLE IF NOT EXISTS execution_revision_sets (
+          id TEXT PRIMARY KEY,
+          work_id TEXT NOT NULL REFERENCES projects(id) ON DELETE CASCADE,
+          owner_kind TEXT NOT NULL CHECK (owner_kind IN ('TURN')),
+          owner_id TEXT NOT NULL,
+          bindings_json TEXT NOT NULL CHECK (json_valid(bindings_json)),
+          created_at TEXT NOT NULL,
+          UNIQUE(owner_kind, owner_id)
+        );
+
+        CREATE INDEX IF NOT EXISTS idx_execution_revision_sets_work
+          ON execution_revision_sets(work_id, created_at DESC);
+
+        CREATE TABLE IF NOT EXISTS unified_turns (
+          id TEXT PRIMARY KEY,
+          work_id TEXT NOT NULL REFERENCES projects(id) ON DELETE CASCADE,
+          idempotency_key TEXT NOT NULL,
+          user_message TEXT NOT NULL,
+          status TEXT NOT NULL CHECK (
+            status IN ('RUNNING', 'COMPLETED', 'DEGRADED', 'FAILED')
+          ),
+          assistant_response TEXT NULL,
+          natural_status TEXT NOT NULL,
+          revision_set_id TEXT NOT NULL
+            REFERENCES execution_revision_sets(id) ON DELETE RESTRICT,
+          created_at TEXT NOT NULL,
+          updated_at TEXT NOT NULL,
+          completed_at TEXT NULL,
+          UNIQUE(work_id, idempotency_key)
+        );
+
+        CREATE INDEX IF NOT EXISTS idx_unified_turns_work_created
+          ON unified_turns(work_id, created_at ASC, id ASC);
+
+        CREATE TABLE IF NOT EXISTS invocation_plans (
+          id TEXT PRIMARY KEY,
+          turn_id TEXT NOT NULL UNIQUE
+            REFERENCES unified_turns(id) ON DELETE CASCADE,
+          work_id TEXT NOT NULL REFERENCES projects(id) ON DELETE CASCADE,
+          intent TEXT NOT NULL,
+          status TEXT NOT NULL CHECK (
+            status IN ('RUNNING', 'COMPLETED', 'DEGRADED', 'FAILED')
+          ),
+          created_at TEXT NOT NULL,
+          updated_at TEXT NOT NULL
+        );
+
+        CREATE INDEX IF NOT EXISTS idx_invocation_plans_work
+          ON invocation_plans(work_id, created_at DESC);
+
+        CREATE TABLE IF NOT EXISTS invocation_steps (
+          id TEXT PRIMARY KEY,
+          plan_id TEXT NOT NULL REFERENCES invocation_plans(id) ON DELETE CASCADE,
+          position INTEGER NOT NULL CHECK (position >= 0),
+          unit TEXT NOT NULL CHECK (
+            unit IN ('DISCOVERY_ROLE', 'ENGINEERING_ROLE', 'STRUCTURE_ROLE')
+          ),
+          status TEXT NOT NULL CHECK (
+            status IN ('QUEUED', 'RUNNING', 'COMPLETED', 'FALLBACK', 'FAILED')
+          ),
+          agent_package_revision_id TEXT NOT NULL,
+          skill_revision_ids_json TEXT NOT NULL CHECK (
+            json_valid(skill_revision_ids_json)
+          ),
+          output_summary TEXT NULL,
+          fallback_code TEXT NULL CHECK (
+            fallback_code IS NULL OR fallback_code IN (
+              'UNIT_UNAVAILABLE', 'OUTPUT_INVALID', 'POLICY_BLOCKED',
+              'INTERNAL_FAILURE'
+            )
+          ),
+          fallback_message TEXT NULL,
+          started_at TEXT NULL,
+          completed_at TEXT NULL,
+          created_at TEXT NOT NULL,
+          updated_at TEXT NOT NULL,
+          UNIQUE(plan_id, position),
+          UNIQUE(plan_id, unit)
+        );
+
+        CREATE INDEX IF NOT EXISTS idx_invocation_steps_plan
+          ON invocation_steps(plan_id, position ASC);
+        """
+    )
+
+
+def _migrate_v35(conn: sqlite3.Connection) -> None:
+    """Add the canonical five-kind capability package and Studio store."""
+
+    _repair_v35_package_platform_tables(conn)
+    conn.execute(
+        """
+        INSERT OR IGNORE INTO schema_migration_audit (
+          id, from_version, to_version, status, backup_path, applied_at
+        ) VALUES ('migration_v34_v35', 34, 35, 'applied', NULL, ?)
+        """,
+        (datetime.now(UTC).isoformat(),),
+    )
+    conn.execute("PRAGMA user_version=35")
+
+
+def _repair_v35_package_platform_tables(conn: sqlite3.Connection) -> None:
+    conn.executescript(
+        """
+        CREATE TABLE IF NOT EXISTS capability_packages (
+          id TEXT PRIMARY KEY,
+          kind TEXT NOT NULL CHECK (
+            kind IN (
+              'SKILL_PACKAGE', 'AGENT_PACKAGE', 'DEVICE_PACKAGE',
+              'RUNTIME_PACKAGE', 'SERVICE_PACKAGE'
+            )
+          ),
+          slug TEXT NOT NULL,
+          display_name TEXT NOT NULL,
+          owner_subject TEXT NULL,
+          owner_key TEXT NOT NULL,
+          source_type TEXT NULL,
+          source_key TEXT NULL,
+          managed_by TEXT NOT NULL CHECK (managed_by IN ('LEGACY_ADAPTER', 'UNIFIED')),
+          stable_revision_id TEXT NULL,
+          draft_revision_id TEXT NULL,
+          revision INTEGER NOT NULL DEFAULT 1 CHECK (revision >= 1),
+          created_at TEXT NOT NULL,
+          updated_at TEXT NOT NULL,
+          UNIQUE(owner_key, kind, slug),
+          UNIQUE(source_type, source_key)
+        );
+
+        CREATE INDEX IF NOT EXISTS idx_capability_packages_kind
+          ON capability_packages(kind, display_name, id);
+
+        CREATE TABLE IF NOT EXISTS package_revisions (
+          id TEXT PRIMARY KEY,
+          package_id TEXT NOT NULL REFERENCES capability_packages(id) ON DELETE CASCADE,
+          revision INTEGER NOT NULL CHECK (revision >= 1),
+          status TEXT NOT NULL CHECK (
+            status IN ('DRAFT', 'VALIDATING', 'VALID', 'INVALID', 'PUBLISHED', 'RETIRED')
+          ),
+          manifest_json TEXT NOT NULL CHECK (json_valid(manifest_json)),
+          files_json TEXT NOT NULL CHECK (json_valid(files_json)),
+          manifest_artifact_id TEXT NOT NULL,
+          content_digest TEXT NOT NULL,
+          schema_version INTEGER NOT NULL CHECK (schema_version >= 1),
+          validation_summary_json TEXT NOT NULL CHECK (json_valid(validation_summary_json)),
+          shadow_status TEXT NOT NULL DEFAULT 'NOT_RUN' CHECK (
+            shadow_status IN ('NOT_RUN', 'PASSED', 'FAILED')
+          ),
+          created_at TEXT NOT NULL,
+          published_at TEXT NULL,
+          supersedes_revision_id TEXT NULL REFERENCES package_revisions(id) ON DELETE RESTRICT,
+          UNIQUE(package_id, revision)
+        );
+
+        CREATE INDEX IF NOT EXISTS idx_package_revisions_package
+          ON package_revisions(package_id, revision DESC);
+
+        CREATE TABLE IF NOT EXISTS package_bindings (
+          id TEXT PRIMARY KEY,
+          owner_key TEXT NOT NULL,
+          scope_kind TEXT NOT NULL CHECK (scope_kind IN ('SYSTEM', 'WORK', 'USER')),
+          scope_id TEXT NOT NULL,
+          package_id TEXT NOT NULL REFERENCES capability_packages(id) ON DELETE CASCADE,
+          strategy TEXT NOT NULL CHECK (
+            strategy IN ('PINNED', 'FOLLOW_STABLE', 'FOLLOW_DRAFT')
+          ),
+          pinned_revision_id TEXT NULL REFERENCES package_revisions(id) ON DELETE RESTRICT,
+          revision INTEGER NOT NULL DEFAULT 1 CHECK (revision >= 1),
+          updated_at TEXT NOT NULL,
+          UNIQUE(owner_key, scope_kind, scope_id, package_id)
+        );
+
+        CREATE TABLE IF NOT EXISTS package_workspaces (
+          id TEXT PRIMARY KEY,
+          package_id TEXT NOT NULL REFERENCES capability_packages(id) ON DELETE CASCADE,
+          owner_subject TEXT NULL,
+          owner_key TEXT NOT NULL,
+          base_revision_id TEXT NULL REFERENCES package_revisions(id) ON DELETE RESTRICT,
+          draft_revision_id TEXT NULL REFERENCES package_revisions(id) ON DELETE RESTRICT,
+          revision INTEGER NOT NULL DEFAULT 1 CHECK (revision >= 1),
+          status TEXT NOT NULL CHECK (status IN ('DRAFT', 'VALID', 'INVALID', 'PUBLISHED')),
+          validation_summary_json TEXT NOT NULL CHECK (json_valid(validation_summary_json)),
+          created_at TEXT NOT NULL,
+          updated_at TEXT NOT NULL,
+          UNIQUE(package_id, owner_key)
+        );
+
+        CREATE TABLE IF NOT EXISTS package_workspace_files (
+          workspace_id TEXT NOT NULL REFERENCES package_workspaces(id) ON DELETE CASCADE,
+          path TEXT NOT NULL,
+          content TEXT NOT NULL,
+          content_digest TEXT NOT NULL,
+          revision INTEGER NOT NULL DEFAULT 1 CHECK (revision >= 1),
+          updated_at TEXT NOT NULL,
+          PRIMARY KEY(workspace_id, path)
+        );
+
+        CREATE TABLE IF NOT EXISTS package_validation_runs (
+          id TEXT PRIMARY KEY,
+          workspace_id TEXT NOT NULL REFERENCES package_workspaces(id) ON DELETE CASCADE,
+          package_revision_id TEXT NOT NULL REFERENCES package_revisions(id) ON DELETE CASCADE,
+          status TEXT NOT NULL CHECK (status IN ('PASSED', 'FAILED')),
+          issues_json TEXT NOT NULL CHECK (json_valid(issues_json)),
+          created_at TEXT NOT NULL
+        );
+
+        CREATE TABLE IF NOT EXISTS package_input_snapshots (
+          id TEXT PRIMARY KEY,
+          source_turn_id TEXT NOT NULL UNIQUE REFERENCES unified_turns(id) ON DELETE CASCADE,
+          work_id TEXT NOT NULL REFERENCES projects(id) ON DELETE CASCADE,
+          input_json TEXT NOT NULL CHECK (json_valid(input_json)),
+          execution_revision_set_json TEXT NOT NULL CHECK (
+            json_valid(execution_revision_set_json)
+          ),
+          redacted INTEGER NOT NULL CHECK (redacted IN (0, 1)),
+          created_at TEXT NOT NULL
+        );
+
+        CREATE TABLE IF NOT EXISTS package_replay_runs (
+          id TEXT PRIMARY KEY,
+          workspace_id TEXT NOT NULL REFERENCES package_workspaces(id) ON DELETE CASCADE,
+          package_id TEXT NOT NULL REFERENCES capability_packages(id) ON DELETE CASCADE,
+          package_revision_id TEXT NOT NULL REFERENCES package_revisions(id) ON DELETE RESTRICT,
+          input_snapshot_id TEXT NOT NULL REFERENCES package_input_snapshots(id) ON DELETE RESTRICT,
+          output_json TEXT NOT NULL CHECK (json_valid(output_json)),
+          tool_plan_json TEXT NOT NULL CHECK (json_valid(tool_plan_json)),
+          diagnostics_json TEXT NOT NULL CHECK (json_valid(diagnostics_json)),
+          created_at TEXT NOT NULL
+        );
+
+        CREATE TABLE IF NOT EXISTS package_shadow_runs (
+          id TEXT PRIMARY KEY,
+          workspace_id TEXT NOT NULL REFERENCES package_workspaces(id) ON DELETE CASCADE,
+          package_id TEXT NOT NULL REFERENCES capability_packages(id) ON DELETE CASCADE,
+          baseline_revision_id TEXT NOT NULL REFERENCES package_revisions(id) ON DELETE RESTRICT,
+          candidate_revision_id TEXT NOT NULL REFERENCES package_revisions(id) ON DELETE RESTRICT,
+          input_snapshot_id TEXT NOT NULL REFERENCES package_input_snapshots(id) ON DELETE RESTRICT,
+          baseline_output_json TEXT NOT NULL CHECK (json_valid(baseline_output_json)),
+          candidate_output_json TEXT NOT NULL CHECK (json_valid(candidate_output_json)),
+          output_diff_json TEXT NOT NULL CHECK (json_valid(output_diff_json)),
+          tool_plan_diff_json TEXT NOT NULL CHECK (json_valid(tool_plan_diff_json)),
+          diagnostics_json TEXT NOT NULL CHECK (json_valid(diagnostics_json)),
+          status TEXT NOT NULL CHECK (status IN ('PASSED', 'FAILED')),
+          created_at TEXT NOT NULL
+        );
+
+        CREATE INDEX IF NOT EXISTS idx_package_shadow_workspace
+          ON package_shadow_runs(workspace_id, created_at DESC);
+        """
+    )
+
+
+def _migrate_v36(conn: sqlite3.Connection) -> None:
+    """Separate stable device facts, user inventory, and per-work bindings."""
+
+    _repair_v36_device_platform_tables(conn)
+    conn.execute(
+        """
+        INSERT OR IGNORE INTO schema_migration_audit (
+          id, from_version, to_version, status, backup_path, applied_at
+        ) VALUES ('migration_v35_v36', 35, 36, 'applied', NULL, ?)
+        """,
+        (datetime.now(UTC).isoformat(),),
+    )
+    conn.execute("PRAGMA user_version=36")
+
+
+def _repair_v36_device_platform_tables(conn: sqlite3.Connection) -> None:
+    conn.executescript(
+        """
+        CREATE TABLE IF NOT EXISTS inventory_items (
+          id TEXT PRIMARY KEY,
+          owner_subject TEXT NULL,
+          owner_key TEXT NOT NULL,
+          device_package_id TEXT NOT NULL
+            REFERENCES capability_packages(id) ON DELETE RESTRICT,
+          display_name TEXT NOT NULL,
+          quantity INTEGER NOT NULL CHECK (quantity >= 0),
+          status TEXT NOT NULL CHECK (
+            status IN ('AVAILABLE', 'IN_USE', 'NEEDS_ATTENTION', 'RETIRED')
+          ),
+          price REAL NOT NULL DEFAULT 0 CHECK (price >= 0),
+          location TEXT NOT NULL DEFAULT '',
+          notes TEXT NOT NULL DEFAULT '',
+          last_connection_status TEXT NULL,
+          last_connected_at TEXT NULL,
+          source_type TEXT NULL,
+          source_key TEXT NULL,
+          idempotency_key TEXT NULL,
+          revision INTEGER NOT NULL DEFAULT 1 CHECK (revision >= 1),
+          created_at TEXT NOT NULL,
+          updated_at TEXT NOT NULL,
+          UNIQUE(owner_key, source_type, source_key),
+          UNIQUE(owner_key, idempotency_key)
+        );
+
+        CREATE INDEX IF NOT EXISTS idx_inventory_items_owner_status
+          ON inventory_items(owner_key, status, updated_at DESC);
+
+        CREATE TABLE IF NOT EXISTS work_device_bindings (
+          id TEXT PRIMARY KEY,
+          work_id TEXT NOT NULL REFERENCES projects(id) ON DELETE CASCADE,
+          owner_key TEXT NOT NULL,
+          inventory_item_id TEXT NULL
+            REFERENCES inventory_items(id) ON DELETE SET NULL,
+          device_package_id TEXT NOT NULL
+            REFERENCES capability_packages(id) ON DELETE RESTRICT,
+          device_package_revision_id TEXT NOT NULL
+            REFERENCES package_revisions(id) ON DELETE RESTRICT,
+          identity_status TEXT NOT NULL CHECK (
+            identity_status IN ('NOT_CONNECTED', 'MATCHED', 'NEEDS_ATTENTION')
+          ),
+          deployment_channel TEXT NULL CHECK (
+            deployment_channel IS NULL OR
+            deployment_channel IN ('USB_SERIAL', 'ESP_CLAW')
+          ),
+          runtime_package_revision_id TEXT NULL
+            REFERENCES package_revisions(id) ON DELETE RESTRICT,
+          code_variant_id TEXT NULL,
+          io_config_json TEXT NOT NULL DEFAULT '{}' CHECK (json_valid(io_config_json)),
+          recovery_status TEXT NOT NULL CHECK (
+            recovery_status IN ('READY', 'RECOVERY_AVAILABLE', 'RECOVERY_REQUIRED')
+          ),
+          natural_status TEXT NOT NULL,
+          source_type TEXT NULL,
+          source_key TEXT NULL,
+          idempotency_key TEXT NULL,
+          revision INTEGER NOT NULL DEFAULT 1 CHECK (revision >= 1),
+          created_at TEXT NOT NULL,
+          updated_at TEXT NOT NULL,
+          UNIQUE(work_id, owner_key, source_type, source_key),
+          UNIQUE(work_id, owner_key, idempotency_key)
+        );
+
+        CREATE INDEX IF NOT EXISTS idx_work_device_bindings_work
+          ON work_device_bindings(work_id, updated_at DESC, id);
+        CREATE INDEX IF NOT EXISTS idx_work_device_bindings_inventory
+          ON work_device_bindings(inventory_item_id, updated_at DESC);
+        """
+    )
+
+
+def _migrate_v37(conn: sqlite3.Connection) -> None:
+    """Add supervised MQTT service instances and immutable topic contracts."""
+
+    _repair_v37_mqtt_service_tables(conn)
+    conn.execute(
+        """
+        INSERT OR IGNORE INTO schema_migration_audit (
+          id, from_version, to_version, status, backup_path, applied_at
+        ) VALUES ('migration_v36_v37', 36, 37, 'applied', NULL, ?)
+        """,
+        (datetime.now(UTC).isoformat(),),
+    )
+    conn.execute("PRAGMA user_version=37")
+
+
+def _repair_v37_mqtt_service_tables(conn: sqlite3.Connection) -> None:
+    conn.executescript(
+        """
+        CREATE TABLE IF NOT EXISTS mqtt_topic_contract_revisions (
+          id TEXT PRIMARY KEY,
+          work_id TEXT NOT NULL REFERENCES projects(id) ON DELETE CASCADE,
+          owner_key TEXT NOT NULL,
+          revision INTEGER NOT NULL CHECK (revision >= 1),
+          namespace TEXT NOT NULL,
+          rules_json TEXT NOT NULL CHECK (json_valid(rules_json)),
+          compiled_acl_json TEXT NOT NULL CHECK (json_valid(compiled_acl_json)),
+          acl_digest TEXT NOT NULL,
+          created_at TEXT NOT NULL,
+          UNIQUE(work_id, owner_key, revision)
+        );
+
+        CREATE INDEX IF NOT EXISTS idx_mqtt_contract_work_revision
+          ON mqtt_topic_contract_revisions(work_id, owner_key, revision DESC);
+
+        CREATE TABLE IF NOT EXISTS mqtt_service_instances (
+          id TEXT PRIMARY KEY,
+          work_id TEXT NOT NULL REFERENCES projects(id) ON DELETE CASCADE,
+          owner_subject TEXT NULL,
+          owner_key TEXT NOT NULL,
+          mode TEXT NOT NULL CHECK (
+            mode IN ('SIMULATED', 'LOOPBACK', 'LAN', 'EXTERNAL')
+          ),
+          status TEXT NOT NULL CHECK (
+            status IN (
+              'STOPPED', 'STARTING', 'RUNNING', 'STOPPING',
+              'FAILED_NEEDS_ATTENTION'
+            )
+          ),
+          service_package_id TEXT NOT NULL
+            REFERENCES capability_packages(id) ON DELETE RESTRICT,
+          service_package_revision_id TEXT NOT NULL
+            REFERENCES package_revisions(id) ON DELETE RESTRICT,
+          topic_contract_revision_id TEXT NOT NULL
+            REFERENCES mqtt_topic_contract_revisions(id) ON DELETE RESTRICT,
+          config_artifact_id TEXT NOT NULL REFERENCES artifacts(id) ON DELETE RESTRICT,
+          config_artifact_version_id TEXT NOT NULL
+            REFERENCES artifact_versions(id) ON DELETE RESTRICT,
+          config_digest TEXT NOT NULL,
+          credential_ref TEXT NULL,
+          credential_digest TEXT NULL,
+          listen_host TEXT NULL,
+          listen_port INTEGER NULL CHECK (
+            listen_port IS NULL OR (listen_port >= 1 AND listen_port <= 65535)
+          ),
+          external_endpoint TEXT NULL,
+          external_tls INTEGER NOT NULL DEFAULT 0 CHECK (external_tls IN (0, 1)),
+          auto_recover INTEGER NOT NULL DEFAULT 0 CHECK (auto_recover IN (0, 1)),
+          restart_count INTEGER NOT NULL DEFAULT 0 CHECK (restart_count >= 0),
+          restart_window_started_at TEXT NULL,
+          next_restart_at TEXT NULL,
+          process_pid INTEGER NULL,
+          last_exit_code INTEGER NULL,
+          last_error TEXT NULL,
+          sample_drop_count INTEGER NOT NULL DEFAULT 0 CHECK (sample_drop_count >= 0),
+          natural_status TEXT NOT NULL,
+          idempotency_key TEXT NOT NULL,
+          revision INTEGER NOT NULL DEFAULT 1 CHECK (revision >= 1),
+          created_at TEXT NOT NULL,
+          updated_at TEXT NOT NULL,
+          started_at TEXT NULL,
+          stopped_at TEXT NULL,
+          UNIQUE(work_id, owner_key, idempotency_key)
+        );
+
+        CREATE INDEX IF NOT EXISTS idx_mqtt_instances_work_status
+          ON mqtt_service_instances(work_id, owner_key, status, updated_at DESC);
+
+        CREATE TABLE IF NOT EXISTS mqtt_service_commands (
+          id TEXT PRIMARY KEY,
+          instance_id TEXT NOT NULL
+            REFERENCES mqtt_service_instances(id) ON DELETE CASCADE,
+          owner_key TEXT NOT NULL,
+          operation TEXT NOT NULL,
+          idempotency_key TEXT NOT NULL,
+          request_digest TEXT NOT NULL,
+          result_revision INTEGER NOT NULL CHECK (result_revision >= 1),
+          created_at TEXT NOT NULL,
+          UNIQUE(instance_id, owner_key, operation, idempotency_key)
+        );
+
+        CREATE TABLE IF NOT EXISTS mqtt_service_samples (
+          id TEXT PRIMARY KEY,
+          instance_id TEXT NOT NULL
+            REFERENCES mqtt_service_instances(id) ON DELETE CASCADE,
+          work_id TEXT NOT NULL REFERENCES projects(id) ON DELETE CASCADE,
+          owner_key TEXT NOT NULL,
+          topic TEXT NOT NULL,
+          direction TEXT NOT NULL CHECK (direction IN ('INBOUND', 'OUTBOUND')),
+          payload_json TEXT NOT NULL CHECK (json_valid(payload_json)),
+          payload_bytes INTEGER NOT NULL CHECK (payload_bytes >= 0),
+          sampled_at TEXT NOT NULL
+        );
+
+        CREATE INDEX IF NOT EXISTS idx_mqtt_samples_instance_time
+          ON mqtt_service_samples(instance_id, sampled_at DESC, id DESC);
+        """
+    )
+
+
+def _migrate_v38(conn: sqlite3.Connection) -> None:
+    """Add versioned Work intent, semantic canvas, layout, and generation jobs."""
+
+    _repair_v38_canvas_tables(conn)
+    conn.execute(
+        """
+        INSERT OR IGNORE INTO schema_migration_audit (
+          id, from_version, to_version, status, backup_path, applied_at
+        ) VALUES ('migration_v37_v38', 37, 38, 'applied', NULL, ?)
+        """,
+        (datetime.now(UTC).isoformat(),),
+    )
+    conn.execute("PRAGMA user_version=38")
+
+
+def _repair_v38_canvas_tables(conn: sqlite3.Connection) -> None:
+    conn.executescript(
+        """
+        CREATE TABLE IF NOT EXISTS work_intent_revisions (
+          id TEXT PRIMARY KEY,
+          work_id TEXT NOT NULL REFERENCES projects(id) ON DELETE CASCADE,
+          owner_key TEXT NOT NULL,
+          revision INTEGER NOT NULL CHECK (revision >= 1),
+          source TEXT NOT NULL CHECK (
+            source IN ('FREEFORM', 'TEMPLATE_SEED', 'IMPORT')
+          ),
+          payload_json TEXT NOT NULL CHECK (json_valid(payload_json)),
+          source_digest TEXT NOT NULL,
+          created_at TEXT NOT NULL,
+          UNIQUE(work_id, owner_key, revision)
+        );
+
+        CREATE INDEX IF NOT EXISTS idx_work_intent_revision
+          ON work_intent_revisions(work_id, owner_key, revision DESC);
+
+        CREATE TABLE IF NOT EXISTS canvas_spec_revisions (
+          id TEXT PRIMARY KEY,
+          work_id TEXT NOT NULL REFERENCES projects(id) ON DELETE CASCADE,
+          owner_key TEXT NOT NULL,
+          revision INTEGER NOT NULL CHECK (revision >= 1),
+          work_intent_revision_id TEXT NOT NULL
+            REFERENCES work_intent_revisions(id) ON DELETE RESTRICT,
+          payload_json TEXT NOT NULL CHECK (json_valid(payload_json)),
+          source_digest TEXT NOT NULL,
+          created_at TEXT NOT NULL,
+          UNIQUE(work_id, owner_key, revision)
+        );
+
+        CREATE INDEX IF NOT EXISTS idx_canvas_spec_revision
+          ON canvas_spec_revisions(work_id, owner_key, revision DESC);
+
+        CREATE TABLE IF NOT EXISTS canvas_layouts (
+          id TEXT PRIMARY KEY,
+          work_id TEXT NOT NULL REFERENCES projects(id) ON DELETE CASCADE,
+          owner_key TEXT NOT NULL,
+          canvas_spec_revision_id TEXT NOT NULL
+            REFERENCES canvas_spec_revisions(id) ON DELETE RESTRICT,
+          revision INTEGER NOT NULL CHECK (revision >= 1),
+          algorithm_version TEXT NOT NULL,
+          payload_json TEXT NOT NULL CHECK (json_valid(payload_json)),
+          created_at TEXT NOT NULL,
+          updated_at TEXT NOT NULL,
+          UNIQUE(work_id, owner_key)
+        );
+
+        CREATE TABLE IF NOT EXISTS canvas_generations (
+          id TEXT PRIMARY KEY,
+          work_id TEXT NOT NULL REFERENCES projects(id) ON DELETE CASCADE,
+          owner_key TEXT NOT NULL,
+          idempotency_key TEXT NOT NULL,
+          request_digest TEXT NOT NULL,
+          seed_json TEXT NOT NULL CHECK (json_valid(seed_json)),
+          status TEXT NOT NULL CHECK (
+            status IN ('QUEUED', 'RUNNING', 'SUCCEEDED', 'FAILED', 'CANCELED')
+          ),
+          current_step TEXT NULL CHECK (
+            current_step IS NULL OR current_step IN (
+              'UNDERSTAND_INTENT', 'EXTRACT_CAPABILITIES', 'MATCH_PACKAGES',
+              'VALIDATE_LOCALLY', 'BUILD_CANVAS'
+            )
+          ),
+          completed_steps_json TEXT NOT NULL CHECK (json_valid(completed_steps_json)),
+          progress INTEGER NOT NULL CHECK (progress >= 0 AND progress <= 100),
+          natural_status TEXT NOT NULL,
+          error_code TEXT NULL,
+          retryable INTEGER NOT NULL DEFAULT 0 CHECK (retryable IN (0, 1)),
+          intent_revision_id TEXT NULL
+            REFERENCES work_intent_revisions(id) ON DELETE RESTRICT,
+          canvas_spec_revision_id TEXT NULL
+            REFERENCES canvas_spec_revisions(id) ON DELETE RESTRICT,
+          created_at TEXT NOT NULL,
+          started_at TEXT NULL,
+          updated_at TEXT NOT NULL,
+          completed_at TEXT NULL,
+          UNIQUE(work_id, owner_key, idempotency_key)
+        );
+
+        CREATE INDEX IF NOT EXISTS idx_canvas_generation_work
+          ON canvas_generations(work_id, owner_key, created_at DESC, id DESC);
+
+        CREATE TABLE IF NOT EXISTS canvas_commands (
+          id TEXT PRIMARY KEY,
+          work_id TEXT NOT NULL REFERENCES projects(id) ON DELETE CASCADE,
+          owner_key TEXT NOT NULL,
+          generation_id TEXT NULL
+            REFERENCES canvas_generations(id) ON DELETE CASCADE,
+          operation TEXT NOT NULL CHECK (
+            operation IN ('CANCEL', 'RETRY', 'SAVE_LAYOUT')
+          ),
+          idempotency_key TEXT NOT NULL,
+          request_digest TEXT NOT NULL,
+          result_json TEXT NOT NULL CHECK (json_valid(result_json)),
+          created_at TEXT NOT NULL,
+          UNIQUE(work_id, owner_key, operation, idempotency_key)
+        );
+        """
+    )
+
+
+def _migrate_v39(conn: sqlite3.Connection) -> None:
+    """Add the single versioned model-provider, routing, and privacy platform."""
+
+    _repair_v39_model_provider_tables(conn)
+    conn.execute(
+        """
+        INSERT OR IGNORE INTO schema_migration_audit (
+          id, from_version, to_version, status, backup_path, applied_at
+        ) VALUES ('migration_v38_v39', 38, 39, 'applied', NULL, ?)
+        """,
+        (datetime.now(UTC).isoformat(),),
+    )
+    conn.execute("PRAGMA user_version=39")
+
+
+def _migrate_v40(conn: sqlite3.Connection) -> None:
+    """Allow immutable XIAO MicroPython runs to use the Wokwi cloud engine."""
+
+    _add_column(conn, "device_lab_runs", "idempotency_key", "TEXT NULL")
+    _add_column(conn, "device_lab_runs", "request_hash", "TEXT NULL")
+    conn.executescript(
+        """
+        CREATE TEMP TABLE device_lab_events_v40_backup AS
+          SELECT run_id, revision, event_json, created_at FROM device_lab_events;
+
+        DROP TABLE device_lab_events;
+
+        CREATE TABLE device_lab_runs_v40 (
+          id TEXT PRIMARY KEY,
+          project_id TEXT NOT NULL REFERENCES projects(id) ON DELETE CASCADE,
+          board_id TEXT NOT NULL CHECK (
+            board_id IN ('seeedstudio/xiao_esp32s3_sense', 'dfrobot/dfrobot_k10')
+          ),
+          target TEXT NOT NULL CHECK (target IN ('SIMULATOR', 'DEVICE')),
+          engine TEXT NOT NULL CHECK (
+            engine IN ('FUNCTIONAL_MODEL', 'QEMU_ESP32S3', 'WOKWI_CLOUD')
+          ),
+          status TEXT NOT NULL CHECK (
+            status IN ('STARTING', 'RUNNING', 'STOPPED', 'ERROR')
+          ),
+          application_id TEXT NULL
+            REFERENCES firmware_applications(id) ON DELETE SET NULL,
+          parameter_set_id TEXT NULL
+            REFERENCES device_parameter_sets(id) ON DELETE SET NULL,
+          state_json TEXT NOT NULL,
+          started_at TEXT NOT NULL,
+          updated_at TEXT NOT NULL,
+          stopped_at TEXT NULL,
+          idempotency_key TEXT NULL,
+          request_hash TEXT NULL
+        );
+
+        INSERT INTO device_lab_runs_v40 (
+          id, project_id, board_id, target, engine, status, application_id,
+          parameter_set_id, state_json, started_at, updated_at, stopped_at,
+          idempotency_key, request_hash
+        )
+        SELECT
+          id, project_id, board_id, target, engine, status, application_id,
+          parameter_set_id, state_json, started_at, updated_at, stopped_at,
+          idempotency_key, request_hash
+        FROM device_lab_runs;
+
+        DROP TABLE device_lab_runs;
+        ALTER TABLE device_lab_runs_v40 RENAME TO device_lab_runs;
+
+        CREATE INDEX idx_device_lab_runs_project
+          ON device_lab_runs(project_id, updated_at DESC);
+        CREATE UNIQUE INDEX uq_device_lab_runs_idempotency
+          ON device_lab_runs(project_id, idempotency_key)
+          WHERE idempotency_key IS NOT NULL;
+
+        CREATE TABLE device_lab_events (
+          run_id TEXT NOT NULL REFERENCES device_lab_runs(id) ON DELETE CASCADE,
+          revision INTEGER NOT NULL,
+          event_json TEXT NOT NULL,
+          created_at TEXT NOT NULL,
+          PRIMARY KEY(run_id, revision)
+        );
+        INSERT INTO device_lab_events (run_id, revision, event_json, created_at)
+          SELECT run_id, revision, event_json, created_at
+          FROM device_lab_events_v40_backup;
+        DROP TABLE device_lab_events_v40_backup;
+        """
+    )
+    conn.execute(
+        """
+        INSERT OR IGNORE INTO schema_migration_audit (
+          id, from_version, to_version, status, backup_path, applied_at
+        ) VALUES ('migration_v39_v40', 39, 40, 'applied', NULL, ?)
+        """,
+        (datetime.now(UTC).isoformat(),),
+    )
+    conn.execute("PRAGMA user_version=40")
+
+
+def _migrate_v41(conn: sqlite3.Connection) -> None:
+    """Add classroom and project-process facts without copying Work data."""
+
+    conn.execute("SAVEPOINT migrate_v41")
+    try:
+        _repair_v41_project_learning_tables(conn)
+        conn.execute(
+            """
+            INSERT OR IGNORE INTO schema_migration_audit (
+              id, from_version, to_version, status, backup_path, applied_at
+            ) VALUES ('migration_v40_v41', 40, 41, 'applied', NULL, ?)
+            """,
+            (datetime.now(UTC).isoformat(),),
+        )
+        conn.execute("PRAGMA user_version=41")
+        conn.execute("RELEASE SAVEPOINT migrate_v41")
+    except Exception:
+        conn.execute("ROLLBACK TO SAVEPOINT migrate_v41")
+        conn.execute("RELEASE SAVEPOINT migrate_v41")
+        raise
+
+
+def _repair_v41_project_learning_tables(conn: sqlite3.Connection) -> None:
+    """Idempotently restore the V41 classroom and project-process shape."""
+
+    statements = (
+        """
+        CREATE TABLE IF NOT EXISTS organizations (
+          id TEXT PRIMARY KEY,
+          name TEXT NOT NULL,
+          created_by_subject TEXT NOT NULL,
+          idempotency_key TEXT NOT NULL,
+          created_at TEXT NOT NULL,
+          updated_at TEXT NOT NULL,
+          UNIQUE(created_by_subject, idempotency_key)
+        )
+        """,
+        """
+        CREATE TABLE IF NOT EXISTS organization_memberships (
+          organization_id TEXT NOT NULL
+            REFERENCES organizations(id) ON DELETE CASCADE,
+          subject TEXT NOT NULL,
+          role TEXT NOT NULL CHECK (role IN ('ADMIN', 'INSTRUCTOR', 'LEARNER')),
+          active INTEGER NOT NULL DEFAULT 1 CHECK (active IN (0, 1)),
+          created_at TEXT NOT NULL,
+          updated_at TEXT NOT NULL,
+          PRIMARY KEY(organization_id, subject)
+        )
+        """,
+        """
+        CREATE INDEX IF NOT EXISTS idx_organization_memberships_subject
+          ON organization_memberships(subject, active, organization_id)
+        """,
+        """
+        CREATE TABLE IF NOT EXISTS courses (
+          id TEXT PRIMARY KEY,
+          organization_id TEXT NOT NULL
+            REFERENCES organizations(id) ON DELETE CASCADE,
+          title TEXT NOT NULL,
+          code TEXT NOT NULL,
+          description TEXT NOT NULL,
+          created_by_subject TEXT NOT NULL,
+          idempotency_key TEXT NOT NULL,
+          created_at TEXT NOT NULL,
+          updated_at TEXT NOT NULL,
+          UNIQUE(organization_id, idempotency_key)
+        )
+        """,
+        """
+        CREATE INDEX IF NOT EXISTS idx_courses_organization
+          ON courses(organization_id, updated_at DESC, id)
+        """,
+        """
+        CREATE TABLE IF NOT EXISTS class_groups (
+          id TEXT PRIMARY KEY,
+          course_id TEXT NOT NULL REFERENCES courses(id) ON DELETE CASCADE,
+          title TEXT NOT NULL,
+          term TEXT NOT NULL,
+          created_by_subject TEXT NOT NULL,
+          idempotency_key TEXT NOT NULL,
+          created_at TEXT NOT NULL,
+          updated_at TEXT NOT NULL,
+          UNIQUE(course_id, idempotency_key)
+        )
+        """,
+        """
+        CREATE INDEX IF NOT EXISTS idx_class_groups_course
+          ON class_groups(course_id, updated_at DESC, id)
+        """,
+        """
+        CREATE TABLE IF NOT EXISTS class_memberships (
+          class_group_id TEXT NOT NULL
+            REFERENCES class_groups(id) ON DELETE CASCADE,
+          subject TEXT NOT NULL,
+          role TEXT NOT NULL CHECK (
+            role IN ('INSTRUCTOR', 'TEACHING_ASSISTANT', 'LEARNER')
+          ),
+          active INTEGER NOT NULL DEFAULT 1 CHECK (active IN (0, 1)),
+          created_at TEXT NOT NULL,
+          updated_at TEXT NOT NULL,
+          PRIMARY KEY(class_group_id, subject)
+        )
+        """,
+        """
+        CREATE INDEX IF NOT EXISTS idx_class_memberships_subject
+          ON class_memberships(subject, active, class_group_id)
+        """,
+        """
+        CREATE TABLE IF NOT EXISTS assignment_policies (
+          id TEXT PRIMARY KEY,
+          organization_id TEXT NOT NULL
+            REFERENCES organizations(id) ON DELETE CASCADE,
+          current_revision_id TEXT NULL
+            REFERENCES assignment_policy_revisions(id) ON DELETE RESTRICT,
+          created_at TEXT NOT NULL,
+          updated_at TEXT NOT NULL
+        )
+        """,
+        """
+        CREATE TABLE IF NOT EXISTS assignment_policy_revisions (
+          id TEXT PRIMARY KEY,
+          policy_id TEXT NOT NULL
+            REFERENCES assignment_policies(id) ON DELETE RESTRICT,
+          revision INTEGER NOT NULL CHECK (revision >= 1),
+          allowed_chip_targets_json TEXT NOT NULL
+            CHECK (json_valid(allowed_chip_targets_json)),
+          allowed_device_package_ids_json TEXT NOT NULL
+            CHECK (json_valid(allowed_device_package_ids_json)),
+          allowed_component_package_ids_json TEXT NOT NULL
+            CHECK (json_valid(allowed_component_package_ids_json)),
+          structure_policy TEXT NOT NULL CHECK (
+            structure_policy IN ('OPTIONAL', 'REQUIRED', 'PROHIBITED')
+          ),
+          required_checkpoints_json TEXT NOT NULL
+            CHECK (json_valid(required_checkpoints_json)),
+          submission_requirements_json TEXT NOT NULL
+            CHECK (json_valid(submission_requirements_json)),
+          safety_rules_json TEXT NOT NULL CHECK (json_valid(safety_rules_json)),
+          supersedes_revision_id TEXT NULL
+            REFERENCES assignment_policy_revisions(id) ON DELETE RESTRICT,
+          created_by_subject TEXT NOT NULL,
+          created_at TEXT NOT NULL,
+          UNIQUE(policy_id, revision)
+        )
+        """,
+        """
+        CREATE TABLE IF NOT EXISTS rubrics (
+          id TEXT PRIMARY KEY,
+          organization_id TEXT NOT NULL
+            REFERENCES organizations(id) ON DELETE CASCADE,
+          current_revision_id TEXT NULL
+            REFERENCES rubric_revisions(id) ON DELETE RESTRICT,
+          created_at TEXT NOT NULL,
+          updated_at TEXT NOT NULL
+        )
+        """,
+        """
+        CREATE TABLE IF NOT EXISTS rubric_revisions (
+          id TEXT PRIMARY KEY,
+          rubric_id TEXT NOT NULL REFERENCES rubrics(id) ON DELETE RESTRICT,
+          revision INTEGER NOT NULL CHECK (revision >= 1),
+          dimensions_json TEXT NOT NULL CHECK (json_valid(dimensions_json)),
+          supersedes_revision_id TEXT NULL
+            REFERENCES rubric_revisions(id) ON DELETE RESTRICT,
+          created_by_subject TEXT NOT NULL,
+          created_at TEXT NOT NULL,
+          UNIQUE(rubric_id, revision)
+        )
+        """,
+        """
+        CREATE TABLE IF NOT EXISTS assignments (
+          id TEXT PRIMARY KEY,
+          class_group_id TEXT NOT NULL
+            REFERENCES class_groups(id) ON DELETE CASCADE,
+          title TEXT NOT NULL,
+          driving_question TEXT NOT NULL,
+          description TEXT NOT NULL,
+          collaboration_mode TEXT NOT NULL CHECK (
+            collaboration_mode IN ('INDIVIDUAL', 'TEAM')
+          ),
+          policy_revision_id TEXT NOT NULL
+            REFERENCES assignment_policy_revisions(id) ON DELETE RESTRICT,
+          rubric_revision_id TEXT NOT NULL
+            REFERENCES rubric_revisions(id) ON DELETE RESTRICT,
+          due_at TEXT NULL,
+          created_by_subject TEXT NOT NULL,
+          idempotency_key TEXT NOT NULL,
+          created_at TEXT NOT NULL,
+          updated_at TEXT NOT NULL,
+          UNIQUE(class_group_id, idempotency_key)
+        )
+        """,
+        """
+        CREATE INDEX IF NOT EXISTS idx_assignments_class
+          ON assignments(class_group_id, updated_at DESC, id)
+        """,
+        """
+        CREATE TABLE IF NOT EXISTS project_proposal_revisions_v2 (
+          id TEXT PRIMARY KEY,
+          work_id TEXT NOT NULL REFERENCES projects(id) ON DELETE CASCADE,
+          assignment_policy_revision_id TEXT NULL
+            REFERENCES assignment_policy_revisions(id) ON DELETE RESTRICT,
+          rubric_revision_id TEXT NULL
+            REFERENCES rubric_revisions(id) ON DELETE RESTRICT,
+          version INTEGER NOT NULL CHECK (version >= 1),
+          status TEXT NOT NULL CHECK (
+            status IN (
+              'DRAFT', 'READY_FOR_REVIEW', 'APPROVED',
+              'CHANGES_REQUESTED', 'STALE', 'SUPERSEDED'
+            )
+          ),
+          content_json TEXT NOT NULL CHECK (json_valid(content_json)),
+          source_kind TEXT NOT NULL CHECK (
+            source_kind IN ('MANUAL', 'FACILITATOR_DRAFT', 'LEGACY_ADAPTER')
+          ),
+          source_proposal_id TEXT NULL REFERENCES proposals(id) ON DELETE SET NULL,
+          supersedes_revision_id TEXT NULL
+            REFERENCES project_proposal_revisions_v2(id) ON DELETE RESTRICT,
+          student_confirmed_by TEXT NULL,
+          student_confirmed_at TEXT NULL,
+          stale_reason TEXT NULL,
+          created_by TEXT NOT NULL,
+          created_at TEXT NOT NULL,
+          UNIQUE(work_id, version)
+        )
+        """,
+        """
+        CREATE INDEX IF NOT EXISTS idx_project_proposal_v2_work
+          ON project_proposal_revisions_v2(work_id, version DESC)
+        """,
+        """
+        CREATE TABLE IF NOT EXISTS work_learning_contexts (
+          work_id TEXT PRIMARY KEY REFERENCES projects(id) ON DELETE CASCADE,
+          assignment_id TEXT NOT NULL REFERENCES assignments(id) ON DELETE RESTRICT,
+          collaboration_mode TEXT NOT NULL CHECK (
+            collaboration_mode IN ('INDIVIDUAL', 'TEAM')
+          ),
+          process_milestone TEXT NOT NULL CHECK (
+            process_milestone IN ('PROPOSAL', 'SIMULATION', 'MAKING', 'COMPLETE')
+          ),
+          process_state TEXT NOT NULL CHECK (
+            process_state IN (
+              'PROPOSAL_DRAFT', 'PROPOSAL_READY_FOR_REVIEW',
+              'PROPOSAL_IN_REVIEW', 'PROPOSAL_CHANGES_REQUESTED',
+              'PROPOSAL_APPROVED', 'SIMULATION_DRAFT', 'SIMULATION_READY',
+              'SIMULATION_RUNNING', 'SIMULATION_CHANGES_REQUIRED',
+              'SIMULATION_VALIDATED', 'BUILD_ROUTE_REQUIRED',
+              'STRUCTURE_DESIGN', 'ASSEMBLY_IN_PROGRESS',
+              'DEVICE_DEPLOYMENT_READY', 'DEVICE_DEPLOYING',
+              'PHYSICAL_OBSERVATION_REQUIRED', 'SUBMISSION_DRAFT',
+              'SUBMISSION_IN_REVIEW', 'SUBMISSION_CHANGES_REQUESTED',
+              'COMPLETED'
+            )
+          ),
+          current_proposal_revision_id TEXT NULL
+            REFERENCES project_proposal_revisions_v2(id) ON DELETE RESTRICT,
+          current_submission_revision_id TEXT NULL
+            REFERENCES project_submission_revisions(id) ON DELETE RESTRICT,
+          revision INTEGER NOT NULL DEFAULT 1 CHECK (revision >= 1),
+          created_at TEXT NOT NULL,
+          updated_at TEXT NOT NULL
+        )
+        """,
+        """
+        CREATE INDEX IF NOT EXISTS idx_work_learning_assignment
+          ON work_learning_contexts(assignment_id, updated_at DESC, work_id)
+        """,
+        """
+        CREATE TABLE IF NOT EXISTS work_memberships (
+          work_id TEXT NOT NULL REFERENCES projects(id) ON DELETE CASCADE,
+          subject TEXT NOT NULL,
+          role TEXT NOT NULL CHECK (role IN ('OWNER', 'EDITOR', 'VIEWER')),
+          active INTEGER NOT NULL DEFAULT 1 CHECK (active IN (0, 1)),
+          created_at TEXT NOT NULL,
+          updated_at TEXT NOT NULL,
+          PRIMARY KEY(work_id, subject)
+        )
+        """,
+        """
+        CREATE INDEX IF NOT EXISTS idx_work_memberships_subject
+          ON work_memberships(subject, active, work_id)
+        """,
+        """
+        CREATE TABLE IF NOT EXISTS project_checkpoint_reviews (
+          id TEXT PRIMARY KEY,
+          work_id TEXT NOT NULL REFERENCES projects(id) ON DELETE CASCADE,
+          checkpoint TEXT NOT NULL,
+          target_kind TEXT NOT NULL,
+          target_revision_id TEXT NOT NULL,
+          decision TEXT NOT NULL CHECK (
+            decision IN ('APPROVED', 'CHANGES_REQUESTED')
+          ),
+          reviewer_subject TEXT NOT NULL,
+          comment TEXT NOT NULL,
+          created_at TEXT NOT NULL
+        )
+        """,
+        """
+        CREATE INDEX IF NOT EXISTS idx_checkpoint_reviews_work
+          ON project_checkpoint_reviews(work_id, checkpoint, created_at DESC, id)
+        """,
+        """
+        CREATE TABLE IF NOT EXISTS project_process_journal (
+          id TEXT PRIMARY KEY,
+          work_id TEXT NOT NULL REFERENCES projects(id) ON DELETE CASCADE,
+          actor_subject TEXT NOT NULL,
+          kind TEXT NOT NULL CHECK (
+            kind IN (
+              'IDEA', 'PROPOSAL_REVISION', 'TEST', 'FAILURE', 'DECISION',
+              'REFLECTION', 'INSTRUCTOR_FEEDBACK', 'SUBMISSION'
+            )
+          ),
+          title TEXT NOT NULL,
+          body TEXT NOT NULL,
+          related_kind TEXT NULL,
+          related_id TEXT NULL,
+          created_at TEXT NOT NULL
+        )
+        """,
+        """
+        CREATE INDEX IF NOT EXISTS idx_process_journal_work
+          ON project_process_journal(work_id, created_at DESC, id)
+        """,
+        """
+        CREATE TABLE IF NOT EXISTS project_build_route_decisions (
+          id TEXT PRIMARY KEY,
+          work_id TEXT NOT NULL REFERENCES projects(id) ON DELETE CASCADE,
+          version INTEGER NOT NULL CHECK (version >= 1),
+          route TEXT NOT NULL CHECK (
+            route IN ('WITH_STRUCTURE', 'WITHOUT_STRUCTURE')
+          ),
+          rationale TEXT NOT NULL,
+          selected_by TEXT NOT NULL,
+          policy_revision_id TEXT NULL
+            REFERENCES assignment_policy_revisions(id) ON DELETE RESTRICT,
+          supersedes_revision_id TEXT NULL
+            REFERENCES project_build_route_decisions(id) ON DELETE RESTRICT,
+          created_at TEXT NOT NULL,
+          UNIQUE(work_id, version)
+        )
+        """,
+        """
+        CREATE TABLE IF NOT EXISTS project_submission_revisions (
+          id TEXT PRIMARY KEY,
+          work_id TEXT NOT NULL REFERENCES projects(id) ON DELETE CASCADE,
+          version INTEGER NOT NULL CHECK (version >= 1),
+          status TEXT NOT NULL CHECK (
+            status IN (
+              'DRAFT', 'SUBMITTED', 'CHANGES_REQUESTED', 'ACCEPTED', 'SUPERSEDED'
+            )
+          ),
+          proposal_revision_id TEXT NOT NULL
+            REFERENCES project_proposal_revisions_v2(id) ON DELETE RESTRICT,
+          simulation_run_id TEXT NULL,
+          build_route_decision_id TEXT NOT NULL
+            REFERENCES project_build_route_decisions(id) ON DELETE RESTRICT,
+          content_json TEXT NOT NULL CHECK (json_valid(content_json)),
+          submitted_by TEXT NULL,
+          submitted_at TEXT NULL,
+          supersedes_revision_id TEXT NULL
+            REFERENCES project_submission_revisions(id) ON DELETE RESTRICT,
+          created_by TEXT NOT NULL,
+          created_at TEXT NOT NULL,
+          UNIQUE(work_id, version)
+        )
+        """,
+        """
+        CREATE INDEX IF NOT EXISTS idx_project_submissions_work
+          ON project_submission_revisions(work_id, version DESC)
+        """,
+        """
+        CREATE TABLE IF NOT EXISTS project_instructor_reviews (
+          id TEXT PRIMARY KEY,
+          work_id TEXT NOT NULL REFERENCES projects(id) ON DELETE CASCADE,
+          submission_revision_id TEXT NOT NULL
+            REFERENCES project_submission_revisions(id) ON DELETE RESTRICT,
+          decision TEXT NOT NULL CHECK (
+            decision IN ('ACCEPTED', 'CHANGES_REQUESTED')
+          ),
+          reviewer_subject TEXT NOT NULL,
+          feedback TEXT NOT NULL,
+          created_at TEXT NOT NULL
+        )
+        """,
+        """
+        CREATE INDEX IF NOT EXISTS idx_instructor_reviews_submission
+          ON project_instructor_reviews(submission_revision_id, created_at DESC, id)
+        """,
+        """
+        CREATE TABLE IF NOT EXISTS project_rubric_assessments (
+          id TEXT PRIMARY KEY,
+          work_id TEXT NOT NULL REFERENCES projects(id) ON DELETE CASCADE,
+          submission_revision_id TEXT NOT NULL
+            REFERENCES project_submission_revisions(id) ON DELETE RESTRICT,
+          rubric_revision_id TEXT NOT NULL
+            REFERENCES rubric_revisions(id) ON DELETE RESTRICT,
+          reviewer_subject TEXT NOT NULL,
+          scores_json TEXT NOT NULL CHECK (json_valid(scores_json)),
+          total_score REAL NOT NULL CHECK (total_score >= 0),
+          status TEXT NOT NULL CHECK (status IN ('DRAFT', 'FINALIZED')),
+          created_at TEXT NOT NULL,
+          updated_at TEXT NOT NULL
+        )
+        """,
+        """
+        CREATE INDEX IF NOT EXISTS idx_rubric_assessments_submission
+          ON project_rubric_assessments(submission_revision_id, updated_at DESC, id)
+        """,
+    )
+    for statement in statements:
+        conn.execute(statement)
+
+
+def _migrate_v42(conn: sqlite3.Connection) -> None:
+    """Add Zhangwen-owned immutable simulation project revisions."""
+
+    conn.execute("SAVEPOINT migrate_v42")
+    try:
+        _repair_v42_simulation_tables(conn)
+        conn.execute(
+            """
+            INSERT OR IGNORE INTO schema_migration_audit (
+              id, from_version, to_version, status, backup_path, applied_at
+            ) VALUES ('migration_v41_v42', 41, 42, 'applied', NULL, ?)
+            """,
+            (datetime.now(UTC).isoformat(),),
+        )
+        conn.execute("PRAGMA user_version=42")
+        conn.execute("RELEASE SAVEPOINT migrate_v42")
+    except Exception:
+        conn.execute("ROLLBACK TO SAVEPOINT migrate_v42")
+        conn.execute("RELEASE SAVEPOINT migrate_v42")
+        raise
+
+
+def _repair_v42_simulation_tables(conn: sqlite3.Connection) -> None:
+    """Idempotently restore V42 simulation drafts and immutable revisions."""
+
+    statements = (
+        """
+        CREATE TABLE IF NOT EXISTS simulation_project_drafts (
+          work_id TEXT PRIMARY KEY REFERENCES projects(id) ON DELETE CASCADE,
+          revision INTEGER NOT NULL CHECK (revision >= 1),
+          source_proposal_revision_id TEXT NOT NULL
+            REFERENCES project_proposal_revisions_v2(id) ON DELETE RESTRICT,
+          payload_json TEXT NOT NULL CHECK (json_valid(payload_json)),
+          last_idempotency_key TEXT NOT NULL,
+          last_request_digest TEXT NOT NULL,
+          created_by TEXT NOT NULL,
+          created_at TEXT NOT NULL,
+          updated_at TEXT NOT NULL
+        )
+        """,
+        """
+        CREATE TABLE IF NOT EXISTS simulation_circuit_revisions (
+          id TEXT PRIMARY KEY,
+          work_id TEXT NOT NULL REFERENCES projects(id) ON DELETE CASCADE,
+          revision INTEGER NOT NULL CHECK (revision >= 1),
+          schema_id TEXT NOT NULL CHECK (schema_id = 'zhangwen.circuit/v1'),
+          payload_json TEXT NOT NULL CHECK (json_valid(payload_json)),
+          digest TEXT NOT NULL CHECK (length(digest) = 64),
+          created_by TEXT NOT NULL,
+          created_at TEXT NOT NULL,
+          UNIQUE(work_id, revision)
+        )
+        """,
+        """
+        CREATE TABLE IF NOT EXISTS simulation_code_bundle_revisions (
+          id TEXT PRIMARY KEY,
+          work_id TEXT NOT NULL REFERENCES projects(id) ON DELETE CASCADE,
+          revision INTEGER NOT NULL CHECK (revision >= 1),
+          payload_json TEXT NOT NULL CHECK (json_valid(payload_json)),
+          digest TEXT NOT NULL CHECK (length(digest) = 64),
+          runtime_package_revision_id TEXT NOT NULL,
+          created_by TEXT NOT NULL,
+          created_at TEXT NOT NULL,
+          UNIQUE(work_id, revision)
+        )
+        """,
+        """
+        CREATE TABLE IF NOT EXISTS simulation_scenario_suite_revisions (
+          id TEXT PRIMARY KEY,
+          work_id TEXT NOT NULL REFERENCES projects(id) ON DELETE CASCADE,
+          revision INTEGER NOT NULL CHECK (revision >= 1),
+          schema_id TEXT NOT NULL
+            CHECK (schema_id = 'zhangwen.simulation-scenarios/v1'),
+          payload_json TEXT NOT NULL CHECK (json_valid(payload_json)),
+          digest TEXT NOT NULL CHECK (length(digest) = 64),
+          created_by TEXT NOT NULL,
+          created_at TEXT NOT NULL,
+          UNIQUE(work_id, revision)
+        )
+        """,
+        """
+        CREATE TABLE IF NOT EXISTS simulation_project_revisions (
+          id TEXT PRIMARY KEY,
+          work_id TEXT NOT NULL REFERENCES projects(id) ON DELETE CASCADE,
+          revision INTEGER NOT NULL CHECK (revision >= 1),
+          schema_id TEXT NOT NULL
+            CHECK (schema_id = 'zhangwen.simulation-project/v1'),
+          source_proposal_revision_id TEXT NOT NULL
+            REFERENCES project_proposal_revisions_v2(id) ON DELETE RESTRICT,
+          board_package_revision_id TEXT NOT NULL,
+          runtime_package_revision_id TEXT NOT NULL,
+          component_package_revision_ids_json TEXT NOT NULL
+            CHECK (json_valid(component_package_revision_ids_json)),
+          circuit_revision_id TEXT NOT NULL
+            REFERENCES simulation_circuit_revisions(id) ON DELETE RESTRICT,
+          code_bundle_revision_id TEXT NOT NULL
+            REFERENCES simulation_code_bundle_revisions(id) ON DELETE RESTRICT,
+          scenario_suite_revision_id TEXT NOT NULL
+            REFERENCES simulation_scenario_suite_revisions(id) ON DELETE RESTRICT,
+          engine_profile TEXT NOT NULL CHECK (engine_profile = 'ZW-MPY-SIM'),
+          digest TEXT NOT NULL CHECK (length(digest) = 64),
+          supersedes_revision_id TEXT NULL
+            REFERENCES simulation_project_revisions(id) ON DELETE RESTRICT,
+          idempotency_key TEXT NOT NULL,
+          request_digest TEXT NOT NULL CHECK (length(request_digest) = 64),
+          created_by TEXT NOT NULL,
+          created_at TEXT NOT NULL,
+          UNIQUE(work_id, revision),
+          UNIQUE(work_id, idempotency_key)
+        )
+        """,
+        """
+        CREATE INDEX IF NOT EXISTS idx_simulation_project_revisions_work
+          ON simulation_project_revisions(work_id, revision DESC)
+        """,
+    )
+    for statement in statements:
+        conn.execute(statement)
+    _add_column(
+        conn,
+        "work_learning_contexts",
+        "current_simulation_project_revision_id",
+        "TEXT NULL REFERENCES simulation_project_revisions(id) ON DELETE RESTRICT",
+    )
+
+
+def _migrate_v43(conn: sqlite3.Connection) -> None:
+    """Add immutable project-learning simulation runs and scenario results."""
+
+    conn.execute("SAVEPOINT migrate_v43")
+    try:
+        _repair_v43_simulation_run_tables(conn)
+        conn.execute(
+            """
+            INSERT OR IGNORE INTO schema_migration_audit (
+              id, from_version, to_version, status, backup_path, applied_at
+            ) VALUES ('migration_v42_v43', 42, 43, 'applied', NULL, ?)
+            """,
+            (datetime.now(UTC).isoformat(),),
+        )
+        conn.execute("PRAGMA user_version=43")
+        conn.execute("RELEASE SAVEPOINT migrate_v43")
+    except Exception:
+        conn.execute("ROLLBACK TO SAVEPOINT migrate_v43")
+        conn.execute("RELEASE SAVEPOINT migrate_v43")
+        raise
+
+
+def _repair_v43_simulation_run_tables(conn: sqlite3.Connection) -> None:
+    """Idempotently restore E6 Run rows without creating a second Evidence store."""
+
+    statements = (
+        """
+        CREATE TABLE IF NOT EXISTS simulation_runs (
+          id TEXT PRIMARY KEY,
+          work_id TEXT NOT NULL REFERENCES projects(id) ON DELETE CASCADE,
+          simulation_project_revision_id TEXT NOT NULL
+            REFERENCES simulation_project_revisions(id) ON DELETE RESTRICT,
+          status TEXT NOT NULL CHECK (status IN (
+            'RUNNING', 'PASSED', 'CONFORMANCE_PASSED', 'FAILED',
+            'TIMED_OUT', 'CANCELED', 'CRASHED', 'STALE'
+          )),
+          engine_mode TEXT NOT NULL CHECK (
+            engine_mode IN ('NATIVE_MICROPYTHON', 'BEHAVIORAL_REFERENCE')
+          ),
+          evidence_level TEXT NOT NULL CHECK (evidence_level IN ('L0', 'L1')),
+          evidence_eligible INTEGER NOT NULL CHECK (evidence_eligible IN (0, 1)),
+          request_json TEXT NOT NULL CHECK (json_valid(request_json)),
+          request_digest TEXT NOT NULL CHECK (length(request_digest) = 64),
+          revision_set_json TEXT NOT NULL CHECK (json_valid(revision_set_json)),
+          deterministic_digest TEXT NULL CHECK (
+            deterministic_digest IS NULL OR length(deterministic_digest) = 64
+          ),
+          explanation TEXT NOT NULL,
+          serial_output TEXT NOT NULL,
+          error_json TEXT NULL CHECK (error_json IS NULL OR json_valid(error_json)),
+          idempotency_key TEXT NOT NULL,
+          created_by TEXT NOT NULL,
+          created_at TEXT NOT NULL,
+          started_at TEXT NOT NULL,
+          completed_at TEXT NULL,
+          invalidated_at TEXT NULL,
+          invalidation_reason TEXT NULL,
+          UNIQUE(work_id, idempotency_key)
+        )
+        """,
+        """
+        CREATE INDEX IF NOT EXISTS idx_simulation_runs_work
+          ON simulation_runs(work_id, created_at DESC, id)
+        """,
+        """
+        CREATE TABLE IF NOT EXISTS simulation_scenario_results (
+          id TEXT PRIMARY KEY,
+          run_id TEXT NOT NULL REFERENCES simulation_runs(id) ON DELETE CASCADE,
+          scenario_id TEXT NOT NULL,
+          title TEXT NOT NULL,
+          required INTEGER NOT NULL CHECK (required IN (0, 1)),
+          status TEXT NOT NULL CHECK (status IN (
+            'PASSED', 'FAILED', 'TIMED_OUT', 'CANCELED', 'CRASHED'
+          )),
+          seed INTEGER NOT NULL CHECK (seed >= 0),
+          reflection TEXT NOT NULL,
+          deterministic_digest TEXT NULL CHECK (
+            deterministic_digest IS NULL OR length(deterministic_digest) = 64
+          ),
+          assertion_results_json TEXT NOT NULL CHECK (json_valid(assertion_results_json)),
+          runtime_result_json TEXT NOT NULL CHECK (json_valid(runtime_result_json)),
+          explanation TEXT NOT NULL,
+          created_at TEXT NOT NULL,
+          UNIQUE(run_id, scenario_id)
+        )
+        """,
+    )
+    for statement in statements:
+        conn.execute(statement)
+    _add_column(
+        conn,
+        "work_learning_contexts",
+        "current_simulation_run_id",
+        "TEXT NULL REFERENCES simulation_runs(id) ON DELETE RESTRICT",
+    )
+
+
+def _migrate_v44(conn: sqlite3.Connection) -> None:
+    """Add immutable deployment bundles and user-attested physical observations."""
+
+    conn.execute("SAVEPOINT migrate_v44")
+    try:
+        _repair_v44_project_deployment_tables(conn)
+        conn.execute(
+            """
+            INSERT OR IGNORE INTO schema_migration_audit (
+              id, from_version, to_version, status, backup_path, applied_at
+            ) VALUES ('migration_v43_v44', 43, 44, 'applied', NULL, ?)
+            """,
+            (datetime.now(UTC).isoformat(),),
+        )
+        conn.execute("PRAGMA user_version=44")
+        conn.execute("RELEASE SAVEPOINT migrate_v44")
+    except Exception:
+        conn.execute("ROLLBACK TO SAVEPOINT migrate_v44")
+        conn.execute("RELEASE SAVEPOINT migrate_v44")
+        raise
+
+
+def _repair_v44_project_deployment_tables(conn: sqlite3.Connection) -> None:
+    """Restore E7 projections while reusing canonical device and Evidence stores."""
+
+    statements = (
+        """
+        CREATE TABLE IF NOT EXISTS deployment_bundles (
+          id TEXT PRIMARY KEY,
+          work_id TEXT NOT NULL REFERENCES projects(id) ON DELETE CASCADE,
+          simulation_run_id TEXT NOT NULL
+            REFERENCES simulation_runs(id) ON DELETE RESTRICT,
+          simulation_project_revision_id TEXT NOT NULL
+            REFERENCES simulation_project_revisions(id) ON DELETE RESTRICT,
+          board_package_revision_id TEXT NOT NULL,
+          chip_family TEXT NOT NULL CHECK (chip_family IN ('esp32s3', 'esp32c3')),
+          runtime_package_revision_id TEXT NOT NULL,
+          files_json TEXT NOT NULL CHECK (json_valid(files_json)),
+          digest TEXT NOT NULL CHECK (length(digest) = 64),
+          status TEXT NOT NULL CHECK (status IN ('CURRENT', 'STALE')),
+          idempotency_key TEXT NOT NULL,
+          request_digest TEXT NOT NULL CHECK (length(request_digest) = 64),
+          created_by TEXT NOT NULL,
+          created_at TEXT NOT NULL,
+          invalidated_at TEXT NULL,
+          invalidation_reason TEXT NULL,
+          UNIQUE(work_id, simulation_run_id),
+          UNIQUE(work_id, idempotency_key)
+        )
+        """,
+        """
+        CREATE INDEX IF NOT EXISTS idx_deployment_bundles_work
+          ON deployment_bundles(work_id, created_at DESC, id)
+        """,
+        """
+        CREATE TABLE IF NOT EXISTS project_device_deployments (
+          id TEXT PRIMARY KEY,
+          work_id TEXT NOT NULL REFERENCES projects(id) ON DELETE CASCADE,
+          deployment_bundle_id TEXT NOT NULL
+            REFERENCES deployment_bundles(id) ON DELETE RESTRICT,
+          device_operation_id TEXT NULL
+            REFERENCES device_operations(id) ON DELETE RESTRICT,
+          session_id TEXT NOT NULL
+            REFERENCES device_sessions(id) ON DELETE RESTRICT,
+          status TEXT NOT NULL CHECK (status IN (
+            'QUEUED', 'RUNNING', 'DRY_RUN_COMPLETE', 'COMPLETED', 'BLOCKED',
+            'FAILED', 'CANCELED', 'TIMED_OUT', 'STALE'
+          )),
+          transport_mode TEXT NOT NULL CHECK (
+            transport_mode IN ('DRY_RUN', 'MOCK', 'LOCAL_SERIAL')
+          ),
+          evidence_eligible INTEGER NOT NULL CHECK (evidence_eligible IN (0, 1)),
+          evidence_level TEXT NULL CHECK (evidence_level IS NULL OR evidence_level = 'L3'),
+          idempotency_key TEXT NOT NULL,
+          request_digest TEXT NOT NULL CHECK (length(request_digest) = 64),
+          created_by TEXT NOT NULL,
+          created_at TEXT NOT NULL,
+          updated_at TEXT NOT NULL,
+          completed_at TEXT NULL,
+          invalidated_at TEXT NULL,
+          invalidation_reason TEXT NULL,
+          UNIQUE(work_id, idempotency_key),
+          UNIQUE(device_operation_id)
+        )
+        """,
+        """
+        CREATE INDEX IF NOT EXISTS idx_project_device_deployments_work
+          ON project_device_deployments(work_id, created_at DESC, id)
+        """,
+        """
+        CREATE TABLE IF NOT EXISTS physical_observations (
+          id TEXT PRIMARY KEY,
+          work_id TEXT NOT NULL REFERENCES projects(id) ON DELETE CASCADE,
+          deployment_id TEXT NOT NULL
+            REFERENCES project_device_deployments(id) ON DELETE RESTRICT,
+          passed INTEGER NOT NULL CHECK (passed IN (0, 1)),
+          observations_json TEXT NOT NULL CHECK (json_valid(observations_json)),
+          attested_by TEXT NOT NULL,
+          attested_by_user INTEGER NOT NULL CHECK (attested_by_user = 1),
+          source TEXT NOT NULL CHECK (source = 'USER_INTERFACE'),
+          idempotency_key TEXT NOT NULL,
+          request_digest TEXT NOT NULL CHECK (length(request_digest) = 64),
+          created_at TEXT NOT NULL,
+          UNIQUE(work_id, idempotency_key)
+        )
+        """,
+    )
+    for statement in statements:
+        conn.execute(statement)
+    _add_column(
+        conn,
+        "work_learning_contexts",
+        "current_deployment_bundle_id",
+        "TEXT NULL REFERENCES deployment_bundles(id) ON DELETE RESTRICT",
+    )
+    _add_column(
+        conn,
+        "work_learning_contexts",
+        "current_device_deployment_id",
+        "TEXT NULL REFERENCES project_device_deployments(id) ON DELETE RESTRICT",
+    )
+
+
+def _migrate_v45(conn: sqlite3.Connection) -> None:
+    """Add versioned build routes, structure validation and assembly records."""
+
+    conn.execute("SAVEPOINT migrate_v45")
+    try:
+        _repair_v45_project_making_tables(conn)
+        conn.execute(
+            """
+            INSERT OR IGNORE INTO schema_migration_audit (
+              id, from_version, to_version, status, backup_path, applied_at
+            ) VALUES ('migration_v44_v45', 44, 45, 'applied', NULL, ?)
+            """,
+            (datetime.now(UTC).isoformat(),),
+        )
+        conn.execute("PRAGMA user_version=45")
+        conn.execute("RELEASE SAVEPOINT migrate_v45")
+    except Exception:
+        conn.execute("ROLLBACK TO SAVEPOINT migrate_v45")
+        conn.execute("RELEASE SAVEPOINT migrate_v45")
+        raise
+
+
+def _repair_v45_project_making_tables(conn: sqlite3.Connection) -> None:
+    """Restore E8 projections while keeping CAD, Artifact and Evidence canonical."""
+
+    _add_column(
+        conn,
+        "project_build_route_decisions",
+        "simulation_run_id",
+        "TEXT NULL REFERENCES simulation_runs(id) ON DELETE RESTRICT",
+    )
+    _add_column(
+        conn,
+        "project_build_route_decisions",
+        "status",
+        "TEXT NOT NULL DEFAULT 'CURRENT'",
+    )
+    _add_column(conn, "project_build_route_decisions", "idempotency_key", "TEXT NULL")
+    _add_column(conn, "project_build_route_decisions", "request_digest", "TEXT NULL")
+    _add_column(conn, "project_build_route_decisions", "invalidated_at", "TEXT NULL")
+    _add_column(
+        conn, "project_build_route_decisions", "invalidation_reason", "TEXT NULL"
+    )
+    statements = (
+        """
+        CREATE UNIQUE INDEX IF NOT EXISTS idx_build_route_decisions_idempotency
+          ON project_build_route_decisions(work_id, idempotency_key)
+          WHERE idempotency_key IS NOT NULL
+        """,
+        """
+        CREATE INDEX IF NOT EXISTS idx_build_route_decisions_current
+          ON project_build_route_decisions(work_id, status, version DESC)
+        """,
+        """
+        CREATE TABLE IF NOT EXISTS project_structure_revisions (
+          id TEXT PRIMARY KEY,
+          work_id TEXT NOT NULL REFERENCES projects(id) ON DELETE CASCADE,
+          build_route_decision_id TEXT NOT NULL
+            REFERENCES project_build_route_decisions(id) ON DELETE RESTRICT,
+          version INTEGER NOT NULL CHECK (version >= 1),
+          cad_intent_revision_id TEXT NOT NULL
+            REFERENCES cad_intent_revisions(id) ON DELETE RESTRICT,
+          artifact_id TEXT NOT NULL REFERENCES artifacts(id) ON DELETE RESTRICT,
+          artifact_version_id TEXT NOT NULL
+            REFERENCES artifact_versions(id) ON DELETE RESTRICT,
+          requirements_json TEXT NOT NULL CHECK (json_valid(requirements_json)),
+          mechanical_profile_revision_ids_json TEXT NOT NULL
+            CHECK (json_valid(mechanical_profile_revision_ids_json)),
+          dimensions_json TEXT NOT NULL CHECK (json_valid(dimensions_json)),
+          interference_checks_json TEXT NOT NULL
+            CHECK (json_valid(interference_checks_json)),
+          material TEXT NOT NULL,
+          fabrication_method TEXT NOT NULL,
+          manufacturing_notes TEXT NOT NULL,
+          status TEXT NOT NULL CHECK (status IN ('READY', 'BLOCKED', 'STALE')),
+          digital_validation_only INTEGER NOT NULL
+            CHECK (digital_validation_only = 1),
+          idempotency_key TEXT NOT NULL,
+          request_digest TEXT NOT NULL CHECK (length(request_digest) = 64),
+          created_by TEXT NOT NULL,
+          created_at TEXT NOT NULL,
+          invalidated_at TEXT NULL,
+          invalidation_reason TEXT NULL,
+          UNIQUE(work_id, version),
+          UNIQUE(work_id, idempotency_key)
+        )
+        """,
+        """
+        CREATE INDEX IF NOT EXISTS idx_structure_revisions_work
+          ON project_structure_revisions(work_id, status, version DESC)
+        """,
+        """
+        CREATE TABLE IF NOT EXISTS project_assembly_records (
+          id TEXT PRIMARY KEY,
+          work_id TEXT NOT NULL REFERENCES projects(id) ON DELETE CASCADE,
+          build_route_decision_id TEXT NOT NULL
+            REFERENCES project_build_route_decisions(id) ON DELETE RESTRICT,
+          structure_revision_id TEXT NULL
+            REFERENCES project_structure_revisions(id) ON DELETE RESTRICT,
+          version INTEGER NOT NULL CHECK (version >= 1),
+          wiring_plan TEXT NOT NULL,
+          fixing_method TEXT NOT NULL,
+          insulation_plan TEXT NOT NULL,
+          power_plan TEXT NOT NULL,
+          assembly_steps_json TEXT NOT NULL CHECK (json_valid(assembly_steps_json)),
+          checklist_json TEXT NOT NULL CHECK (json_valid(checklist_json)),
+          fabrication_confirmed INTEGER NOT NULL
+            CHECK (fabrication_confirmed IN (0, 1)),
+          observations_json TEXT NOT NULL CHECK (json_valid(observations_json)),
+          reflection TEXT NOT NULL,
+          evidence_artifact_version_ids_json TEXT NOT NULL
+            CHECK (json_valid(evidence_artifact_version_ids_json)),
+          status TEXT NOT NULL CHECK (status IN ('CURRENT', 'STALE')),
+          attested_by TEXT NOT NULL,
+          attested_by_user INTEGER NOT NULL CHECK (attested_by_user = 1),
+          source TEXT NOT NULL CHECK (source = 'USER_INTERFACE'),
+          idempotency_key TEXT NOT NULL,
+          request_digest TEXT NOT NULL CHECK (length(request_digest) = 64),
+          created_at TEXT NOT NULL,
+          invalidated_at TEXT NULL,
+          invalidation_reason TEXT NULL,
+          UNIQUE(work_id, version),
+          UNIQUE(work_id, idempotency_key)
+        )
+        """,
+        """
+        CREATE INDEX IF NOT EXISTS idx_assembly_records_work
+          ON project_assembly_records(work_id, status, version DESC)
+        """,
+    )
+    for statement in statements:
+        conn.execute(statement)
+    _add_column(
+        conn,
+        "work_learning_contexts",
+        "current_build_route_decision_id",
+        "TEXT NULL REFERENCES project_build_route_decisions(id) ON DELETE RESTRICT",
+    )
+    _add_column(
+        conn,
+        "work_learning_contexts",
+        "current_structure_revision_id",
+        "TEXT NULL REFERENCES project_structure_revisions(id) ON DELETE RESTRICT",
+    )
+    _add_column(
+        conn,
+        "work_learning_contexts",
+        "current_assembly_record_id",
+        "TEXT NULL REFERENCES project_assembly_records(id) ON DELETE RESTRICT",
+    )
+
+
+def _migrate_v46(conn: sqlite3.Connection) -> None:
+    """Complete project submission, review and classroom sync facts."""
+
+    conn.execute("SAVEPOINT migrate_v46")
+    try:
+        _repair_v46_project_submission_tables(conn)
+        conn.execute(
+            """
+            INSERT OR IGNORE INTO schema_migration_audit (
+              id, from_version, to_version, status, backup_path, applied_at
+            ) VALUES ('migration_v45_v46', 45, 46, 'applied', NULL, ?)
+            """,
+            (datetime.now(UTC).isoformat(),),
+        )
+        conn.execute("PRAGMA user_version=46")
+        conn.execute("RELEASE SAVEPOINT migrate_v46")
+    except Exception:
+        conn.execute("ROLLBACK TO SAVEPOINT migrate_v46")
+        conn.execute("RELEASE SAVEPOINT migrate_v46")
+        raise
+
+
+def _repair_v46_project_submission_tables(conn: sqlite3.Connection) -> None:
+    """Restore E9 facts without duplicating Work, Artifact or Evidence stores."""
+
+    submission_columns = (
+        (
+            "structure_revision_id",
+            "TEXT NULL REFERENCES project_structure_revisions(id) ON DELETE RESTRICT",
+        ),
+        (
+            "assembly_record_id",
+            "TEXT NULL REFERENCES project_assembly_records(id) ON DELETE RESTRICT",
+        ),
+        (
+            "deployment_bundle_id",
+            "TEXT NULL REFERENCES deployment_bundles(id) ON DELETE RESTRICT",
+        ),
+        (
+            "device_deployment_id",
+            "TEXT NULL REFERENCES project_device_deployments(id) ON DELETE RESTRICT",
+        ),
+        (
+            "physical_observation_id",
+            "TEXT NULL REFERENCES physical_observations(id) ON DELETE RESTRICT",
+        ),
+        (
+            "rubric_revision_id",
+            "TEXT NULL REFERENCES rubric_revisions(id) ON DELETE RESTRICT",
+        ),
+        ("manifest_json", "TEXT NOT NULL DEFAULT '{}' CHECK (json_valid(manifest_json))"),
+        (
+            "manifest_sha256",
+            "TEXT NULL CHECK (manifest_sha256 IS NULL OR length(manifest_sha256) = 64)",
+        ),
+        ("idempotency_key", "TEXT NULL"),
+        (
+            "request_digest",
+            "TEXT NULL CHECK (request_digest IS NULL OR length(request_digest) = 64)",
+        ),
+        ("invalidated_at", "TEXT NULL"),
+        ("invalidation_reason", "TEXT NULL"),
+    )
+    for column_name, definition in submission_columns:
+        _add_column(conn, "project_submission_revisions", column_name, definition)
+
+    review_columns = (
+        ("annotations_json", "TEXT NOT NULL DEFAULT '[]' CHECK (json_valid(annotations_json))"),
+        ("idempotency_key", "TEXT NULL"),
+        (
+            "request_digest",
+            "TEXT NULL CHECK (request_digest IS NULL OR length(request_digest) = 64)",
+        ),
+    )
+    for column_name, definition in review_columns:
+        _add_column(conn, "project_instructor_reviews", column_name, definition)
+    _add_column(
+        conn,
+        "project_rubric_assessments",
+        "instructor_review_id",
+        "TEXT NULL REFERENCES project_instructor_reviews(id) ON DELETE RESTRICT",
+    )
+    _add_column(
+        conn,
+        "project_rubric_assessments",
+        "dimension_feedback_json",
+        "TEXT NOT NULL DEFAULT '{}' CHECK (json_valid(dimension_feedback_json))",
+    )
+
+    statements = (
+        """
+        CREATE UNIQUE INDEX IF NOT EXISTS idx_submission_revisions_idempotency
+          ON project_submission_revisions(work_id, idempotency_key)
+          WHERE idempotency_key IS NOT NULL
+        """,
+        """
+        CREATE UNIQUE INDEX IF NOT EXISTS idx_submission_reviews_idempotency
+          ON project_instructor_reviews(work_id, idempotency_key)
+          WHERE idempotency_key IS NOT NULL
+        """,
+        """
+        CREATE UNIQUE INDEX IF NOT EXISTS idx_rubric_assessments_review
+          ON project_rubric_assessments(instructor_review_id)
+          WHERE instructor_review_id IS NOT NULL
+        """,
+        """
+        CREATE TABLE IF NOT EXISTS project_submission_commands (
+          id TEXT PRIMARY KEY,
+          work_id TEXT NOT NULL REFERENCES projects(id) ON DELETE CASCADE,
+          submission_revision_id TEXT NOT NULL
+            REFERENCES project_submission_revisions(id) ON DELETE RESTRICT,
+          command TEXT NOT NULL CHECK (command IN ('SUBMIT', 'REVIEW')),
+          actor_subject TEXT NOT NULL,
+          idempotency_key TEXT NOT NULL,
+          request_digest TEXT NOT NULL CHECK (length(request_digest) = 64),
+          response_json TEXT NOT NULL CHECK (json_valid(response_json)),
+          created_at TEXT NOT NULL,
+          UNIQUE(work_id, actor_subject, idempotency_key)
+        )
+        """,
+        """
+        CREATE TABLE IF NOT EXISTS project_team_contributions (
+          id TEXT PRIMARY KEY,
+          work_id TEXT NOT NULL REFERENCES projects(id) ON DELETE CASCADE,
+          kind TEXT NOT NULL CHECK (kind IN (
+            'PLANNING', 'CODE', 'CIRCUIT', 'TEST', 'MAKING',
+            'DOCUMENTATION', 'REFLECTION'
+          )),
+          contributor_subject TEXT NOT NULL,
+          summary TEXT NOT NULL,
+          related_kind TEXT NULL,
+          related_id TEXT NULL,
+          idempotency_key TEXT NOT NULL,
+          request_digest TEXT NOT NULL CHECK (length(request_digest) = 64),
+          work_revision INTEGER NOT NULL CHECK (work_revision >= 1),
+          created_at TEXT NOT NULL,
+          UNIQUE(work_id, contributor_subject, idempotency_key)
+        )
+        """,
+        """
+        CREATE INDEX IF NOT EXISTS idx_team_contributions_work
+          ON project_team_contributions(work_id, created_at DESC, id)
+        """,
+        """
+        CREATE TABLE IF NOT EXISTS classroom_sync_inbox (
+          id TEXT PRIMARY KEY,
+          operation_id TEXT NOT NULL,
+          actor_subject TEXT NOT NULL,
+          work_id TEXT NOT NULL REFERENCES projects(id) ON DELETE CASCADE,
+          device_id_sha256 TEXT NOT NULL CHECK (length(device_id_sha256) = 64),
+          mutation_kind TEXT NOT NULL CHECK (
+            mutation_kind IN ('JOURNAL_APPEND', 'CONTRIBUTION_RECORD')
+          ),
+          base_work_revision INTEGER NOT NULL CHECK (base_work_revision >= 1),
+          payload_sha256 TEXT NOT NULL CHECK (length(payload_sha256) = 64),
+          status TEXT NOT NULL CHECK (status IN ('APPLIED', 'CONFLICT', 'REJECTED')),
+          result_ref TEXT NULL,
+          server_work_revision INTEGER NOT NULL CHECK (server_work_revision >= 1),
+          conflict_reason TEXT NULL,
+          received_at TEXT NOT NULL,
+          UNIQUE(actor_subject, operation_id)
+        )
+        """,
+        """
+        CREATE INDEX IF NOT EXISTS idx_classroom_sync_inbox_work
+          ON classroom_sync_inbox(work_id, received_at DESC, id)
+        """,
+        """
+        CREATE TABLE IF NOT EXISTS classroom_sync_outbox (
+          id TEXT PRIMARY KEY,
+          work_id TEXT NOT NULL REFERENCES projects(id) ON DELETE CASCADE,
+          event_type TEXT NOT NULL,
+          aggregate_revision INTEGER NOT NULL CHECK (aggregate_revision >= 1),
+          redacted_payload_json TEXT NOT NULL CHECK (json_valid(redacted_payload_json)),
+          status TEXT NOT NULL DEFAULT 'PENDING' CHECK (
+            status IN ('PENDING', 'PUBLISHED', 'FAILED')
+          ),
+          attempts INTEGER NOT NULL DEFAULT 0 CHECK (attempts >= 0),
+          created_at TEXT NOT NULL,
+          published_at TEXT NULL,
+          last_error TEXT NULL,
+          UNIQUE(work_id, event_type, aggregate_revision)
+        )
+        """,
+        """
+        CREATE INDEX IF NOT EXISTS idx_classroom_sync_outbox_pending
+          ON classroom_sync_outbox(status, created_at, id)
+        """,
+        """
+        CREATE TABLE IF NOT EXISTS project_evidence_resets (
+          id TEXT PRIMARY KEY,
+          work_id TEXT NOT NULL REFERENCES projects(id) ON DELETE CASCADE,
+          reason TEXT NOT NULL,
+          requested_by TEXT NOT NULL,
+          invalidated_evidence_count INTEGER NOT NULL CHECK (
+            invalidated_evidence_count >= 0
+          ),
+          idempotency_key TEXT NOT NULL,
+          request_digest TEXT NOT NULL CHECK (length(request_digest) = 64),
+          created_at TEXT NOT NULL,
+          UNIQUE(work_id, requested_by, idempotency_key)
+        )
+        """,
+    )
+    for statement in statements:
+        conn.execute(statement)
+
+
+def _repair_v39_model_provider_tables(conn: sqlite3.Connection) -> None:
+    conn.executescript(
+        """
+        CREATE TABLE IF NOT EXISTS provider_configurations (
+          id TEXT PRIMARY KEY,
+          preset_id TEXT NOT NULL,
+          name TEXT NOT NULL,
+          current_revision_id TEXT NULL,
+          enabled INTEGER NOT NULL DEFAULT 1 CHECK (enabled IN (0, 1)),
+          credential_state TEXT NOT NULL DEFAULT 'CLEARED' CHECK (
+            credential_state IN ('FALLBACK', 'CONFIGURED', 'CLEARED')
+          ),
+          legacy_credential_service TEXT NULL,
+          deleted_at TEXT NULL,
+          created_at TEXT NOT NULL,
+          updated_at TEXT NOT NULL
+        );
+
+        CREATE TABLE IF NOT EXISTS provider_configuration_revisions (
+          id TEXT PRIMARY KEY,
+          configuration_id TEXT NOT NULL
+            REFERENCES provider_configurations(id) ON DELETE RESTRICT,
+          revision INTEGER NOT NULL CHECK (revision >= 1),
+          provider TEXT NOT NULL,
+          base_url TEXT NOT NULL,
+          default_model TEXT NOT NULL,
+          custom_models_json TEXT NOT NULL CHECK (json_valid(custom_models_json)),
+          thinking_mode TEXT NOT NULL,
+          reasoning_effort TEXT NULL,
+          timeout_seconds INTEGER NOT NULL CHECK (
+            timeout_seconds >= 5 AND timeout_seconds <= 300
+          ),
+          allow_private_network INTEGER NOT NULL DEFAULT 0 CHECK (
+            allow_private_network IN (0, 1)
+          ),
+          supersedes_revision_id TEXT NULL
+            REFERENCES provider_configuration_revisions(id) ON DELETE RESTRICT,
+          created_at TEXT NOT NULL,
+          UNIQUE(configuration_id, revision)
+        );
+
+        CREATE INDEX IF NOT EXISTS idx_provider_configurations_active
+          ON provider_configurations(deleted_at, updated_at DESC, id);
+
+        CREATE INDEX IF NOT EXISTS idx_provider_configuration_revisions
+          ON provider_configuration_revisions(configuration_id, revision DESC);
+
+        CREATE TABLE IF NOT EXISTS model_routing_profiles (
+          id TEXT PRIMARY KEY,
+          current_revision_id TEXT NULL,
+          created_at TEXT NOT NULL,
+          updated_at TEXT NOT NULL
+        );
+
+        CREATE TABLE IF NOT EXISTS model_routing_profile_revisions (
+          id TEXT PRIMARY KEY,
+          profile_id TEXT NOT NULL
+            REFERENCES model_routing_profiles(id) ON DELETE RESTRICT,
+          revision INTEGER NOT NULL CHECK (revision >= 1),
+          default_target_json TEXT NOT NULL CHECK (json_valid(default_target_json)),
+          fallback_target_json TEXT NULL CHECK (
+            fallback_target_json IS NULL OR json_valid(fallback_target_json)
+          ),
+          workload_routes_json TEXT NOT NULL CHECK (json_valid(workload_routes_json)),
+          supersedes_revision_id TEXT NULL
+            REFERENCES model_routing_profile_revisions(id) ON DELETE RESTRICT,
+          created_at TEXT NOT NULL,
+          UNIQUE(profile_id, revision)
+        );
+
+        CREATE TABLE IF NOT EXISTS model_privacy_settings (
+          id TEXT PRIMARY KEY,
+          current_revision_id TEXT NULL,
+          created_at TEXT NOT NULL,
+          updated_at TEXT NOT NULL
+        );
+
+        CREATE TABLE IF NOT EXISTS model_privacy_setting_revisions (
+          id TEXT PRIMARY KEY,
+          settings_id TEXT NOT NULL
+            REFERENCES model_privacy_settings(id) ON DELETE RESTRICT,
+          revision INTEGER NOT NULL CHECK (revision >= 1),
+          context_scope TEXT NOT NULL,
+          cloud_trace_enabled INTEGER NOT NULL CHECK (
+            cloud_trace_enabled IN (0, 1)
+          ),
+          allow_automatic_fallback INTEGER NOT NULL CHECK (
+            allow_automatic_fallback IN (0, 1)
+          ),
+          supersedes_revision_id TEXT NULL
+            REFERENCES model_privacy_setting_revisions(id) ON DELETE RESTRICT,
+          created_at TEXT NOT NULL,
+          UNIQUE(settings_id, revision)
+        );
+
+        CREATE TABLE IF NOT EXISTS provider_connection_tests (
+          id TEXT PRIMARY KEY,
+          configuration_id TEXT NOT NULL
+            REFERENCES provider_configurations(id) ON DELETE RESTRICT,
+          configuration_revision_id TEXT NOT NULL
+            REFERENCES provider_configuration_revisions(id) ON DELETE RESTRICT,
+          status TEXT NOT NULL CHECK (
+            status IN ('RUNNING', 'PASSED', 'FAILED', 'CANCELED')
+          ),
+          latency_ms INTEGER NULL CHECK (latency_ms IS NULL OR latency_ms >= 0),
+          message TEXT NOT NULL,
+          error_code TEXT NULL,
+          created_at TEXT NOT NULL,
+          completed_at TEXT NULL
+        );
+
+        CREATE INDEX IF NOT EXISTS idx_provider_connection_tests_config
+          ON provider_connection_tests(configuration_id, created_at DESC, id DESC);
+
+        CREATE TABLE IF NOT EXISTS model_runtime_selections (
+          id TEXT PRIMARY KEY,
+          owner_kind TEXT NOT NULL,
+          owner_id TEXT NOT NULL,
+          provider_configuration_id TEXT NOT NULL
+            REFERENCES provider_configurations(id) ON DELETE RESTRICT,
+          provider_configuration_revision_id TEXT NOT NULL
+            REFERENCES provider_configuration_revisions(id) ON DELETE RESTRICT,
+          routing_profile_revision_id TEXT NOT NULL
+            REFERENCES model_routing_profile_revisions(id) ON DELETE RESTRICT,
+          provider TEXT NOT NULL,
+          model TEXT NOT NULL,
+          workload TEXT NOT NULL,
+          fallback INTEGER NOT NULL CHECK (fallback IN (0, 1)),
+          created_at TEXT NOT NULL,
+          UNIQUE(owner_kind, owner_id, fallback)
+        );
+
+        CREATE INDEX IF NOT EXISTS idx_model_runtime_selections_owner
+          ON model_runtime_selections(owner_kind, owner_id, created_at DESC);
+        """
+    )
+    _add_column(
+        conn,
+        "model_route_audit",
+        "provider_configuration_id",
+        "TEXT NULL",
+    )
+    _add_column(
+        conn,
+        "model_route_audit",
+        "provider_configuration_revision_id",
+        "TEXT NULL",
+    )
+    _add_column(
+        conn,
+        "model_route_audit",
+        "routing_profile_revision_id",
+        "TEXT NULL",
+    )
+    _add_column(conn, "model_route_audit", "workload", "TEXT NULL")
+    _add_column(
+        conn,
+        "model_route_audit",
+        "fallback_provider_configuration_id",
+        "TEXT NULL",
+    )
+    _add_column(
+        conn,
+        "execution_revision_sets",
+        "provider_configuration_id",
+        "TEXT NULL",
+    )
+    _add_column(
+        conn,
+        "execution_revision_sets",
+        "provider_configuration_revision_id",
+        "TEXT NULL",
+    )
+    _add_column(
+        conn,
+        "execution_revision_sets",
+        "routing_profile_revision_id",
+        "TEXT NULL",
+    )
+    _add_column(conn, "execution_revision_sets", "model", "TEXT NULL")
+    _add_column(conn, "execution_revision_sets", "model_workload", "TEXT NULL")
 
 
 def _legacy_snapshot_spec(

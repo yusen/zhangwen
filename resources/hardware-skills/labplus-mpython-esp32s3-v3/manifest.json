@@ -1,0 +1,58 @@
+{
+  "schema": "zhangwen.hardware-skill-manifest/v1",
+  "schemaVersion": 1,
+  "skillName": "labplus-mpython-esp32s3-v3",
+  "componentId": "hw_labplus_mpython_esp32s3_v3",
+  "displayName": "掌控板 3.0（ESP32-S3）",
+  "description": "掌控板 3.0 的 3.3V 电气、ESP32-S3、板载硬件、引脚、完整 mPython 官方类库、安全和结构包络事实。",
+  "status": "ACTIVE",
+  "sourceKind": "MANUAL",
+  "files": [
+    "README.md",
+    "SKILL.md",
+    "references/specifications.md",
+    "references/compatibility-rules.md",
+    "references/mechanical.md",
+    "references/integration.md",
+    "references/safety.md",
+    "references/sources.md",
+    "models/cadquery.py",
+    "examples/usage.md",
+    "tests/validation-cases.md"
+  ],
+  "media": [
+    {
+      "path": "assets/cover.webp",
+      "role": "cover",
+      "alt": "掌控板 3.0 正面与背面三维产品图，可见 LCD、金手指、USB-C 和板载器件",
+      "contentType": "image/webp",
+      "sha256": "0fda69ede7f625a255c5451b26fb869d9ef9f24092d2d5e035a24dc2af09829b",
+      "sourceUrl": "https://mpython-esp32s3-doc.readthedocs.io/zh-cn/latest/index.html",
+      "attribution": "深圳盛思科教文化有限公司 / 掌控板 3.0 官方文档",
+      "license": "CC0-1.0（官方版权页声明文档采用 CC0）"
+    },
+    {
+      "path": "assets/pinout.webp",
+      "role": "gallery",
+      "alt": "掌控板 3.0 正反面标注图，标出 LCD、按键、传感器、ESP32-S3 和金手指",
+      "contentType": "image/webp",
+      "sha256": "253c10b63012f5bc973a0622dc0d1076b93a9a94b535113c6cc593a8bcb9549b",
+      "sourceUrl": "https://mpython-esp32s3-doc.readthedocs.io/zh-cn/latest/1_hardware/1_1_introduce.html",
+      "attribution": "深圳盛思科教文化有限公司 / 掌控板 3.0 官方文档",
+      "license": "CC0-1.0（官方版权页声明文档采用 CC0）"
+    },
+    {
+      "path": "assets/structural-dimensions.webp",
+      "role": "gallery",
+      "alt": "掌控板 3.0 官方结构尺寸工程图，单位毫米",
+      "contentType": "image/webp",
+      "sha256": "0d4d4bf46fd665a717c6e54d7485c1616c393f9e0d076f7a0b7f6b1ac6d221a0",
+      "sourceUrl": "https://mpython-esp32s3-doc.readthedocs.io/zh-cn/latest/1_hardware/1_4_Structural_dimensions.html",
+      "attribution": "深圳盛思科教文化有限公司 / 掌控板 3.0 官方文档",
+      "license": "CC0-1.0（官方版权页声明文档采用 CC0）"
+    }
+  ],
+  "revision": "63f03e04d05366c47edcf770",
+  "createdAt": "2026-07-17T09:23:07Z",
+  "updatedAt": "2026-07-18T13:16:46+08:00"
+}

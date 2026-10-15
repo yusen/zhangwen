@@ -30,6 +30,7 @@ from zhangwen.llm.contracts import LLMErrorCode
 from zhangwen.llm.errors import make_llm_error
 from zhangwen.llm.http import llm_http_exception
 from zhangwen.llm.runtime import require_llm_config
+from zhangwen.settings.models import ModelWorkload
 from zhangwen.llm.structured import StructuredLLMError
 from zhangwen.projects.errors import ProjectError, ProjectValidationError
 from zhangwen.projects.models import (
@@ -103,7 +104,7 @@ async def decide_legacy_project_claim(
         raise _http_error(exc) from exc
 
 
-@router.post("/projects", response_model=ProjectWorkspaceResponse)
+@router.post("/projects", response_model=ProjectWorkspaceResponse, deprecated=True)
 async def create_project(request: CreateProjectRequest) -> ProjectWorkspaceResponse:
     try:
         repository = _repo()
@@ -122,14 +123,10 @@ async def create_project(request: CreateProjectRequest) -> ProjectWorkspaceRespo
             )
         workspace = repository.create_project_from_idea(
             idea=request.initialIdea,
-            project_name=(
-                request.name
-                or model_route.projectName
-            ),
+            project_name=(request.name or model_route.projectName),
             initial_expert=request.initialExpert,
             participating_experts=(
-                request.selectedExpertTypes
-                or model_route.recommendedExperts
+                request.selectedExpertTypes or model_route.recommendedExperts
             ),
             selected_model=request.selectedModel,
             router_result=model_route,
@@ -144,7 +141,7 @@ async def create_project(request: CreateProjectRequest) -> ProjectWorkspaceRespo
         raise _http_error(exc) from exc
 
 
-@router.post("/projects/suggest", response_model=SuggestProjectResponse)
+@router.post("/projects/suggest", response_model=SuggestProjectResponse, deprecated=True)
 async def suggest_project(request: SuggestProjectRequest) -> SuggestProjectResponse:
     try:
         text = request.text or request.initialIdea or ""
@@ -547,6 +544,7 @@ async def _route_project_idea_with_model(
             credential_store=credential_store_factory(),
             credential_service=settings.credential_service,
             credential_account=settings.credential_account,
+            workload=ModelWorkload.CREATION,
         )
         route = ModelRouter(repository.db_path).route(
             agent_id="entry_router",

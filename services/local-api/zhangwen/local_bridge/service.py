@@ -389,10 +389,10 @@ def normalize_origin(value: str) -> str:
 
 
 def project_id_from_path(path: str) -> str | None:
-    for prefix in ("/api/projects/", "/api/v2/projects/"):
-        if path.startswith(prefix):
-            candidate = path[len(prefix) :].split("/", 1)[0]
-            return candidate or None
+    prefix = "/api/projects/"
+    if path.startswith(prefix):
+        candidate = path[len(prefix) :].split("/", 1)[0]
+        return candidate or None
     return None
 
 

@@ -7,6 +7,9 @@ from typing import Literal
 
 from pydantic import BaseModel, ConfigDict, Field
 
+from zhangwen.domains.orchestration.models import ExecutionRevisionSet
+from zhangwen.domains.works.models import WorkRunRevisionBindings
+
 
 class StrictModel(BaseModel):
     model_config = ConfigDict(extra="forbid")
@@ -65,6 +68,14 @@ class DeviceLabSceneSource(StrictModel):
     proposalId: str
     proposalVersion: int = Field(ge=1)
     proposalConfirmedAt: str
+    projectionPurpose: Literal["PHYSICAL_BOARD", "WORK_FUNCTIONAL"] = (
+        "PHYSICAL_BOARD"
+    )
+    simulationProxyPackageId: str | None = Field(
+        default=None,
+        min_length=1,
+        max_length=240,
+    )
     hardwareFactId: str | None = None
     hardwareFactUpdatedAt: str | None = None
     specRunId: str | None = None
@@ -231,6 +242,50 @@ class DeviceLabTarget(StrEnum):
 class DeviceLabEngine(StrEnum):
     FUNCTIONAL_MODEL = "FUNCTIONAL_MODEL"
     QEMU_ESP32S3 = "QEMU_ESP32S3"
+    WOKWI_CLOUD = "WOKWI_CLOUD"
+
+
+class WokwiRunBindingV1(StrictModel):
+    schemaVersion: Literal["zhangwen.wokwi-run-binding/v1"] = (
+        "zhangwen.wokwi-run-binding/v1"
+    )
+    projectRevisionId: str = Field(min_length=1, max_length=160)
+    sourceSceneRevision: str = Field(pattern=r"^[a-f0-9]{64}$")
+    sourceCodeRunId: str = Field(min_length=1, max_length=160)
+    diagramArtifactId: str = Field(min_length=1, max_length=160)
+    diagramArtifactVersionId: str | None = Field(
+        default=None, min_length=1, max_length=240
+    )
+    diagramSha256: str = Field(pattern=r"^[a-f0-9]{64}$")
+    firmwareArtifactId: str = Field(min_length=1, max_length=160)
+    firmwareArtifactVersionId: str | None = Field(
+        default=None, min_length=1, max_length=240
+    )
+    firmwareSha256: str = Field(pattern=r"^[a-f0-9]{64}$")
+    elfArtifactId: str | None = Field(default=None, min_length=1, max_length=160)
+    runtimePackageRevisionId: str = Field(min_length=1, max_length=160)
+    devicePackageRevisionId: str = Field(min_length=1, max_length=160)
+    firmwareBaseRevision: str = Field(min_length=1, max_length=160)
+    compatibilitySummary: str = Field(default="", max_length=500)
+    profile: DeviceLabProfileV1 | None = None
+    controlBindings: list["WokwiControlBinding"] = Field(
+        default_factory=list, max_length=64
+    )
+    gpioBindings: list["WokwiGpioBinding"] = Field(
+        default_factory=list, max_length=64
+    )
+
+
+class WokwiControlBinding(StrictModel):
+    channelId: str = Field(min_length=1, max_length=80)
+    partId: str = Field(min_length=1, max_length=80)
+    control: str = Field(min_length=1, max_length=80)
+
+
+class WokwiGpioBinding(StrictModel):
+    channelId: str = Field(min_length=1, max_length=80)
+    partId: str = Field(min_length=1, max_length=80)
+    pin: str = Field(min_length=1, max_length=40)
 
 
 class DeviceLabRunStatus(StrEnum):
@@ -241,6 +296,11 @@ class DeviceLabRunStatus(StrEnum):
 
 
 LabValue = float | bool | str
+
+
+class DeviceLabScenarioResult(StrictModel):
+    scenarioId: str = Field(min_length=1, max_length=160)
+    passed: bool
 
 
 class DeviceLabRun(StrictModel):
@@ -258,6 +318,14 @@ class DeviceLabRun(StrictModel):
     startedAt: str
     updatedAt: str
     errorMessage: str | None = None
+    revisionBindings: WorkRunRevisionBindings | None = None
+    executionRevisionSet: ExecutionRevisionSet | None = None
+    wokwiBinding: WokwiRunBindingV1 | None = None
+    scenarioResults: list[DeviceLabScenarioResult] = Field(default_factory=list)
+    resultPassed: bool | None = None
+    resultSummary: str | None = None
+    resultIdempotencyKey: str | None = None
+    resultRequestHash: str | None = None
     # V29 runs created before project-scene projection remain readable. New runs
     # always persist the exact proposal-derived scene snapshot here.
     scene: DeviceLabSceneV1 | None = None
@@ -268,6 +336,7 @@ class CreateDeviceLabRunRequest(StrictModel):
         min_length=8, max_length=160, pattern=r"^[A-Za-z0-9._:-]+$"
     )
     target: DeviceLabTarget = DeviceLabTarget.SIMULATOR
+    engine: DeviceLabEngine = DeviceLabEngine.FUNCTIONAL_MODEL
     applicationId: str | None = None
     parameterSetId: str | None = None
     expectedSceneRevision: str | None = Field(

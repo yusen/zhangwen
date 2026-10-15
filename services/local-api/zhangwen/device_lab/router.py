@@ -215,6 +215,12 @@ async def shutdown_device_lab_services() -> None:
         await service.shutdown()
 
 
+def recover_device_lab_runs() -> int:
+    """Recover durable run state before the local API accepts requests."""
+
+    return _service().recover_interrupted_runs()
+
+
 def _project(project_id: str) -> ProjectRepository:
     repository = ProjectRepository(settings.data_dir)
     repository.get_workspace(project_id)
@@ -222,6 +228,11 @@ def _project(project_id: str) -> ProjectRepository:
 
 
 def _service() -> DeviceLabService:
+    return device_lab_service()
+
+
+def device_lab_service() -> DeviceLabService:
+    """Return the one process-local Device Lab executor shared by adapters."""
     repository = ProjectRepository(settings.data_dir)
     key = repository.db_path.resolve()
     service = _services.get(key)

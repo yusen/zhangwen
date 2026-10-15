@@ -1,0 +1,54 @@
+{
+  "layouts": [
+    {
+      "theme": "light",
+      "width": 1440,
+      "overflow": false,
+      "password": true,
+      "empty": true,
+      "focused": true,
+      "models": [
+        "deepseek-flash",
+        "deepseek-v4-pro"
+      ]
+    },
+    {
+      "theme": "light",
+      "width": 375,
+      "overflow": false,
+      "password": true,
+      "empty": true,
+      "focused": true,
+      "models": [
+        "deepseek-flash",
+        "deepseek-v4-pro"
+      ]
+    },
+    {
+      "theme": "dark",
+      "width": 1440,
+      "overflow": false,
+      "password": true,
+      "empty": true,
+      "focused": true,
+      "models": [
+        "deepseek-flash",
+        "deepseek-v4-pro"
+      ]
+    },
+    {
+      "theme": "dark",
+      "width": 375,
+      "overflow": false,
+      "password": true,
+      "empty": true,
+      "focused": true,
+      "models": [
+        "deepseek-flash",
+        "deepseek-v4-pro"
+      ]
+    }
+  ],
+  "pageErrors": [],
+  "productionWrites": 0
+}

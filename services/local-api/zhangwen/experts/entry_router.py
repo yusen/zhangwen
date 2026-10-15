@@ -408,6 +408,28 @@ def _suggest_project_name(text: str) -> str:
             break
     if not cleaned:
         return "新的创客项目"
+    if len(cleaned) <= 24:
+        return cleaned
+    clause_endings: list[int] = []
+    for delimiter in (
+        "，",
+        "。",
+        "；",
+        ";",
+        ",",
+        ".",
+        "！",
+        "!",
+        "？",
+        "?",
+    ):
+        position = cleaned.find(delimiter)
+        if position > 0:
+            clause_endings.append(position)
+    if clause_endings:
+        first_clause = cleaned[: min(clause_endings)].strip()
+        if 2 <= len(first_clause) <= 24:
+            return first_clause
     head = cleaned[:18]
     suffix = "项目"
     if any(keyword in cleaned.lower() for keyword in ("提醒", "检测", "控制", "自动", "智能")):

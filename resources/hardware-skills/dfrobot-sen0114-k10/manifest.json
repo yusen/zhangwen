@@ -1,0 +1,36 @@
+{
+  "schema": "zhangwen.hardware-skill-manifest/v1",
+  "schemaVersion": 1,
+  "skillName": "dfrobot-sen0114-k10",
+  "componentId": "hw_dfrobot_sen0114_k10",
+  "displayName": "DFRobot SEN0114 土壤湿度传感器",
+  "description": "为行空板 K10 MicroPython 项目提供 SEN0114 的ANALOG接入、兼容和安全边界；API 与电气值仍需按当前固件和实物复核。",
+  "status": "ACTIVE",
+  "sourceKind": "MANUAL",
+  "files": [
+    "README.md",
+    "SKILL.md",
+    "references/specifications.md",
+    "references/compatibility-rules.md",
+    "references/integration.md",
+    "references/safety.md",
+    "references/sources.md",
+    "examples/usage.md",
+    "tests/validation-cases.md"
+  ],
+  "media": [
+    {
+      "path": "assets/cover.webp",
+      "role": "cover",
+      "alt": "DFRobot SEN0114 官方产品图",
+      "contentType": "image/webp",
+      "sha256": "ca47982a102a09b764da5714b133e1e92e3310846fc4ce9a2168aefc704e6d7b",
+      "sourceUrl": "https://wiki.dfrobot.com.cn/_SKU_SEN0114_Moisture_Sensor%E5%9C%9F%E5%A3%A4%E6%B9%BF%E5%BA%A6%E4%BC%A0%E6%84%9F%E5%99%A8",
+      "attribution": "DFRobot（取自对应官方资料页）",
+      "license": "DFRobot 官方产品图；仅随本 Skill 作来源引用，公开再分发授权未独立核验"
+    }
+  ],
+  "revision": "ea0355a6cbb1842dba738c5f",
+  "createdAt": "2026-07-17T06:57:53Z",
+  "updatedAt": "2026-07-17T10:42:11Z"
+}

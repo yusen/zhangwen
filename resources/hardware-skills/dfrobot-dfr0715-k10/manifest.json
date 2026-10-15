@@ -1,0 +1,36 @@
+{
+  "schema": "zhangwen.hardware-skill-manifest/v1",
+  "schemaVersion": 1,
+  "skillName": "dfrobot-dfr0715-k10",
+  "componentId": "hw_dfrobot_dfr0715_k10",
+  "displayName": "DFRobot DFR0715 语音识别模块",
+  "description": "为行空板 K10 MicroPython 项目提供 DFR0715 的I2C接入、兼容和安全边界；API 与电气值仍需按当前固件和实物复核。",
+  "status": "ACTIVE",
+  "sourceKind": "MANUAL",
+  "files": [
+    "README.md",
+    "SKILL.md",
+    "references/specifications.md",
+    "references/compatibility-rules.md",
+    "references/integration.md",
+    "references/safety.md",
+    "references/sources.md",
+    "examples/usage.md",
+    "tests/validation-cases.md"
+  ],
+  "media": [
+    {
+      "path": "assets/cover.webp",
+      "role": "cover",
+      "alt": "DFRobot DFR0715 Gravity I2C 离线语音识别模块产品图",
+      "contentType": "image/webp",
+      "sha256": "669f88a7fbdfe168180de57e205a0d5e201c5eda53bfffd4bd2ad345d4389742",
+      "sourceUrl": "https://wiki.dfrobot.com.cn/_SKU_DFR0715_Gravity_I2C_%E7%A6%BB%E7%BA%BF%E8%AF%AD%E9%9F%B3%E8%AF%86%E5%88%AB%E6%A8%A1%E5%9D%97",
+      "attribution": "DFRobot（取自对应官方资料页）",
+      "license": "DFRobot 官方产品图；仅随本 Skill 作来源引用，公开再分发授权未独立核验"
+    }
+  ],
+  "revision": "b707888619d72cd38e07e039",
+  "createdAt": "2026-07-17T06:57:53Z",
+  "updatedAt": "2026-07-17T10:42:11Z"
+}

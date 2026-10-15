@@ -1,64 +1,22 @@
-# Dependencies
 node_modules/
-.pnpm-store/
+.venv/
+.data/
+.test-data/
+dist/
 __pycache__/
 *.pyc
 .pytest_cache/
-.venv/
-venv/
-
-# Build outputs
-dist/
-target/
-
-# IDE
-.vscode/
-.idea/
-*.swp
-*.swo
-
-# OS
-.DS_Store
-Thumbs.db
-desktop.ini
-
-# Environment
+test-results/
+playwright-report/
 .env
-.env.local
-*.env.local
-.python-version
-.codex/config.toml
-
-# App data
-.data/
-.tmp/
-
-# Local reference workspaces and generated presentation exports
-/references/local/
-/outputs/
-
-# Logs
-*.log
-
-# Tauri
-apps/desktop/src-tauri/target/
-apps/desktop/src-tauri/gen/
-apps/desktop/src-tauri/resources/sidecar/*
-!apps/desktop/src-tauri/resources/sidecar/.gitkeep
-
-# Test coverage
-coverage/
-htmlcov/
-.coverage
-
-# Qoder internal cache
-.qoder/repowiki/
-
-# Local assistant memory
-.workbuddy/
-
-# GitHub upload staging package (created locally; never commit it into this repository)
-/GitHub_Upload_Zhangwen/
-
-# Runtime data accidentally created inside the Python package tree
-/services/local-api/zhangwen/hardware/projects/
+outputs/
+imports/
+.backups/
+.browser-data/
+.device-backups/
+.publish/
+.runtime/
+.cache/
+.env.*
+!.env.example
+docs/device-acceptance/

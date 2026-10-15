@@ -12,6 +12,7 @@ from zhangwen.llm.contracts import ChatMessage, ChatMessageStatus, ChatRole
 from zhangwen.llm.deepseek import DeepSeekProvider
 from zhangwen.llm.http import llm_http_exception
 from zhangwen.llm.runtime import require_llm_config
+from zhangwen.settings.models import ModelWorkload
 from zhangwen.llm.structured import StructuredLLMError
 from zhangwen.hardware.models import ValidationSeverity
 from zhangwen.hardware.router import validate_component_ids
@@ -248,6 +249,7 @@ def _get_llm_config():
         credential_store=credential_store_factory(),
         credential_service=settings.credential_service,
         credential_account=settings.credential_account,
+        workload=ModelWorkload.CREATION,
     )
 
 

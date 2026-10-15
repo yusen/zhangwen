@@ -1,0 +1,12 @@
+{
+  "protectedSourceFiles": 471,
+  "snapshotFiles": 817,
+  "hashErrors": [],
+  "productionVisiblePackages": 71,
+  "productionSensors": 54,
+  "health": {
+    "status": "ok",
+    "version": "0.1.0",
+    "transport": "web-serial"
+  }
+}

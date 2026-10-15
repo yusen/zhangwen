@@ -1,0 +1,38 @@
+{
+  "schema": "zhangwen.hardware-skill-manifest/v1",
+  "schemaVersion": 1,
+  "skillName": "dfrobot-sen0388-urm09-k10-micropython",
+  "componentId": "hw_dfrobot_sen0388_urm09_trig_k10",
+  "displayName": "DFRobot SEN0388 URM09 触发式超声波传感器（行空板 K10 MicroPython）",
+  "description": "为 DFRobot SEN0388 URM09 Gravity 触发式超声波传感器接入行空板 K10 提供单线 TRIG/ECHO 接线、unihiker_k10 MicroPython 代码、兼容校验、机械参考包络和安全边界；用于 K10 P0/P1 测距代码生成、硬件方案校验、故障排查和传感器结构件设计，不适用于 SEN0307 模拟量版、SEN0304 I2C 版或双引脚 HC-SR04 用法。",
+  "status": "ACTIVE",
+  "sourceKind": "MANUAL",
+  "files": [
+    "README.md",
+    "SKILL.md",
+    "references/specifications.md",
+    "references/compatibility-rules.md",
+    "references/mechanical.md",
+    "references/integration.md",
+    "references/safety.md",
+    "references/sources.md",
+    "models/cadquery.py",
+    "examples/usage.md",
+    "tests/validation-cases.md"
+  ],
+  "media": [
+    {
+      "path": "assets/cover.png",
+      "role": "cover",
+      "alt": "DFRobot SEN0388 URM09 触发式超声波传感器双探头正面产品图",
+      "contentType": "image/png",
+      "sha256": "5aab6381930b6e274050ccbacdc28bee3beed57be5647e691b2fd1b76d742c8e",
+      "sourceUrl": "https://wiki.dfrobot.com/sen0388/",
+      "attribution": "DFRobot（图片由用户提供）",
+      "license": "用于产品识别和本地硬件库展示；公开再分发前需确认 DFRobot 图片授权。"
+    }
+  ],
+  "revision": "46c250feecc182be026d8245",
+  "createdAt": "2026-07-16T16:08:45Z",
+  "updatedAt": "2026-07-19T13:54:40.916947+00:00"
+}

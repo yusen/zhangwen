@@ -1,0 +1,56 @@
+{
+  "schema": "zhangwen.hardware-skill-manifest/v1",
+  "schemaVersion": 1,
+  "skillName": "seeed-xiao-esp32s3-micropython",
+  "componentId": "hw_seeed_xiao_esp32s3",
+  "displayName": "Seeed Studio XIAO ESP32S3（MicroPython）",
+  "description": "基础版 XIAO ESP32S3 的 3.3V 电气、官方 MicroPython API、引脚和安全边界；不包含 Sense/Plus 专属能力或机械猜测。",
+  "status": "ACTIVE",
+  "sourceKind": "MANUAL",
+  "files": [
+    "README.md",
+    "SKILL.md",
+    "references/specifications.md",
+    "references/compatibility-rules.md",
+    "references/integration.md",
+    "references/safety.md",
+    "references/sources.md",
+    "examples/usage.md",
+    "tests/validation-cases.md"
+  ],
+  "media": [
+    {
+      "path": "assets/cover.webp",
+      "role": "cover",
+      "alt": "Seeed Studio XIAO ESP32S3 基础版开发板产品正面图",
+      "contentType": "image/webp",
+      "sha256": "a68b5f5194bcfd9f27c8f1976abee40e90aff6c70c86e02ada456cb6c3d7ffd4",
+      "sourceUrl": "https://wiki.seeedstudio.com/cn/xiao_esp32s3_getting_started/",
+      "attribution": "Seeed Studio",
+      "license": "CC BY-SA 4.0"
+    },
+    {
+      "path": "assets/front-pinout.webp",
+      "role": "gallery",
+      "alt": "Seeed Studio XIAO ESP32S3 官方正面引脚图",
+      "contentType": "image/webp",
+      "sha256": "bc27aee2a6fc69dff9441a81d0b8b8d3b753246014f84b820648c5d8b5229910",
+      "sourceUrl": "https://wiki.seeedstudio.com/cn/xiao_esp32s3_getting_started/",
+      "attribution": "Seeed Studio",
+      "license": "CC BY-SA 4.0"
+    },
+    {
+      "path": "assets/back-pinout.webp",
+      "role": "gallery",
+      "alt": "Seeed Studio XIAO ESP32S3 官方背面引脚图",
+      "contentType": "image/webp",
+      "sha256": "2353b3ea3cdc3796bf56255f2003f40d9722c05f771777f76b4e6ac5797f25d8",
+      "sourceUrl": "https://wiki.seeedstudio.com/cn/xiao_esp32s3_getting_started/",
+      "attribution": "Seeed Studio",
+      "license": "CC BY-SA 4.0"
+    }
+  ],
+  "revision": "6823341307da6499f8d3dbb0",
+  "createdAt": "2026-07-18T06:30:00Z",
+  "updatedAt": "2026-07-18T06:30:00Z"
+}

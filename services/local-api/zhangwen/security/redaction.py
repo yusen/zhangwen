@@ -9,7 +9,15 @@ SECRET_PATTERNS = [
     re.compile(r"Bearer\s+[A-Za-z0-9._\-]+", re.IGNORECASE),
 ]
 
-SECRET_KEYS = {"authorization", "api_key", "apikey", "apiKey", "token", "secret"}
+SECRET_KEYS = {
+    "authorization",
+    "api_key",
+    "apikey",
+    "token",
+    "secret",
+    "password",
+    "credential",
+}
 
 
 def redact_text(value: str) -> str:
@@ -26,7 +34,7 @@ def redact_mapping(data: Mapping[str, Any]) -> dict[str, Any]:
 
     redacted: dict[str, Any] = {}
     for key, value in data.items():
-        if key in SECRET_KEYS or key.lower() in SECRET_KEYS:
+        if key.lower() in SECRET_KEYS:
             redacted[key] = "[REDACTED]"
         elif isinstance(value, str):
             redacted[key] = redact_text(value)

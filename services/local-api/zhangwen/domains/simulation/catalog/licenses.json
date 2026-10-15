@@ -1,0 +1,17 @@
+{
+  "schema": "zhangwen.simulation-assets-license/v1",
+  "entries": [
+    {
+      "path": "reference-boards.svg",
+      "spdx": "LicenseRef-Zhangwen-Original",
+      "source": "Zhangwen project",
+      "attribution": "掌问原创 ESP32-S3/C3 教学参考板示意图；正式分发前纳入 SBOM 与发布审查。"
+    },
+    {
+      "path": "component-symbols.svg",
+      "spdx": "LicenseRef-Zhangwen-Original",
+      "source": "Zhangwen project",
+      "attribution": "掌问原创首批课堂组件示意图；不使用 Wokwi 视觉资产。"
+    }
+  ]
+}

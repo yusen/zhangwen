@@ -1,0 +1,74 @@
+{
+  "schema": "zhangwen.simulation-runtime-manifest/v1",
+  "revisionId": "runtime/zw-mpy-sim@1",
+  "workerProtocol": "zhangwen.micropython-worker/v1",
+  "hostPatchRevision": "zhangwen-micropython-host/v1",
+  "micropython": {
+    "version": "1.26.1",
+    "upstreamTag": "v1.26.1",
+    "upstreamCommit": "647c8b96cae7e202c7a020395b7cfe65e5b8ce04",
+    "sourceArchiveUrl": "https://github.com/micropython/micropython/releases/download/v1.26.1/micropython-1.26.1.tar.xz",
+    "sourceArchiveSha256": "12be6514df6272c0fcb328122b534af6b12abdd52435c19f40ee1707cc43ac98",
+    "licenseSpdx": "MIT",
+    "hostPort": "ports/windows",
+    "upstreamHostPortStatus": "EXPERIMENTAL_COMMUNITY_SUPPORTED"
+  },
+  "nativeDistributions": [],
+  "behavioralReference": {
+    "implementation": "restricted-cpython-reference/v1",
+    "workerProtocol": "zhangwen.micropython-worker/v1",
+    "evidenceEligible": false,
+    "purpose": "在固定原生 MicroPython host core 尚未随安装包提供时验证掌问组件总线与确定性语义；不得作为原生 MicroPython 或 L1 Evidence。"
+  },
+  "supportedApis": [
+    "machine.Pin.init/value/on/off/toggle",
+    "machine.ADC.read/read_u16/read_uv",
+    "machine.PWM.freq/duty/duty_u16/duty_ns/deinit",
+    "machine.I2C.scan/readfrom/writeto/readfrom_mem/writeto_mem",
+    "machine.SoftI2C.scan/readfrom/writeto/readfrom_mem/writeto_mem",
+    "machine.UART.any/read/readline/write/init/deinit",
+    "machine.Timer.init/deinit ONE_SHOT/PERIODIC",
+    "time.sleep/sleep_ms/sleep_us/ticks_ms/ticks_us/ticks_add/ticks_diff",
+    "deterministic random.random/randint/uniform",
+    "read-only code-bundle open"
+  ],
+  "supportedComponents": [
+    "component/led@1",
+    "component/button@1",
+    "component/potentiometer@1",
+    "component/dht22@1",
+    "component/ssd1306@1",
+    "component/neopixel@1",
+    "component/buzzer@1",
+    "component/servo@1"
+  ],
+  "explicitlyUnsupported": [
+    "machine.SPI",
+    "machine.Pin.irq",
+    "network/Wi-Fi/BLE",
+    "camera/microphone/I2S/RMT/USB/SD",
+    "host filesystem writes",
+    "host network, shell, environment variables and credentials",
+    "cycle-accurate timing, electrical current and RF behavior"
+  ],
+  "defaultLimits": {
+    "wallTimeoutMs": 2000,
+    "maxVirtualTimeUs": 30000000,
+    "maxInstructions": 100000,
+    "maxEvents": 5000,
+    "maxOutputBytes": 65536,
+    "maxHeapBytes": 16000000
+  },
+  "maximumLimits": {
+    "wallTimeoutMs": 10000,
+    "maxVirtualTimeUs": 3600000000,
+    "maxInstructions": 2000000,
+    "maxEvents": 100000,
+    "maxOutputBytes": 1000000,
+    "maxHeapBytes": 64000000
+  },
+  "licenseNoticePaths": [
+    "LICENSES/MICROPYTHON-MIT.txt",
+    "THIRD_PARTY_NOTICES.md"
+  ]
+}

@@ -42,6 +42,21 @@ class ProjectPersistenceVersion(IntEnum):
     V29 = 29
     V30 = 30
     V31 = 31
+    V32 = 32
+    V33 = 33
+    V34 = 34
+    V35 = 35
+    V36 = 36
+    V37 = 37
+    V38 = 38
+    V39 = 39
+    V40 = 40
+    V41 = 41
+    V42 = 42
+    V43 = 43
+    V44 = 44
+    V45 = 45
+    V46 = 46
 
 
 class ExpertType(StrEnum):
@@ -181,7 +196,7 @@ class Project(BaseModel):
     createdAt: str
     updatedAt: str
     lastOpenedAt: str | None = None
-    schemaVersion: ProjectPersistenceVersion = ProjectPersistenceVersion.V31
+    schemaVersion: ProjectPersistenceVersion = ProjectPersistenceVersion.V46
 
 
 class ProjectSummary(BaseModel):

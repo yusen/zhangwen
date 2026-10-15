@@ -1,0 +1,36 @@
+{
+  "schema": "zhangwen.hardware-skill-manifest/v1",
+  "schemaVersion": 1,
+  "skillName": "dfrobot-sen0322-k10",
+  "componentId": "hw_dfrobot_sen0322_k10",
+  "displayName": "DFRobot SEN0322 I2C 氧气浓度传感器",
+  "description": "为行空板 K10 MicroPython 项目提供 SEN0322 的I2C接入、兼容和安全边界；API 与电气值仍需按当前固件和实物复核。",
+  "status": "ACTIVE",
+  "sourceKind": "MANUAL",
+  "files": [
+    "README.md",
+    "SKILL.md",
+    "references/specifications.md",
+    "references/compatibility-rules.md",
+    "references/integration.md",
+    "references/safety.md",
+    "references/sources.md",
+    "examples/usage.md",
+    "tests/validation-cases.md"
+  ],
+  "media": [
+    {
+      "path": "assets/cover.webp",
+      "role": "cover",
+      "alt": "Front of DFRobot electrochemical O2 sensor module for oxygen detection-DFRobot product sku:SEN0322 image.",
+      "contentType": "image/webp",
+      "sha256": "65243f6726c0ddb70490cd83b96a39582e957440dccfffb5c39f359565e04187",
+      "sourceUrl": "https://wiki.dfrobot.com/sen0322/",
+      "attribution": "DFRobot（取自对应官方资料页）",
+      "license": "DFRobot 官方产品图；仅随本 Skill 作来源引用，公开再分发授权未独立核验"
+    }
+  ],
+  "revision": "a1dc50a97020339cfe449e8e",
+  "createdAt": "2026-07-17T06:57:53Z",
+  "updatedAt": "2026-07-17T10:42:11Z"
+}

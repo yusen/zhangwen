@@ -1,25 +1,9 @@
-# 第三方组件声明
+# 第三方与资料来源
 
-## Wokwi Elements 1.9.2
+本版复用旧掌问仓库的后端源码、Hardware Skill 格式与硬件资料，来源及摘要见 `legacy-source-manifest.json`、`hardware-import-snapshot.json` 和各硬件包的 `references/sources.md`。保留包内原 NOTICE、许可证及来源链接。没有为第三方资料授予额外许可。
 
-- 项目：`@wokwi/elements`
-- 来源：https://github.com/wokwi/wokwi-elements
-- 许可证：MIT（上游许可证：https://github.com/wokwi/wokwi-elements/blob/main/LICENSE）
-- 用途：项目实物仿真的板卡、外设外观和交互控件。它不执行硬件仿真。
-- 分发：作为 pnpm 锁定依赖由前端本地打包。
+当前 Web 前端使用 React、Vite、CodeMirror、Lucide；后端使用 FastAPI、Pydantic、Uvicorn、HTTPX、PyYAML 等。精确版本由根 `package-lock.json` 与 `services/local-api/requirements-web-lock.txt` 锁定；依赖的许可证随各上游分发。
 
-## Espressif ESP32-S3 QEMU
+Windows 启动时从官方源下载 Node.js（https://nodejs.org/，含自身第三方许可证）与 uv（https://github.com/astral-sh/uv，MIT/Apache-2.0），通过 uv 下载 python-build-standalone 的 CPython 发行版。运行环境下载后保留其自带的许可证文件，源码仓库不包含这些二进制。
 
-- 参考：https://github.com/espressif/esp-toolchain-docs/blob/main/qemu/esp32s3/README.md
-- 用途：可选的离线固件级 CPU/Flash/UART 运行时。
-- 当前状态：本仓库未包含 QEMU 可执行文件，也未把它加入当前安装器。启用分发前必须固定版本与 SHA-256，并随二进制提供对应许可证和完整第三方声明。
-
-## ESP-Claw
-
-- 项目：https://github.com/espressif/esp-claw
-- K10 板级来源：https://github.com/espressif/esp-claw/tree/master/application/edge_agent/boards/dfrobot/dfrobot_k10
-- XIAO Sense 板级来源：https://github.com/espressif/esp-claw/tree/master/application/edge_agent/boards/seeedstudio/xiao_esp32s3_sense
-- Lua 能力参考：https://esp-claw.com/en/reference-cap/cap-lua/
-- MCP 能力参考：https://esp-claw.com/en/reference-cap/cap-mcp/
-- 用途：双板事实、预构建运行时包，以及 ESP-Claw Lua 代码部署协议的参考。
-- 当前状态：仓库不编译或重新分发 ESP-Claw 源码/二进制；运行时包必须单独固定来源、版本和 SHA-256。首版代码部署仅连接用户在专业模式中明确配对、且通过私网/同主机/能力门禁的 Web 与 MCP 端点；尚未实现 mDNS 自动发现或设备级认证。
+旧桌面版的 Wokwi Elements、ESP32-S3 QEMU 和 ESP-Claw 声明保存在旧版恢复标签的 `docs/THIRD_PARTY_NOTICES.md` 中。当前保留的仿真兼容源码另有 `services/local-api/zhangwen/domains/simulation/THIRD_PARTY_NOTICES.md`，本版 Web 启动不安装或调用这些仿真运行时，不包含 QEMU 或 ESP-Claw 二进制。

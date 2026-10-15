@@ -57,6 +57,7 @@ from zhangwen.devices.espclaw import (
     normalize_espclaw_web_endpoint,
 )
 from zhangwen.devices.transport import (
+    DeviceIdentity,
     DeviceIdentityRequirement,
     DeviceTransport,
     DeviceTransportCanceled,
@@ -78,6 +79,11 @@ from zhangwen.device_lab.models import (
 )
 from zhangwen.device_lab.repository import DeviceLabRepository
 from zhangwen.device_lab.service import DeviceLabError, DeviceLabService
+from zhangwen.domains.inventory.models import (
+    DeviceOperationRevisionPin,
+    DevicePlatformError,
+)
+from zhangwen.domains.inventory.repository import DevicePlatformRepository
 
 
 MAX_FIRMWARE_BYTES = 32 * 1024 * 1024
@@ -164,6 +170,7 @@ class DeviceOperationService:
         self._db_path = Path(db_path)
         self._data_dir = Path(data_dir)
         self._repo = DeviceRepository(self._db_path)
+        self._device_platform = DevicePlatformRepository(self._data_dir)
         self._transport = transport
         self._command_timeout = command_timeout_seconds
         self._upload_timeout = upload_timeout_seconds
@@ -189,8 +196,72 @@ class DeviceOperationService:
         self._terminal_errors: dict[str, str] = {}
         self._terminal_unlocks: dict[str, tuple[str, datetime]] = {}
 
+    @property
+    def transport_mode(self) -> str:
+        return str(getattr(self._transport, "transport_mode", "LOCAL_SERIAL"))
+
+    @property
+    def transport_evidence_eligible(self) -> bool:
+        return bool(getattr(self._transport, "evidence_eligible", True))
+
     async def scan_ports(self) -> list[DevicePort]:
         return await self._transport.scan_ports()
+
+    def upload_code_dry_run(
+        self,
+        *,
+        project_id: str,
+        session_id: str,
+        code_run: CodeRun,
+    ) -> tuple[DeviceOperation, DeviceSession]:
+        if _code_runtime_value(code_run) != "MICROPYTHON":
+            raise ValueError("USB serial deployment requires a MICROPYTHON CodeRun.")
+        self._repo.get_serial_session(
+            project_id,
+            session_id,
+            require_current_scene=True,
+        )
+        pin = self._resolve_device_pin(
+            project_id,
+            session_id,
+            DeviceDeploymentChannel.USB_SERIAL,
+        )
+        return self._repo.upload_code_dry_run(
+            project_id=project_id,
+            session_id=session_id,
+            code_run=code_run,
+            device_binding_id=pin.device_binding_id,
+            execution_revision_set=pin.execution_revision_set.model_dump(
+                mode="json",
+                by_alias=True,
+            ),
+        )
+
+    def firmware_flash_dry_run(
+        self,
+        *,
+        project_id: str,
+        session_id: str,
+    ) -> tuple[DeviceOperation, DeviceSession]:
+        self._repo.get_serial_session(
+            project_id,
+            session_id,
+            require_current_scene=True,
+        )
+        pin = self._resolve_device_pin(
+            project_id,
+            session_id,
+            DeviceDeploymentChannel.USB_SERIAL,
+        )
+        return self._repo.firmware_flash_dry_run(
+            project_id=project_id,
+            session_id=session_id,
+            device_binding_id=pin.device_binding_id,
+            execution_revision_set=pin.execution_revision_set.model_dump(
+                mode="json",
+                by_alias=True,
+            ),
+        )
 
     async def shutdown(self) -> None:
         """Cooperatively stop device work before the Sidecar event loop exits."""
@@ -636,6 +707,242 @@ class DeviceOperationService:
             if identity_requirement is not None:
                 self._identity_requirements[session.id] = identity_requirement
             return session
+
+    async def connect_project_device(
+        self,
+        project_id: str,
+        port_id: str,
+        *,
+        board_key: str,
+        identity_requirement: DeviceIdentityRequirement,
+    ) -> tuple[DeviceSession, DeviceIdentity]:
+        """Attach and probe a data-driven project-learning board target.
+
+        This is an adapter into the same serial lock and transport used by the
+        legacy device workspace. It does not infer a commercial board, reset
+        hardware, write files, erase Flash, or flash firmware.
+        """
+
+        fact = self._device_platform.get_board_fact(board_key)
+        if (
+            DeviceDeploymentChannel.USB_SERIAL not in fact.deployment_channels
+            or fact.runtime != "MICROPYTHON"
+        ):
+            raise DeviceServiceError(
+                "DEVICE_PACKAGE_USB_MICROPYTHON_REQUIRED",
+                "当前设备技术包未声明 MicroPython USB 文件部署。",
+                status_code=409,
+            )
+        try:
+            port = self._transport.resolve_port(port_id)
+        except (ValueError, DeviceTransportError) as exc:
+            raise DeviceServiceError(
+                "DEVICE_PORT_NOT_FOUND",
+                "未找到明确选择的设备端口。",
+                status_code=404,
+            ) from exc
+        lock = self._port_locks.setdefault(port.id, asyncio.Lock())
+        if lock.locked():
+            raise DeviceServiceError(
+                "DEVICE_PORT_BUSY",
+                "设备端口正在执行其他操作。",
+                status_code=409,
+                retryable=True,
+            )
+        cancel = asyncio.Event()
+        async with lock:
+            try:
+                handle, attached = await asyncio.wait_for(
+                    self._transport.connect(
+                        port,
+                        cancel=cancel,
+                        timeout_seconds=self._command_timeout,
+                    ),
+                    timeout=self._command_timeout,
+                )
+                if attached.exit_code != 0:
+                    raise DeviceServiceError(
+                        "DEVICE_CONNECTION_FAILED",
+                        _connection_failure_message(attached.output),
+                        retryable=True,
+                    )
+                identity, probed = await asyncio.wait_for(
+                    self._transport.probe_identity(
+                        handle,
+                        cancel=cancel,
+                        timeout_seconds=self._command_timeout,
+                    ),
+                    timeout=self._command_timeout,
+                )
+                if probed.exit_code != 0 or not identity_requirement.matches(identity):
+                    await self._release_transport_handle(handle, cancel)
+                    raise DeviceServiceError(
+                        "DEVICE_IDENTITY_MISMATCH",
+                        "设备的芯片、板型或 MicroPython 运行时与当前部署包不一致。",
+                        status_code=409,
+                    )
+            except TimeoutError as exc:
+                cancel.set()
+                raise DeviceServiceError(
+                    "DEVICE_CONNECTION_TIMEOUT",
+                    "连接或身份探测超时。",
+                    status_code=408,
+                    retryable=True,
+                ) from exc
+            except DeviceTransportError as exc:
+                raise self._service_error(exc, "DEVICE_CONNECTION_FAILED") from exc
+            session = self._repo.connect_port(
+                project_id,
+                port,
+                board_id=board_key,
+                status=DeviceSessionStatus.READY,
+                messages=[
+                    ("INFO", f"已明确选择设备端口：{port.label}。"),
+                    ("INFO", "MicroPython、ESP32 平台和目标芯片族身份探测通过。"),
+                ],
+            )
+            self._transport_sessions[session.id] = handle
+            self._identity_requirements[session.id] = identity_requirement
+            return session, identity
+
+    def bundle_upload_dry_run(
+        self,
+        *,
+        project_id: str,
+        session_id: str,
+        bundle_id: str,
+        bundle_digest: str,
+        board_key: str,
+        files: dict[str, bytes],
+        operation_id: str | None,
+    ) -> tuple[DeviceOperation, DeviceSession]:
+        operation_id = _validated_operation_id(operation_id)
+        session = self._project_serial_session(project_id, session_id, board_key)
+        fingerprint = _fingerprint(
+            "project-bundle-dry-run",
+            project_id,
+            session_id,
+            bundle_id,
+            bundle_digest,
+        )
+        if existing := self._existing_idempotent(project_id, operation_id, fingerprint):
+            return existing, session
+        pin = self._resolve_device_pin(
+            project_id,
+            session_id,
+            DeviceDeploymentChannel.USB_SERIAL,
+        )
+        state = _initial_state(
+            DeviceOperationKind.UPLOAD_CODE,
+            fingerprint,
+            metadata={
+                "channel": DeviceDeploymentChannel.USB_SERIAL.value,
+                "deploymentBundleId": bundle_id,
+                "codeRunId": bundle_id,
+                "targetId": session_id,
+                "fileCount": len(files),
+                "transportMode": "DRY_RUN",
+                "evidenceEligible": False,
+                "hardwareWritePerformed": False,
+            },
+        )
+        state["deviceBindingId"] = pin.device_binding_id
+        state["executionRevisionSet"] = pin.execution_revision_set.model_dump(
+            mode="json", by_alias=True
+        )
+        self._finish_state(
+            state,
+            status=DeviceOperationStatus.DRY_RUN_COMPLETE,
+            error_code=None,
+            message=(
+                f"部署 Dry Run 完成：检查 {len(files)} 个文件；未连接写入、"
+                "未复位硬件、未擦除 Flash、未烧录固件。"
+            ),
+        )
+        operation = self._repo.create_operation(
+            project_id=project_id,
+            session_id=session_id,
+            operation_id=operation_id,
+            kind=DeviceOperationKind.UPLOAD_CODE,
+            command_label="mpremote",
+            log=_encode_state(state),
+            dry_run=True,
+            status=DeviceOperationStatus.DRY_RUN_COMPLETE,
+        )
+        return self._repo.sync_operation_artifact(project_id, operation.id), session
+
+    async def start_bundle_upload(
+        self,
+        *,
+        project_id: str,
+        session_id: str,
+        bundle_id: str,
+        bundle_digest: str,
+        board_key: str,
+        files: dict[str, bytes],
+        operation_id: str | None,
+        confirm_write: bool,
+    ) -> tuple[DeviceOperation, DeviceSession]:
+        if not confirm_write:
+            raise DeviceServiceError(
+                "DEVICE_UPLOAD_CONFIRMATION_REQUIRED",
+                "文件部署会覆盖设备同名文件，必须明确确认。",
+            )
+        operation_id = _validated_operation_id(operation_id)
+        session = self._project_serial_session(project_id, session_id, board_key)
+        normalized_files = _validated_bundle_files(files)
+        fingerprint = _fingerprint(
+            "project-bundle-upload",
+            project_id,
+            session_id,
+            bundle_id,
+            bundle_digest,
+        )
+        if existing := self._existing_idempotent(project_id, operation_id, fingerprint):
+            return existing, self._repo.get_session(project_id, existing.sessionId)
+        await self._stop_terminal_handle(session_id)
+        state = _initial_state(
+            DeviceOperationKind.UPLOAD_CODE,
+            fingerprint,
+            metadata={
+                "channel": DeviceDeploymentChannel.USB_SERIAL.value,
+                "deploymentBundleId": bundle_id,
+                # Preserve the canonical deployment validator's revision field
+                # while distinguishing this immutable project-learning bundle.
+                "codeRunId": bundle_id,
+                "targetId": session_id,
+                "fileCount": len(normalized_files),
+                "transportMode": self.transport_mode,
+                "evidenceEligible": self.transport_evidence_eligible,
+                "hardwareWritePerformed": True,
+            },
+        )
+        operation, created = self._reserve_operation(
+            project_id=project_id,
+            session_id=session_id,
+            operation_id=operation_id,
+            kind=DeviceOperationKind.UPLOAD_CODE,
+            command_label="mpremote",
+            state=state,
+            fingerprint=fingerprint,
+        )
+        session = self._repo.get_session(project_id, operation.sessionId)
+        if not created:
+            return operation, session
+        self._states[operation_id] = state
+        cancel = asyncio.Event()
+        self._cancellations[operation_id] = cancel
+        self._tasks[operation_id] = asyncio.create_task(
+            self._execute_upload(
+                project_id,
+                session,
+                operation_id,
+                normalized_files,
+                cancel,
+            ),
+            name=f"project-bundle-upload-{operation_id}",
+        )
+        return operation, session
 
     def require_project_board(
         self,
@@ -2463,18 +2770,32 @@ class DeviceOperationService:
         self._require_zero(backup_result, "DEVICE_BACKUP_FAILED", DeviceOperationPhase.BACKUP)
         backup_summary = self._write_file_backup(operation_id, backups)
         state["backup"] = backup_summary.model_dump(mode="json")
-        new_paths = [path for path in files if path not in backups]
+        changed_files = {
+            path: content
+            for path, content in files.items()
+            if backups.get(path) != content
+        }
+        new_paths = [path for path in changed_files if path not in backups]
+        metadata = state.setdefault("metadata", {})
+        if isinstance(metadata, dict):
+            metadata["skippedFileCount"] = len(files) - len(changed_files)
+            metadata["writtenFileCount"] = len(changed_files)
 
         hashes: dict[str, str] = {}
         try:
             self._running(project_id, operation_id, state, DeviceOperationPhase.TRANSFER, 48)
-            upload = await self._transport.upload_files(
-                handle,
-                files,
-                cancel=cancel,
-                timeout_seconds=self._command_timeout,
-            )
-            self._step(state, DeviceOperationPhase.TRANSFER, upload, "写入 MicroPython 文件")
+            if changed_files:
+                upload = await self._transport.upload_files(
+                    handle,
+                    changed_files,
+                    cancel=cancel,
+                    timeout_seconds=self._command_timeout,
+                )
+                transfer_summary = "写入已变化的 MicroPython 文件"
+            else:
+                upload = TransportResult(0, "all file hashes already match")
+                transfer_summary = "文件 Hash 已一致，跳过设备写入"
+            self._step(state, DeviceOperationPhase.TRANSFER, upload, transfer_summary)
             self._require_zero(upload, "DEVICE_UPLOAD_FAILED", DeviceOperationPhase.TRANSFER)
 
             self._running(project_id, operation_id, state, DeviceOperationPhase.VERIFY_FILES, 72)
@@ -3292,8 +3613,57 @@ class DeviceOperationService:
         self._assert_supported_board(project_id, session_id, session=session)
         return session
 
+    def _project_serial_session(
+        self,
+        project_id: str,
+        session_id: str,
+        board_key: str,
+    ) -> DeviceSession:
+        session = self._physical_serial_session(project_id, session_id)
+        if session.board != board_key:
+            raise DeviceServiceError(
+                "DEVICE_PROJECT_BOARD_MISMATCH",
+                "已连接设备与当前部署包的板型版本不一致。",
+                status_code=409,
+            )
+        if session.status not in {
+            DeviceSessionStatus.READY,
+            DeviceSessionStatus.ATTACHED_UNVERIFIED,
+            DeviceSessionStatus.RUNTIME_BUSY,
+            DeviceSessionStatus.MANAGED,
+        }:
+            raise DeviceServiceError(
+                "DEVICE_SESSION_NOT_READY",
+                "设备会话未就绪。",
+                status_code=409,
+                retryable=True,
+            )
+        return session
+
     def _ready_session(self, project_id: str, session_id: str) -> DeviceSession:
-        session = self._serial_session(project_id, session_id)
+        session = self._physical_serial_session(project_id, session_id)
+        try:
+            SupportedDeviceBoardId(session.board)
+        except ValueError:
+            try:
+                fact = self._device_platform.get_board_fact(session.board)
+            except DevicePlatformError as exc:
+                raise DeviceServiceError(
+                    "DEVICE_BOARD_NOT_SUPPORTED",
+                    "设备会话缺少可验证的板型技术包。",
+                    status_code=409,
+                ) from exc
+            if (
+                DeviceDeploymentChannel.USB_SERIAL not in fact.deployment_channels
+                or fact.runtime != "MICROPYTHON"
+            ):
+                raise DeviceServiceError(
+                    "DEVICE_BOARD_NOT_SUPPORTED",
+                    "设备技术包未声明 MicroPython USB 终端能力。",
+                    status_code=409,
+                )
+        else:
+            self._assert_supported_board(project_id, session_id, session=session)
         if session.status not in {
             DeviceSessionStatus.READY,
             DeviceSessionStatus.ATTACHED_UNVERIFIED,
@@ -3545,6 +3915,17 @@ class DeviceOperationService:
         state: dict[str, object],
         fingerprint: str,
     ) -> tuple[DeviceOperation, bool]:
+        metadata = state.get("metadata")
+        raw_channel = metadata.get("channel") if isinstance(metadata, dict) else None
+        channel = DeviceDeploymentChannel(
+            str(raw_channel or DeviceDeploymentChannel.USB_SERIAL.value)
+        )
+        pin = self._resolve_device_pin(project_id, session_id, channel)
+        state["deviceBindingId"] = pin.device_binding_id
+        state["executionRevisionSet"] = pin.execution_revision_set.model_dump(
+            mode="json",
+            by_alias=True,
+        )
         try:
             return self._repo.reserve_operation(
                 project_id=project_id,
@@ -3594,6 +3975,26 @@ class DeviceOperationService:
                 "DEVICE_SESSION_NOT_FOUND",
                 "设备会话不存在。",
                 status_code=404,
+            ) from exc
+
+    def _resolve_device_pin(
+        self,
+        project_id: str,
+        session_id: str,
+        channel: DeviceDeploymentChannel,
+    ) -> DeviceOperationRevisionPin:
+        try:
+            return self._device_platform.resolve_operation_pin(
+                work_id=project_id,
+                session_id=session_id,
+                channel=channel,
+            )
+        except (DevicePlatformError, ValueError) as exc:
+            raise DeviceServiceError(
+                "DEVICE_REVISION_PIN_FAILED",
+                f"设备操作无法固定当前能力版本：{exc}",
+                status_code=409,
+                retryable=True,
             ) from exc
 
     def _reconcile_orphaned_operation(
@@ -4041,6 +4442,37 @@ def _upload_files(code_run: CodeRun) -> dict[str, bytes]:
     if "main.py" not in files:
         raise DeviceServiceError("DEVICE_MAIN_FILE_MISSING", "当前代码版本缺少 src/main.py。")
     return files
+
+
+def _validated_bundle_files(files: dict[str, bytes]) -> dict[str, bytes]:
+    if not files or "main.py" not in files:
+        raise DeviceServiceError(
+            "DEVICE_BUNDLE_MAIN_REQUIRED",
+            "部署包必须包含 main.py。",
+        )
+    normalized: dict[str, bytes] = {}
+    total = 0
+    for raw_path, content in files.items():
+        path = raw_path.replace("\\", "/")
+        if not is_uploadable_python_path(f"src/{path}"):
+            raise DeviceServiceError(
+                "DEVICE_BUNDLE_PATH_INVALID",
+                f"部署包包含不允许上传的路径：{path}",
+            )
+        if PurePosixPath(path).name.casefold() in {"unihiker_k10.py", "k10_base.py"}:
+            raise DeviceServiceError(
+                "RESERVED_DEVICE_MODULE_NAME",
+                "部署包不能覆盖用于设备身份校验的固件模块。",
+            )
+        payload = bytes(content)
+        total += len(payload)
+        if total > 1_000_000:
+            raise DeviceServiceError(
+                "DEVICE_BUNDLE_TOO_LARGE",
+                "部署包超过 1 MB 文件级上传限制。",
+            )
+        normalized[path] = payload
+    return normalized
 
 
 def _code_runtime_value(code_run: CodeRun) -> str:

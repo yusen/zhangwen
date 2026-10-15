@@ -1,0 +1,36 @@
+{
+  "schema": "zhangwen.hardware-skill-manifest/v1",
+  "schemaVersion": 1,
+  "skillName": "dfrobot-sen0619-k10",
+  "componentId": "hw_dfrobot_sen0619_k10",
+  "displayName": "DFRobot SEN0619 BMM350 三轴地磁传感器",
+  "description": "为行空板 K10 MicroPython 项目提供 SEN0619 的I2C接入、兼容和安全边界；API 与电气值仍需按当前固件和实物复核。",
+  "status": "ACTIVE",
+  "sourceKind": "MANUAL",
+  "files": [
+    "README.md",
+    "SKILL.md",
+    "references/specifications.md",
+    "references/compatibility-rules.md",
+    "references/integration.md",
+    "references/safety.md",
+    "references/sources.md",
+    "examples/usage.md",
+    "tests/validation-cases.md"
+  ],
+  "media": [
+    {
+      "path": "assets/cover.webp",
+      "role": "cover",
+      "alt": "DFRobot SEN0619 官方产品图",
+      "contentType": "image/webp",
+      "sha256": "34b6ee54e8bb6db2fe6669b683325156a64659a69a0eda349f1e89e06bc46e01",
+      "sourceUrl": "https://wiki.dfrobot.com/sen0619/docs/21283",
+      "attribution": "DFRobot（取自对应官方资料页）",
+      "license": "DFRobot 官方产品图；仅随本 Skill 作来源引用，公开再分发授权未独立核验"
+    }
+  ],
+  "revision": "eb5707de2c9f88a5a8027817",
+  "createdAt": "2026-07-17T06:57:53Z",
+  "updatedAt": "2026-07-17T10:42:11Z"
+}

@@ -1,0 +1,75 @@
+{
+  "layouts": [
+    {
+      "width": 1440,
+      "theme": "light",
+      "overflow": false,
+      "toolbar": "9px",
+      "iconSize": "40px",
+      "editorVisible": true
+    },
+    {
+      "width": 1024,
+      "theme": "light",
+      "overflow": false,
+      "toolbar": "9px",
+      "iconSize": "40px",
+      "editorVisible": true
+    },
+    {
+      "width": 720,
+      "theme": "light",
+      "overflow": false,
+      "toolbar": "9px",
+      "iconSize": "40px",
+      "editorVisible": true
+    },
+    {
+      "width": 375,
+      "theme": "light",
+      "overflow": false,
+      "toolbar": "9px",
+      "iconSize": "40px",
+      "editorVisible": true
+    },
+    {
+      "width": 1440,
+      "theme": "dark",
+      "overflow": false,
+      "toolbar": "9px",
+      "iconSize": "40px",
+      "editorVisible": true
+    },
+    {
+      "width": 1024,
+      "theme": "dark",
+      "overflow": false,
+      "toolbar": "9px",
+      "iconSize": "40px",
+      "editorVisible": true
+    },
+    {
+      "width": 720,
+      "theme": "dark",
+      "overflow": false,
+      "toolbar": "9px",
+      "iconSize": "40px",
+      "editorVisible": true
+    },
+    {
+      "width": 375,
+      "theme": "dark",
+      "overflow": false,
+      "toolbar": "9px",
+      "iconSize": "40px",
+      "editorVisible": true
+    }
+  ],
+  "catalogModules": 68,
+  "themes": true,
+  "keyboardDialogs": true,
+  "pickerScroll": true,
+  "draftRestored": true,
+  "productionWrites": false,
+  "pageErrors": []
+}

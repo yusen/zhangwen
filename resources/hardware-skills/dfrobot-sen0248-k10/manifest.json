@@ -1,0 +1,36 @@
+{
+  "schema": "zhangwen.hardware-skill-manifest/v1",
+  "schemaVersion": 1,
+  "skillName": "dfrobot-sen0248-k10",
+  "componentId": "hw_dfrobot_sen0248_k10",
+  "displayName": "DFRobot SEN0248 BME680 环境传感器",
+  "description": "为行空板 K10 MicroPython 项目提供 SEN0248 的I2C接入、兼容和安全边界；API 与电气值仍需按当前固件和实物复核。",
+  "status": "ACTIVE",
+  "sourceKind": "MANUAL",
+  "files": [
+    "README.md",
+    "SKILL.md",
+    "references/specifications.md",
+    "references/compatibility-rules.md",
+    "references/integration.md",
+    "references/safety.md",
+    "references/sources.md",
+    "examples/usage.md",
+    "tests/validation-cases.md"
+  ],
+  "media": [
+    {
+      "path": "assets/cover.webp",
+      "role": "cover",
+      "alt": "Front of BME680 environmental sensor module with pins and header connector-DFRobot product sku:SEN0248 image.",
+      "contentType": "image/webp",
+      "sha256": "21a5a78d213078d9c1c369c4edd861a1bc2da23fbb35d8409400c7ca901000e0",
+      "sourceUrl": "https://wiki.dfrobot.com/sen0248/",
+      "attribution": "DFRobot（取自对应官方资料页）",
+      "license": "DFRobot 官方产品图；仅随本 Skill 作来源引用，公开再分发授权未独立核验"
+    }
+  ],
+  "revision": "534ed435006bdf3737cb959f",
+  "createdAt": "2026-07-17T06:57:53Z",
+  "updatedAt": "2026-07-17T10:42:11Z"
+}

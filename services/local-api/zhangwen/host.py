@@ -74,6 +74,8 @@ def require_desktop_host(request: Request, capability: str) -> None:
         "local_tool": "当前浏览器模式不支持本地工具执行，请在桌面模式中完成此操作。",
         "shell": "当前浏览器模式不支持本地 Shell，请在桌面模式中完成此操作。",
         "provider_credentials": "浏览器不能提交或修改模型服务密钥，请在掌问桌面应用中完成。",
+        "service_credentials": "浏览器不能提交或修改设备通信凭据，请在掌问桌面应用中完成。",
+        "local_service": "当前浏览器模式不支持启动或停止本机服务，请在掌问桌面应用中完成。",
         "desktop_capability": "当前浏览器模式不支持桌面能力校验。",
     }
     raise HTTPException(

@@ -1,30 +1,44 @@
 {
-  "name": "zhangwen",
-  "private": true,
+  "name": "zhangwen-mu-web",
   "version": "0.1.0",
-  "description": "掌问 — AI 创客工程工作台",
+  "private": true,
+  "type": "module",
   "scripts": {
-    "start": "cmd /c start-local.bat",
-    "start:check": "cmd /c start-local.bat --check",
-    "dev:web": "powershell -ExecutionPolicy Bypass -File scripts-dev/start-web.ps1",
-    "dev:web:fake": "powershell -ExecutionPolicy Bypass -File scripts-dev/start-web.ps1 -FakeProvider",
-    "dev:web:paid": "powershell -ExecutionPolicy Bypass -File scripts-dev/start-web.ps1 -PaidProvider",
-    "clean:generated": "powershell -ExecutionPolicy Bypass -File scripts-dev/clean-generated.ps1",
-    "build:contracts": "pnpm --filter @zhangwen/contracts build",
-    "build:desktop": "pnpm --filter @zhangwen/contracts build && pnpm --filter @zhangwen/desktop build",
-    "package:sidecar": "powershell -NoProfile -ExecutionPolicy Bypass -File scripts-dev/build-windows-sidecar.ps1",
-    "package:windows": "powershell -NoProfile -ExecutionPolicy Bypass -File scripts-dev/build-windows-package.ps1",
-    "verify:package:windows": "powershell -NoProfile -ExecutionPolicy Bypass -File scripts-dev/verify-windows-package.ps1",
-    "tauri:build": "pnpm package:windows",
-    "test:frontend": "pnpm --filter @zhangwen/contracts build && pnpm --filter @zhangwen/desktop test",
-    "test:api": ".venv\\Scripts\\python.exe -m pytest services/local-api/tests/ -v --rootdir services/local-api",
-    "typecheck": "pnpm --filter @zhangwen/contracts build && pnpm --filter @zhangwen/contracts typecheck && pnpm --filter @zhangwen/desktop typecheck"
+    "setup": "node scripts/setup.mjs --prepare-only",
+    "web": "node scripts/setup.mjs",
+    "build": "tsc --noEmit && vite build",
+    "build:web": "npm run build",
+    "start": "node scripts/start.mjs",
+    "start:web": "node scripts/start.mjs",
+    "dev:web": "vite --host 127.0.0.1",
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run",
+    "test:api": "node scripts/test-api.mjs",
+    "test:e2e": "playwright test"
   },
   "engines": {
-    "node": ">=20.0.0",
-    "pnpm": ">=9.0.0"
+    "node": ">=22"
+  },
+  "dependencies": {
+    "@codemirror/commands": "^6.11.1",
+    "@codemirror/lang-python": "^6.2.1",
+    "@codemirror/language": "^6.13.1",
+    "@codemirror/state": "^6.5.2",
+    "@codemirror/view": "^6.38.1",
+    "@lezer/highlight": "^1.2.5",
+    "codemirror": "^6.0.2",
+    "lucide-react": "^0.468.0",
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1"
   },
   "devDependencies": {
-    "@tauri-apps/cli": "2.11.4"
+    "@playwright/test": "^1.56.0",
+    "@types/node": "^26.6.5",
+    "@types/react": "^18.3.0",
+    "@types/react-dom": "^18.3.0",
+    "@vitejs/plugin-react": "^4.7.0",
+    "typescript": "^5.7.0",
+    "vite": "^6.4.3",
+    "vitest": "^3.2.7"
   }
 }

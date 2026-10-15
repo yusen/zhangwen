@@ -7,7 +7,7 @@ from enum import StrEnum
 from pydantic import BaseModel, Field
 from typing import Self
 
-from zhangwen.llm.contracts import LLMModelId, LLMProviderId
+from zhangwen.llm.contracts import LLMModelSelection, LLMProviderId
 from zhangwen.projects.models import ExpertType
 
 
@@ -152,10 +152,15 @@ class ModelRouteRequest(BaseModel):
 
 class ModelRouteResult(BaseModel):
     provider: LLMProviderId
-    model: LLMModelId
+    model: LLMModelSelection
     strategy: ModelRouteStrategy
     retryCount: int
-    fallbackModel: LLMModelId | None
+    fallbackModel: LLMModelSelection | None
+    providerConfigurationId: str | None = None
+    providerConfigurationRevisionId: str | None = None
+    routingProfileRevisionId: str | None = None
+    fallbackProviderConfigurationId: str | None = None
+    workload: str | None = None
     costTier: str = Field(pattern="^(LOW|MEDIUM|HIGH)$")
     qualityTier: str = Field(pattern="^(STANDARD|HIGH)$")
     reasoning: str

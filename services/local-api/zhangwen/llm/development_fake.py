@@ -75,6 +75,9 @@ def _structured_reply(request: ChatRequest) -> dict[str, object]:
     system_prompt = request.messages[0].content if request.messages else ""
     user_prompt = request.messages[-1].content if request.messages else ""
 
+    if "掌问作品画布规划器" in system_prompt:
+        return _canvas_plan_reply(user_prompt)
+
     if "入口主路由" in system_prompt:
         idea = _entry_idea(user_prompt)
         smart = _contains_any(
@@ -154,6 +157,98 @@ def _structured_reply(request: ChatRequest) -> dict[str, object]:
         }
 
     return {"content": "本地 Fake Provider 已完成这次 Web 交互验证回复。"}
+
+
+def _canvas_plan_reply(user_prompt: str) -> dict[str, object]:
+    try:
+        payload = json.loads(user_prompt)
+    except json.JSONDecodeError:
+        payload = {}
+    context = str(payload.get("currentWorkContext", ""))
+    name = str(payload.get("workName", "本地预览作品"))
+    lowered = context.casefold()
+    watering = _contains_any(lowered, ("浇花", "浇水", "水泵", "pump", "土壤"))
+    reminder = _contains_any(lowered, ("提醒", "喝水", "定时", "timer"))
+    if watering:
+        scene_kind, subject_kind = "PLANT", "PLANTER"
+        subject_label, environment_label = "智能花盆", "花盆旁"
+        input_label, behavior = "土壤湿度", "判断土壤是否干燥，并限制连续浇水"
+        output_label, action_label = "显示土壤状态", "驱动水泵"
+        physical_actions = [action_label]
+        constraints = ["默认离线优先，不自动开放网络", "水泵必须有独立供电、保护和异常停止策略"]
+    elif reminder:
+        scene_kind, subject_kind = "DESK", "REMINDER"
+        subject_label, environment_label = "桌面提醒器", "书桌上"
+        input_label, behavior = "时间条件", "到达设定时间后给出温和提醒"
+        output_label, action_label = "给出可见提醒", behavior
+        physical_actions = []
+        constraints = ["默认离线优先，不自动开放网络"]
+    else:
+        scene_kind, subject_kind = "GENERIC", "GENERIC"
+        subject_label, environment_label = name, "预期使用场景"
+        input_label, behavior = "用户给出的内容或操作", "根据输入形成当前作品结果"
+        output_label, action_label = "产生用户可以观察的结果", behavior
+        physical_actions = []
+        constraints = ["默认离线优先，不自动开放网络"]
+    summary = context[:600] or f"{subject_label}会根据输入形成可以观察的结果。"
+    parts: list[dict[str, str]] = [
+        {"role": "SUBJECT", "label": subject_label, "description": summary},
+        {"role": "INPUT", "label": input_label, "description": "作品读取这一触发信息。"},
+        {"role": "DECISION", "label": behavior, "description": "作品依据输入判断下一步。"},
+        {"role": "RESULT", "label": output_label, "description": "使用者能够观察这一结果。"},
+    ]
+    if physical_actions:
+        parts.extend(
+            [
+                {"role": "ACTION", "label": action_label, "description": "真实执行前保留确认。"},
+                {"role": "POWER", "label": "独立安全供电", "description": "受保护供电和停止策略。"},
+            ]
+        )
+    return {
+        "projectSummary": summary,
+        "users": ["作品使用者"],
+        "environments": [environment_label],
+        "inputs": [input_label],
+        "behaviors": [behavior],
+        "outputs": [output_label],
+        "physicalActions": physical_actions,
+        "serviceNeeds": [],
+        "structureNeeds": [],
+        "constraints": constraints,
+        "unknowns": ["具体实现载体仍需与本机能力包匹配"],
+        "criticalQuestion": "你希望优先使用手边的哪件设备？",
+        "confidence": 0.86,
+        "scene": {
+            "kind": scene_kind,
+            "title": name,
+            "description": summary,
+            "environment": {
+                "kind": "HOME" if watering else "DESKTOP" if reminder else "GENERIC",
+                "label": environment_label,
+                "description": f"作品放在{environment_label}使用。",
+            },
+            "subject": {"kind": subject_kind, "label": subject_label, "description": summary},
+            "actors": [{"kind": "PERSON", "label": "作品使用者", "role": "触发作品并观察结果"}],
+            "visualParts": parts,
+            "stateNarratives": {
+                "idle": f"{subject_label}正在等待触发。",
+                "triggered": f"作品观察到{input_label}。",
+                "deciding": behavior,
+                "acting": f"作品正在{action_label}。",
+                "result": f"使用者可以观察到{output_label}。",
+                "fault": "发生异常时停止动作并等待使用者检查。",
+            },
+            "flow": {
+                "trigger": f"读取{input_label}",
+                "decide": "形成当前判断",
+                "act": f"执行{action_label}",
+                "result": f"呈现{output_label}",
+                "fault": "异常时安全停止",
+            },
+            "composition": "WIDE_CONTEXT" if watering else "CENTERED",
+            "accessibilityNarrative": f"画面位于{environment_label}，中心是{subject_label}。当{input_label}出现时，作品会{behavior}，最终{output_label}。",
+        },
+    }
 
 
 def _entry_idea(prompt: str) -> str:

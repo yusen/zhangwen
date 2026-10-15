@@ -1,0 +1,36 @@
+{
+  "schema": "zhangwen.hardware-skill-manifest/v1",
+  "schemaVersion": 1,
+  "skillName": "dfrobot-sen0305-k10",
+  "componentId": "hw_dfrobot_sen0305_k10",
+  "displayName": "DFRobot SEN0305 HUSKYLENS 二哈 AI 摄像头",
+  "description": "为行空板 K10 MicroPython 项目提供 SEN0305 的I2C接入、兼容和安全边界；API 与电气值仍需按当前固件和实物复核。",
+  "status": "ACTIVE",
+  "sourceKind": "MANUAL",
+  "files": [
+    "README.md",
+    "SKILL.md",
+    "references/specifications.md",
+    "references/compatibility-rules.md",
+    "references/integration.md",
+    "references/safety.md",
+    "references/sources.md",
+    "examples/usage.md",
+    "tests/validation-cases.md"
+  ],
+  "media": [
+    {
+      "path": "assets/cover.webp",
+      "role": "cover",
+      "alt": "DFRobot SEN0305 官方产品图",
+      "contentType": "image/webp",
+      "sha256": "c205adca8ca73a76f30138ed3aa940ea85b85eaed38d0a7aa1c7b422b26d561f",
+      "sourceUrl": "https://wiki.dfrobot.com.cn/SKU_SEN0305_Gravity__HUSKYLENS%E4%BA%BA%E5%B7%A5%E6%99%BA%E8%83%BD%E6%91%84%E5%83%8F%E5%A4%B4",
+      "attribution": "DFRobot（取自对应官方资料页）",
+      "license": "DFRobot 官方产品图；仅随本 Skill 作来源引用，公开再分发授权未独立核验"
+    }
+  ],
+  "revision": "d73d75e0d944a01d00d7fd36",
+  "createdAt": "2026-07-17T06:57:53Z",
+  "updatedAt": "2026-07-17T10:42:11Z"
+}

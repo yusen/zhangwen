@@ -11,7 +11,7 @@ from typing import Any
 
 import yaml
 
-from zhangwen.device_lab.boards import BOARDS
+from zhangwen.device_lab.boards import BOARDS, PROFILES
 from zhangwen.device_lab.models import (
     DigitalPrototypeBindingV1,
     DeviceLabProjectTestCase,
@@ -37,6 +37,11 @@ _BOARD_COMPONENT_IDS: dict[str, SupportedDeviceBoardId] = {
     "seeedstudio/xiao_esp32s3_sense": SupportedDeviceBoardId.XIAO_ESP32S3_SENSE,
 }
 
+_BOARD_PACKAGE_IDS: dict[str, SupportedDeviceBoardId] = {
+    f"device-package:board:{board_id.value.replace('/', '-')}": board_id
+    for board_id in SupportedDeviceBoardId
+}
+
 _BOARD_SCENARIO_CHANNELS: tuple[tuple[tuple[str, ...], tuple[str, ...]], ...] = (
     (("温度", "temperature"), ("temperature",)),
     (("环境湿度", "air humidity"), ("humidity",)),
@@ -45,7 +50,7 @@ _BOARD_SCENARIO_CHANNELS: tuple[tuple[tuple[str, ...], tuple[str, ...]], ...] = 
     (("按键 a", "button a"), ("button-a",)),
     (("按键 b", "button b"), ("button-b",)),
     (("摄像头", "camera", "图像"), ("camera-fixture",)),
-    (("麦克风", "microphone", "声音"), ("microphone-level",)),
+    (("麦克风", "microphone", "声音输入", "声音检测", "声响检测"), ("microphone-level",)),
     (("sd 卡", "存储卡", "storage"), ("sd-mounted",)),
 )
 
@@ -73,7 +78,12 @@ class DeviceLabSceneProjector:
         self._proposals = ProposalRepository(self._db_path)
         self._specs = SpecRepository(self._db_path)
 
-    def project(self, project_id: str) -> DeviceLabSceneV1:
+    def project(
+        self,
+        project_id: str,
+        *,
+        allow_work_functional_proxy: bool = False,
+    ) -> DeviceLabSceneV1:
         proposal = self._approved_proposal(project_id)
         fact = self._preferred_hardware_fact(project_id)
         fact_components = _fact_components(fact["value"] if fact else None)
@@ -99,7 +109,26 @@ class DeviceLabSceneProjector:
             creator_components,
             proposal_components,
         )
-        board_id, controller_record, board_source = _resolve_board(records, proposal_text)
+        projection_purpose = "PHYSICAL_BOARD"
+        simulation_proxy_package_id: str | None = None
+        try:
+            board_id, controller_record, board_source = _resolve_board(
+                records,
+                proposal_text,
+            )
+        except DeviceLabSceneProjectionError as exc:
+            if (
+                not allow_work_functional_proxy
+                or exc.code != "DEVICE_LAB_SUPPORTED_CONTROLLER_REQUIRED"
+            ):
+                raise
+            (
+                board_id,
+                controller_record,
+                simulation_proxy_package_id,
+            ) = self._work_functional_proxy(project_id)
+            board_source = "approved-proposal"
+            projection_purpose = "WORK_FUNCTIONAL"
         controller_id = str(controller_record.get("id") or f"board:{board_id.value}")
         controller_name = str(
             controller_record.get("name") or BOARDS[board_id].displayName
@@ -185,6 +214,10 @@ class DeviceLabSceneProjector:
             confirmed_targets.add(target_id)
 
         warnings: list[str] = list(creator_warnings)
+        if projection_purpose == "WORK_FUNCTIONAL":
+            warnings.append(
+                "当前控制器只作为本机功能仿真代理，不代表已经选择、拥有或连接真实设备。"
+            )
         topology_targets = _append_functional_topology(
             components,
             connections,
@@ -246,11 +279,13 @@ class DeviceLabSceneProjector:
                 )
             )
 
-        test_cases = self._project_test_cases(project_id, components)
+        test_cases = self._project_test_cases(project_id, components, board_id)
         source = DeviceLabSceneSource(
             proposalId=proposal.id,
             proposalVersion=proposal.version,
             proposalConfirmedAt=proposal.confirmedAt or proposal.updatedAt,
+            projectionPurpose=projection_purpose,
+            simulationProxyPackageId=simulation_proxy_package_id,
             hardwareFactId=str(fact["id"]) if fact else None,
             hardwareFactUpdatedAt=str(fact["updatedAt"]) if fact else None,
             specRunId=spec.id if spec else None,
@@ -258,7 +293,9 @@ class DeviceLabSceneProjector:
             specConfirmedAt=spec.confirmedAt if spec else None,
         )
         status = (
-            "NEEDS_IO_CONFIRMATION"
+            "READY"
+            if projection_purpose == "WORK_FUNCTIONAL"
+            else "NEEDS_IO_CONFIRMATION"
             if any(item.confidence == "PROPOSAL_DERIVED" for item in connections)
             else "READY"
         )
@@ -432,6 +469,7 @@ class DeviceLabSceneProjector:
         self,
         project_id: str,
         components: list[DeviceLabSceneComponent],
+        board_id: SupportedDeviceBoardId,
     ) -> list[DeviceLabProjectTestCase]:
         """Turn confirmed acceptance scenarios into the only default test inputs.
 
@@ -445,6 +483,15 @@ class DeviceLabSceneProjector:
             for item in components
             if item.role == "external" and item.category == "SENSOR"
         ]
+        allowed_input_ids = {
+            channel.id
+            for channel in PROFILES[board_id].channels
+            if channel.kind == "sensor-input"
+        }
+        allowed_input_ids.update(
+            _component_channel_id(component.id, "input")
+            for component in sensor_components
+        )
         try:
             with sqlite3.connect(self._db_path) as conn:
                 conn.row_factory = sqlite3.Row
@@ -499,7 +546,11 @@ class DeviceLabSceneProjector:
                 DeviceLabProjectTestCase(
                     id=str(row["id"]),
                     title=title,
-                    inputChannelIds=list(dict.fromkeys(input_ids)),
+                    inputChannelIds=[
+                        channel_id
+                        for channel_id in dict.fromkeys(input_ids)
+                        if channel_id in allowed_input_ids
+                    ],
                     expectedBehavior=expected,
                     source="acceptance-scenario",
                 )
@@ -612,6 +663,112 @@ class DeviceLabSceneProjector:
             "updatedAt": str(row["updated_at"]),
         }
 
+    def _work_functional_proxy(
+        self,
+        project_id: str,
+    ) -> tuple[SupportedDeviceBoardId, dict[str, Any], str]:
+        """Resolve one Canvas package only as a functional-simulation fixture.
+
+        This deliberately does not mutate the confirmed BOM, preferred hardware,
+        inventory, or WorkDeviceBinding. Physical Device Lab projection continues
+        to require an explicitly confirmed controller.
+        """
+
+        try:
+            with sqlite3.connect(self._db_path) as conn:
+                row = conn.execute(
+                    """
+                    SELECT payload_json FROM canvas_spec_revisions
+                    WHERE work_id = ?
+                    ORDER BY revision DESC, created_at DESC, id DESC LIMIT 1
+                    """,
+                    (project_id,),
+                ).fetchone()
+        except sqlite3.OperationalError:
+            row = None
+        payload = _json_object(row[0]) if row is not None else {}
+        nodes = payload.get("nodes")
+        candidate_ids = (
+            {
+                str(candidate)
+                for node in nodes
+                if isinstance(node, dict) and node.get("kind") == "DEVICE"
+                for candidate in node.get("packageCandidateIds", [])
+                if isinstance(candidate, str)
+                and candidate in _BOARD_PACKAGE_IDS
+            }
+            if isinstance(nodes, list)
+            else set()
+        )
+        try:
+            with sqlite3.connect(self._db_path) as conn:
+                conn.row_factory = sqlite3.Row
+                package_rows = conn.execute(
+                    """
+                    SELECT package.id, revision.manifest_json
+                    FROM capability_packages AS package
+                    JOIN package_revisions AS revision
+                      ON revision.id = package.stable_revision_id
+                    WHERE package.kind = 'DEVICE_PACKAGE'
+                      AND package.id LIKE 'device-package:board:%'
+                    ORDER BY package.id
+                    """
+                ).fetchall()
+        except sqlite3.OperationalError:
+            package_rows = []
+        proxies: list[tuple[int, str, SupportedDeviceBoardId]] = []
+        for package_row in package_rows:
+            package_id = str(package_row["id"])
+            board_id = _BOARD_PACKAGE_IDS.get(package_id)
+            if board_id is None:
+                continue
+            manifest = _json_object(package_row["manifest_json"])
+            capabilities = manifest.get("capabilities")
+            if not isinstance(capabilities, list) or "simulation" not in capabilities:
+                continue
+            evidence = manifest.get("evidence")
+            evidence = evidence if isinstance(evidence, dict) else {}
+            hardware_skill = evidence.get("hardwareSkill")
+            hardware_skill = (
+                hardware_skill if isinstance(hardware_skill, dict) else {}
+            )
+            board_skill = evidence.get("boardSkill")
+            board_skill = board_skill if isinstance(board_skill, dict) else {}
+            score = 0
+            if package_id in candidate_ids:
+                score += 1000
+            if hardware_skill.get("verificationStatus") == "OFFICIAL_DOC_VERIFIED":
+                score += 100
+            if board_skill.get("syntaxValidated") is True:
+                score += 10
+            if board_skill.get("hardwareValidated") is True:
+                score += 20
+            proxies.append((score, package_id, board_id))
+        if not proxies:
+            raise DeviceLabSceneProjectionError(
+                "WORK_FUNCTIONAL_SIMULATION_PROXY_REQUIRED",
+                "掌问还没有找到唯一可用的本机数字试作环境，请先让掌问重新整理当前作品方案。",
+            )
+        _score, package_id, board_id = sorted(
+            proxies,
+            key=lambda item: (-item[0], item[1]),
+        )[0]
+        component_id = (
+            "hw_seed_unihiker_k10"
+            if board_id is SupportedDeviceBoardId.DFROBOT_K10
+            else "hw_seeed_xiao_esp32s3_sense"
+        )
+        return (
+            board_id,
+            {
+                "id": f"simulation-proxy:{component_id}",
+                "name": f"{BOARDS[board_id].displayName}（数字试做代理）",
+                "category": "MCU",
+                "_source": "approved-proposal",
+            },
+            package_id,
+        )
+
     def _catalog_mentions(self, proposal_text: str) -> list[dict[str, Any]]:
         text = proposal_text.casefold()
         try:
@@ -661,6 +818,29 @@ def materialize_device_lab_scene(
 
     try:
         scene = DeviceLabSceneProjector(db_path, data_dir).project(project_id)
+    except DeviceLabSceneProjectionError:
+        return None
+    from zhangwen.device_lab.repository import DeviceLabRepository
+
+    return DeviceLabRepository(db_path).save_scene(scene)
+
+
+def materialize_work_functional_scene(
+    db_path: Path,
+    data_dir: Path,
+    project_id: str,
+) -> DeviceLabSceneV1 | None:
+    """Materialize the unified Work's functional scene in the existing store.
+
+    A Canvas-derived controller candidate is an execution fixture only. The
+    source marker keeps physical connection and deployment gates fail-closed.
+    """
+
+    try:
+        scene = DeviceLabSceneProjector(db_path, data_dir).project(
+            project_id,
+            allow_work_functional_proxy=True,
+        )
     except DeviceLabSceneProjectionError:
         return None
     from zhangwen.device_lab.repository import DeviceLabRepository

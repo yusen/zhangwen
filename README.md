@@ -1,142 +1,173 @@
-# 掌问
+# 掌问 Mu Web
 
-掌问是一款本地优先的“AI 创客工程工作台”，由同一个 React 应用、FastAPI 本地服务、SQLite 项目库、共享 TypeScript 契约，以及 Browser/Tauri 两个宿主组成。Tauri 是最终桌面宿主；`start-local.bat` 是唯一完整本地应用入口，设备能力在该应用内使用。
+本地部署的 MicroPython 编程平台：浏览器工作台 + 硬件资料库 + 可选 AI + Web Serial 上传。
 
-当前产品使用三位用户可见专家：问题引导师、智能工程师和结构工程师。生产 AI 推理、生成和修订可选择 DeepSeek、千问（Qwen）、智谱 GLM 或 Kimi 的 OpenAI 兼容 API；权限、持久化、硬件规则、代码/CAD 校验以及文件、Shell、串口和设备执行保持本地受控。
+## Windows 一键启动
 
-当前 Web 交互采用“一个项目、一条时间线、一个输入框”：左侧创建/切换项目，创建时按需求选择参与智能体，输入框上方以胶囊显示项目智能体，并可通过 `@智能体` 指定下一位回复者。底层各智能体的 Provider 对话历史仍相互隔离，共享的只是项目事实、决策、产物和公共硬件知识。
+1. 在 [GitHub 仓库](https://github.com/yusen/zhangwen) 点击 **Code → Download ZIP**，解压到普通可写目录；或 `git clone https://github.com/yusen/zhangwen.git`。
+2. 双击 **start-web.bat**。无需预装 Node.js、Python 或管理员权限；首次联网下载项目内运行环境、安装锁定依赖并构建。
+3. 就绪后自动打开 **http://127.0.0.1:3080**，使用桌面版 **Chrome / Edge**。
+4. 需要 AI 时，在页面「API 设置」填写自己的 DeepSeek Key；手工编程和串口上传不需要 Key。
 
-三师行为使用产品内目录化 Agent Skill 包配置：每位智能体以 `SKILL.md` 为入口并按需读取 Markdown 参考文件。专业模式可在设置中编辑、保存或恢复默认；这些文本只影响目标智能体提示词，不会授予工具、设备或本地执行权限。现有 Registry Skill 仍是独立的受控执行能力。
+后续仍双击同一个文件，未变化的安装/构建步骤会跳过。保留启动窗口，Ctrl+C 停止服务。首次需要访问 nodejs.org、GitHub、PyPI 和 npm，失败后根据窗口错误重试，不会清空项目。
 
-硬件库同样使用目录化 Hardware Skill：每个器件以 `SKILL.md` 为入口，参数、兼容规则、集成、安全、来源和验证用例均保存在受控 Markdown 文件中。Sidecar 从有效 Skill 编译确定性规则快照，SQLite 仅保留可重建投影；客户可通过上传资料或对话生成草稿，校验并确认后才激活。三师共享读取同一有效 revision，云端 LLM 不直接写文件或执行规则。
-
-## 目录
-
-- `apps/desktop`：React/Vite 桌面 UI 和 Tauri 宿主。
-- `services/local-api`：FastAPI Sidecar、SQLite 持久化、LLM Runtime 和本地工具边界。
-- `services/local-api/zhangwen/experts/agent-packages`：三师内置 Agent Skill 包。
-- `<data_dir>/hardware-skills`：统一的客户 Hardware Skill 项目；旧组件在首次读取时由 Sidecar 幂等迁移。
-- `docs/HARDWARE_SKILL_AI_AUTHORING_GUIDE.md`：可直接交给任意 AI 的 Hardware Skill v1 权威编写规范、精确 Schema、哈希算法和交付检查清单。
-- `packages/contracts`：跨前后端共享契约。
-- `docs`：当前 PRD、架构、UI/API 契约、决策和验收记录。
-- `tasks`：可恢复的 ExecPlan 和阶段记录。
-- `assets/branding`：桌面、Web 和安装器共用的品牌源文件。
-- `references/source-packages`：受 Git 跟踪、可审计的原始参考包。
-- `references/local`：仅本机使用的外部工程和资料，整体忽略；详细边界见 `references/README.md`。
-- `scripts`、`scripts-dev`：一致性检查、开发启动、构建和 QA 工具。
-- `specs`、`templates`：工程规格来源和项目模板。
-- `ai/skills`：Codex/Qoder 开发工具的共享 Skill 源；`.agents/skills` 和 `.qoder/skills` 是工具发现镜像，不承载产品三师配置。
-
-`.data/` 是受保护的本地应用数据，`outputs/` 是用户/开发输出，`.venv/`、`node_modules/` 和 Tauri `target/` 是本地依赖或可再生构建缓存；这些目录不应为了“整理根目录”而移动、提交或删除。
-
-## Windows 安装包
-
-Windows x64 离线安装包位于
-`apps/desktop/src-tauri/target/release/bundle/nsis/掌问_0.1.x_x64-setup.exe`。根目录直接运行
-`build-installer.bat` 会自动递增补丁版本、构建并验证，无需手工修改版本文件。
-安装后不需要 Node.js、pnpm、Python 或 Rust；本地 UI、Sidecar 和内置资源均随包提供。
-安装、离线边界、数据目录、SmartScreen 和构建验证说明见
-`docs/WINDOWS_INSTALLER.md`。
-
-## 环境
-
-- Node.js 20+
-- pnpm 9+
-- Python 3.11+
-- Rust/Cargo（Tauri 桌面检查和构建）
+当前仓库为**私有仓库**：其他电脑须登录具有访问权限的 GitHub 账号，或获得你提供的源码 ZIP。一键入口已经包含在仓库中，无需 npm 发布。
 
 ```powershell
-pnpm install --frozen-lockfile
-py -3.13 -m venv .venv
-.\.venv\Scripts\python.exe -m pip install -r services\local-api\requirements.txt
+git clone https://github.com/yusen/zhangwen.git
+cd zhangwen
+.\start-web.bat
 ```
 
-## 默认启动：完整本地应用
+详细说明、更新和数据迁移见 [部署指南](docs/DEPLOYMENT.md)。自动准备运行环境目前面向 Windows 10/11 x64；macOS/Linux 使用下方源码命令，尚未完成实机验收。
+
+## 工作台
+
+掌问是本机运行、浏览器访问的 MicroPython 工作台。左侧硬件资料库，中间可选 AI 对话，右侧代码和串口终端。
+本版无需 Tauri、Rust 或桌面安装器；Web Serial 直接连接浏览器所在电脑的 USB 开发板。
+
+界面按用户最新提供的 final-design.html 设计：紧凑标题栏、圆角方形工具、软件蓝/硬件橙/运行金，以及中性面板中的已加入模块 / 直接AI对话 / 代码编辑三栏。右上角可切换浅色/深色主题，刷新保留。窄屏通过标签切换工作区，顶部工具可横向滚动。
+左上角「主控」选择硬件库板型，「加载」打开项目，「文件」载入/导出本机代码、浏览读取设备根目录和查看历史版本；「REPL」展开/收起串口终端，「接线」查看所选元件的接线资料，「放大/缩小」调整代码字号。
+主控选择采用大图卡片网格：产品图、名称、原库简介与橙色选中边框，支持搜索；保存命名表单也使用同一个选择窗，返回保留已填名称。当前可选K10、XIAO S3、ESP32-C3通用板、掌控板2.0和掌控板3.0；K10/掌控3.0复用原图，缺图时明确显示占位。新增2.0和C3作为经过原加载器校验的Hardware Skill包，通用C3不假定开发板引脚或板载外设。
+左侧以**大图标卡片**显示已加入模块，按「输入模块」「输出模块」分组；点击「添加模块」打开网格浮窗，可按全部/输入/输出筛选、搜索、多选后确认加入。原库SENSOR映射输入，ACTUATOR/DISPLAY映射输出，是用途分类，不代表电气兼容已通过。图片来自原硬件包，缺图或图片加载失败时使用类别图标。
+候选库随主控板筛选：XIAO S3仅显示Grove，K10仅显示DFRobot。74个原Hardware Skill包随源码发布，加上C3/掌控2.0共76包，Web可见74包。K10可选54个输入模块、14个输出模块，尚无可编程Grove资料包。已加入器件不会因换板被删除，网格内部滚动，搜索和确认保持可见。
+点击模块卡片查看简述、供电/电平/接口、接线表和使用注意，完整原始规范可折叠展开。浮窗勾选只有确认后才加入，取消无变化。
+已加入卡片的「载入模块」先预览原资料包Python示例，点击「替换当前代码」才修改main.py草稿；保存、检查和上传分别操作，无示例会明确提示。顶部「格式化」仅整理四空格缩进，可在编辑器撤销；「退出」收起工作区并保留草稿，点击「返回工作台」继续，服务仍运行。
+首次打开即是**未命名项目**，右侧可直接编辑，主控/代码/模块草稿刷新后保留；不会随机打开列表中的第一个旧项目。已有明确当前项目时，刷新恢复该项目。未命名项目尚未保存到本机服务，页面会明确显示。
+当前界面截图：[浅色工作台](docs/final-workbench-light-1440.png)、[深色工作台](docs/final-workbench-dark-1440.png)、[模块选择](docs/final-picker-light-1440.png)、[手机布局](docs/final-workbench-light-375.png)。参考及交互对应关系见[适配说明](docs/FINAL_DESIGN_ADAPTATION.md)。
+
+## 保存和加载项目
+
+1. 打开页面即可选择主控、添加模块、编写main.py，无需先提交新建表单。
+2. 点击顶部「保存」或Ctrl+S；首次保存填写项目名称并确认「保存项目」。代码、主控、输入/输出模块一起存入本机项目v1。
+3. 后续点击「保存」创建新版本；「文件」可查看历史代码版本。
+4. 点击「加载」，选择本机已保存的项目，一起恢复名称、代码、主控、模块及对话；未保存更改会提示确认，取消切换仍保留加载窗口。
+5. 点击「新建」立即进入空的未命名项目，沿用当前主控；未保存更改会提示先保存。刷新恢复当前项目或草稿，不会仅因打开页面而往数据库新增空项目。
+
+项目保存在启动器当前数据目录（默认.data），「加载」读取该目录已有项目。草稿只在当前浏览器中，跨浏览器继续工作前请保存。AI首次发送会把未命名工作区保存为「我的项目」并保存当时的代码/主控/模块，再发送对话，不必先手动保存；仅打开页面仍不会新增项目。文件历史和设备上传需要已保存项目；新项目可直接静态检查和查看接线资料。
+
+## 现在可以做什么
+
+- 复用原 Hardware Skill 库：左上角「主控板」可选K10、XIAO S3、ESP32-C3、掌控2.0/3.0，网格展示对应系列输入/输出模块；资料包保留供电、电气规则、接线、机械资料和示例。
+- 新建/打开个人项目，编辑 `main.py`，保存到本机 SQLite；刷新/服务重启恢复，保留版本历史和本浏览器未保存草稿。
+- 代码高亮、行号、缩进、查找、Ctrl+S；导出代码或历史版本，识别双标签保存冲突。
+- Python 语法检查和原库器件兼容规则检查。**不会执行代码**，也不能保证 MicroPython 专用 API、引脚或实际接线正确。
+- 用 Chrome/Edge 的 Web Serial 选择串口、识别 MicroPython、上传/备份/摘要回读、单独运行/中断、发送 REPL 和查看输出。
+- 可选 DeepSeek 真实对话：发送当前代码及所选硬件资料，返回建议；核对并接受后才改草稿。无 Key 明确显示未配置。
+
+首版只上传一个 UTF-8 `main.py`，最多 **64 KiB**；需要设备已经安装 MicroPython、提供 raw REPL、`machine`、`os`、`json/ujson`、`binascii` 和 `hashlib/uhashlib` SHA-256。不包含固件烧录、多文件部署、CAD/仿真界面或完整课堂迁移。
+
+## 源码安装（已有 Node / Python）
+
+环境：Node.js 22+、Python 3.11+；Windows 用户可跳过本节，直接双击启动。自动启动器使用项目内 Node 24.14.0 / Python 3.13.7，不修改系统 PATH。在源码目录执行：
 
 ```powershell
-pnpm start
-# 或
-.\start-local.bat
+npm run setup
+npm start
 ```
 
-`start-local.bat` 是唯一完整本地应用入口；`pnpm start` 只是它的同义命令。入口只在源码变更后重建共享 contracts，并启动 Tauri 开发宿主；Vite 由 Tauri CLI 管理，FastAPI Sidecar 由桌面主机单一托管并在异常退出后自动恢复。串口扫描、设备连接、代码上传等本地硬件能力均在这个应用内使用。
+macOS/Linux 同样使用以上命令，需先安装 Node.js 22+ 和 Python 3.11+，以及支持 Web Serial 的桌面 Chrome。
 
-只检查完整本地应用启动脚本、不启动服务或访问硬件：
+## 日常启动
+
+双击 `start-web.bat`，或执行：
 
 ```powershell
-pnpm start:check
-# 或
-.\start-local.bat --check
+npm start
 ```
 
-## 显式 Web Development Mode
+默认仅监听 **http://127.0.0.1:3080**，就绪后打开系统浏览器。请使用桌面版 **Chrome 或 Edge**。
+双击启动或 `npm run web` 会按源码/锁文件变化准备依赖和构建；`npm start` 仅运行现有构建。关闭启动窗口或 Ctrl+C 停止服务。
 
 ```powershell
-pnpm dev:web
+npm start -- --no-open
+npm start -- --port 3082
 ```
 
-访问 [http://localhost:5173](http://localhost:5173)。该命令启动 FastAPI Sidecar 和 Vite Browser Host，并在退出时清理开发子进程；它不会启动 Tauri 或 Rust。
+同一数据目录只允许一个服务实例；端口冲突会退出并提示，不会终止其他程序。
+`npm run start:web` 与 `npm run build:web` 是对应别名。需要改界面时重新构建。
 
-Web Development Mode 只是同一个 React UI 的浏览器开发宿主。FastAPI/SQLite 仍拥有项目、消息、草稿、产物和 Provider 调用。浏览器不直接访问 SQLite 或 DeepSeek，不保存 Provider Key，也不允许串口、设备上传、Flash、Shell 或本地 CAD 执行。
+## 第一次上传
 
-浏览器开发需要模型服务时，优先使用 fake Provider 测试；手工开发可在启动 FastAPI 前设置对应的后端进程环境变量 `ZHANGWEN_DEEPSEEK_API_KEY`、`ZHANGWEN_QWEN_API_KEY`、`ZHANGWEN_GLM_API_KEY` 或 `ZHANGWEN_KIMI_API_KEY`，也可使用已有后端安全凭据。不同服务商的凭据相互隔离。不要把 Key 写入 Vite 环境、LocalStorage、命令日志或 Git。
+1. 新建项目，选择与实际设备一致的主控板，加入所需外设；阅读供电、接线和固件资料。
+2. 编辑代码，点击「保存」「检查」。连接前请关闭占用串口的其他工具。
+3. 点击「连接设备」，在浏览器选择实际串口。连接会中断已有程序并识别 MicroPython。
+4. 点击「上传」，核对设备报告、项目板型、文件大小和摘要，勾选确认后开始。
+5. 首先读回旧 `main.py`，验证并持久保存浏览器备份，再写随机暂存文件。暂存校验通过后，把旧文件改名为备份、替换 `main.py`，再次计算 SHA-256。
+6. 「上传回读一致」仅表示文件摘要相同。点击「运行」才提交运行命令，通过串口输出和实物观察判断行为；程序自然返回REPL时恢复空闲，Traceback单独显示；「停止」等待真实 REPL 提示符。
 
-需要在不调用真实云端模型的情况下验证多智能体发送交互时，使用内部 QA 隔离入口：
+也可直接点击「上传」：未连接先请求浏览器选择串口，未命名项目先命名保存，已有修改先保存成新版本，再建立清单；确认后才写设备。取消串口选择/命名/清单不会写设备。
+
+「文件」支持64 KiB以内UTF-8 `.py`本机文件载入与代码导出、设备根目录只读列表（最多256项）、单文件回读/SHA-256校验与导出、明确载入编辑器、原项目历史版本。目录不递归进入，不提供删除或任意文件上传。
+
+掌控板2.0示例：`examples/mpython-v2-circle/main.py`，128×64 OLED中央(64,32)、半径24空心圆，使用官方`oled.circle`与`oled.show`，不操作外设。
+
+其他设备用户文件不会被清空；固件不会被烧录。多个掌问标签共用浏览器互斥锁。
+浏览器关闭/刷新或拔线会结束连接。普通局域网 HTTP 不满足 Web Serial 安全上下文，本版也不监听局域网。
+
+## 备份与故障恢复
+
+- 写设备前旧文件保存在当前浏览器的 IndexedDB；终端「备份」可导出最近一次旧文件。不同浏览器/用户配置的备份各自独立。不要在导出前清理站点数据。
+- 替换成功后，旧文件还留在设备 `.zw-<随机值>.bak`。本版保留备份，避免自动清理丢失恢复依据。
+- 连接正常时，取消或已知回读失败会清理本次暂存文件并尝试恢复原 `main.py`；超时/断线后不继续发送不可信协议命令。
+- 若日志显示「需要恢复」，关闭其他串口工具后重新连接，核对 `main.py` 和日志中的 `.tmp/.bak` 路径。可以导出浏览器旧代码，将其放入编辑器后保存并重新上传，或在 REPL 明确确认路径后恢复设备备份。
+- 运行与任意 REPL 操作可以改变设备状态；REPL 会使旧上传回执失效。重新上传校验后才可再次运行。
+
+项目数据默认在项目目录的 `.data/`；设置 `ZHANGWEN_DATA_DIR` 可使用其他本机目录。
+停止服务后备份整个数据目录，包含 `projects/zhangwen.sqlite3`、`hardware-skills` 和相关资料。
+浏览器草稿保存在当前 Origin 的 localStorage；保存到本机服务或导出才适合跨浏览器/迁移。
+
+## 可选 AI
+
+手工编程不依赖 AI。点击顶部「API 设置」，或掌问 AI 标题旁的设置入口：填写 DeepSeek API Key，选择deepseek-flash或deepseek-v4-pro，点击「保存设置」。立即生效，无需重启或输入命令。保存后Key输入框留空表示保持原Key，「清除 Key」停用AI；取消不修改设置。
+
+模型名称已按[DeepSeek官方文档](https://api-docs.deepseek.com/zh-cn/quick_start/pricing)更新，默认deepseek-flash。旧chat/reasoner设置和已退役v4-flash别名在读取时使用当前Flash默认值，Key保留；这属于本工具升级策略，Pro由用户手动选择。读取时不重写设置文件，点击保存才持久化新名称。
+
+Key保存在当前本机数据目录的mu-settings.json（明文），刷新/重启仍可使用；接口只返回已配置状态与模型名称，不回显密钥，不写入浏览器草稿、项目或对话。设置只支持固定DeepSeek地址。保存配置不代表网络或Key验证成功，实际发送对话后查看结果。
+
+也保留启动前环境变量方式作为未保存网页设置时的默认值：
 
 ```powershell
-pnpm dev:web:fake
+$env:ZHANGWEN_DEEPSEEK_API_KEY = '<你的 Key>'
+$env:ZHANGWEN_MU_MODEL = 'deepseek-flash'
+npm start
 ```
 
-该命令把验证数据放在 `.data/web-fake`，只在当前 FastAPI 子进程设置本地假 Provider 和假凭据。它不是生产失败 fallback，不读取或覆盖正式项目数据；默认 `pnpm dev:web` 仍使用真实 DeepSeek 配置。
+网页保存的设置优先于启动环境变量，包括清除Key后的空配置。本版只调用固定 DeepSeek API 地址。
+发送会将当前代码和所选硬件资料提交给该服务，勿发送不希望外传的内容。AI 没有设备、Shell 或固件权限。
+当前提供一次有界请求与网页API设置，尚无完整流式输出。
+发送时重新读取本机会话与API配置，服务重启后无需因旧会话标识而反复尝试；Key未配置会打开设置并保留问题。对话区显示发送状态和具体错误，失败保留输入，可手动重试。发送准备期间的后续编辑不会被项目快照或回复覆盖，AI代码仍需明确接受。当前文字助手使用非思考请求，避免默认思考内容占用有限回复额度。
 
-需要用真实云端 DeepSeek 验证同一套 Web 交互时：
+## 原项目的保留方式
+
+当前工作区初始为空。原 `D:\ZW_V1` 没有修改，其生产数据、定制硬件、库存、课程、方案、评审与未提交改动仍留在原位置。
+V4 原字节复制了 **471 项后端源码和内置资源**，记录在 `docs/legacy-source-manifest.json`。
+复用原 `ProjectRepository`、`HardwareSkillRepository`、`ArtifactRepository`、Conversation 与 SQLite v46 迁移链；`mu_workspaces` 只保存个人工作台扩展和版本指针。
+
+**V4 没有自动导入 V1 用户数据库。** 本版不会把课程项目静默改成无审核项目，也不声称定制库存/旧项目已迁移。
+2026-10-13已完成**硬件资料包文件**的离线副本校验、演练与导入，完整记录见 [硬件迁移记录](docs/HARDWARE_MIGRATION.md)。2026-10-15将74包完整放入发布资源，并加入C3/掌控2.0、启用原掌控3.0的Web显示，共76包/Web可见74包，其中54个传感器。全新部署无需旧imports目录或用户数据库。CAD外形参考仍未冒充编程包。
+后续迁移须先备份、复制并验证旧数据；不要把 V4 服务直接指向 V1 正在使用的数据库。
+旧后端串口执行器保留为兼容代码，本版只开放 Mu 路由，串口由浏览器持有。
+
+## 验证与开发
 
 ```powershell
-pnpm dev:web:paid
+npm run build
+npm test
+npm run test:api
+npm run test:e2e
 ```
 
-`dev:web:paid` 是内部真实云端验收配置，使用隔离目录 `.data/web-paid`，不是产品的“付费模式”。Provider 为真实 DeepSeek，Key 仍只能来自后端环境变量 `ZHANGWEN_DEEPSEEK_API_KEY` 或 Windows Credential Manager，浏览器不会读取 Key。产品界面统一显示云端 LLM，顶栏只显示本地服务健康，设置页使用“测试云端连接”；创建项目、发送消息和测试连接仍可能调用真实模型并消耗 token。
+浏览器测试默认使用已安装的 Microsoft Edge；所有自动测试使用隔离目录、Fake serial 和模拟 AI 响应，不连接真实设备或付费模型。
+测试截图在 `test-results/`，完整范围与真机待验项见 `docs/MVP_VALIDATION.md`。
 
-建议先按 `docs/WEB_DEVELOPMENT.md` 的“真实云端模型最小验收顺序”只读确认内部配置，再由测试人员决定是否执行真实模型请求。自动测试和默认门禁不会调用真实云端模型。
-
-- UI：`http://localhost:5173/`
-- API 健康检查：`http://127.0.0.1:8100/api/health`
-
-Tauri、Rust、Sidecar 生命周期、Windows Credential Manager 和本地设备/CAD 接口均由完整入口管理。桌面模式已实现受控串口扫描、连接和 MicroPython 文件操作；Web 模式仍严格禁用这些本地副作用。自动回归只使用 Mock transport，固件烧录和 Flash 擦除不属于自动验收。
-
-## 验证
+开发态使用两个窗口：
 
 ```powershell
-pnpm typecheck
-pnpm test:frontend
-.\.venv\Scripts\python.exe -m pytest services/local-api/tests/ -q --rootdir services/local-api
-cargo check --manifest-path apps/desktop/src-tauri/Cargo.toml
+npm start -- --no-open --dev
+# 另一个窗口
+npm run dev:web
 ```
 
-自动测试只使用 fake provider 和 Mock 设备，不调用真实付费 LLM，不执行真实串口、Flash 或固件操作。
-
-## 文档
-
-- 产品基线：`docs/PRD.md`
-- UI 契约：`docs/UI_CONTRACT.md`
-- API/事件：`docs/API_EVENTS.md`
-- 架构决策：`docs/DECISIONS.md`
-- 当前任务：`CURRENT_TASK.md`
-- 当前交接：`HANDOFF.md`
-- Web 开发说明：`docs/WEB_DEVELOPMENT.md`
-
-## 目录清理
-
-预览会删除的可再生构建/测试目录：
-
-```powershell
-powershell -ExecutionPolicy Bypass -File scripts-dev/clean-generated.ps1 -WhatIf
-```
-
-执行清理：
-
-```powershell
-pnpm clean:generated
-```
-
-脚本不会删除 `.venv`、`node_modules`、`services/local-api/.data` 或 `.codex/config.toml`。
+打开 http://127.0.0.1:5173，API 代理到 3080。正式模式 UI 与 API 同源，仅回环 Host/Origin 和有会话标识的写请求可用。
+开发方案与限制见 `docs/DEVELOPMENT_MU_LOCAL_WEB.md`，任务状态见 `tasks/MVP.md`。

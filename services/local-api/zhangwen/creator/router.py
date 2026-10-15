@@ -45,6 +45,7 @@ from zhangwen.devices.device_packages import list_device_packages
 from zhangwen.host import require_desktop_host
 from zhangwen.llm.deepseek import DeepSeekProvider
 from zhangwen.llm.runtime import require_llm_config
+from zhangwen.settings.models import ModelWorkload
 from zhangwen.projects.errors import ProjectError
 from zhangwen.projects.repository import ProjectRepository
 from zhangwen.security.credentials import BackendCredentialStore
@@ -398,6 +399,7 @@ async def ensure_creator_job_runner() -> CreatorJobRunner:
                 credential_store=credential_store_factory(),
                 credential_service=settings.credential_service,
                 credential_account=settings.credential_account,
+                workload=ModelWorkload.ENGINEERING,
             )
             route = ModelRouter(projects.db_path).route(
                 agent_id="code_generator",

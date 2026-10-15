@@ -1,0 +1,49 @@
+{
+  "source": "D:\\ZW_V1\\references\\source-packages\\ZW-CAD-intent\\server\\data\\hardware-library.json",
+  "snapshot": "imports\\v1-cad-reference-snapshot\\hardware-library.json",
+  "sha256": "5df03fc080f9b765170aabbfbe2e629d6fc4e930bf21e5f947dac2705aaf89ab",
+  "profiles": 40,
+  "groveProfiles": [
+    {
+      "id": "grove_oled_096",
+      "category": "display",
+      "name": "Grove - OLED Display 0.96 inch"
+    },
+    {
+      "id": "grove_button",
+      "category": "button",
+      "name": "Grove - Button"
+    },
+    {
+      "id": "grove_dual_button",
+      "category": "button",
+      "name": "Grove - Dual Button"
+    },
+    {
+      "id": "grove_passive_buzzer",
+      "category": "speaker",
+      "name": "Grove - Passive Buzzer"
+    },
+    {
+      "id": "grove_sht4x",
+      "category": "sensor",
+      "name": "Grove - Temperature & Humidity Sensor (SHT4x)"
+    },
+    {
+      "id": "grove_bme280",
+      "category": "sensor",
+      "name": "Grove - Temp&Humi&Barometer Sensor (BME280)"
+    },
+    {
+      "id": "grove_digital_pir",
+      "category": "sensor",
+      "name": "Grove - Digital PIR Sensor"
+    },
+    {
+      "id": "grove_ultrasonic_ranger",
+      "category": "sensor",
+      "name": "Grove - Ultrasonic Ranger"
+    }
+  ],
+  "scope": "CAD mechanical reference; no electrical or MicroPython contract, not activated as sensor packages"
+}

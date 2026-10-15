@@ -1,7 +1,0 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 200" role="img" aria-label="Quadruped dog shin">
-  <rect width="320" height="200" fill="#f7f5d6"/>
-  <path d="M78 90 L248 68 Q278 64 285 82 L285 105 Q279 120 249 125 L78 145 Z" fill="#6b4200"/>
-  <path d="M78 90 L248 68 Q278 64 285 82 L110 106 Z" fill="#f6a000"/>
-  <path d="M78 90 L110 106 L110 145 L78 145 Z" fill="#d18800"/>
-  <ellipse cx="82" cy="116" rx="5" ry="13" fill="#9fb2bd"/>
-</svg>

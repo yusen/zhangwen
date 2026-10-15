@@ -12,6 +12,7 @@ from typing import Any
 
 from pydantic import ValidationError
 
+from zhangwen.auth.context import current_owner_subject
 from zhangwen.creator.metrics import (
     DigitalBehaviorObservedMetric,
     FirstDeploymentFinishedMetric,
@@ -59,6 +60,7 @@ from zhangwen.creator.models import (
     SolutionRevision,
     VerificationLevel,
 )
+from zhangwen.domains.events.store import RealtimeEventStore
 from zhangwen.projects.errors import ProjectError
 from zhangwen.projects.models import ExpertType
 from zhangwen.projects.repository import ProjectRepository
@@ -139,6 +141,13 @@ class CreatorRepository:
                     ),
                     origin="CREATOR",
                 ),
+            )
+            RealtimeEventStore(self._db_path).append_work_event(
+                conn,
+                work_id=project_id,
+                event_type="work.created",
+                source_event_id=f"creator-work-created:{project_id}",
+                payload={"origin": "CREATOR"},
             )
 
         workspace = self._projects.create_project_from_idea(
@@ -873,9 +882,9 @@ class CreatorRepository:
     ) -> None:
         scene_row = conn.execute(
             """
-            SELECT board_id FROM device_lab_scenes
+            SELECT board_id, scene_json FROM device_lab_scenes
             WHERE project_id = ? AND proposal_id = ?
-            ORDER BY created_at DESC LIMIT 1
+            ORDER BY rowid DESC LIMIT 1
             """,
             (project_id, solution_id),
         ).fetchone()
@@ -883,6 +892,17 @@ class CreatorRepository:
             raise CreatorError(
                 "CREATOR_DEVICE_SCENE_REQUIRED",
                 "连接真机前必须先由当前方案建立数字原型。",
+                status_code=409,
+            )
+        scene_payload = json.loads(str(scene_row["scene_json"]))
+        scene_source = scene_payload.get("source")
+        if (
+            isinstance(scene_source, dict)
+            and scene_source.get("projectionPurpose") == "WORK_FUNCTIONAL"
+        ):
+            raise CreatorError(
+                "CREATOR_PHYSICAL_BOARD_REQUIRED",
+                "数字试做代理不能作为真实设备选择；连接真机前请先确认实际控制器。",
                 status_code=409,
             )
         endpoint = conn.execute(
@@ -1275,10 +1295,17 @@ class CreatorRepository:
                     "最终验收必须由明确的人类操作者确认，不能由系统或模型代签。",
                     status_code=409,
                 )
-            if not self._current_pass(conn, project_id, EvidenceKind.PHYSICAL_BEHAVIOR):
+            physical_ready = self._current_pass(
+                conn, project_id, EvidenceKind.PHYSICAL_BEHAVIOR
+            )
+            digital_only = self._is_digital_only_work(conn, project_id)
+            digital_ready = digital_only and self._current_pass(
+                conn, project_id, EvidenceKind.SIMULATION
+            )
+            if not physical_ready and not digital_ready:
                 raise CreatorError(
                     "CREATOR_PHYSICAL_EVIDENCE_REQUIRED",
-                    "真机行为尚未通过，不能进行最终验收。",
+                    "当前作品所需的数字或真机结果尚未通过，不能进行最终验收。",
                     status_code=409,
                 )
             self._record_evidence(
@@ -1292,6 +1319,9 @@ class CreatorRepository:
                     bindings={
                         "actor": parsed.actor,
                         "actorSubject": authenticated_subject,
+                        "acceptanceScope": (
+                            "PHYSICAL" if physical_ready else "DIGITAL"
+                        ),
                     },
                 ),
             )
@@ -1857,10 +1887,17 @@ class CreatorRepository:
             for item in evidence
             if item.status is EvidenceStatus.CURRENT and item.passed
         }
-        level = self._level(goal, current_kinds)
+        digital_only = self._is_digital_only_work(conn, project_id)
+        level = self._level(goal, current_kinds, digital_only=digital_only)
         phase = self._phase(goal, solution, current_kinds)
         stage = self._stage(phase)
-        next_action = self._next_action(goal, solution, current_kinds, level)
+        next_action = self._next_action(
+            goal,
+            solution,
+            current_kinds,
+            level,
+            digital_only=digital_only,
+        )
         return CreatorWorkspace(
             workId=project_id,
             projectId=project_id,
@@ -1871,7 +1908,13 @@ class CreatorRepository:
             activeStage=stage,
             verificationLevel=level,
             verificationLabel=_LEVEL_LABELS[level],
-            stages=self._stage_summaries(level, stage, solution, current_kinds),
+            stages=self._stage_summaries(
+                level,
+                stage,
+                solution,
+                current_kinds,
+                digital_only=digital_only,
+            ),
             confirmedGoal=confirmed_goal,
             draftGoal=draft_goal,
             confirmedSolution=confirmed_solution,
@@ -2562,6 +2605,8 @@ class CreatorRepository:
         self,
         goal: GoalRevision | None,
         current_kinds: set[EvidenceKind],
+        *,
+        digital_only: bool = False,
     ) -> VerificationLevel:
         if goal is None or goal.status != "CONFIRMED":
             return VerificationLevel.UNVERIFIED
@@ -2574,6 +2619,12 @@ class CreatorRepository:
             (EvidenceKind.USER_ACCEPTANCE, VerificationLevel.USER_ACCEPTED),
         )
         for kind, candidate in ladder:
+            if (
+                digital_only
+                and kind is EvidenceKind.DEVICE_CONNECTION
+                and EvidenceKind.USER_ACCEPTANCE in current_kinds
+            ):
+                return VerificationLevel.USER_ACCEPTED
             if kind not in current_kinds:
                 break
             level = candidate
@@ -2626,6 +2677,8 @@ class CreatorRepository:
         solution: SolutionRevision | None,
         current: set[EvidenceKind],
         level: VerificationLevel,
+        *,
+        digital_only: bool = False,
     ) -> CreatorNextAction:
         if solution is None or solution.status != "CONFIRMED":
             return CreatorNextAction(
@@ -2661,6 +2714,27 @@ class CreatorRepository:
                 blockedReason=None,
                 riskLevel="LOW",
             )
+        if digital_only:
+            if EvidenceKind.USER_ACCEPTANCE not in current:
+                return CreatorNextAction(
+                    id="accept-digital-work",
+                    label="亲自检查并确认数字作品",
+                    command=CreatorCommand.ACCEPT_WORK,
+                    stage=CreatorStage.DIGITAL_PROTOTYPE,
+                    enabled=True,
+                    blockedReason=None,
+                    riskLevel="MEDIUM",
+                )
+            if EvidenceKind.REPRODUCTION not in current:
+                return CreatorNextAction(
+                    id="reproduce-work",
+                    label="生成并复现交付包",
+                    command=CreatorCommand.RECORD_REPRODUCTION,
+                    stage=CreatorStage.DIGITAL_PROTOTYPE,
+                    enabled=True,
+                    blockedReason=None,
+                    riskLevel="LOW",
+                )
         if EvidenceKind.DEVICE_CONNECTION not in current:
             return CreatorNextAction(
                 id="connect-device",
@@ -2727,6 +2801,8 @@ class CreatorRepository:
         active: CreatorStage,
         solution: SolutionRevision | None,
         current: set[EvidenceKind],
+        *,
+        digital_only: bool = False,
     ) -> list[CreatorStageSummary]:
         structure_not_applicable = solution is not None and solution.structure.strip() in {
             "",
@@ -2738,7 +2814,12 @@ class CreatorRepository:
             (CreatorStage.IDEA_SOLUTION, "创意与方案", level >= 1, "目标与当前方案"),
             (CreatorStage.DIGITAL_PROTOTYPE, "数字原型", level >= 3, "仿真、参数与日志"),
             (CreatorStage.STRUCTURE_3D, "3D 结构", EvidenceKind.STRUCTURE_CHECK in current, "结构版本与制造检查"),
-            (CreatorStage.PHYSICAL_RUN, "实物运行", level >= 5, "连接、部署与真机验证"),
+            (
+                CreatorStage.PHYSICAL_RUN,
+                "实物运行",
+                False if digital_only else level >= 5,
+                "这件作品无需实物运行" if digital_only else "连接、部署与真机验证",
+            ),
         )
         for stage, label, passed, detail in definitions:
             if stage is CreatorStage.STRUCTURE_3D and structure_not_applicable:
@@ -2792,6 +2873,39 @@ class CreatorRepository:
             (project_id, kind.value),
         ).fetchone() is not None
 
+    def _is_digital_only_work(
+        self, conn: sqlite3.Connection, project_id: str
+    ) -> bool:
+        """Trust only the current immutable Canvas when skipping real hardware."""
+
+        owner_key = current_owner_subject() or "__local__"
+        row = conn.execute(
+            """
+            SELECT payload_json FROM canvas_spec_revisions
+            WHERE work_id = ? AND owner_key = ?
+            ORDER BY revision DESC, created_at DESC, id DESC LIMIT 1
+            """,
+            (project_id, owner_key),
+        ).fetchone()
+        if row is None:
+            return False
+        try:
+            payload = json.loads(str(row["payload_json"]))
+            intent = payload.get("workIntent")
+            scene = payload.get("scene")
+            if not isinstance(intent, dict) or not isinstance(scene, dict):
+                return False
+            subject = scene.get("subject")
+            return bool(
+                isinstance(subject, dict)
+                and subject.get("kind") == "SOFTWARE"
+                and not intent.get("physicalActions")
+                and not intent.get("structureNeeds")
+                and not intent.get("serviceNeeds")
+            )
+        except (TypeError, ValueError, json.JSONDecodeError):
+            return False
+
     def _current_bindings(
         self, conn: sqlite3.Connection, project_id: str
     ) -> dict[str, str]:
@@ -2805,7 +2919,7 @@ class CreatorRepository:
         scene = conn.execute(
             """
             SELECT revision FROM device_lab_scenes
-            WHERE project_id = ? ORDER BY created_at DESC, revision DESC LIMIT 1
+            WHERE project_id = ? ORDER BY rowid DESC LIMIT 1
             """,
             (project_id,),
         ).fetchone()
@@ -2840,6 +2954,15 @@ class CreatorRepository:
         ).fetchone()
         if parameter is not None:
             result["parameterRevisionId"] = str(parameter["id"])
+        canvas = conn.execute(
+            """
+            SELECT id FROM canvas_spec_revisions
+            WHERE work_id = ? ORDER BY revision DESC, created_at DESC, id DESC LIMIT 1
+            """,
+            (project_id,),
+        ).fetchone()
+        if canvas is not None:
+            result["canvasSpecRevisionId"] = str(canvas["id"])
         return result
 
     def _refresh_stale_evidence(
@@ -2854,40 +2977,52 @@ class CreatorRepository:
         """
 
         dependency_keys: dict[EvidenceKind, tuple[str, ...]] = {
-            EvidenceKind.STATIC_VALIDATION: ("sceneRevision",),
+            EvidenceKind.STATIC_VALIDATION: (
+                "sceneRevision",
+                "canvasSpecRevisionId",
+            ),
             EvidenceKind.SIMULATION: (
                 "sceneRevision",
                 "codeRevisionId",
                 "parameterRevisionId",
+                "canvasSpecRevisionId",
             ),
-            EvidenceKind.STRUCTURE_CHECK: ("structureRevisionId",),
+            EvidenceKind.STRUCTURE_CHECK: (
+                "structureRevisionId",
+                "canvasSpecRevisionId",
+            ),
             EvidenceKind.DEVICE_CONNECTION: (
                 "sceneRevision",
                 "codeRevisionId",
                 "parameterRevisionId",
+                "canvasSpecRevisionId",
             ),
             EvidenceKind.DEPLOYMENT: (
                 "sceneRevision",
                 "codeRevisionId",
                 "parameterRevisionId",
+                "canvasSpecRevisionId",
             ),
             EvidenceKind.PHYSICAL_BEHAVIOR: (
                 "sceneRevision",
                 "codeRevisionId",
                 "parameterRevisionId",
                 "structureRevisionId",
+                "canvasSpecRevisionId",
             ),
             EvidenceKind.USER_ACCEPTANCE: (
                 "sceneRevision",
                 "codeRevisionId",
                 "parameterRevisionId",
                 "structureRevisionId",
+                "canvasSpecRevisionId",
             ),
             EvidenceKind.REPRODUCTION: (
                 "sceneRevision",
                 "codeRevisionId",
                 "parameterRevisionId",
                 "structureRevisionId",
+                "canvasSpecRevisionId",
             ),
         }
         current = self._current_bindings(conn, project_id)
@@ -2904,6 +3039,7 @@ class CreatorRepository:
             "codeRevisionId": "code",
             "parameterRevisionId": "parameter set",
             "structureRevisionId": "structure",
+            "canvasSpecRevisionId": "作品地图",
         }
         for row in rows:
             try:
@@ -2974,12 +3110,20 @@ class CreatorRepository:
         event_type: str,
         payload: dict[str, Any],
     ) -> None:
+        source_event_id = _id("cevt")
         conn.execute(
             """
             INSERT INTO creator_events (id, project_id, event_type, payload_json, created_at)
             VALUES (?, ?, ?, ?, ?)
             """,
-            (_id("cevt"), project_id, event_type, _dump(payload), _now()),
+            (source_event_id, project_id, event_type, _dump(payload), _now()),
+        )
+        RealtimeEventStore(self._db_path).append_creator_event(
+            conn,
+            work_id=project_id,
+            source_event_id=source_event_id,
+            creator_event_type=event_type,
+            payload=payload,
         )
 
     def _append_command_metrics(

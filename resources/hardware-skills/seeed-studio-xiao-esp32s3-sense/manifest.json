@@ -1,0 +1,24 @@
+{
+  "schema": "zhangwen.hardware-skill-manifest/v1",
+  "schemaVersion": 1,
+  "skillName": "seeed-studio-xiao-esp32s3-sense",
+  "componentId": "hw_seeed_xiao_esp32s3_sense",
+  "displayName": "Seeed Studio XIAO ESP32S3 Sense",
+  "description": "规范板型 seeedstudio/xiao_esp32s3_sense；8 MB Flash、8 MB OPI PSRAM，Sense 扩展含 OV2640、PDM 麦克风和 SPI microSD。peakCurrent=0 表示未固化整板峰值，并非实际电流为零。",
+  "status": "ACTIVE",
+  "sourceKind": "MIGRATED",
+  "files": [
+    "SKILL.md",
+    "references/specifications.md",
+    "references/compatibility-rules.md",
+    "references/integration.md",
+    "references/safety.md",
+    "references/sources.md",
+    "examples/usage.md",
+    "tests/validation-cases.md"
+  ],
+  "media": [],
+  "revision": "451748fe64e1a8c1d8c48ddf",
+  "createdAt": "2026-07-30T00:55:06.480881+00:00",
+  "updatedAt": "2026-07-30T00:55:06.480881+00:00"
+}

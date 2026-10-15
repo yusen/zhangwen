@@ -305,6 +305,9 @@ class DeviceTransport(Protocol):
 class MockDeviceTransport:
     """Deterministic in-memory transport for all automated device tests."""
 
+    transport_mode = "MOCK"
+    evidence_eligible = False
+
     def __init__(
         self,
         *,
@@ -616,6 +619,8 @@ class MockDeviceTransport:
 
 
 class SubprocessDeviceTransport:
+    transport_mode = "LOCAL_SERIAL"
+    evidence_eligible = True
     """Real adapter using fixed module invocations and no shell interpolation."""
 
     def __init__(self, scanner: Callable[[], list[DevicePort]] = list_serial_ports) -> None:

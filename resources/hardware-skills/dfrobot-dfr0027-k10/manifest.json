@@ -1,0 +1,36 @@
+{
+  "schema": "zhangwen.hardware-skill-manifest/v1",
+  "schemaVersion": 1,
+  "skillName": "dfrobot-dfr0027-k10",
+  "componentId": "hw_dfrobot_dfr0027_k10",
+  "displayName": "DFRobot DFR0027 数字震动传感器",
+  "description": "为行空板 K10 MicroPython 项目提供 DFR0027 的GPIO接入、兼容和安全边界；API 与电气值仍需按当前固件和实物复核。",
+  "status": "ACTIVE",
+  "sourceKind": "MANUAL",
+  "files": [
+    "README.md",
+    "SKILL.md",
+    "references/specifications.md",
+    "references/compatibility-rules.md",
+    "references/integration.md",
+    "references/safety.md",
+    "references/sources.md",
+    "examples/usage.md",
+    "tests/validation-cases.md"
+  ],
+  "media": [
+    {
+      "path": "assets/cover.webp",
+      "role": "cover",
+      "alt": "DFRobot DFR0027 数字震动传感器产品图",
+      "contentType": "image/webp",
+      "sha256": "88a9950955db05029470de15048db34dec2e0e1628264f78458ffc7d0463b374",
+      "sourceUrl": "https://wiki.dfrobot.com.cn/_SKU_DFR0027_%E6%95%B0%E5%AD%97%E9%9C%87%E5%8A%A8%E4%BC%A0%E6%84%9F%E5%99%A8",
+      "attribution": "DFRobot（取自对应官方资料页）",
+      "license": "DFRobot 官方产品图；仅随本 Skill 作来源引用，公开再分发授权未独立核验"
+    }
+  ],
+  "revision": "789efa80068e026a5f9a56d1",
+  "createdAt": "2026-07-17T06:57:53Z",
+  "updatedAt": "2026-07-17T10:42:11Z"
+}

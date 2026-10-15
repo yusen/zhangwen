@@ -17,6 +17,7 @@ from zhangwen.device_lab.models import (
     ParameterSetRevision,
     SupportedDeviceBoardId,
 )
+from zhangwen.domains.events.store import RealtimeEventStore
 
 
 def _now() -> str:
@@ -193,6 +194,85 @@ class DeviceLabRepository:
         if row is None:
             raise KeyError("run not found")
         return DeviceLabRun.model_validate_json(str(row["state_json"]))
+
+    def list_runs(self, project_id: str, *, limit: int = 20) -> list[DeviceLabRun]:
+        bounded_limit = max(1, min(limit, 100))
+        with self._connect() as conn:
+            rows = conn.execute(
+                """
+                SELECT state_json FROM device_lab_runs
+                WHERE project_id = ? AND target = 'SIMULATOR'
+                ORDER BY started_at DESC, rowid DESC LIMIT ?
+                """,
+                (project_id, bounded_limit),
+            ).fetchall()
+        return [
+            DeviceLabRun.model_validate_json(str(row["state_json"]))
+            for row in rows
+        ]
+
+    def list_interrupted_runs(self) -> list[DeviceLabRun]:
+        """Return runs whose process-local executor disappeared on restart."""
+
+        with self._connect() as conn:
+            rows = conn.execute(
+                """
+                SELECT state_json FROM device_lab_runs
+                WHERE status IN ('STARTING', 'RUNNING')
+                ORDER BY started_at, rowid
+                """
+            ).fetchall()
+        return [
+            DeviceLabRun.model_validate_json(str(row["state_json"]))
+            for row in rows
+        ]
+
+    def recover_interrupted_run(
+        self,
+        run: DeviceLabRun,
+        event: DeviceLabEvent,
+    ) -> bool:
+        """Persist one startup recovery without racing a later terminal state."""
+
+        with self._connect() as conn:
+            conn.execute("BEGIN IMMEDIATE")
+            updated = conn.execute(
+                """
+                UPDATE device_lab_runs
+                SET status = ?, state_json = ?, updated_at = ?, stopped_at = ?
+                WHERE id = ? AND project_id = ?
+                  AND status IN ('STARTING', 'RUNNING')
+                """,
+                (
+                    run.status.value,
+                    run.model_dump_json(),
+                    run.updatedAt,
+                    run.updatedAt,
+                    run.id,
+                    run.projectId,
+                ),
+            )
+            if updated.rowcount != 1:
+                return False
+            conn.execute(
+                """
+                INSERT INTO device_lab_events (
+                  run_id, revision, event_json, created_at
+                ) VALUES (?, ?, ?, ?)
+                """,
+                (run.id, event.revision, event.model_dump_json(), event.createdAt),
+            )
+            RealtimeEventStore(self._db_path).append_work_event(
+                conn,
+                work_id=run.projectId,
+                event_type="work.run.recovered",
+                source_event_id=f"work-run:{run.id}:recovered:{run.revision}",
+                payload={
+                    "runId": run.id,
+                    "naturalStatus": event.message,
+                },
+            )
+        return True
 
     def update_run(self, run: DeviceLabRun, event: DeviceLabEvent) -> None:
         stopped_at = run.updatedAt if run.status.value in {"STOPPED", "ERROR"} else None

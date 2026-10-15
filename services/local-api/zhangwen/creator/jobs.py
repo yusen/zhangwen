@@ -24,7 +24,8 @@ from zhangwen.code_agent.validation import (
     run_micropython_validation,
 )
 from zhangwen.creator.models import CreatorJob, CreatorJobKind, CreatorJobStatus
-from zhangwen.device_lab.scene import materialize_device_lab_scene
+from zhangwen.device_lab.scene import materialize_work_functional_scene
+from zhangwen.domains.events.store import RealtimeEventStore
 from zhangwen.llm.structured import StructuredLLMError
 from zhangwen.specs.models import (
     SpecFile,
@@ -474,13 +475,21 @@ class CreatorJobRepository:
             "solutionRevisionId": solution_revision_id,
             **(extra or {}),
         }
+        source_event_id = f"cevt_{uuid.uuid4().hex}"
         conn.execute(
             """
             INSERT INTO creator_events (
               id, project_id, event_type, payload_json, created_at
             ) VALUES (?, ?, 'JOB', ?, ?)
             """,
-            (f"cevt_{uuid.uuid4().hex}", project_id, _dump(payload), _now()),
+            (source_event_id, project_id, _dump(payload), _now()),
+        )
+        RealtimeEventStore(self._db_path).append_creator_event(
+            conn,
+            work_id=project_id,
+            source_event_id=source_event_id,
+            creator_event_type="JOB",
+            payload=payload,
         )
 
     def _row(
@@ -979,7 +988,7 @@ class CreatorJobRunner:
         progress: ProgressCallback,
     ) -> dict[str, Any]:
         progress(30, "正在根据当前方案生成数字原型场景。")
-        scene = materialize_device_lab_scene(
+        scene = materialize_work_functional_scene(
             self.db_path,
             self.data_dir,
             job.work_id,
@@ -987,13 +996,14 @@ class CreatorJobRunner:
         if scene is None:
             raise CreatorJobExecutionError(
                 "CREATOR_DIGITAL_PROTOTYPE_UNAVAILABLE",
-                "当前方案尚未绑定可投影的设备包，数字原型生成失败。",
+                "当前方案尚未形成唯一可用的本机数字试作环境，请让掌问重新整理方案。",
             )
         progress(85, "数字原型场景已持久化，等待用户运行验收场景。")
         return {
             "materialization": "DEVICE_LAB_SCENE",
             "sceneRevision": scene.revision,
             "boardId": scene.boardId.value,
+            "projectionPurpose": scene.source.projectionPurpose,
             "solutionRevisionId": job.solution_revision_id,
         }
 

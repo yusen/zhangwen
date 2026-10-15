@@ -1,0 +1,1425 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../">
+<head>
+  <meta charset="utf-8" />
+  <meta name="readthedocs-addons-api-version" content="1"><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>mpython — 掌控板板载相关功能函数 &mdash; mPython掌控 2.2.0 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=03e43079" />
+      <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=9edc463e" />
+
+  
+    <link rel="shortcut icon" href="../../_static/favicon.ico"/>
+      <script src="../../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../../_static/documentation_options.js?v=b21de401"></script>
+      <script src="../../_static/doctools.js?v=9a2dae69"></script>
+      <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../../_static/js/theme.js"></script>
+    <script src="../../_static/js/versions.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+    <link rel="next" title="music — 音乐相关功能函数" href="music.html" />
+    <link rel="prev" title="mPython类库" href="index.html" /> 
+<script async type="text/javascript" src="/_/static/javascript/readthedocs-addons.js"></script><meta name="readthedocs-project-slug" content="mpython-docs-en" /><meta name="readthedocs-version-slug" content="master" /><meta name="readthedocs-resolver-filename" content="/library/mPython/mpython.html" /><meta name="readthedocs-http-status" content="200" /></head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../index.html">
+            
+              <img src="../../_static/logo.png" class="logo" alt="Logo"/>
+          </a>
+              <div class="switch-menus">
+                <div class="version-switch"></div>
+                <div class="language-switch"></div>
+              </div>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="../../board/index.html">掌控板资料</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">掌控板教程</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../tutorials/basics/index.html">入门教程</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../tutorials/advance/index.html">进阶教程</a></li>
+</ul>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../classic/index.html">经典案例</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">MicroPython类库</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../pythonStd/index.html">Python标准库</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../micropython/index.html">MicroPython类库</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">mPython类库</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="reference internal" href="index.html">mPython类库</a><ul class="current">
+<li class="toctree-l2 current"><a class="current reference internal" href="#"><code class="xref py py-mod docutils literal notranslate"><span class="pre">mpython</span></code> — 掌控板板载相关功能函数</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#id1">延时</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#mpython.sleep"><code class="docutils literal notranslate"><span class="pre">sleep()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#mpython.sleep_ms"><code class="docutils literal notranslate"><span class="pre">sleep_ms()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#mpython.sleep_us"><code class="docutils literal notranslate"><span class="pre">sleep_us()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#id2">映射</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#mpython.numberMap"><code class="docutils literal notranslate"><span class="pre">numberMap()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#id3">板载传感器</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#id4">声音、光线</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#id5">加速度计</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#gyroscope">gyroscope</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#mpython.gyroscope.get_x"><code class="docutils literal notranslate"><span class="pre">gyroscope.get_x()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#mpython.gyroscope.get_y"><code class="docutils literal notranslate"><span class="pre">gyroscope.get_y()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#mpython.gyroscope.get_z"><code class="docutils literal notranslate"><span class="pre">gyroscope.get_z()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#mpython.gyroscope.set_range"><code class="docutils literal notranslate"><span class="pre">gyroscope.set_range()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#mpython.gyroscope.set_offset"><code class="docutils literal notranslate"><span class="pre">gyroscope.set_offset()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#magnetic">magnetic</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#mpython.magnetic.get_x"><code class="docutils literal notranslate"><span class="pre">magnetic.get_x()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#mpython.magnetic.get_y"><code class="docutils literal notranslate"><span class="pre">magnetic.get_y()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#mpython.magnetic.get_z"><code class="docutils literal notranslate"><span class="pre">magnetic.get_z()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#mpython.magnetic.get_field_strength"><code class="docutils literal notranslate"><span class="pre">magnetic.get_field_strength()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#mpython.magnetic.peeling"><code class="docutils literal notranslate"><span class="pre">magnetic.peeling()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#mpython.magnetic.clear_peeling"><code class="docutils literal notranslate"><span class="pre">magnetic.clear_peeling()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#mpython.magnetic.get_heading"><code class="docutils literal notranslate"><span class="pre">magnetic.get_heading()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#mpython.magnetic.calibrate"><code class="docutils literal notranslate"><span class="pre">magnetic.calibrate()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#bme280">bme280</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#mpython.bme280.temperature"><code class="docutils literal notranslate"><span class="pre">bme280.temperature()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#mpython.bme280.pressure"><code class="docutils literal notranslate"><span class="pre">bme280.pressure()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#mpython.bme280.humidity"><code class="docutils literal notranslate"><span class="pre">bme280.humidity()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#id7">蜂鸣器</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#button-a-b">button_[a,b]对象</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#mpython.Button"><code class="docutils literal notranslate"><span class="pre">Button</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#mpython.Button.event_pressed"><code class="docutils literal notranslate"><span class="pre">Button.event_pressed</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#mpython.Button.event_released"><code class="docutils literal notranslate"><span class="pre">Button.event_released</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#mpython.Button.value"><code class="docutils literal notranslate"><span class="pre">Button.value()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#mpython.Button.is_pressed"><code class="docutils literal notranslate"><span class="pre">Button.is_pressed()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#mpython.Button.was_pressed"><code class="docutils literal notranslate"><span class="pre">Button.was_pressed()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#mpython.Button.get_presses"><code class="docutils literal notranslate"><span class="pre">Button.get_presses()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#mpython.Button.irq"><code class="docutils literal notranslate"><span class="pre">Button.irq()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#touch">touch对象</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#mpython.Touch"><code class="docutils literal notranslate"><span class="pre">Touch</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#mpython.Touch.event_pressed"><code class="docutils literal notranslate"><span class="pre">Touch.event_pressed</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#mpython.Touch.event_released"><code class="docutils literal notranslate"><span class="pre">Touch.event_released</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#mpython.Touch.read"><code class="docutils literal notranslate"><span class="pre">Touch.read()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#mpython.Touch.is_pressed"><code class="docutils literal notranslate"><span class="pre">Touch.is_pressed()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#mpython.Touch.was_pressed"><code class="docutils literal notranslate"><span class="pre">Touch.was_pressed()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#mpython.Touch.get_presses"><code class="docutils literal notranslate"><span class="pre">Touch.get_presses()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#rgb">rgb对象</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#mpython.rgb.write"><code class="docutils literal notranslate"><span class="pre">rgb.write()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#mpython.rgb.fill"><code class="docutils literal notranslate"><span class="pre">rgb.fill()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#mpython.rgb.brightness"><code class="docutils literal notranslate"><span class="pre">rgb.brightness()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#oled">oled对象</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#mpython.oled.poweron"><code class="docutils literal notranslate"><span class="pre">oled.poweron()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#mpython.oled.poweroff"><code class="docutils literal notranslate"><span class="pre">oled.poweroff()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#mpython.oled.contrast"><code class="docutils literal notranslate"><span class="pre">oled.contrast()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#mpython.oled.invert"><code class="docutils literal notranslate"><span class="pre">oled.invert()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#mpython.oled.DispChar"><code class="docutils literal notranslate"><span class="pre">oled.DispChar()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#mpython.oled.show"><code class="docutils literal notranslate"><span class="pre">oled.show()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#mpython.oled.DispChar_font"><code class="docutils literal notranslate"><span class="pre">oled.DispChar_font()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#mpython.oled.fill"><code class="docutils literal notranslate"><span class="pre">oled.fill()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#mpython.oled.circle"><code class="docutils literal notranslate"><span class="pre">oled.circle()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#mpython.oled.fill_circle"><code class="docutils literal notranslate"><span class="pre">oled.fill_circle()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#mpython.oled.triangle"><code class="docutils literal notranslate"><span class="pre">oled.triangle()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#mpython.oled.fill_triangle"><code class="docutils literal notranslate"><span class="pre">oled.fill_triangle()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#mpython.oled.bitmap"><code class="docutils literal notranslate"><span class="pre">oled.bitmap()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#mpython.oled.RoundRect"><code class="docutils literal notranslate"><span class="pre">oled.RoundRect()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#i2c">i2c对象</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#mpythonpin">MPythonPin类</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#mpython.MPythonPin"><code class="docutils literal notranslate"><span class="pre">MPythonPin</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#mpython.MPythonPin.read_digital"><code class="docutils literal notranslate"><span class="pre">MPythonPin.read_digital()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#mpython.MPythonPin.write_digital"><code class="docutils literal notranslate"><span class="pre">MPythonPin.write_digital()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#mpython.MPythonPin.read_analog"><code class="docutils literal notranslate"><span class="pre">MPythonPin.read_analog()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#wifi">wifi类</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#mpython.wifi"><code class="docutils literal notranslate"><span class="pre">wifi</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#mpython.wifi.connectWiFi"><code class="docutils literal notranslate"><span class="pre">wifi.connectWiFi()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#mpython.wifi.disconnectWiFi"><code class="docutils literal notranslate"><span class="pre">wifi.disconnectWiFi()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#mpython.wifi.enable_APWiFi"><code class="docutils literal notranslate"><span class="pre">wifi.enable_APWiFi()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#mpython.wifi.disable_APWiFi"><code class="docutils literal notranslate"><span class="pre">wifi.disable_APWiFi()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="music.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">music</span></code> — 音乐相关功能函数</a></li>
+<li class="toctree-l2"><a class="reference internal" href="urequests.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">urequests</span></code> — HTTP客户端的相关功能函数</a></li>
+<li class="toctree-l2"><a class="reference internal" href="umqtt.simple.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">umqtt.simple</span></code> — 简单MQTT客户端功能函数</a></li>
+<li class="toctree-l2"><a class="reference internal" href="gui.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">gui</span></code> — 提供GUI类的绘制的相关功能函数</a></li>
+<li class="toctree-l2"><a class="reference internal" href="audio.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">audio</span></code> — 提供音频播放录音的相关功能</a></li>
+<li class="toctree-l2"><a class="reference internal" href="radio.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">radio</span></code> — radio 无线广播相关功能</a></li>
+<li class="toctree-l2"><a class="reference internal" href="sdcard.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">sdcard</span></code> — SD卡</a></li>
+<li class="toctree-l2"><a class="reference internal" href="bluebit.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">bluebit</span></code> — blue:bit驱动</a></li>
+<li class="toctree-l2"><a class="reference internal" href="parrot.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">parrot</span></code> — 掌控拓展板驱动</a></li>
+<li class="toctree-l2"><a class="reference internal" href="ds18x20.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">ds18x20</span></code> — ds18b20温度传感器驱动</a></li>
+<li class="toctree-l2"><a class="reference internal" href="servo.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">servo</span></code> — 舵机驱动功能函数</a></li>
+<li class="toctree-l2"><a class="reference internal" href="bluetooth.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">bluetooth</span></code> — 提供无线蓝牙功能</a></li>
+<li class="toctree-l2"><a class="reference internal" href="iat.html">语音听写(IAT)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="mpython_code.html">mpython.py源码</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../ext_lib/index.html">mPython拓展库</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">MicroPython 语法</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../reference/index.html">MicroPython 语法</a></li>
+</ul>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../license.html">版权</a></li>
+</ul>
+<ul>
+<li class="toctree-l1"><a class="reference external" href="https://github.com/labplus-cn/mpython/releases">固件发布</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">掌控系列</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../extboard/index.html">掌控拓展板</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">内部研发文档</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../project/index.html">内部研发文档</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">mPython掌控</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content style-external-links">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="index.html">mPython类库</a></li>
+      <li class="breadcrumb-item active"><code class="xref py py-mod docutils literal notranslate"><span class="pre">mpython</span></code> — 掌控板板载相关功能函数</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="mpython">
+<span id="module-mpython"></span><span id="mpython-py"></span><h1><a class="reference internal" href="#module-mpython" title="mpython: 掌控板板载相关功能函数"><code class="xref py py-mod docutils literal notranslate"><span class="pre">mpython</span></code></a> — 掌控板板载相关功能函数<a class="headerlink" href="#mpython" title="Link to this heading"></a></h1>
+<p><code class="docutils literal notranslate"><span class="pre">mpython</span></code> 是基于掌控板封装的专有模块,内含掌控板板载资源相关功能函数。 详细代码实现可查阅 <a class="reference internal" href="mpython_code.html#mpython-code"><span class="std std-ref">mpython.py源码</span></a> 。</p>
+<section id="id1">
+<h2>延时<a class="headerlink" href="#id1" title="Link to this heading"></a></h2>
+<dl class="py method">
+<dt class="sig sig-object py" id="mpython.sleep">
+<span class="sig-prename descclassname"><span class="pre">mpython.</span></span><span class="sig-name descname"><span class="pre">sleep</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">s</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mpython.sleep" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<p>秒级延时</p>
+<blockquote>
+<div><ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">s</span></code> -单位秒。</p></li>
+</ul>
+</div></blockquote>
+<dl class="py method">
+<dt class="sig sig-object py" id="mpython.sleep_ms">
+<span class="sig-prename descclassname"><span class="pre">mpython.</span></span><span class="sig-name descname"><span class="pre">sleep_ms</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ms</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mpython.sleep_ms" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<p>毫秒级延时</p>
+<blockquote>
+<div><ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">ms</span></code> -单位毫秒。</p></li>
+</ul>
+</div></blockquote>
+<dl class="py method">
+<dt class="sig sig-object py" id="mpython.sleep_us">
+<span class="sig-prename descclassname"><span class="pre">mpython.</span></span><span class="sig-name descname"><span class="pre">sleep_us</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">us</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mpython.sleep_us" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<p>级延时</p>
+<blockquote>
+<div><ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">us</span></code> -单位微秒。</p></li>
+</ul>
+</div></blockquote>
+</section>
+<section id="id2">
+<h2>映射<a class="headerlink" href="#id2" title="Link to this heading"></a></h2>
+<dl class="py method">
+<dt class="sig sig-object py" id="mpython.numberMap">
+<span class="sig-prename descclassname"><span class="pre">mpython.</span></span><span class="sig-name descname"><span class="pre">numberMap</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">inputNum</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">bMin</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">bMax</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cMin</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cMax</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mpython.numberMap" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<p>映射函数，参数：</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">inputNum</span></code> 为需要映射的变量</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">bMin</span></code> 为需要映射的最小值</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">bMax</span></code> 为需要映射的最大值</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">cMin</span></code> 为映射的最小值</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">cMax</span></code> 为映射的最大值</p></li>
+</ul>
+</section>
+<section id="id3">
+<h2>板载传感器<a class="headerlink" href="#id3" title="Link to this heading"></a></h2>
+<section id="id4">
+<h3>声音、光线<a class="headerlink" href="#id4" title="Link to this heading"></a></h3>
+<dl class="py method">
+<dt class="sig sig-object py" id="mpython.light.read">
+<span class="sig-prename descclassname"><span class="pre">light.</span></span><span class="sig-name descname"><span class="pre">read</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#mpython.light.read" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<p>读取板载光线传感器值，范围0~4095。</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="mpython.sound.read">
+<span class="sig-prename descclassname"><span class="pre">sound.</span></span><span class="sig-name descname"><span class="pre">read</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#mpython.sound.read" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<p>读取板载麦克风，范围0~4095。</p>
+</section>
+<section id="id5">
+<h3>加速度计<a class="headerlink" href="#id5" title="Link to this heading"></a></h3>
+<p>通过accelerometer对象，您可以获取3轴加速度计值，单位g。 加速度范围±2g/±4g/±8g/±16g,默认为±2g。</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="mpython.accelerometer.get_x">
+<span class="sig-prename descclassname"><span class="pre">accelerometer.</span></span><span class="sig-name descname"><span class="pre">get_x</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#mpython.accelerometer.get_x" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<p>获取x轴上的加速度测量值，正整数或负整数，具体取决于方向。</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="mpython.accelerometer.get_y">
+<span class="sig-prename descclassname"><span class="pre">accelerometer.</span></span><span class="sig-name descname"><span class="pre">get_y</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#mpython.accelerometer.get_y" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<p>获取y轴上的加速度测量值，正整数或负整数，具体取决于方向。</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="mpython.accelerometer.get_z">
+<span class="sig-prename descclassname"><span class="pre">accelerometer.</span></span><span class="sig-name descname"><span class="pre">get_z</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#mpython.accelerometer.get_z" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<p>获取z轴上的加速度测量值，正整数或负整数，具体取决于方向。</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="mpython.accelerometer.set_range">
+<span class="sig-prename descclassname"><span class="pre">accelerometer.</span></span><span class="sig-name descname"><span class="pre">set_range</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">range</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mpython.accelerometer.set_range" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<p>设置加速度范围,在默认,不修改为,范围在±2g。</p>
+<p>加速度范围值为以下常量:</p>
+<blockquote>
+<div><table class="docutils align-default">
+<tbody>
+<tr class="row-odd"><td><p>常量</p></td>
+<td><p>值</p></td>
+<td><p>定义</p></td>
+</tr>
+<tr class="row-even"><td><p>RANGE_2G</p></td>
+<td><p>0</p></td>
+<td><p>范围±2g</p></td>
+</tr>
+<tr class="row-odd"><td><p>RANGE_4G</p></td>
+<td><p>1</p></td>
+<td><p>范围±4g</p></td>
+</tr>
+<tr class="row-even"><td><p>RANGE_8G</p></td>
+<td><p>2</p></td>
+<td><p>范围±8g</p></td>
+</tr>
+<tr class="row-odd"><td><p>RANGE_16G</p></td>
+<td><p>3</p></td>
+<td><p>范围±16g</p></td>
+</tr>
+</tbody>
+</table>
+</div></blockquote>
+<dl class="py method">
+<dt class="sig sig-object py" id="mpython.accelerometer.set_resolution">
+<span class="sig-prename descclassname"><span class="pre">accelerometer.</span></span><span class="sig-name descname"><span class="pre">set_resolution</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">resolution</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mpython.accelerometer.set_resolution" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<p>设置加速度分辨率,默认,不修改为10bit分辨率。</p>
+<p>分辨率值为以下常量:</p>
+<blockquote>
+<div><table class="docutils align-default">
+<tbody>
+<tr class="row-odd"><td><p>常量</p></td>
+<td><p>值</p></td>
+<td><p>定义</p></td>
+</tr>
+<tr class="row-even"><td><p>RES_14_BIT</p></td>
+<td><p>0</p></td>
+<td><p>14 bit 分辨率</p></td>
+</tr>
+<tr class="row-odd"><td><p>RES_12_BIT</p></td>
+<td><p>1</p></td>
+<td><p>12 bit 分辨率</p></td>
+</tr>
+<tr class="row-even"><td><p>RES_10_BIT</p></td>
+<td><p>2</p></td>
+<td><p>10 bit 分辨率</p></td>
+</tr>
+</tbody>
+</table>
+</div></blockquote>
+<dl class="py method">
+<dt class="sig sig-object py" id="mpython.accelerometer.set_offset">
+<span class="sig-prename descclassname"><span class="pre">accelerometer.</span></span><span class="sig-name descname"><span class="pre">set_offset</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">y</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">z</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mpython.accelerometer.set_offset" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<p>该函数用于校准加速度计的3个轴(x,y,z)的加速值偏差。一般情况下无需校准,只有当遇到加速度偏差较大时修正。
+注意,校准数据断电后不会保存。<code class="docutils literal notranslate"><span class="pre">x</span></code> , <code class="docutils literal notranslate"><span class="pre">y</span></code> , <code class="docutils literal notranslate"><span class="pre">z</span></code> 为调整偏差值,可修正范围±1g。
+掌控板v2.3版本以上，掉电会保存校准数据。</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="mpython.accelerometer.roll_pitch_angle">
+<span class="sig-prename descclassname"><span class="pre">accelerometer.</span></span><span class="sig-name descname"><span class="pre">roll_pitch_angle</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#mpython.accelerometer.roll_pitch_angle" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<p>返回通过加速度计计算得出的欧拉角(横滚角roll、俯仰角pitch)。注意，偏航角(yaw)需要角速度，故无法测得。返回2元组（roll,pitch），单位角度。</p>
+<p>假定，掌控板为飞机：</p>
+<ul class="simple">
+<li><p>横滚角指飞机两翼所在的平面与平行线之间的夹角，机体向右滚为正,范围为[-180,180].</p></li>
+<li><p>俯仰角是指机头与水平面的夹角,当飞机平行时则为0,抬头时则为正,范围为[-180,180]</p></li>
+</ul>
+<div class="admonition attention">
+<p class="admonition-title">Attention</p>
+<p>只通过3轴加速度计算方式，只适用于静态下，只受重力下的测量。实际中，会受到其他加速度干扰，如震动。</p>
+</div>
+<section id="id6">
+<h4>运动侦测事件<a class="headerlink" href="#id6" title="Link to this heading"></a></h4>
+<p>提供多种平面倾斜、翻转、敲击（类似鼠标点击）、掉落的运动姿态事件。用户可预先设定回调函数，当事件发生后，触发事件回调。
+回调函数定义如，function_callback(event)。<cite>event</cite> 参数为对应事件常量。</p>
+<dl class="py data">
+<dt class="sig sig-object py" id="mpython.accelerometer.event_tilt_left">
+<span class="sig-prename descclassname"><span class="pre">accelerometer.</span></span><span class="sig-name descname"><span class="pre">event_tilt_left</span></span><a class="headerlink" href="#mpython.accelerometer.event_tilt_left" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<p>向左倾斜</p>
+<dl class="py data">
+<dt class="sig sig-object py" id="mpython.accelerometer.event_tilt_right">
+<span class="sig-prename descclassname"><span class="pre">accelerometer.</span></span><span class="sig-name descname"><span class="pre">event_tilt_right</span></span><a class="headerlink" href="#mpython.accelerometer.event_tilt_right" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<p>向右倾斜</p>
+<dl class="py data">
+<dt class="sig sig-object py" id="mpython.accelerometer.event_tilt_up">
+<span class="sig-prename descclassname"><span class="pre">accelerometer.</span></span><span class="sig-name descname"><span class="pre">event_tilt_up</span></span><a class="headerlink" href="#mpython.accelerometer.event_tilt_up" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<p>向前倾斜</p>
+<dl class="py data">
+<dt class="sig sig-object py" id="mpython.accelerometer.event_tilt_down">
+<span class="sig-prename descclassname"><span class="pre">accelerometer.</span></span><span class="sig-name descname"><span class="pre">event_tilt_down</span></span><a class="headerlink" href="#mpython.accelerometer.event_tilt_down" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<p>向后倾斜</p>
+<dl class="py data">
+<dt class="sig sig-object py" id="mpython.accelerometer.event_face_up">
+<span class="sig-prename descclassname"><span class="pre">accelerometer.</span></span><span class="sig-name descname"><span class="pre">event_face_up</span></span><a class="headerlink" href="#mpython.accelerometer.event_face_up" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<p>正面朝上</p>
+<dl class="py data">
+<dt class="sig sig-object py" id="mpython.accelerometer.event_face_down">
+<span class="sig-prename descclassname"><span class="pre">accelerometer.</span></span><span class="sig-name descname"><span class="pre">event_face_down</span></span><a class="headerlink" href="#mpython.accelerometer.event_face_down" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<p>正面朝下</p>
+<dl class="py data">
+<dt class="sig sig-object py" id="mpython.accelerometer.event_single_click">
+<span class="sig-prename descclassname"><span class="pre">accelerometer.</span></span><span class="sig-name descname"><span class="pre">event_single_click</span></span><a class="headerlink" href="#mpython.accelerometer.event_single_click" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<p>单次敲击，类似鼠标的单击操作。</p>
+<dl class="py data">
+<dt class="sig sig-object py" id="id0">
+<span class="sig-prename descclassname"><span class="pre">accelerometer.</span></span><span class="sig-name descname"><span class="pre">event_single_click</span></span><a class="headerlink" href="#id0" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<p>连续敲击两次，类似鼠标的双击操作。</p>
+<dl class="py data">
+<dt class="sig sig-object py" id="mpython.accelerometer.event_freefall">
+<span class="sig-prename descclassname"><span class="pre">accelerometer.</span></span><span class="sig-name descname"><span class="pre">event_freefall</span></span><a class="headerlink" href="#mpython.accelerometer.event_freefall" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<p>坠落</p>
+<p>event事件定义如下:</p>
+<blockquote>
+<div><table class="docutils align-default">
+<tbody>
+<tr class="row-odd"><td><p>事件</p></td>
+<td><p>值</p></td>
+</tr>
+<tr class="row-even"><td><p>accelerometer.TILT_LEFT</p></td>
+<td><p>0</p></td>
+</tr>
+<tr class="row-odd"><td><p>accelerometer.TILT_RIGHT</p></td>
+<td><p>1</p></td>
+</tr>
+<tr class="row-even"><td><p>accelerometer.TILT_UP</p></td>
+<td><p>2</p></td>
+</tr>
+<tr class="row-odd"><td><p>accelerometer.TILT_DOWN</p></td>
+<td><p>3</p></td>
+</tr>
+<tr class="row-even"><td><p>accelerometer.FACE_UP</p></td>
+<td><p>4</p></td>
+</tr>
+<tr class="row-odd"><td><p>accelerometer.FACE_DOWN</p></td>
+<td><p>5</p></td>
+</tr>
+<tr class="row-even"><td><p>accelerometer.SINGLE_CLICK</p></td>
+<td><p>6</p></td>
+</tr>
+<tr class="row-odd"><td><p>accelerometer.DOUBLE_CLICK</p></td>
+<td><p>7</p></td>
+</tr>
+<tr class="row-even"><td><p>accelerometer.FREEFALL</p></td>
+<td><p>8</p></td>
+</tr>
+</tbody>
+</table>
+</div></blockquote>
+<div class="admonition attention">
+<p class="admonition-title">Attention</p>
+<p>掌控板v2.3版本以上,去除加速度计运动侦测事件</p>
+</div>
+<div class="literal-block-wrapper docutils container" id="id9">
+<div class="code-block-caption"><span class="caption-text">accelerometer 事件的简单应用</span><a class="headerlink" href="#id9" title="Link to this code"></a></div>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="linenos"> 1</span><span class="c1"># The MIT License (MIT)</span>
+<span class="linenos"> 2</span><span class="c1"># Copyright (c) 2020, Tangliufeng for labplus Industries</span>
+<span class="linenos"> 3</span>
+<span class="linenos"> 4</span><span class="c1"># accelerometer event simple example</span>
+<span class="linenos"> 5</span>
+<span class="linenos"> 6</span><span class="kn">from</span><span class="w"> </span><span class="nn">mpython</span><span class="w"> </span><span class="kn">import</span> <span class="o">*</span>
+<span class="linenos"> 7</span>
+<span class="linenos"> 8</span><span class="k">def</span><span class="w"> </span><span class="nf">motion_callback_function</span><span class="p">(</span><span class="n">event</span><span class="p">):</span>
+<span class="linenos"> 9</span><span class="w">    </span><span class="sd">&quot;&quot;&quot; 运动事件回调函数 &quot;&quot;&quot;</span>
+<span class="linenos">10</span>    <span class="k">if</span> <span class="n">event</span> <span class="o">==</span> <span class="n">accelerometer</span><span class="o">.</span><span class="n">TILT_LEFT</span><span class="p">:</span>
+<span class="linenos">11</span>        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;tilt left&quot;</span><span class="p">)</span>
+<span class="linenos">12</span>    <span class="k">elif</span> <span class="n">event</span> <span class="o">==</span> <span class="n">accelerometer</span><span class="o">.</span><span class="n">TILT_RIGHT</span><span class="p">:</span>
+<span class="linenos">13</span>        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;tilt right&quot;</span><span class="p">)</span>
+<span class="linenos">14</span>    <span class="k">elif</span> <span class="n">event</span> <span class="o">==</span> <span class="n">accelerometer</span><span class="o">.</span><span class="n">TILT_UP</span><span class="p">:</span>
+<span class="linenos">15</span>        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;tilt up&quot;</span><span class="p">)</span>
+<span class="linenos">16</span>    <span class="k">elif</span> <span class="n">event</span> <span class="o">==</span> <span class="n">accelerometer</span><span class="o">.</span><span class="n">TILT_DOWN</span><span class="p">:</span>
+<span class="linenos">17</span>        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;tilt down&quot;</span><span class="p">)</span>
+<span class="linenos">18</span>    <span class="k">elif</span> <span class="n">event</span> <span class="o">==</span> <span class="n">accelerometer</span><span class="o">.</span><span class="n">FACE_UP</span><span class="p">:</span>
+<span class="linenos">19</span>        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;face up&quot;</span><span class="p">)</span>
+<span class="linenos">20</span>    <span class="k">elif</span> <span class="n">event</span> <span class="o">==</span> <span class="n">accelerometer</span><span class="o">.</span><span class="n">FACE_DOWN</span><span class="p">:</span>
+<span class="linenos">21</span>        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;face down&quot;</span><span class="p">)</span>
+<span class="linenos">22</span>    <span class="k">elif</span> <span class="n">event</span> <span class="o">==</span> <span class="n">accelerometer</span><span class="o">.</span><span class="n">SINGLE_CLICK</span><span class="p">:</span>
+<span class="linenos">23</span>        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;single click&quot;</span><span class="p">)</span>
+<span class="linenos">24</span>    <span class="k">elif</span> <span class="n">event</span> <span class="o">==</span> <span class="n">accelerometer</span><span class="o">.</span><span class="n">DOUBLE_CLICK</span><span class="p">:</span>
+<span class="linenos">25</span>        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;double click&quot;</span><span class="p">)</span>
+<span class="linenos">26</span>    <span class="k">elif</span> <span class="n">event</span> <span class="o">==</span> <span class="n">accelerometer</span><span class="o">.</span><span class="n">FREEFALL</span><span class="p">:</span>
+<span class="linenos">27</span>        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;freefall&quot;</span><span class="p">)</span>
+<span class="linenos">28</span>
+<span class="linenos">29</span><span class="c1"># 事件回调注册</span>
+<span class="linenos">30</span><span class="n">accelerometer</span><span class="o">.</span><span class="n">event_tilt_up</span> <span class="o">=</span> <span class="n">motion_callback_function</span>
+<span class="linenos">31</span><span class="n">accelerometer</span><span class="o">.</span><span class="n">event_tilt_down</span> <span class="o">=</span> <span class="n">motion_callback_function</span>
+<span class="linenos">32</span><span class="n">accelerometer</span><span class="o">.</span><span class="n">event_tilt_left</span> <span class="o">=</span> <span class="n">motion_callback_function</span>
+<span class="linenos">33</span><span class="n">accelerometer</span><span class="o">.</span><span class="n">event_tilt_right</span> <span class="o">=</span> <span class="n">motion_callback_function</span>
+<span class="linenos">34</span><span class="n">accelerometer</span><span class="o">.</span><span class="n">event_face_up</span> <span class="o">=</span> <span class="n">motion_callback_function</span>
+<span class="linenos">35</span><span class="n">accelerometer</span><span class="o">.</span><span class="n">event_face_down</span> <span class="o">=</span> <span class="n">motion_callback_function</span>
+<span class="linenos">36</span><span class="n">accelerometer</span><span class="o">.</span><span class="n">event_single_click</span> <span class="o">=</span> <span class="n">motion_callback_function</span>
+<span class="linenos">37</span><span class="n">accelerometer</span><span class="o">.</span><span class="n">event_double_click</span> <span class="o">=</span> <span class="n">motion_callback_function</span>
+<span class="linenos">38</span><span class="n">accelerometer</span><span class="o">.</span><span class="n">event_freefall</span> <span class="o">=</span> <span class="n">motion_callback_function</span>
+<span class="linenos">39</span>
+<span class="linenos">40</span>
+</pre></div>
+</div>
+</div>
+</section>
+</section>
+</section>
+<section id="gyroscope">
+<h2>gyroscope<a class="headerlink" href="#gyroscope" title="Link to this heading"></a></h2>
+<p>通过gyroscope对象，您可以获取陀螺仪角速度值，角速度的单位是dps(°/S)。
+角速度范围±16dps/±32dps/±64dps/±128dps/±256dps/±512dps/±1024dps/±2048dps ,默认为±256 dps。</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="mpython.gyroscope.get_x">
+<span class="sig-prename descclassname"><span class="pre">gyroscope.</span></span><span class="sig-name descname"><span class="pre">get_x</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#mpython.gyroscope.get_x" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<p>获取x轴上的角速度测量值，具体取决于方向。</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="mpython.gyroscope.get_y">
+<span class="sig-prename descclassname"><span class="pre">gyroscope.</span></span><span class="sig-name descname"><span class="pre">get_y</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#mpython.gyroscope.get_y" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<p>获取y轴上的角速度测量值，具体取决于方向。</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="mpython.gyroscope.get_z">
+<span class="sig-prename descclassname"><span class="pre">gyroscope.</span></span><span class="sig-name descname"><span class="pre">get_z</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#mpython.gyroscope.get_z" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<p>获取z轴上的角速度测量值，具体取决于方向。</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="mpython.gyroscope.set_range">
+<span class="sig-prename descclassname"><span class="pre">gyroscope.</span></span><span class="sig-name descname"><span class="pre">set_range</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">range</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mpython.gyroscope.set_range" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<p>设置角速度范围,默认不修改为,范围在±256 dps。</p>
+<p>角速度范围值为以下常量:</p>
+<blockquote>
+<div><table class="docutils align-default">
+<tbody>
+<tr class="row-odd"><td><p>常量</p></td>
+<td><p>值</p></td>
+<td><p>定义</p></td>
+</tr>
+<tr class="row-even"><td><p>RANGE_16_DPS</p></td>
+<td><p>0</p></td>
+<td><p>范围±16 dps</p></td>
+</tr>
+<tr class="row-odd"><td><p>RANGE_32_DPS</p></td>
+<td><p>16</p></td>
+<td><p>范围±32 dps</p></td>
+</tr>
+<tr class="row-even"><td><p>RANGE_64_DPS</p></td>
+<td><p>32</p></td>
+<td><p>范围±64 dps</p></td>
+</tr>
+<tr class="row-odd"><td><p>RANGE_128_DPS</p></td>
+<td><p>48</p></td>
+<td><p>范围±128 dps</p></td>
+</tr>
+<tr class="row-even"><td><p>RANGE_256_DPS</p></td>
+<td><p>64</p></td>
+<td><p>范围±256 dps</p></td>
+</tr>
+<tr class="row-odd"><td><p>RANGE_512_DPS</p></td>
+<td><p>80</p></td>
+<td><p>范围±512 dps</p></td>
+</tr>
+<tr class="row-even"><td><p>RANGE_1024_DPS</p></td>
+<td><p>96</p></td>
+<td><p>范围±1024 dps</p></td>
+</tr>
+<tr class="row-odd"><td><p>RANGE_2048_DPS</p></td>
+<td><p>112</p></td>
+<td><p>范围±2048 dps</p></td>
+</tr>
+</tbody>
+</table>
+</div></blockquote>
+<dl class="py method">
+<dt class="sig sig-object py" id="mpython.gyroscope.set_offset">
+<span class="sig-prename descclassname"><span class="pre">gyroscope.</span></span><span class="sig-name descname"><span class="pre">set_offset</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">y</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">z</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mpython.gyroscope.set_offset" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<p>该函数用于校准陀螺仪的3个轴(x,y,z)的角速值偏差。一般情况下无需校准,只有当遇到角速度偏差较大时修正。
+<code class="docutils literal notranslate"><span class="pre">x</span></code> , <code class="docutils literal notranslate"><span class="pre">y</span></code> , <code class="docutils literal notranslate"><span class="pre">z</span></code> 为调整偏差值,可修正范围±1024dps。</p>
+<div class="admonition attention">
+<p class="admonition-title">Attention</p>
+<p>掌控板v2.3版本以上加入陀螺仪传感器</p>
+</div>
+</section>
+<section id="magnetic">
+<h2>magnetic<a class="headerlink" href="#magnetic" title="Link to this heading"></a></h2>
+<p>MMC5983MA磁力计函数接口,可获取3轴地磁感应强度、地磁场强度、获取电子罗盘角度。</p>
+<div class="admonition attention">
+<p class="admonition-title">Attention</p>
+<p>掌控板v2.0版本以上,才有MMC5983MA磁力计！</p>
+</div>
+<dl class="py method">
+<dt class="sig sig-object py" id="mpython.magnetic.get_x">
+<span class="sig-prename descclassname"><span class="pre">magnetic.</span></span><span class="sig-name descname"><span class="pre">get_x</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#mpython.magnetic.get_x" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<p>获取x轴的磁感应值,正整数或负整数,范围±8191,单位mG(毫高斯)。</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="mpython.magnetic.get_y">
+<span class="sig-prename descclassname"><span class="pre">magnetic.</span></span><span class="sig-name descname"><span class="pre">get_y</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#mpython.magnetic.get_y" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<p>获取y轴的磁感应值,正整数或负整数,范围±8191,单位mG(毫高斯)。</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="mpython.magnetic.get_z">
+<span class="sig-prename descclassname"><span class="pre">magnetic.</span></span><span class="sig-name descname"><span class="pre">get_z</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#mpython.magnetic.get_z" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<p>获取z轴的磁感应值,正整数或负整数,范围±8191,单位mG(毫高斯)。</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="mpython.magnetic.get_field_strength">
+<span class="sig-prename descclassname"><span class="pre">magnetic.</span></span><span class="sig-name descname"><span class="pre">get_field_strength</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#mpython.magnetic.get_field_strength" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<p>返回计算后的磁感应值,即3轴磁力的和。计算公式,x^2+y^2+z^2的平方根。</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="mpython.magnetic.peeling">
+<span class="sig-prename descclassname"><span class="pre">magnetic.</span></span><span class="sig-name descname"><span class="pre">peeling</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#mpython.magnetic.peeling" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<p>磁力去皮。类似电子秤去皮功能, <code class="docutils literal notranslate"><span class="pre">peeling()</span></code> 后,下次 <code class="docutils literal notranslate"><span class="pre">get_field_strength()</span></code> 返回的值为减去当前磁力值后计算得出的结果。可用于去除地磁感应值的测量应用。</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="mpython.magnetic.clear_peeling">
+<span class="sig-prename descclassname"><span class="pre">magnetic.</span></span><span class="sig-name descname"><span class="pre">clear_peeling</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#mpython.magnetic.clear_peeling" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<p>磁力去皮功能取消。使用 <code class="docutils literal notranslate"><span class="pre">peeling()</span></code> 后,可用该函数,恢复正常地磁测量。</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="mpython.magnetic.get_heading">
+<span class="sig-prename descclassname"><span class="pre">magnetic.</span></span><span class="sig-name descname"><span class="pre">get_heading</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#mpython.magnetic.get_heading" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<p>获取电子罗盘角度,即改方向与地磁北极的夹角,掌控板的正上方,即USB位置视为正北方。单位角度,范围0~360。</p>
+<div class="admonition attention">
+<p class="admonition-title">Attention</p>
+<p>由于在角度计算并没有做z轴的倾斜补偿,在使用 <code class="docutils literal notranslate"><span class="pre">get_heading()</span></code> 读取罗盘角度时,掌控板应保持水平放置！</p>
+</div>
+<div class="admonition attention">
+<p class="admonition-title">Attention</p>
+<p>如需得到精准的罗盘角度,请确保周边无强磁场干扰或在使用前 <code class="docutils literal notranslate"><span class="pre">calibrate()</span></code> 校准。</p>
+</div>
+<dl class="py method">
+<dt class="sig sig-object py" id="mpython.magnetic.calibrate">
+<span class="sig-prename descclassname"><span class="pre">magnetic.</span></span><span class="sig-name descname"><span class="pre">calibrate</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#mpython.magnetic.calibrate" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<p>电子罗盘校准。当掌控板周边存在强磁干扰,可使用该函数清除强磁分量,才能计算准确的地磁北偏角。注意,断电后不保存校准偏移值。</p>
+<p>校准方法,按照掌控板显示屏指示步骤操作:</p>
+<blockquote>
+<div><ol class="arabic simple">
+<li><p>掌控板水平放置,在水平面旋转数圈,过程约15秒。</p></li>
+<li><p>掌控板垂直放置,沿着垂直于地面轴旋转数圈,过程约15秒。</p></li>
+</ol>
+</div></blockquote>
+<div class="literal-block-wrapper docutils container" id="id10">
+<div class="code-block-caption"><span class="caption-text">磁力计应用–指北针</span><a class="headerlink" href="#id10" title="Link to this code"></a></div>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="linenos"> 1</span><span class="c1"># The MIT License (MIT)</span>
+<span class="linenos"> 2</span><span class="c1"># Copyright (c) 2019, Tangliufeng for labplus Industries</span>
+<span class="linenos"> 3</span>
+<span class="linenos"> 4</span><span class="c1"># 掌控板磁力计Magnetic应用--指北针 </span>
+<span class="linenos"> 5</span>
+<span class="linenos"> 6</span><span class="kn">from</span><span class="w"> </span><span class="nn">mpython</span><span class="w"> </span><span class="kn">import</span> <span class="o">*</span>
+<span class="linenos"> 7</span><span class="kn">import</span><span class="w"> </span><span class="nn">math</span>
+<span class="linenos"> 8</span>
+<span class="linenos"> 9</span><span class="c1"># 绘制罗盘中心坐标和半径</span>
+<span class="linenos">10</span><span class="n">xc</span><span class="p">,</span><span class="n">yc</span><span class="p">,</span><span class="n">r</span><span class="o">=</span> <span class="mi">64</span><span class="p">,</span><span class="mi">32</span><span class="p">,</span><span class="mi">30</span>
+<span class="linenos">11</span>
+<span class="linenos">12</span>
+<span class="linenos">13</span><span class="k">def</span><span class="w"> </span><span class="nf">draw_heading</span><span class="p">(</span><span class="n">angle</span><span class="p">):</span>
+<span class="linenos">14</span><span class="w">    </span><span class="sd">&quot;&quot;&quot;绘制磁北指针&quot;&quot;&quot;</span>
+<span class="linenos">15</span>    <span class="k">global</span> <span class="n">xc</span><span class="p">,</span><span class="n">yc</span><span class="p">,</span><span class="n">r</span>
+<span class="linenos">16</span>    <span class="n">angle</span> <span class="o">=</span> <span class="mi">360</span> <span class="o">-</span> <span class="n">angle</span>
+<span class="linenos">17</span>    <span class="n">am</span> <span class="o">=</span> <span class="n">math</span><span class="o">.</span><span class="n">pi</span> <span class="o">*</span> <span class="mf">2.0</span> <span class="o">*</span> <span class="n">angle</span> <span class="o">/</span> <span class="mi">360</span>
+<span class="linenos">18</span>    <span class="n">xm</span> <span class="o">=</span> <span class="nb">round</span><span class="p">(</span><span class="n">xc</span> <span class="o">+</span> <span class="n">r</span> <span class="o">*</span> <span class="n">math</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="n">am</span><span class="p">))</span>
+<span class="linenos">19</span>    <span class="n">ym</span> <span class="o">=</span> <span class="nb">round</span><span class="p">(</span><span class="n">yc</span> <span class="o">-</span> <span class="n">r</span> <span class="o">*</span> <span class="n">math</span><span class="o">.</span><span class="n">cos</span><span class="p">(</span><span class="n">am</span><span class="p">))</span>
+<span class="linenos">20</span>    <span class="n">oled</span><span class="o">.</span><span class="n">line</span><span class="p">(</span><span class="n">xc</span><span class="p">,</span> <span class="n">yc</span><span class="p">,</span> <span class="n">xm</span><span class="p">,</span> <span class="n">ym</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+<span class="linenos">21</span>
+<span class="linenos">22</span><span class="c1"># 电子罗盘校准</span>
+<span class="linenos">23</span><span class="n">magnetic</span><span class="o">.</span><span class="n">calibrate</span><span class="p">()</span>
+<span class="linenos">24</span><span class="n">sleep</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span>
+<span class="linenos">25</span><span class="n">oled</span><span class="o">.</span><span class="n">DispChar</span><span class="p">(</span><span class="s1">&#39;指北针&#39;</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">)</span>
+<span class="linenos">26</span><span class="c1"># 绘制罗盘轮廓</span>
+<span class="linenos">27</span><span class="n">oled</span><span class="o">.</span><span class="n">circle</span><span class="p">(</span><span class="n">xc</span><span class="p">,</span> <span class="n">yc</span><span class="p">,</span> <span class="n">r</span><span class="o">+</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+<span class="linenos">28</span><span class="n">oled</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+<span class="linenos">29</span><span class="k">while</span> <span class="kc">True</span><span class="p">:</span>
+<span class="linenos">30</span>    <span class="c1"># 获取磁力计电子罗盘角度</span>
+<span class="linenos">31</span>    <span class="n">angle</span> <span class="o">=</span> <span class="n">magnetic</span><span class="o">.</span><span class="n">get_heading</span><span class="p">()</span>
+<span class="linenos">32</span>    <span class="c1"># 清除指针</span>
+<span class="linenos">33</span>    <span class="n">oled</span><span class="o">.</span><span class="n">fill_circle</span><span class="p">(</span><span class="n">xc</span><span class="p">,</span> <span class="n">yc</span><span class="p">,</span> <span class="n">r</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+<span class="linenos">34</span>    <span class="c1"># 显示罗盘指针</span>
+<span class="linenos">35</span>    <span class="n">draw_heading</span><span class="p">(</span><span class="n">angle</span><span class="p">)</span>
+<span class="linenos">36</span>    <span class="n">oled</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+<span class="linenos">37</span>    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;磁北极夹角: </span><span class="si">%d</span><span class="s2">&quot;</span> <span class="o">%</span><span class="n">angle</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</section>
+<section id="bme280">
+<h2>bme280<a class="headerlink" href="#bme280" title="Link to this heading"></a></h2>
+<p>BME280是一款集成温度、湿度、气压，三位一体的环境传感器。具有高精度，多功能，小尺寸等特点。</p>
+<ul class="simple">
+<li><p>温度检测范围：-40℃~+85℃，分辨率0.1℃，误差±0.5℃</p></li>
+<li><p>湿度检测范围：0~100%RH，分辨率0.1%RH，误差±2%RH</p></li>
+<li><p>压力检测范围：300~1100hPa</p></li>
+<li><p>湿度测量响应时间：1s</p></li>
+</ul>
+<div class="admonition attention">
+<p class="admonition-title">Attention</p>
+<p>掌控板没有集成BME280传感器,掌控板会扫描I2C总线是否存在0x77(119)I2C设备,确定是否构建bme280对象!</p>
+</div>
+<dl class="py method">
+<dt class="sig sig-object py" id="mpython.bme280.temperature">
+<span class="sig-prename descclassname"><span class="pre">bme280.</span></span><span class="sig-name descname"><span class="pre">temperature</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#mpython.bme280.temperature" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<p>返回温度值,单位摄氏度。</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="mpython.bme280.pressure">
+<span class="sig-prename descclassname"><span class="pre">bme280.</span></span><span class="sig-name descname"><span class="pre">pressure</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#mpython.bme280.pressure" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<p>返回大气压值,单位Pa。</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="mpython.bme280.humidity">
+<span class="sig-prename descclassname"><span class="pre">bme280.</span></span><span class="sig-name descname"><span class="pre">humidity</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#mpython.bme280.humidity" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<p>返回环境湿度,单位%。</p>
+</section>
+<section id="id7">
+<h2>蜂鸣器<a class="headerlink" href="#id7" title="Link to this heading"></a></h2>
+<p>由 <code class="docutils literal notranslate"><span class="pre">music</span></code> 模块驱动掌控板蜂鸣器,具体操作详见 <a class="reference internal" href="music.html#module-music" title="music: 音乐相关功能函数"><code class="xref py py-mod docutils literal notranslate"><span class="pre">music</span></code></a> 模块。</p>
+</section>
+<section id="button-a-b">
+<h2>button_[a,b]对象<a class="headerlink" href="#button-a-b" title="Link to this heading"></a></h2>
+<p>掌控板上的a,b按键。button_a/button_b 是 <code class="docutils literal notranslate"><span class="pre">Button</span></code> 类的实例对象。使用 <a class="reference internal" href="../micropython/machine/machine.Pin.html#pin-irq"><span class="std std-ref">machine.Pin.irq</span></a> 中断实现。定义了
+<code class="docutils literal notranslate"><span class="pre">event_pressed</span></code> 和 <code class="docutils literal notranslate"><span class="pre">event_released</span></code> 按键按下、释放事件。 用户可轻易的实现事件回调。除此外，还实现当前或过去按键状态、按键次数等函数方法。</p>
+<dl class="py class">
+<dt class="sig sig-object py" id="mpython.Button">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">mpython.</span></span><span class="sig-name descname"><span class="pre">Button</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">pin_num</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">reverse</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mpython.Button" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<p>Button类，按键抽象类。</p>
+<blockquote>
+<div><ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">pin_num</span></code> - IO引脚号</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">reverse</span></code> - 默认为reverse为False。适用于触发为低电平按键。如是触发为高电平按键，将reverse设为True，翻转下。</p></li>
+</ul>
+</div></blockquote>
+<p>掌控板上button_a、button_b的实例:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">button_a</span> <span class="o">=</span> <span class="n">Button</span><span class="p">(</span><span class="n">Pin</span><span class="o">.</span><span class="n">P5</span><span class="p">)</span>
+<span class="n">button_b</span> <span class="o">=</span> <span class="n">Button</span><span class="p">(</span><span class="n">Pin</span><span class="o">.</span><span class="n">P11</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>当按键事件发生，触发事件回调。回调函数定义如，function_callback(pin), <code class="docutils literal notranslate"><span class="pre">pin</span></code> 为该引脚的machine.Pin对象返回。</p>
+<dl class="py data">
+<dt class="sig sig-object py" id="mpython.Button.event_pressed">
+<span class="sig-prename descclassname"><span class="pre">Button.</span></span><span class="sig-name descname"><span class="pre">event_pressed</span></span><a class="headerlink" href="#mpython.Button.event_pressed" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<p>按键按下事件。</p>
+<dl class="py data">
+<dt class="sig sig-object py" id="mpython.Button.event_released">
+<span class="sig-prename descclassname"><span class="pre">Button.</span></span><span class="sig-name descname"><span class="pre">event_released</span></span><a class="headerlink" href="#mpython.Button.event_released" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<p>按键释放事件。</p>
+<div class="literal-block-wrapper docutils container" id="id11">
+<div class="code-block-caption"><span class="caption-text">Button 事件回调的简单应用</span><a class="headerlink" href="#id11" title="Link to this code"></a></div>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="linenos"> 1</span><span class="c1"># The MIT License (MIT)</span>
+<span class="linenos"> 2</span><span class="c1"># Copyright (c) 2020, Tangliufeng for labplus Industries</span>
+<span class="linenos"> 3</span>
+<span class="linenos"> 4</span><span class="c1"># 按键事件回调简单的示例</span>
+<span class="linenos"> 5</span>
+<span class="linenos"> 6</span><span class="kn">from</span><span class="w"> </span><span class="nn">mpython</span><span class="w"> </span><span class="kn">import</span> <span class="o">*</span>
+<span class="linenos"> 7</span>
+<span class="linenos"> 8</span><span class="k">def</span><span class="w"> </span><span class="nf">on_button_a_pressed</span><span class="p">(</span><span class="n">pin</span><span class="p">):</span>
+<span class="linenos"> 9</span><span class="w">    </span><span class="sd">&quot;&quot;&quot; a键按下事件回调函数 &quot;&quot;&quot;</span>
+<span class="linenos">10</span>    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;按键A，按下了。&quot;</span><span class="p">)</span>
+<span class="linenos">11</span>
+<span class="linenos">12</span><span class="k">def</span><span class="w"> </span><span class="nf">on_button_b_pressed</span><span class="p">(</span><span class="n">pin</span><span class="p">):</span>
+<span class="linenos">13</span><span class="w">    </span><span class="sd">&quot;&quot;&quot; b键按下事件回调函数 &quot;&quot;&quot;</span>
+<span class="linenos">14</span>    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;按键B，按下了。&quot;</span><span class="p">)</span>
+<span class="linenos">15</span>
+<span class="linenos">16</span><span class="c1"># 按键事件注册</span>
+<span class="linenos">17</span><span class="n">button_a</span><span class="o">.</span><span class="n">event_pressed</span> <span class="o">=</span> <span class="n">on_button_a_pressed</span>
+<span class="linenos">18</span><span class="n">button_b</span><span class="o">.</span><span class="n">event_pressed</span> <span class="o">=</span> <span class="n">on_button_b_pressed</span>
+</pre></div>
+</div>
+</div>
+<dl class="py method">
+<dt class="sig sig-object py" id="mpython.Button.value">
+<span class="sig-prename descclassname"><span class="pre">Button.</span></span><span class="sig-name descname"><span class="pre">value</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#mpython.Button.value" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<p>获取按键引脚电平状态。1为高电平，0位低电平。</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">button_a</span><span class="o">.</span><span class="n">value</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="mi">1</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">button_a</span><span class="o">.</span><span class="n">value</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="mi">0</span>
+</pre></div>
+</div>
+<dl class="py method">
+<dt class="sig sig-object py" id="mpython.Button.is_pressed">
+<span class="sig-prename descclassname"><span class="pre">Button.</span></span><span class="sig-name descname"><span class="pre">is_pressed</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#mpython.Button.is_pressed" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<p>返回当前是否按住。 <code class="docutils literal notranslate"><span class="pre">True</span></code> 表示按键按下，<code class="docutils literal notranslate"><span class="pre">False</span></code> 则未按下。</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="mpython.Button.was_pressed">
+<span class="sig-prename descclassname"><span class="pre">Button.</span></span><span class="sig-name descname"><span class="pre">was_pressed</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#mpython.Button.was_pressed" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<p>返回 <code class="docutils literal notranslate"><span class="pre">True</span></code> 或 <code class="docutils literal notranslate"><span class="pre">False</span></code> 指示自设备启动以来或上次调用此方法以来是否按下按钮。调用此方法将清除按下状态，因此必须再次按下按钮，然后才能再次返回 <code class="docutils literal notranslate"><span class="pre">True</span></code> 。</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="mpython.Button.get_presses">
+<span class="sig-prename descclassname"><span class="pre">Button.</span></span><span class="sig-name descname"><span class="pre">get_presses</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#mpython.Button.get_presses" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<p>返回按键的按下总数，并在返回之前将该总数重置为零。注意，计数器超过100将不再计数。</p>
+<dl class="py method" id="button-irq">
+<dt class="sig sig-object py" id="mpython.Button.irq">
+<span class="sig-prename descclassname"><span class="pre">Button.</span></span><span class="sig-name descname"><span class="pre">irq</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">handler</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">trigger</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">Pin.IRQ_FALLING</span> <span class="pre">|</span> <span class="pre">Pin.IRQ_RISING</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">priority</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">wake</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mpython.Button.irq" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<p>配置在引脚的触发源处于活动状态时调用的中断处理程序。用法与 machine.Pin.irq 一样。</p>
+<p>参数:</p>
+<blockquote>
+<div><ul>
+<li><p><code class="docutils literal notranslate"><span class="pre">handler</span></code> 是一个可选的函数，在中断触发时调用。</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">trigger</span></code> 配置可以触发中断的事件。可能的值是：</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">Pin.IRQ_FALLING</span></code> 下降沿中断</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">Pin.IRQ_RISING</span></code> 上升沿中断</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">Pin.IRQ_LOW_LEVEL</span></code> 低电平中断</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">Pin.IRQ_HIGH_LEVEL</span></code> 高电平中断</p></li>
+</ul>
+<p>这些值可以一起进行 <code class="docutils literal notranslate"><span class="pre">OR</span></code> 运算以触发多个事件。</p>
+</li>
+<li><p><code class="docutils literal notranslate"><span class="pre">priority</span></code> 设置中断的优先级。它可以采用的值是特定于端口的，但是更高的值总是代表更高的优先级。</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">wake</span></code> 选择此中断可唤醒系统的电源模式。它可以是 <code class="docutils literal notranslate"><span class="pre">machine.IDLE</span></code> ， <code class="docutils literal notranslate"><span class="pre">machine.SLEEP</span></code> 或 <code class="docutils literal notranslate"><span class="pre">machine.DEEPSLEEP</span></code> 。</p></li>
+</ul>
+<p>这些值也可以进行 <code class="docutils literal notranslate"><span class="pre">OR</span></code> 运算，使引脚在多种功耗模式下产生中断。</p>
+</div></blockquote>
+<p>此方法返回一个回调对象。</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span><span class="w"> </span><span class="nn">mpython</span><span class="w"> </span><span class="kn">import</span> <span class="o">*</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">button_a</span><span class="o">.</span><span class="n">irq</span><span class="p">(</span><span class="n">trigger</span><span class="o">=</span><span class="n">Pin</span><span class="o">.</span><span class="n">IRQ_FALLING</span><span class="p">,</span> <span class="n">handler</span><span class="o">=</span><span class="k">lambda</span> <span class="n">p</span><span class="p">:</span><span class="nb">print</span><span class="p">(</span><span class="s2">&quot;button-a press！&quot;</span><span class="p">))</span>
+</pre></div>
+</div>
+</section>
+<section id="touch">
+<h2>touch对象<a class="headerlink" href="#touch" title="Link to this heading"></a></h2>
+<p>掌控板上共有6个触摸引脚分别touchpad_p/y/t/h/o/n。是Touch类的实例对象，具体包含函数方法如下。</p>
+<dl class="py class">
+<dt class="sig sig-object py" id="mpython.Touch">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">mpython.</span></span><span class="sig-name descname"><span class="pre">Touch</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">pin</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mpython.Touch" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py data">
+<dt class="sig sig-object py" id="mpython.Touch.event_pressed">
+<span class="sig-prename descclassname"><span class="pre">Touch.</span></span><span class="sig-name descname"><span class="pre">event_pressed</span></span><a class="headerlink" href="#mpython.Touch.event_pressed" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<p>触摸按键按下事件。当按键事件发生，触发事件回调。回调函数定义如，function_callback(value), <code class="docutils literal notranslate"><span class="pre">value</span></code> 为该触摸按键的状态值。</p>
+<dl class="py data">
+<dt class="sig sig-object py" id="mpython.Touch.event_released">
+<span class="sig-prename descclassname"><span class="pre">Touch.</span></span><span class="sig-name descname"><span class="pre">event_released</span></span><a class="headerlink" href="#mpython.Touch.event_released" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<p>触摸按键释放事件。</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="mpython.Touch.read">
+<span class="sig-prename descclassname"><span class="pre">Touch.</span></span><span class="sig-name descname"><span class="pre">read</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#mpython.Touch.read" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<p>返回触摸值</p>
+<p>. method:: Touch.config(threshold)</p>
+<p>触摸阈值设置</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="mpython.Touch.is_pressed">
+<span class="sig-prename descclassname"><span class="pre">Touch.</span></span><span class="sig-name descname"><span class="pre">is_pressed</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#mpython.Touch.is_pressed" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<p>返回当前是否按住。 <code class="docutils literal notranslate"><span class="pre">True</span></code> 表示按键按下，<code class="docutils literal notranslate"><span class="pre">False</span></code> 则未按下。</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="mpython.Touch.was_pressed">
+<span class="sig-prename descclassname"><span class="pre">Touch.</span></span><span class="sig-name descname"><span class="pre">was_pressed</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#mpython.Touch.was_pressed" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<p>返回 <code class="docutils literal notranslate"><span class="pre">True</span></code> 或 <code class="docutils literal notranslate"><span class="pre">False</span></code> 指示自设备启动以来或上次调用此方法以来是否按下按钮。调用此方法将清除按下状态，因此必须再次按下按钮，然后才能再次返回 <code class="docutils literal notranslate"><span class="pre">True</span></code> 。</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="mpython.Touch.get_presses">
+<span class="sig-prename descclassname"><span class="pre">Touch.</span></span><span class="sig-name descname"><span class="pre">get_presses</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#mpython.Touch.get_presses" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<p>返回按键的按下总数，并在返回之前将该总数重置为零。注意，计数器超过100将不再计数。</p>
+</section>
+<section id="rgb">
+<h2>rgb对象<a class="headerlink" href="#rgb" title="Link to this heading"></a></h2>
+<p>用于控制掌控板的3颗RGB ws2812灯珠。rgb对象为neopixel的衍生类，继承neopixel的方法。更多的使用方法请查阅 <a class="reference internal" href="../micropython/neopixel.html#neopixel"><span class="std std-ref">neopixel</span></a> 。</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="mpython.rgb.write">
+<span class="sig-prename descclassname"><span class="pre">rgb.</span></span><span class="sig-name descname"><span class="pre">write</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#mpython.rgb.write" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<p>把数据写入RGB灯珠中。</p>
+<div class="admonition hint">
+<p class="admonition-title">Hint</p>
+<p>通过给rgb[n]列表赋值来写入RGB颜色值。如，rgb[0]=(50,0,0)</p>
+</div>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">mpython</span><span class="w"> </span><span class="kn">import</span> <span class="o">*</span>
+
+<span class="n">rgb</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="mi">255</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>  <span class="c1"># 设置为红色，全亮度</span>
+<span class="n">rgb</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">128</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>  <span class="c1"># 设定为绿色，半亮度</span>
+<span class="n">rgb</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">64</span><span class="p">)</span>   <span class="c1"># 设置为蓝色，四分之一亮度</span>
+
+<span class="n">rgb</span><span class="o">.</span><span class="n">write</span><span class="p">()</span>
+</pre></div>
+</div>
+<dl class="py method">
+<dt class="sig sig-object py" id="mpython.rgb.fill">
+<span class="sig-prename descclassname"><span class="pre">rgb.</span></span><span class="sig-name descname"><span class="pre">fill</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">rgb_buf</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mpython.rgb.fill" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<p>填充所有LED像素。</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="mpython.rgb.brightness">
+<span class="sig-prename descclassname"><span class="pre">rgb.</span></span><span class="sig-name descname"><span class="pre">brightness</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">brightness</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mpython.rgb.brightness" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<p>亮度调节,范围0~1.0</p>
+</section>
+<section id="oled">
+<span id="id8"></span><h2>oled对象<a class="headerlink" href="#oled" title="Link to this heading"></a></h2>
+<p>oled对象为framebuf的衍生类，继承framebuf的方法。更多的使用方法请查阅 <a class="reference internal" href="../micropython/framebuf.html#module-framebuf" title="framebuf: 帧缓冲操作"><code class="xref py py-mod docutils literal notranslate"><span class="pre">framebuf</span></code></a> 。</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="mpython.oled.poweron">
+<span class="sig-prename descclassname"><span class="pre">oled.</span></span><span class="sig-name descname"><span class="pre">poweron</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#mpython.oled.poweron" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<p>开启显示屏电源。</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="mpython.oled.poweroff">
+<span class="sig-prename descclassname"><span class="pre">oled.</span></span><span class="sig-name descname"><span class="pre">poweroff</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#mpython.oled.poweroff" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<p>关闭显示器电源。</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="mpython.oled.contrast">
+<span class="sig-prename descclassname"><span class="pre">oled.</span></span><span class="sig-name descname"><span class="pre">contrast</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">brightness</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mpython.oled.contrast" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<p>设置显示屏亮度。</p>
+<blockquote>
+<div><ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">brightness</span></code> 亮度,范围0~255</p></li>
+</ul>
+</div></blockquote>
+<dl class="py method">
+<dt class="sig sig-object py" id="mpython.oled.invert">
+<span class="sig-prename descclassname"><span class="pre">oled.</span></span><span class="sig-name descname"><span class="pre">invert</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">n</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mpython.oled.invert" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<p>翻转像素点。当n=1时,未填充像素点点亮,填充像素点灭。当n=0时,则反。默认启动是填充像素点点亮。</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="mpython.oled.DispChar">
+<span class="sig-prename descclassname"><span class="pre">oled.</span></span><span class="sig-name descname"><span class="pre">DispChar</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">s</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">x</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">y</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mode</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">TextMode.normal</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">auto_return</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mpython.oled.DispChar" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<p>oled屏显示文本。采用 <a class="reference external" href="http://www.google.cn/get/noto/help/cjk/">Google Noto Sans CJK</a> 开源无衬线字体字体。字体高度16像素点,支持英文,简体中文繁体中文，日文和韩文语言。</p>
+<p>返回(字符总像素点宽度,续接显示的x,y坐标)的二元组。</p>
+<blockquote>
+<div><ul>
+<li><p><code class="docutils literal notranslate"><span class="pre">s</span></code> -需要显示的文本。</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">x</span></code> 、<code class="docutils literal notranslate"><span class="pre">y</span></code> -文本的左上角作为起点坐标。</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">mode</span></code> - 设置文本模式,默认为TextMode.normal</p>
+<blockquote>
+<div><ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">TextMode.normal</span></code> - 等于1 。普通模式,文本显示白色,背景为黑色。</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">TextMode.rev</span></code> - 等于2 。反转模式,文本显示黑色,背景为白色。</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">TextMode.trans</span></code> - 等于3 。透明模式,透明文本意味着文本被写在显示中已经可见的内容之上。不同之处在于，以前屏幕上的内容仍然可以看到，而对于normal，背景将被当前选择的背景颜色所替代。</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">TextMode.xor</span></code> - 等于4 。XOR模式,如果背景是黑色的，效果与默认模式(normal模式)相同。如果背景为白色，则反转文本。</p></li>
+</ul>
+</div></blockquote>
+</li>
+<li><p><code class="docutils literal notranslate"><span class="pre">auto_return</span></code> - 自动换行,当显示字符串超出显示屏宽度可自动换行。默认不换行。</p></li>
+</ul>
+</div></blockquote>
+<dl class="py method">
+<dt class="sig sig-object py" id="mpython.oled.show">
+<span class="sig-prename descclassname"><span class="pre">oled.</span></span><span class="sig-name descname"><span class="pre">show</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#mpython.oled.show" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<p>将frame缓存发送至oled显示。</p>
+<div class="literal-block-wrapper docutils container" id="id12">
+<div class="code-block-caption"><span class="caption-text">hello world</span><a class="headerlink" href="#id12" title="Link to this code"></a></div>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="linenos">1</span><span class="kn">from</span><span class="w"> </span><span class="nn">mpython</span><span class="w"> </span><span class="kn">import</span> <span class="o">*</span>
+<span class="linenos">2</span>
+<span class="linenos">3</span><span class="n">oled</span><span class="o">.</span><span class="n">DispChar</span><span class="p">(</span><span class="s1">&#39;你好世界&#39;</span><span class="p">,</span> <span class="mi">38</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+<span class="linenos">4</span><span class="n">oled</span><span class="o">.</span><span class="n">DispChar</span><span class="p">(</span><span class="s1">&#39;hello,world&#39;</span><span class="p">,</span> <span class="mi">32</span><span class="p">,</span> <span class="mi">16</span><span class="p">)</span>
+<span class="linenos">5</span><span class="n">oled</span><span class="o">.</span><span class="n">DispChar</span><span class="p">(</span><span class="s1">&#39;안녕하세요&#39;</span><span class="p">,</span> <span class="mi">35</span><span class="p">,</span> <span class="mi">32</span><span class="p">)</span>
+<span class="linenos">6</span><span class="n">oled</span><span class="o">.</span><span class="n">DispChar</span><span class="p">(</span><span class="s1">&#39;こんにちは世界&#39;</span><span class="p">,</span> <span class="mi">24</span><span class="p">,</span> <span class="mi">48</span><span class="p">)</span>
+<span class="linenos">7</span><span class="n">oled</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="literal-block-wrapper docutils container" id="id13">
+<div class="code-block-caption"><span class="caption-text">打字效果</span><a class="headerlink" href="#id13" title="Link to this code"></a></div>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="linenos"> 1</span><span class="c1"># 打字效果</span>
+<span class="linenos"> 2</span><span class="kn">from</span><span class="w"> </span><span class="nn">mpython</span><span class="w"> </span><span class="kn">import</span> <span class="o">*</span>
+<span class="linenos"> 3</span><span class="n">oled</span><span class="o">.</span><span class="n">fill</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+<span class="linenos"> 4</span>
+<span class="linenos"> 5</span><span class="c1"># 显示的字符串</span>
+<span class="linenos"> 6</span><span class="n">_str</span> <span class="o">=</span> <span class="s2">&quot;掌控板是创客教育专家委员会、猫友汇、广大一线老师共同提出需求并与创客教育行业优秀企业代表共同参与研发的教具、学具,是一块为教育而生的开源硬件，也是一个公益项目。mPython掌控板是一块MicroPython微控制器板，它集成ESP32高性能双核芯片,使用当下最流行的Python编程语言，以便您轻松地将代码从桌面传输到微控制器或嵌入式系统。&quot;</span>
+<span class="linenos"> 7</span>
+<span class="linenos"> 8</span><span class="c1"># 起点坐标    </span>
+<span class="linenos"> 9</span><span class="n">axis</span> <span class="o">=</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+<span class="linenos">10</span>
+<span class="linenos">11</span><span class="c1"># 逐字显示,根据返回的坐标续接显示</span>
+<span class="linenos">12</span><span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="n">_str</span><span class="p">:</span>
+<span class="linenos">13</span>    <span class="n">response</span> <span class="o">=</span> <span class="n">oled</span><span class="o">.</span><span class="n">DispChar</span><span class="p">(</span><span class="n">c</span><span class="p">,</span> <span class="n">axis</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">axis</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
+<span class="linenos">14</span>    <span class="n">char_width</span> <span class="o">=</span> <span class="n">response</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+<span class="linenos">15</span>    <span class="n">axis</span> <span class="o">=</span> <span class="n">response</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+<span class="linenos">16</span>    <span class="n">oled</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+<span class="linenos">17</span>
+<span class="linenos">18</span>    <span class="c1"># 满屏时,清屏</span>
+<span class="linenos">19</span>    <span class="k">if</span> <span class="n">axis</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">&gt;=</span> <span class="mi">64</span> <span class="o">-</span> <span class="mi">16</span> <span class="ow">and</span> <span class="n">char_width</span> <span class="o">&gt;=</span> <span class="mi">128</span><span class="o">-</span><span class="n">axis</span><span class="p">[</span><span class="mi">0</span><span class="p">]:</span>
+<span class="linenos">20</span>        <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Clear screen&#39;</span><span class="p">)</span>
+<span class="linenos">21</span>        <span class="n">oled</span><span class="o">.</span><span class="n">fill</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<dl class="py method">
+<dt class="sig sig-object py" id="mpython.oled.DispChar_font">
+<span class="sig-prename descclassname"><span class="pre">oled.</span></span><span class="sig-name descname"><span class="pre">DispChar_font</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">font</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">s</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">x</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">y</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">invert</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mpython.oled.DispChar_font" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<p>自定义字体显示。用户可根据自己需求,在PC端将 <cite>otf</cite> 、 <cite>ttf</cite> 标准字体文件通过Python脚本 <a class="reference external" href="https://github.com/peterhinch/micropython-font-to-py/blob/master/font_to_py.py">font_to_py.py</a> 转为输出含字体Bitmap的python源码,调用使用。
+返回(字符总像素点宽度,续接显示的x,y坐标)的二元组。</p>
+<blockquote>
+<div><ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">font</span></code> - 字体对象。<cite>font_to_py.py</cite> 脚本转换得到的Python源码, 放到文件系统中,注意,在使用函数前须导入font文件。</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">s</span></code> - 显示的字符串</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">x</span></code> 、 <code class="docutils literal notranslate"><span class="pre">y</span></code> - 文本的左上角作为起点坐标。</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">invert</span></code> - 显示像素点翻转。</p></li>
+</ul>
+</div></blockquote>
+<div class="literal-block-wrapper docutils container" id="id14">
+<div class="code-block-caption"><span class="caption-text">自定义字体显示</span><a class="headerlink" href="#id14" title="Link to this code"></a></div>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="linenos"> 1</span><span class="c1"># The MIT License (MIT)</span>
+<span class="linenos"> 2</span><span class="c1"># Copyright (c) 2019, Tangliufeng for labplus Industries</span>
+<span class="linenos"> 3</span>
+<span class="linenos"> 4</span><span class="c1"># 掌控板oled.DispChar_font()自定义字体显示的简单示例</span>
+<span class="linenos"> 5</span>
+<span class="linenos"> 6</span><span class="kn">from</span><span class="w"> </span><span class="nn">mpython</span><span class="w"> </span><span class="kn">import</span> <span class="o">*</span>
+<span class="linenos"> 7</span>
+<span class="linenos"> 8</span><span class="c1"># 导入转换好的字体</span>
+<span class="linenos"> 9</span><span class="kn">import</span><span class="w"> </span><span class="nn">simfang16</span>
+<span class="linenos">10</span><span class="kn">import</span><span class="w"> </span><span class="nn">freescpt18</span>
+<span class="linenos">11</span><span class="kn">import</span><span class="w"> </span><span class="nn">stxingkai20</span>
+<span class="linenos">12</span>
+<span class="linenos">13</span><span class="c1"># 使用自定义字体显示</span>
+<span class="linenos">14</span><span class="n">oled</span><span class="o">.</span><span class="n">DispChar_font</span><span class="p">(</span><span class="n">simfang16</span><span class="p">,</span><span class="s1">&#39;你好,世界&#39;</span><span class="p">,</span> <span class="mi">23</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+<span class="linenos">15</span><span class="n">oled</span><span class="o">.</span><span class="n">DispChar_font</span><span class="p">(</span><span class="n">stxingkai20</span><span class="p">,</span><span class="s1">&#39;你好,世界&#39;</span><span class="p">,</span> <span class="mi">23</span><span class="p">,</span> <span class="mi">21</span><span class="p">)</span>
+<span class="linenos">16</span><span class="n">oled</span><span class="o">.</span><span class="n">DispChar_font</span><span class="p">(</span><span class="n">freescpt18</span><span class="p">,</span><span class="s1">&#39;hello,world&#39;</span><span class="p">,</span> <span class="mi">23</span><span class="p">,</span> <span class="mi">42</span><span class="p">)</span>
+<span class="linenos">17</span>
+<span class="linenos">18</span><span class="n">oled</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<ul class="simple">
+<li><p><a class="reference download external" download="" href="https://github.com/labplus-cn/mpython-docs/tree/master/examples/display/custom_font"><code class="xref download docutils literal notranslate"><span class="pre">以上自定义字体示例中simfang16、freescpt18、stxingkai20</span></code></a></p></li>
+</ul>
+<figure class="align-center">
+<a class="reference internal image-reference" href="../../_images/helloworld_customfont.jpg"><img alt="../../_images/helloworld_customfont.jpg" src="../../_images/helloworld_customfont.jpg" style="width: 400px;" />
+</a>
+</figure>
+<div class="admonition-font-to-py-py admonition">
+<p class="admonition-title"><cite>font_to_py.py</cite> 脚本使用说明</p>
+<ul class="simple">
+<li><p>该脚本要Python 3.2或更高版本运行环境。依赖 <cite>freetype</cite> python包。安装方法, <cite>pip3 install freetype-py</cite></p></li>
+<li><p>默认情况下，只转换ASCII字符集（ <cite>chr(32)</cite> 到 <cite>chr(126)</cite> 字符）。通过命令行参数 <cite>-c</cite>,根据需要修改此范围，以指定任意的Unicode字符集,可以定义非英语和非连续字符集。</p></li>
+<li><p><cite>oled.DispChar_font()</cite> 函数只支持hmap水平映射的字体,所以在转换时,需要使用命令行参数 <cite>-x</cite> 固定转换为水平映射。</p></li>
+<li><p>固件参数。字体文件路径、转换后的字体高度、输出文件路径。例如: font_to_py.py FreeSans.ttf 20 myfont.py</p></li>
+</ul>
+</div>
+<p>在PC端使用font_to_py.py脚本转换字体:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span># 转换高度为16像素只包含ASCII字符集
+font_to_py.py -x FreeSans.ttf 16 myfont.py
+
+# 转换高度为16像素指定Unicode字符集,-c参数后面为你指定的字符集
+font_to_py.py -x simfang.ttf 16 simfang.py -c  ¬!&quot;#£$%&amp;&#39;()*+,-./0123456789:;&lt;=&gt;?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\]^_`abcdefghijklmnopqrstuvwxyz{|}~°Ωαβγδθλμπωϕ£
+</pre></div>
+</div>
+<p>该函数功能实现,参考来源于 <a class="reference external" href="https://github.com/peterhinch/micropython-font-to-py">peterhinch/micropython-font-to</a> 开源项目,更详细有关 <cite>font_to_py.py</cite> 详细使用说明,可到此项目获取更多资料。</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="mpython.oled.fill">
+<span class="sig-prename descclassname"><span class="pre">oled.</span></span><span class="sig-name descname"><span class="pre">fill</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">c</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mpython.oled.fill" title="Link to this definition"></a></dt>
+<dd><p>用指定的颜色填充整个帧缓存。 <code class="docutils literal notranslate"><span class="pre">c</span></code> 为1时,像素点亮；<code class="docutils literal notranslate"><span class="pre">c</span></code> 为0时,像素点灭。</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mpython.oled.circle">
+<span class="sig-prename descclassname"><span class="pre">oled.</span></span><span class="sig-name descname"><span class="pre">circle</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">y</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">radius</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">c</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mpython.oled.circle" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<p>绘制圆</p>
+<blockquote>
+<div><ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">x</span></code> 、<code class="docutils literal notranslate"><span class="pre">y</span></code> -左上角作为起点坐标。</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">radius</span></code> -圆半径大小</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">c</span></code> -为1时,像素点亮；<code class="docutils literal notranslate"><span class="pre">c</span></code> 为0时,像素点灭。</p></li>
+</ul>
+</div></blockquote>
+<dl class="py method">
+<dt class="sig sig-object py" id="mpython.oled.fill_circle">
+<span class="sig-prename descclassname"><span class="pre">oled.</span></span><span class="sig-name descname"><span class="pre">fill_circle</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">y</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">radius</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">c</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mpython.oled.fill_circle" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<p>绘制实心圆</p>
+<blockquote>
+<div><ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">x</span></code> 、<code class="docutils literal notranslate"><span class="pre">y</span></code> -左上角作为起点坐标。</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">radius</span></code> -圆半径大小</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">c</span></code> -为1时,像素点亮；<code class="docutils literal notranslate"><span class="pre">c</span></code> 为0时,像素点灭。</p></li>
+</ul>
+</div></blockquote>
+<dl class="py method">
+<dt class="sig sig-object py" id="mpython.oled.triangle">
+<span class="sig-prename descclassname"><span class="pre">oled.</span></span><span class="sig-name descname"><span class="pre">triangle</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">y0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">x1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">y1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">x2</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">y2</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">c</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mpython.oled.triangle" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<p>绘制三角形</p>
+<blockquote>
+<div><ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">x0</span></code> 、<code class="docutils literal notranslate"><span class="pre">y0</span></code> -三角形上顶点坐标 。</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">x1</span></code> 、<code class="docutils literal notranslate"><span class="pre">y1</span></code> -三角形左顶点坐标 。</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">x2</span></code> 、<code class="docutils literal notranslate"><span class="pre">y2</span></code> -三角形左顶点坐标 。</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">c</span></code> -为1时,像素点亮；<code class="docutils literal notranslate"><span class="pre">c</span></code> 为0时,像素点灭。</p></li>
+</ul>
+</div></blockquote>
+<dl class="py method">
+<dt class="sig sig-object py" id="mpython.oled.fill_triangle">
+<span class="sig-prename descclassname"><span class="pre">oled.</span></span><span class="sig-name descname"><span class="pre">fill_triangle</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">y0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">x1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">y1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">x2</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">y2</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">c</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mpython.oled.fill_triangle" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<p>绘制实心三角形</p>
+<blockquote>
+<div><ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">x0</span></code> 、<code class="docutils literal notranslate"><span class="pre">y0</span></code> -三角形上顶点坐标 。</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">x1</span></code> 、<code class="docutils literal notranslate"><span class="pre">y1</span></code> -三角形左顶点坐标 。</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">x2</span></code> 、<code class="docutils literal notranslate"><span class="pre">y2</span></code> -三角形左顶点坐标 。</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">c</span></code> -为1时,像素点亮；<code class="docutils literal notranslate"><span class="pre">c</span></code> 为0时,像素点灭。</p></li>
+</ul>
+</div></blockquote>
+<dl class="py method">
+<dt class="sig sig-object py" id="mpython.oled.bitmap">
+<span class="sig-prename descclassname"><span class="pre">oled.</span></span><span class="sig-name descname"><span class="pre">bitmap</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">y</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">bitmap</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">w</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">h</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">c</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mpython.oled.bitmap" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<p>绘制bitmap图案</p>
+<blockquote>
+<div><ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">x</span></code> 、<code class="docutils literal notranslate"><span class="pre">y</span></code> -左上角作为起点坐标</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">bitmap</span></code> -图案bitmap 的btyearray字节数组</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">w</span></code> -图案宽度</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">h</span></code> -图案高度</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">c</span></code> -为1时,像素点亮;</p></li>
+</ul>
+</div></blockquote>
+<dl class="py method">
+<dt class="sig sig-object py" id="mpython.oled.RoundRect">
+<span class="sig-prename descclassname"><span class="pre">oled.</span></span><span class="sig-name descname"><span class="pre">RoundRect</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">y</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">w</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">h</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">r</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">c</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mpython.oled.RoundRect" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<p>绘制弧角矩形</p>
+<blockquote>
+<div><ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">x</span></code> 、<code class="docutils literal notranslate"><span class="pre">y</span></code> -左上角作为起点坐标</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">w</span></code> -图案宽度</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">h</span></code> -图案高度</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">r</span></code> -圆弧角半径</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">c</span></code> -为1时,像素点亮；<code class="docutils literal notranslate"><span class="pre">c</span></code> 为0时,像素点灭。</p></li>
+</ul>
+</div></blockquote>
+</section>
+<section id="i2c">
+<h2>i2c对象<a class="headerlink" href="#i2c" title="Link to this heading"></a></h2>
+<p>mPython掌控板已实例 <code class="docutils literal notranslate"><span class="pre">I2C</span></code> 类，P19、P20 为I2C的SCL、SDA引脚。I2C设备可连接掌控板I2C总线进行操作。</p>
+<p>详细有关I2C的读写操作，请查看 <a class="reference internal" href="../micropython/machine/machine.I2C.html#machine-i2c"><span class="std std-ref">machine.I2C</span></a> 模块或 <a class="reference internal" href="../../tutorials/advance/i2c.html#tutorials-i2c"><span class="std std-ref">I2C基础教程</span></a> 章节。</p>
+</section>
+<section id="mpythonpin">
+<h2>MPythonPin类<a class="headerlink" href="#mpythonpin" title="Link to this heading"></a></h2>
+<dl class="py class">
+<dt class="sig sig-object py" id="mpython.MPythonPin">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">mpython.</span></span><span class="sig-name descname"><span class="pre">MPythonPin</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">pin</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mode</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">PinMode.IN</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pull</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mpython.MPythonPin" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<p>构建Pin对象</p>
+<ul>
+<li><p><code class="docutils literal notranslate"><span class="pre">pin</span></code> 掌控板定义引脚号，具体定义看查看 <span class="xref std std-ref">掌控板引脚定义</span> 。</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">mode</span></code> 引脚模式。未设定时,默认 <cite>mode</cite> = <cite>PinMode.IN</cite></p>
+<blockquote>
+<div><ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">PinMode.IN</span></code> 等于1，数字输入模式</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">PinMode.OUT</span></code> 等于2，数字输出模式</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">PinMode.PWM</span></code> 等于3，模拟输出模式</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">PinMode.ANALOG</span></code> 等于4，模拟输入模式</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">PinMode.OUT_DRAIN</span></code> 等于5，开漏输出模式</p></li>
+</ul>
+</div></blockquote>
+</li>
+<li><p><code class="docutils literal notranslate"><span class="pre">pull</span></code> 指定引脚是否连接了电阻，可以是以下之一：</p>
+<blockquote>
+<div><ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">None</span></code> - 无上拉或下拉电阻</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">Pin.PULL_UP</span></code> - 上拉电阻使能</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">Pin.PULL_DOWN</span></code> - 下拉电阻使能</p></li>
+</ul>
+</div></blockquote>
+</li>
+</ul>
+<p>示例:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span><span class="w"> </span><span class="nn">mpython</span><span class="w"> </span><span class="kn">import</span> <span class="n">MPythonPin</span>       <span class="c1">#导入MPython模块</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">P0</span><span class="o">=</span><span class="n">MPythonPin</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="n">PinMode</span><span class="o">.</span><span class="n">IN</span><span class="p">)</span>          <span class="c1">#构建引脚0对象，设置数字输入模式</span>
+</pre></div>
+</div>
+<dl class="py method">
+<dt class="sig sig-object py" id="mpython.MPythonPin.read_digital">
+<span class="sig-prename descclassname"><span class="pre">MPythonPin.</span></span><span class="sig-name descname"><span class="pre">read_digital</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#mpython.MPythonPin.read_digital" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<p>返回该IO引脚电平值。1代表高电平，0代表低电平</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="mpython.MPythonPin.write_digital">
+<span class="sig-prename descclassname"><span class="pre">MPythonPin.</span></span><span class="sig-name descname"><span class="pre">write_digital</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mpython.MPythonPin.write_digital" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<p>IO引脚输出电平控制。<code class="docutils literal notranslate"><span class="pre">value</span></code> =1时输出高电平， <code class="docutils literal notranslate"><span class="pre">value</span></code> =0时输出低电平。</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="mpython.MPythonPin.read_analog">
+<span class="sig-prename descclassname"><span class="pre">MPythonPin.</span></span><span class="sig-name descname"><span class="pre">read_analog</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#mpython.MPythonPin.read_analog" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<p>读取ADC并返回读取结果，返回的值将在0到4095之间。</p>
+<dl class="py method">
+<dt class="sig sig-object py">
+<span class="sig-name descname"><span class="pre">MPythonPin.write_analog(duty,</span> <span class="pre">freq=1000):</span></span></dt>
+<dd></dd></dl>
+
+<p>设置输出PWM信号的占空比。</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">duty</span></code> 0 ≤ duty ≤ 1023</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">freq</span></code> PWM波频率,0 &lt; freq ≤ 0x0001312D（十进制：0 &lt; freq ≤ 78125）</p></li>
+</ul>
+<dl class="py method" id="mpythonpin-irq">
+<dt class="sig sig-object py">
+<span class="sig-name descname"><span class="pre">MPythonPin.irq(handler=None,</span> <span class="pre">trigger=Pin.IRQ_RISING):</span></span></dt>
+<dd></dd></dl>
+
+<p>如果引脚模式配置为 <code class="docutils literal notranslate"><span class="pre">IN</span></code> ,可配置该引脚的触发源处于活动状态时调用的中断处理程序。</p>
+<p>参数:</p>
+<blockquote>
+<div><ul>
+<li><p><code class="docutils literal notranslate"><span class="pre">handler</span></code> 是一个可选的函数，在中断触发时调用。</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">trigger</span></code> 配置可以触发中断的事件。可能的值是：</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">Pin.IRQ_FALLING</span></code> 下降沿中断</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">Pin.IRQ_RISING</span></code> 上升沿中断</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">Pin.IRQ_LOW_LEVEL</span></code> 低电平中断</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">Pin.IRQ_HIGH_LEVEL</span></code> 高电平中断</p></li>
+</ul>
+<p>这些值可以一起进行 <code class="docutils literal notranslate"><span class="pre">OR</span></code> 运算以触发多个事件。</p>
+</li>
+</ul>
+</div></blockquote>
+</section>
+<section id="wifi">
+<span id="mpython-wifi"></span><h2>wifi类<a class="headerlink" href="#wifi" title="Link to this heading"></a></h2>
+<p>提供便捷的wifi连接网络方式或无线AP功能。注意,开启WiFi功能功耗会增大,如不使用情况下,可关闭WiFi可降低功耗。</p>
+<dl class="py class">
+<dt class="sig sig-object py" id="mpython.wifi">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">mpython.</span></span><span class="sig-name descname"><span class="pre">wifi</span></span><a class="headerlink" href="#mpython.wifi" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<p>构建wifi对象并会创建 <code class="docutils literal notranslate"><span class="pre">sta</span></code> 对象和 <code class="docutils literal notranslate"><span class="pre">ap</span></code> 对象。可参见 <a class="reference internal" href="../micropython/network.html#module-network" title="network: 网络配置"><code class="xref py py-mod docutils literal notranslate"><span class="pre">network</span></code></a> 模块了解更多使用方法。</p>
+<blockquote>
+<div><ul class="simple">
+<li><p>sta用于客户端连接路由器来连接网络。</p></li>
+<li><p>ap用于掌控板作为无线AP接入方式。</p></li>
+</ul>
+</div></blockquote>
+<dl class="py method">
+<dt class="sig sig-object py" id="mpython.wifi.connectWiFi">
+<span class="sig-prename descclassname"><span class="pre">wifi.</span></span><span class="sig-name descname"><span class="pre">connectWiFi</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ssid</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">password</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">timeout</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">10</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mpython.wifi.connectWiFi" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<p>连接wifi网络</p>
+<blockquote>
+<div><ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">ssid</span></code> -WiFi网络名称</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">password</span></code> -WiFi密码</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">timeout</span></code> -链接超时,默认10秒</p></li>
+</ul>
+</div></blockquote>
+<dl class="py method">
+<dt class="sig sig-object py" id="mpython.wifi.disconnectWiFi">
+<span class="sig-prename descclassname"><span class="pre">wifi.</span></span><span class="sig-name descname"><span class="pre">disconnectWiFi</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#mpython.wifi.disconnectWiFi" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<p>断开wifi网络连接</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="mpython.wifi.enable_APWiFi">
+<span class="sig-prename descclassname"><span class="pre">wifi.</span></span><span class="sig-name descname"><span class="pre">enable_APWiFi</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">essid</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">password</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">channel</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">10</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mpython.wifi.enable_APWiFi" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<p>开启wifi的无线AP模式</p>
+<blockquote>
+<div><ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">essid</span></code> - 创建WiFi网络名称</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">password</span></code> - 密码</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">channel</span></code> -设置wifi使用信道,channel 1~13</p></li>
+</ul>
+</div></blockquote>
+<dl class="py method">
+<dt class="sig sig-object py" id="mpython.wifi.disable_APWiFi">
+<span class="sig-prename descclassname"><span class="pre">wifi.</span></span><span class="sig-name descname"><span class="pre">disable_APWiFi</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#mpython.wifi.disable_APWiFi" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<p>关闭无线AP</p>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="index.html" class="btn btn-neutral float-left" title="mPython类库" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="music.html" class="btn btn-neutral float-right" title="music — 音乐相关功能函数" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2018-2026 labplus.All Rights Reserved.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

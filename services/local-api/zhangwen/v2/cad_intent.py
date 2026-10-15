@@ -752,6 +752,16 @@ class CadIntentService:
                     revision_id,
                 ),
             )
+            from zhangwen.domains.making.service import (
+                invalidate_making_for_cad_revision,
+            )
+
+            invalidate_making_for_cad_revision(
+                conn,
+                work_id=project_id,
+                cad_revision_id=revision_id,
+                now=_now(),
+            )
             self._append_event(
                 conn,
                 project_id,

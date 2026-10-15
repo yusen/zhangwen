@@ -38,6 +38,8 @@ from zhangwen.device_lab.boards import BOARDS, scene_profile
 from zhangwen.device_lab.models import DeviceLabSceneV1
 from zhangwen.device_lab.repository import DeviceLabRepository
 from zhangwen.device_lab.scene import materialize_device_lab_scene
+from zhangwen.domains.works.canvas import WorkCanvasService
+from zhangwen.domains.works.models import CanvasSpec
 from zhangwen.project_packages.errors import ProjectPackageError
 from zhangwen.project_packages.models import (
     ExportProjectPackageRequest,
@@ -47,6 +49,8 @@ from zhangwen.project_packages.models import (
 from zhangwen.project_packages.privacy import scan_package_payload
 from zhangwen.project_packages.repository import ProjectPackageRepository
 from zhangwen.projects.repository import ProjectRepository
+from zhangwen.settings.models import ModelRoutingTarget, ModelWorkload
+from zhangwen.settings.provider_repository import ProviderSettingsRepository
 
 
 MAX_CREATOR_DELIVERY_MEMBERS = 16
@@ -61,6 +65,8 @@ class CreatorDeliveryService:
         self._projects = ProjectRepository(data_dir)
         self._packages = ProjectPackageRepository(data_dir)
         self._db_path = self._projects.db_path
+        self._canvas = WorkCanvasService(data_dir)
+        self._provider_settings = ProviderSettingsRepository(data_dir)
 
     def recover_incomplete_imports(self) -> int:
         """Remove projects left by a process interruption before API startup."""
@@ -458,6 +464,7 @@ class CreatorDeliveryService:
             id_map = self._restore_delivery_materials(
                 imported_id, workspace_data, project_payload
             )
+            self._restore_imported_canvas(imported_id, workspace_data)
         except Exception:
             self._abandon_import_intent(intent_id, imported_id)
             raise
@@ -782,6 +789,32 @@ class CreatorDeliveryService:
                 (project_id,),
             )
 
+    def _restore_imported_canvas(
+        self,
+        project_id: str,
+        data: dict[str, Any],
+    ) -> None:
+        materials = data.get("deliveryMaterials")
+        if not isinstance(materials, dict):
+            return
+        raw_spec = materials.get("canvasSpec")
+        if raw_spec is None:
+            # V1 delivery packages created before M10D remain importable and use
+            # the deterministic legacy projection on first read.
+            return
+        try:
+            source_spec = CanvasSpec.model_validate(raw_spec)
+        except Exception as exc:
+            raise CreatorError(
+                "CREATOR_DELIVERY_CANVAS_INVALID",
+                "作品包中的作品地图无法校验。",
+                status_code=422,
+            ) from exc
+        self._canvas.import_spec(
+            self._creator.workspace(project_id),
+            source_spec,
+        )
+
     def _restore_delivery_materials(
         self, project_id: str, data: dict[str, Any], project_package: bytes
     ) -> dict[str, dict[str, str]]:
@@ -1011,7 +1044,7 @@ class CreatorDeliveryService:
             scene = conn.execute(
                 """
                 SELECT revision, board_id, scene_json FROM device_lab_scenes
-                WHERE project_id = ? ORDER BY created_at DESC, revision DESC LIMIT 1
+                WHERE project_id = ? ORDER BY rowid DESC LIMIT 1
                 """,
                 (project_id,),
             ).fetchone()
@@ -1226,6 +1259,17 @@ class CreatorDeliveryService:
         }
         if structure_required:
             version_bindings["structureRevisionId"] = str(structure["revisionId"])
+        canvas_spec, _layout, _generation = self._canvas.current(workspace)
+        routing_summary = self._redacted_model_routing_summary()
+        version_bindings["canvasSpecRevisionId"] = canvas_spec.id
+        version_bindings["modelRoutingProfileRevisionId"] = str(
+            routing_summary["routingProfileRevisionId"]
+        )
+        default_route = routing_summary["default"]
+        if isinstance(default_route, dict):
+            version_bindings["defaultProviderConfigurationRevisionId"] = str(
+                default_route["providerConfigurationRevisionId"]
+            )
 
         proof = {
             _proof_key(kind): _evidence_material(current[kind])
@@ -1277,6 +1321,8 @@ class CreatorDeliveryService:
                 "values": _json_object(str(parameter["values_json"]), "parameter set"),
             },
             "structure": structure,
+            "canvasSpec": canvas_spec.model_dump(mode="json", by_alias=True),
+            "modelRoutingSummary": routing_summary,
             "proof": proof,
         }
         materials["maturity"] = _derive_maturity(
@@ -1285,6 +1331,34 @@ class CreatorDeliveryService:
             current,
         )
         return materials
+
+    def _redacted_model_routing_summary(self) -> dict[str, Any]:
+        profile = self._provider_settings.get_routing_profile()
+
+        def summarize(target: ModelRoutingTarget) -> dict[str, str]:
+            configuration = self._provider_settings.get_configuration(
+                target.configuration_id
+            )
+            return {
+                "provider": configuration.provider.value,
+                "model": str(target.model),
+                "providerConfigurationRevisionId": configuration.revision_id,
+            }
+
+        return {
+            "schemaVersion": 1,
+            "routingProfileRevisionId": profile.revision_id,
+            "default": summarize(profile.default_target),
+            "fallback": (
+                summarize(profile.fallback_target)
+                if profile.fallback_target is not None
+                else None
+            ),
+            "workloads": {
+                workload.value: summarize(target)
+                for workload, target in profile.workload_routes.items()
+            },
+        }
 
     @staticmethod
     def _acceptance_identity(
@@ -1482,6 +1556,77 @@ def _reproduction_guide(
     )
 
 
+def _validate_model_routing_summary(value: object) -> None:
+    if not isinstance(value, dict) or set(value) != {
+        "schemaVersion",
+        "routingProfileRevisionId",
+        "default",
+        "fallback",
+        "workloads",
+    }:
+        raise CreatorError(
+            "CREATOR_DELIVERY_ROUTING_INVALID",
+            "作品包中的模型路由摘要结构无效。",
+            status_code=422,
+        )
+    if value.get("schemaVersion") != 1 or not _bounded_identifier(
+        value.get("routingProfileRevisionId")
+    ):
+        raise CreatorError(
+            "CREATOR_DELIVERY_ROUTING_INVALID",
+            "作品包中的模型路由摘要版本无效。",
+            status_code=422,
+        )
+
+    def validate_target(target: object, *, optional: bool = False) -> None:
+        if target is None and optional:
+            return
+        if not isinstance(target, dict) or set(target) != {
+            "provider",
+            "model",
+            "providerConfigurationRevisionId",
+        }:
+            raise CreatorError(
+                "CREATOR_DELIVERY_ROUTING_INVALID",
+                "作品包中的模型目标摘要结构无效。",
+                status_code=422,
+            )
+        if not all(
+            _bounded_identifier(target.get(key))
+            for key in (
+                "provider",
+                "model",
+                "providerConfigurationRevisionId",
+            )
+        ):
+            raise CreatorError(
+                "CREATOR_DELIVERY_ROUTING_INVALID",
+                "作品包中的模型目标摘要字段无效。",
+                status_code=422,
+            )
+
+    validate_target(value.get("default"))
+    validate_target(value.get("fallback"), optional=True)
+    workloads = value.get("workloads")
+    allowed_workloads = {item.value for item in ModelWorkload}
+    if (
+        not isinstance(workloads, dict)
+        or len(workloads) > len(allowed_workloads)
+        or not set(workloads).issubset(allowed_workloads)
+    ):
+        raise CreatorError(
+            "CREATOR_DELIVERY_ROUTING_INVALID",
+            "作品包中的模型分工摘要无效。",
+            status_code=422,
+        )
+    for target in workloads.values():
+        validate_target(target)
+
+
+def _bounded_identifier(value: object) -> bool:
+    return isinstance(value, str) and 0 < len(value) <= 160
+
+
 def _validate_delivery_snapshot(
     manifest: CreatorDeliveryManifestV1,
     workspace: dict[str, Any],
@@ -1529,6 +1674,41 @@ def _validate_delivery_snapshot(
             "作品包材料版本与 manifest 不一致。",
             status_code=422,
         )
+    if "canvasLayout" in materials:
+        raise CreatorError(
+            "CREATOR_DELIVERY_SNAPSHOT_INVALID",
+            "作品包不得携带用户本机的作品地图布局。",
+            status_code=422,
+        )
+    canvas = materials.get("canvasSpec")
+    if canvas is not None:
+        try:
+            canvas_spec = CanvasSpec.model_validate(canvas)
+        except Exception as exc:
+            raise CreatorError(
+                "CREATOR_DELIVERY_CANVAS_INVALID",
+                "作品包中的作品地图无法校验。",
+                status_code=422,
+            ) from exc
+        if str(bindings.get("canvasSpecRevisionId", "")) != canvas_spec.id:
+            raise CreatorError(
+                "CREATOR_DELIVERY_CANVAS_INVALID",
+                "作品包中的作品地图没有固定到 manifest 版本集合。",
+                status_code=422,
+            )
+    routing_summary = materials.get("modelRoutingSummary")
+    if routing_summary is not None:
+        _validate_model_routing_summary(routing_summary)
+        if str(bindings.get("modelRoutingProfileRevisionId", "")) != str(
+            routing_summary["routingProfileRevisionId"]
+        ) or str(
+            bindings.get("defaultProviderConfigurationRevisionId", "")
+        ) != str(routing_summary["default"]["providerConfigurationRevisionId"]):
+            raise CreatorError(
+                "CREATOR_DELIVERY_ROUTING_INVALID",
+                "作品包中的模型路由摘要没有固定到 manifest 版本集合。",
+                status_code=422,
+            )
     structure = materials.get("structure")
     if not isinstance(structure, dict) or (
         structure.get("required") is True

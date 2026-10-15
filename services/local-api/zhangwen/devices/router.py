@@ -430,11 +430,13 @@ async def deploy_code(
                     raise ValueError("Only accepted code can enter a device deployment dry run.")
                 if code_run.runtime != CodeRuntime.MICROPYTHON:
                     raise ValueError("USB serial deployment requires a MICROPYTHON CodeRun.")
-                operation, session = DeviceRepository(repo.db_path).upload_code_dry_run(
+                operation, session = _service(repo).upload_code_dry_run(
                     project_id=project_id,
                     session_id=request.sessionId,
                     code_run=code_run,
                 )
+            except DeviceServiceError as exc:
+                raise _device_error(exc) from exc
             except ValueError as exc:
                 code = (
                     "DEVICE_USB_RUNTIME_REQUIRED"
@@ -489,11 +491,13 @@ async def upload_code(
                     "DEVICE_USB_RUNTIME_REQUIRED",
                     "USB serial deployment requires a MICROPYTHON CodeRun.",
                 )
-            operation, session = DeviceRepository(repo.db_path).upload_code_dry_run(
+            operation, session = _service(repo).upload_code_dry_run(
                 project_id=project_id,
                 session_id=request.sessionId,
                 code_run=code_run,
             )
+        except DeviceServiceError as exc:
+            raise _device_error(exc) from exc
         except ValueError as exc:
             code = (
                 "DEVICE_REQUIRES_ACCEPTED_CODE"
@@ -728,10 +732,12 @@ async def flash_firmware(
     repo.get_workspace(project_id)
     if request.dryRun:
         try:
-            operation, session = DeviceRepository(repo.db_path).firmware_flash_dry_run(
+            operation, session = _service(repo).firmware_flash_dry_run(
                 project_id=project_id,
                 session_id=request.sessionId,
             )
+        except DeviceServiceError as exc:
+            raise _device_error(exc) from exc
         except ValueError as exc:
             raise _unprocessable("DEVICE_FLASH_DRY_RUN_FAILED", str(exc)) from exc
         return DeviceOperationResponse(operation=operation, session=session)
@@ -781,6 +787,12 @@ def _service(repo: ProjectRepository) -> DeviceOperationService:
         )
         _services[key] = service
     return service
+
+
+def get_device_operation_service() -> DeviceOperationService:
+    """Return the one process-wide executor for trusted in-process adapters."""
+
+    return _service(_project_repo())
 
 
 def _device_error(exc: DeviceServiceError) -> HTTPException:

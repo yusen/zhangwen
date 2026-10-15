@@ -1,0 +1,1889 @@
+{
+  "source": "D:/ZW_V1/services/local-api/zhangwen",
+  "files": [
+    {
+      "path": "config.py",
+      "sha256": "aa607c73ef5ec3c3910656036fa1c7c6a6df55f698059657bbe093281c8e36c5"
+    },
+    {
+      "path": "host.py",
+      "sha256": "3631dbbfe66381afe758e1d3a3f39c940987132da3adf824862fd49f9652ce1c"
+    },
+    {
+      "path": "main.py",
+      "sha256": "acf2c1ab4386fb17d16916a7be0988f709ab1fe23ff88819d3c17939fa9244f1"
+    },
+    {
+      "path": "packaged_entry.py",
+      "sha256": "f6c35cb0a6ea5d6c8703e65b82239050894f66412bcfa934d2689ae2c3df51d7"
+    },
+    {
+      "path": "runtime.py",
+      "sha256": "a2e22167c89e14d152b9c8507b1e6724f886744861305d6970386493cb40a0b9"
+    },
+    {
+      "path": "__init__.py",
+      "sha256": "1e261ca767c1a2437df65d3391c00b969b1d6921417f2acc55cf4cec8debf37d"
+    },
+    {
+      "path": "artifacts/models.py",
+      "sha256": "12cce23b062395c4006cb1e5f5c02a52b0c4dc5582db1be281136ffc4711eb29"
+    },
+    {
+      "path": "artifacts/repository.py",
+      "sha256": "7a6ab14ad69d757aa782b0e6251b8b82c2c9bf91c7ec826e11487e5cea1668f0"
+    },
+    {
+      "path": "artifacts/router.py",
+      "sha256": "94dd5bc03e2c4d28d62d1b75d5d903e3950e02163b22c53b255ab6248a030ad2"
+    },
+    {
+      "path": "artifacts/__init__.py",
+      "sha256": "48c4c176d9bbc3e7566795de1e9287c69d5686fc8b2cfac1ba80aa8590806c06"
+    },
+    {
+      "path": "auth/cloud_client.py",
+      "sha256": "224f8a01220b5c62e958d73908efcb813eadd2316c152f644d477ad6d05e1d78"
+    },
+    {
+      "path": "auth/cloud_facade.py",
+      "sha256": "be1a6f1423edc5c2a96d87830771ff14a760e0d5e87ab2b50721d3382d981852"
+    },
+    {
+      "path": "auth/context.py",
+      "sha256": "2a65623f86f91ec645620ae3225830e27d59412b7c968873fdbbe0e5456a0c42"
+    },
+    {
+      "path": "auth/middleware.py",
+      "sha256": "c45965b0bd80ec94f9a2ba8c240c9290fc5cd29ecfa8fb1341ed648192929a7e"
+    },
+    {
+      "path": "auth/models.py",
+      "sha256": "e9b289fa700c93f82594879f0cf7069791d3f7a34d1b78cca9f58319470eb514"
+    },
+    {
+      "path": "auth/repository.py",
+      "sha256": "6ebc6c40613a2d0c57129c3eccfd1058d10326381156ff071dabfc287e672189"
+    },
+    {
+      "path": "auth/router.py",
+      "sha256": "0e869e405e750b5862d6d885d8c556c864126cbcaf3cb2d5f9d541b589a9e3dc"
+    },
+    {
+      "path": "auth/__init__.py",
+      "sha256": "8a4faf20bc0a614ebc4b6c44736d1242f99ce8baa5f4cda24186b3ad0e5c6d5f"
+    },
+    {
+      "path": "cad_agent/artifact_store.py",
+      "sha256": "0a0f8c2539c7720d6b6b6698eb851304195459220a24647f33cdaebe05a4091c"
+    },
+    {
+      "path": "cad_agent/chat_projection.py",
+      "sha256": "5b73342416dd4bcbb7e9af193e27e0bf2bc19cae1e2ea47cf15e90387c589572"
+    },
+    {
+      "path": "cad_agent/coordinator.py",
+      "sha256": "8912ad02b74eb785b136e692de1a2ae54290e16be80c7032779e8c6c04d7e54f"
+    },
+    {
+      "path": "cad_agent/freeform_geometry.py",
+      "sha256": "930c6d7c677a4083511de2f7d018f36cc4968c005b7e9bedaed0550c729a1f21"
+    },
+    {
+      "path": "cad_agent/generator.py",
+      "sha256": "e069a29da66cb70cdedeb291f3d5dd74b4ff0e2936be6886edfed3a2187d6a14"
+    },
+    {
+      "path": "cad_agent/intake.py",
+      "sha256": "1d7b2a7e51f2507d47081aa2aeb75a3778bd26eceb9a9eea5e992cdd912ee936"
+    },
+    {
+      "path": "cad_agent/job_repository.py",
+      "sha256": "9e0d65303887fa138ebf8518c27b7b8c7a7497456d82561e132b1e1fb235aba9"
+    },
+    {
+      "path": "cad_agent/models.py",
+      "sha256": "fa020a5a72fb68ff1106a7dc4013aef667d809cdf6a20f8b791dff362041b6fe"
+    },
+    {
+      "path": "cad_agent/process_limits.py",
+      "sha256": "52fc6b94a9cf5351dace3da7f8f504d25703ceca1c0aca47835cd356b74aaee0"
+    },
+    {
+      "path": "cad_agent/profile_api.py",
+      "sha256": "2892ee309b02537c63d0b087c638a3ca73f5c6bc5a26ad27ce5856d4ef561d6a"
+    },
+    {
+      "path": "cad_agent/profile_repository.py",
+      "sha256": "44f803ab70ef921710833741422efe3f026be15f6c57d4f3f0fd7f2b8798ae8e"
+    },
+    {
+      "path": "cad_agent/profile_seeds.py",
+      "sha256": "1cd37461372292b36d4fe3865558968a0bb0b67d5e7cecc4afd816ec71b95962"
+    },
+    {
+      "path": "cad_agent/repository.py",
+      "sha256": "66d282b68a135d95afc6170bb93443c29eee054e32abeafffbc5bdb88ba9f095"
+    },
+    {
+      "path": "cad_agent/router.py",
+      "sha256": "e46dc6c12b43c12229b4311fe827dd84c462658f5dd9a2fbd67205e846070ad0"
+    },
+    {
+      "path": "cad_agent/service.py",
+      "sha256": "2e60953074fe0f45abeb4ed47bb9834027b2b5abc918b5fadcb7f07c7bd0055f"
+    },
+    {
+      "path": "cad_agent/sizing.py",
+      "sha256": "9bd0875afed45bd429b6fb9d99820f0f03c335fd573e23ea40192c96f1b80fb1"
+    },
+    {
+      "path": "cad_agent/template_catalog.py",
+      "sha256": "fcbbbdbce2695bc70841531a147e385692e1af51000a4736276ab94629b13448"
+    },
+    {
+      "path": "cad_agent/worker_client.py",
+      "sha256": "d2402b59d6f69c5ca4ca214d111bad5f6683de6f2974786c941d65659e85a74d"
+    },
+    {
+      "path": "cad_agent/worker_protocol.py",
+      "sha256": "5726fdf3c3200371eb044341df33eb068891f0b937c6b6e24eb965e115dd61ab"
+    },
+    {
+      "path": "cad_agent/__init__.py",
+      "sha256": "f633f49d1d8f14ef0124e4bd5e1040bbf14e0fd929d34124748ed19b71689ff8"
+    },
+    {
+      "path": "cad_engine/engine.py",
+      "sha256": "c67fdb56d545641b29a5bc805271cf45cb96b8b1e170b7a4af97def6d6907bc7"
+    },
+    {
+      "path": "cad_engine/exports.py",
+      "sha256": "d335f185e8306106fe48f2f389475895a5f6a8f5f8d7b76dfa68509aa6a797b2"
+    },
+    {
+      "path": "cad_engine/geometry.py",
+      "sha256": "71852531d59659882a3e5d35030b087b2b2c04c101ee49b69610c970ce116c54"
+    },
+    {
+      "path": "cad_engine/k10_photo_album.py",
+      "sha256": "8ae5c70b63fca323bd19a0ae9ebf7a08d5cd59c4c99cb7e8dbc48ef5fec2542b"
+    },
+    {
+      "path": "cad_engine/layout.py",
+      "sha256": "1273ab1fe4dd8ece2e779968192a8bf912e408cc47c23e332dbb39a7be326000"
+    },
+    {
+      "path": "cad_engine/models.py",
+      "sha256": "f2574baa02ceb75304ad41510a6c85ed7ba2d3177e901980936019711a1389a8"
+    },
+    {
+      "path": "cad_engine/profiles.py",
+      "sha256": "56a8eb0adb6f9429c49e51d763692ac21530082b87e3a6cb4873441d0e53f6e7"
+    },
+    {
+      "path": "cad_engine/validation.py",
+      "sha256": "3fe34e3aba3e5a3983f04e35c82d0fdafc21009302e6f84d84c9ec2c57ee1eab"
+    },
+    {
+      "path": "cad_engine/worker.py",
+      "sha256": "c56d5b05ec6a8b05e14d832a4eabe8b5b07053ecee6079e7f9baf506a8f0514b"
+    },
+    {
+      "path": "cad_engine/__init__.py",
+      "sha256": "35e1f1f5becb33903bf15e9a692914d703d497b8914998bc7b9dbe5851a2f28c"
+    },
+    {
+      "path": "chat/idea_flow.py",
+      "sha256": "44140323eeac297b06af9d8c52541dc79d6707bbfbd35546d9e74971a6acb363"
+    },
+    {
+      "path": "chat/router.py",
+      "sha256": "cb46827c5152b39c4ab818f8aa735e2043d7f23663f1f4903a9a9a2a5e3101cb"
+    },
+    {
+      "path": "chat/sessions.py",
+      "sha256": "868cd4d1c7de0353f7f57ebb246753ec9302c59f5395e86b8e27e5b8db991fd8"
+    },
+    {
+      "path": "chat/workspace_context.py",
+      "sha256": "283616a859f0fbbd9f7d3cb27be0d706c48a47358796a3aa0011e477b4eaaa2f"
+    },
+    {
+      "path": "chat/__init__.py",
+      "sha256": "5b626acc40ad6e86edf9dab54af385e90cde5d9b2fe7cb196bfa5e4f6fcd5a8d"
+    },
+    {
+      "path": "clarification/prompts.py",
+      "sha256": "5a9a399f74f3f719ae3c0447584e9b4d56a9a90ae02f5e4896a530d1f7d0526c"
+    },
+    {
+      "path": "clarification/router.py",
+      "sha256": "1d690a34407a0b3c17fdd37ebaf172c13849f81974637e6baa634b5c6c4a8209"
+    },
+    {
+      "path": "clarification/service.py",
+      "sha256": "a37362e81344e1f2fcf006917b5cef2a6080056b8d20e4a6e0e8fdf02942685a"
+    },
+    {
+      "path": "clarification/__init__.py",
+      "sha256": "020b3d8c5faa39f9dc6376802ae2f4bf63e77b77e4ac882692847686199d9bc2"
+    },
+    {
+      "path": "code_agent/board_api_contracts.py",
+      "sha256": "dbb7f00d7fe4590169cab1d8a2bd6a64604d7a67f4e1373e9fe8224e359e673b"
+    },
+    {
+      "path": "code_agent/chat_code.py",
+      "sha256": "0ffe1cea8d0de8ca18c8564cb236ff4f6860e95b9fbb481c1ebb6ebc72c4644b"
+    },
+    {
+      "path": "code_agent/generator.py",
+      "sha256": "d5147c0e9929a48dea166b4f02a76fa666da31759e2085bcbe329b88f6a930a3"
+    },
+    {
+      "path": "code_agent/models.py",
+      "sha256": "759a1455743fd71fc4b3c9e163bf2080405e94bcbfde348fe89a129fe38e9496"
+    },
+    {
+      "path": "code_agent/repository.py",
+      "sha256": "593af09bdfd130cb1ba24aed2d7c59d3dff00680c0e1f79332f73e4182c01f2e"
+    },
+    {
+      "path": "code_agent/router.py",
+      "sha256": "0bcd9de779b8f76223f670ff1a9b6a73da6bb50c759315aa2d3cf19bfed8f8bd"
+    },
+    {
+      "path": "code_agent/service.py",
+      "sha256": "788da8ade746a86e8aee4dbc9b782800dc3e0080837f48b2648eed8430aa9075"
+    },
+    {
+      "path": "code_agent/validation.py",
+      "sha256": "b86c1659c94c63fa66fbf4686b3a098c43e9c10d4287f02b86dae1be2d77a410"
+    },
+    {
+      "path": "code_agent/validation_worker.py",
+      "sha256": "5b999741380f489ba1bdff3ef4a75f719bd8952ef44e3bbd3977143537495269"
+    },
+    {
+      "path": "code_agent/__init__.py",
+      "sha256": "3bcd66c6944d4ef165825c59d6028a4769ed41dc89cf672e7dd47ec1690b2daf"
+    },
+    {
+      "path": "coordinator/service.py",
+      "sha256": "7b5a5cf6ea2cfa8b90fcfda33a0d84f01cf7b1fea33bebc70acf42b3bfc8f64f"
+    },
+    {
+      "path": "coordinator/__init__.py",
+      "sha256": "4736ea86167216e20af98a2b17a40f728dcec9e90fa67962f29ceff7e8e12028"
+    },
+    {
+      "path": "creator/delivery.py",
+      "sha256": "483f971e94c77037121eae8ebcd7b47a5f927a0c101b5bda359f21f69ecce1fc"
+    },
+    {
+      "path": "creator/jobs.py",
+      "sha256": "c8fee7a75b9e532d2905b4fa6b21779c584a05253355d6164d1309fa90d0df49"
+    },
+    {
+      "path": "creator/metrics.py",
+      "sha256": "e6a7e750e0359004150ca1b933c04daa87eb398f7a2698f8719f47165ca5c022"
+    },
+    {
+      "path": "creator/models.py",
+      "sha256": "78a9cdb3dc2a21af31b5eb646c96551e2dc6c657ecb9d1bf83c8392292d2c04a"
+    },
+    {
+      "path": "creator/repository.py",
+      "sha256": "6115b3503a1923425b064caf969271cb284d48f702f1accc3d59e08d505e0c10"
+    },
+    {
+      "path": "creator/router.py",
+      "sha256": "52a6718f74221aa977b402ca115f54fd00b77e600161db4f4a265cecf8c15895"
+    },
+    {
+      "path": "creator/__init__.py",
+      "sha256": "ccccb41a485fe43da725e3b835cb790f6b4bd6f5c1559ccce54ccf1ece84fe8f"
+    },
+    {
+      "path": "devices/device_packages.py",
+      "sha256": "2668666ab02d07c15981cb62132688b32a22e95e83db44566b06a9d3df1139a1"
+    },
+    {
+      "path": "devices/espclaw.py",
+      "sha256": "e7379491d379bea83359dc1d84740281f577d53326a5464c3f27c1d63a18499d"
+    },
+    {
+      "path": "devices/models.py",
+      "sha256": "ed04f66a36f9c385c061eaea4759584087d7c7dcb6521e9d6abc89e3ed7cad15"
+    },
+    {
+      "path": "devices/repository.py",
+      "sha256": "a8cb444dd5c8deb06ebc70e201a4a701283c717af2bddabe3fd39b5917e22e44"
+    },
+    {
+      "path": "devices/router.py",
+      "sha256": "e1cef16c6985f09bd9a460728d45618060685e2291e7ccf4b1da14110f9960f7"
+    },
+    {
+      "path": "devices/serial_discovery.py",
+      "sha256": "dade79b5cf68c8d6eea3cf91ca85616aa7cb0537cced3ad2a6a0f348278b7224"
+    },
+    {
+      "path": "devices/service.py",
+      "sha256": "dbfaeedbd67ff71f9c5336c7408bdd257dac046ec60bd099f78e5fbf6850d145"
+    },
+    {
+      "path": "devices/simulator.py",
+      "sha256": "07f77f71c04c8fc764410f628bf5b5cb042435cde6d041aec7a9fde2ac5f3efe"
+    },
+    {
+      "path": "devices/transport.py",
+      "sha256": "fa3287519ec7909f734fdfb712aff33b0ce83a6f5d0cd224e6e5fd73322f704c"
+    },
+    {
+      "path": "devices/__init__.py",
+      "sha256": "0cedded71e0224d9d44f2456b120790af225d955a674ad7323e0a0420387bdb2"
+    },
+    {
+      "path": "device_lab/applications.py",
+      "sha256": "1449bd32cf0d6e24b579466597197d49240a3c1ceab1d2e7a9e3ccc534f47a6f"
+    },
+    {
+      "path": "device_lab/boards.py",
+      "sha256": "c44732323eefd6cf3ca4b2b2ecf3da22c954a4e3db25c8181919bb60297d157d"
+    },
+    {
+      "path": "device_lab/models.py",
+      "sha256": "a1692fec3cf3653107c156e2ede9ed9b107d807c00c69d3eaaed00ebf740974f"
+    },
+    {
+      "path": "device_lab/qemu.py",
+      "sha256": "9f834d79ba910b92a3bad1c38bf29efa3e0dc2e805aa12268ada9434a17db049"
+    },
+    {
+      "path": "device_lab/repository.py",
+      "sha256": "218f92d943cd65e8adb54f563756853e092a06c7eec64ed2237470a888d404a9"
+    },
+    {
+      "path": "device_lab/router.py",
+      "sha256": "a946f3fbe6b0088aee7aa54597eed29f1cf296a901ac2eed0f17a4bb32caa172"
+    },
+    {
+      "path": "device_lab/scene.py",
+      "sha256": "c9699881e7e0d5f6dd0ed5e209758b14d81984d352b8f45502702a6ac4256aa8"
+    },
+    {
+      "path": "device_lab/service.py",
+      "sha256": "3e32cbbeba6a60924880458a3e88d1e290063b421f10e896ecb7841d56801dd0"
+    },
+    {
+      "path": "device_lab/__init__.py",
+      "sha256": "32c6fc3511adeef02647d50c2c7c7c5ef07622f9d1f653ac75f0b22844a33816"
+    },
+    {
+      "path": "domains/__init__.py",
+      "sha256": "3cb686255c9e7406bd47d9d244cd810769a0e430d993ccc4a118d6fe6f47bdd2"
+    },
+    {
+      "path": "experts/config.py",
+      "sha256": "0cef776901a5d9ed4300d2fe729aae89bc1de081a1fc530fc950402f329d53a7"
+    },
+    {
+      "path": "experts/context_assembler.py",
+      "sha256": "2dd13ed16346ff7ad7253d0fb0d7a92f50f7cfd776cf5ff8b09b36889abd3d12"
+    },
+    {
+      "path": "experts/entry_router.py",
+      "sha256": "3e235d219b0bf22304d07a55d3f7d5b4c876bcc00da1e0ee13d6c03cce96e957"
+    },
+    {
+      "path": "experts/packages.py",
+      "sha256": "7909432f6953a3f3ec62fdb392d5119b4aef6e9d89609a330d96dafdbf326ed5"
+    },
+    {
+      "path": "experts/router.py",
+      "sha256": "5d6d156189ce18a76d95f26a9a249f07b724fffef6c9eff3bf78c3893adc7eb6"
+    },
+    {
+      "path": "experts/runtime.py",
+      "sha256": "741c6b050cf94a45c6d5f051157eb4af3f218699eafb89eb924e8355035c8cf1"
+    },
+    {
+      "path": "experts/__init__.py",
+      "sha256": "7b449d8d6438d7fe303a3ba377f976ff5e496a45d6a54dc146d09dc044633ada"
+    },
+    {
+      "path": "hardware/board_profiles.py",
+      "sha256": "e99e41118821735718f56b4a4723c18df4fc1259eabd8acd975e328ba26abf2d"
+    },
+    {
+      "path": "hardware/board_skills.py",
+      "sha256": "54cbf5a98240c283777cb47560cce8c05d84cb6818fc72cde06940361eacb167"
+    },
+    {
+      "path": "hardware/component_packages.py",
+      "sha256": "c5b4923365807273eaec9618b067359e11758655444989e4b1f48ba343e7e4a2"
+    },
+    {
+      "path": "hardware/hardware_skills.py",
+      "sha256": "f7597387f64b8aac32f9cb7b46b7a92ab4ad1ffe5333313710135a28f9bc99ff"
+    },
+    {
+      "path": "hardware/mechanical_preview.py",
+      "sha256": "7dd1183a4ad33ae25a19ab8f31ab00aeb5a2a21e4def4a88d86d45f5575078fd"
+    },
+    {
+      "path": "hardware/models.py",
+      "sha256": "73ebc8e66ae5c2b2cdfba97485e7bfae7be331e911808c2f7b10b0dc7b1a9f9b"
+    },
+    {
+      "path": "hardware/repository.py",
+      "sha256": "47da54fa0735f8f805cb716cde4ae0ba8895d107cc96acc0ca9982defbe90b21"
+    },
+    {
+      "path": "hardware/router.py",
+      "sha256": "18f76fd57ca9fb567856bd31b9002b261ef31920b658481cc6093ba9ab6b2754"
+    },
+    {
+      "path": "hardware/rule_engine.py",
+      "sha256": "33921b66dbd158d7da977ad51a65ff2d6d82585d86e3c243e29c8ead8b67f7f6"
+    },
+    {
+      "path": "hardware/seeds.py",
+      "sha256": "0581074c1e85263d907e2ee2368fca53bd6b9b26707672218a5f991150c23c20"
+    },
+    {
+      "path": "hardware/__init__.py",
+      "sha256": "9f3d5fc9707ce925b4fe45a57427001bd02a664e233c0d9609c62a5d68f07e55"
+    },
+    {
+      "path": "health/router.py",
+      "sha256": "e51e7f6a40d3b87449e33af8b05bb2e4891e928f8c7aa4a022ef5c3212f5d787"
+    },
+    {
+      "path": "health/__init__.py",
+      "sha256": "778a180be6490c341098cda87dfd2ee50e4f0af963a64d385dfa0509d4409070"
+    },
+    {
+      "path": "lesson_agent/generator.py",
+      "sha256": "18067a958ea407812ebc7014d0508d8ed33370bb2a28910c52e42cc67ee6197a"
+    },
+    {
+      "path": "lesson_agent/models.py",
+      "sha256": "c69a3df8058f6904e8ba8dc174ba772c307934731a4ed0b9959f10057c472bbf"
+    },
+    {
+      "path": "lesson_agent/repository.py",
+      "sha256": "c408a804d4ae097ae066e6f8133c1e58bfdad7220bbdea6d622e4c0e909e6555"
+    },
+    {
+      "path": "lesson_agent/router.py",
+      "sha256": "d5854f110ade5b0d13ef563418438592f21d70585e2396fbdd48402d490d07b9"
+    },
+    {
+      "path": "lesson_agent/service.py",
+      "sha256": "c9eb65dd7d994bfb22fbca3da353e261803fb9f21c57bcbe422c8f3c99d95bf6"
+    },
+    {
+      "path": "lesson_agent/__init__.py",
+      "sha256": "cca4b409bc063879e9fee368c863166b9ba9fdff2319399479729491fecfdf6c"
+    },
+    {
+      "path": "llm/contracts.py",
+      "sha256": "db32a5037f1077d84604b0c2edd532c3ff867839508f085bc966491209e4ba8f"
+    },
+    {
+      "path": "llm/deepseek.py",
+      "sha256": "ff48284eee823ae7aa346308e5efc6d89177fe058b74f0656b8e260b803b5edc"
+    },
+    {
+      "path": "llm/development_fake.py",
+      "sha256": "493e7c95a203832bb1d4a69a70fe8e70ec16cf63a78530710103238e87ab2652"
+    },
+    {
+      "path": "llm/errors.py",
+      "sha256": "0d75453d9b4625bb4224eca20c02a191ee2ab65341c5ab12820c9d72890fa84d"
+    },
+    {
+      "path": "llm/gateway.py",
+      "sha256": "74dd3ce017303142cddef4a26586d07642909d84f1d5fe86239cd650e7fb9dbb"
+    },
+    {
+      "path": "llm/http.py",
+      "sha256": "7a7590b09fcdb561efc87cec1183e168ed8aecc76dc06982f159d812b4ed84a9"
+    },
+    {
+      "path": "llm/runtime.py",
+      "sha256": "569d990b16f51b5af824eed2125ae5cb27758258a2aba1353c57d0300af08993"
+    },
+    {
+      "path": "llm/structured.py",
+      "sha256": "a72c941be0fbb319fa113cc8ee34bb0600fbaa8ba4e6dea260a0d7045f834ad7"
+    },
+    {
+      "path": "llm/__init__.py",
+      "sha256": "ffc0d7b8650a918e4f5c0cb7cea40f14075df7f58c5ec5e6aa952f70e8fa3bef"
+    },
+    {
+      "path": "local_bridge/router.py",
+      "sha256": "5f063be985b127651a948b6720d097ce1d8268d98aad25aeeb181378831a278c"
+    },
+    {
+      "path": "local_bridge/service.py",
+      "sha256": "5c932c130f21b27568201a885c979dfa293d727ed3896437e14171d5ff477d5c"
+    },
+    {
+      "path": "local_bridge/__init__.py",
+      "sha256": "32fdecc7048229d608dbab322d57ef7f10a52dc1125d1c5aaffaa685b24051eb"
+    },
+    {
+      "path": "mvp/models.py",
+      "sha256": "f5ab521b11c9781f9936d148bf4c2ab2cc794a63f2689126e8be70c67d04aa5c"
+    },
+    {
+      "path": "mvp/repository.py",
+      "sha256": "14580f7f60a1fe34706e47e5a99c21dd84ab32146df989f2e4b0202ebcb2e115"
+    },
+    {
+      "path": "mvp/router.py",
+      "sha256": "0c21ced7c0380389d2b3b30931d6b860918b2fa849cf3f706d61858c3fb82865"
+    },
+    {
+      "path": "mvp/__init__.py",
+      "sha256": "53e495dfd0102838e86ecf7e23fb3df9124e0b99fafba85fc53d36046891ac5d"
+    },
+    {
+      "path": "orchestrator/models.py",
+      "sha256": "f8b20cc55bfe9c497b7fe2012a911687af66f001bcacdb2885365bbe8cee9b42"
+    },
+    {
+      "path": "orchestrator/registry.py",
+      "sha256": "17fdae9ba911252ef952db117bcff78f2e423b70feff79d1c593e149e4c2b56b"
+    },
+    {
+      "path": "orchestrator/repository.py",
+      "sha256": "1993ace740580a08fac68df33caf3504b1f0d0a33fb9150b28e214dabd0715bb"
+    },
+    {
+      "path": "orchestrator/router.py",
+      "sha256": "d279b900ce6962350702c2a0c98409238c8bc16fca80fbfeed8486af0fa533d2"
+    },
+    {
+      "path": "orchestrator/service.py",
+      "sha256": "00ee316e312cb138d520ad4547d98ba21d238aa1c4ad5298d6ace177a87ad0e5"
+    },
+    {
+      "path": "orchestrator/__init__.py",
+      "sha256": "453d7dfa4a608251b71b23ed3328df4a0348de87093cd464c46c20b155d723eb"
+    },
+    {
+      "path": "projects/errors.py",
+      "sha256": "d8157ede3b1b2f27ca53e16c7352612c0841ba1da9c97aadd6f3dc2afae53d9d"
+    },
+    {
+      "path": "projects/lifecycle.py",
+      "sha256": "df036fb294182ecf7d9276619c1dea367b8bc7dbd0041898cc04d66c751d17ea"
+    },
+    {
+      "path": "projects/migrations.py",
+      "sha256": "9391e5ad8f6cc962cc62be42cbc27dc630c1a51e6ab34541a696ba62dba0cc7f"
+    },
+    {
+      "path": "projects/models.py",
+      "sha256": "8a685abc00ae57667924b84fb88ae58b084b49e879b10801387f84fd45ab2528"
+    },
+    {
+      "path": "projects/progress.py",
+      "sha256": "2cb9eb810c249aa5131c59ed6db8659a6d33fc8cc7d6810411b81cdf8aa0c3f6"
+    },
+    {
+      "path": "projects/repository.py",
+      "sha256": "d9f920538e03e93fa471596262de1072260842b1a562f322d4c74e42f1994d05"
+    },
+    {
+      "path": "projects/router.py",
+      "sha256": "19ff32427251c78c2deb56e1f5fe27bd3f2a0715b5e85bf84793677167846007"
+    },
+    {
+      "path": "projects/__init__.py",
+      "sha256": "734ac7d15a82529b3a45038dceea6f0599f6a57d811e6f78ca104997df3b99a5"
+    },
+    {
+      "path": "project_packages/errors.py",
+      "sha256": "32a9dfe7305a2dba89871b1b24a1758b2ba032392e32dfb73761261c706ed6ce"
+    },
+    {
+      "path": "project_packages/models.py",
+      "sha256": "c9c4ef297bcdd76e81f746896ff1526d5b3d16b385dff6992d599b8af081eba9"
+    },
+    {
+      "path": "project_packages/privacy.py",
+      "sha256": "a1c9f345634688128f4354413880155be0271289c571527076d415fae21bce5e"
+    },
+    {
+      "path": "project_packages/repository.py",
+      "sha256": "2817d251a82a740f3c9d161f85b9c802d3bd853130565bfdb8f1d5c1e73f7e39"
+    },
+    {
+      "path": "project_packages/router.py",
+      "sha256": "a7ae0262ea2683b1a8f200e245371eb065d7d8135578c61fbadd64209fc49b9c"
+    },
+    {
+      "path": "project_packages/__init__.py",
+      "sha256": "8fe957c0f28f0d2a7b85e62e33664da7cc6f0fd8f8d1d1ba8eb49302583bc4ff"
+    },
+    {
+      "path": "proposals/exporter.py",
+      "sha256": "52bbbd7a608e530900f54ccbc21d0a0623b10dd16d9cb45ab4d8bf7e8a4edd1c"
+    },
+    {
+      "path": "proposals/models.py",
+      "sha256": "d9e5dd0f26aa8b725127feb6ebfe3eadc2e0d6d4a9f4b1c5106e847b9a566dbb"
+    },
+    {
+      "path": "proposals/repository.py",
+      "sha256": "484031dd1838dd4d65c4bcc1fc33becd89d12cc9cf78f02fefae992469f7e352"
+    },
+    {
+      "path": "proposals/router.py",
+      "sha256": "ba391a581066bf86e09f9c378949c1ab739377a663ac0dc18e793b8c47b2ddb3"
+    },
+    {
+      "path": "proposals/service.py",
+      "sha256": "c5e75adab28703ec91554f900aa90289f3847afd1f4c8b8bad498f18f74c8320"
+    },
+    {
+      "path": "proposals/__init__.py",
+      "sha256": "532b5ddc738d58239d09d83efc6878832bef6f5fce84825a03cd58a9cc421934"
+    },
+    {
+      "path": "security/credentials.py",
+      "sha256": "302a14913d0071ef8345511249b5014607f40e256051aeef85d290b1b7490cc4"
+    },
+    {
+      "path": "security/redaction.py",
+      "sha256": "9f3403767ef4cc93faa7d7d5c7b58f0c9665a77ba07f7d1d25bda3645b5774af"
+    },
+    {
+      "path": "security/__init__.py",
+      "sha256": "87ceada3cb91187b79dd8dd60300f3e558a3298c6cfc29e4214bf4a7482045dd"
+    },
+    {
+      "path": "settings/models.py",
+      "sha256": "1d11896655f5e0953e2407c961a1210630f5b8113f9ee82ab18d061ea6dadc5d"
+    },
+    {
+      "path": "settings/provider_repository.py",
+      "sha256": "630537b81eaf3b71dc784b3806d30241e4a7ac9dadb3f499089d0fbaac45850a"
+    },
+    {
+      "path": "settings/provider_service.py",
+      "sha256": "d0aa99cf8e03c55bb5fdb69fa856c2d3084ba6b5a9a957725735b08f492f7834"
+    },
+    {
+      "path": "settings/repository.py",
+      "sha256": "82d15df3c816d8eab0109051a5d54432d6403f444393204057385be56dbe72df"
+    },
+    {
+      "path": "settings/router.py",
+      "sha256": "6af5256ebc38b3ac209acc5bc2302eb031f8484b00749066bdd5c61498d30f7e"
+    },
+    {
+      "path": "settings/service.py",
+      "sha256": "d4d1294c06a6048c5f9810faf681f78896e73b143764038f3fef12e953f39383"
+    },
+    {
+      "path": "settings/url_security.py",
+      "sha256": "0895be34af0762d9cd3a15737bdd8a286184cc896f99b088c51c617770f2502a"
+    },
+    {
+      "path": "settings/__init__.py",
+      "sha256": "6b69f91cd82c5e48f35b57d52009a7a908d03cb0df2cc6d0db721c8fd396a2c5"
+    },
+    {
+      "path": "skills/models.py",
+      "sha256": "ea07c80c7e1d8e6185cecc712499144b0ea8118919c96498b1e1a48e834904d2"
+    },
+    {
+      "path": "skills/model_router.py",
+      "sha256": "aee57e394fd2f003cdfab5a2f948b51bbd5948d0cc91c5650438d0acc3430c97"
+    },
+    {
+      "path": "skills/registry.py",
+      "sha256": "03cebc96ad542115dc338f969e43508c408761db66463f4d945f7e2ab5279d38"
+    },
+    {
+      "path": "skills/repository.py",
+      "sha256": "3639d2de55d7cd7713bb337779ae3e8cc5836eb88f074149406fcf6de0d4b92a"
+    },
+    {
+      "path": "skills/router.py",
+      "sha256": "ef53d8734e9811852e97608de0229f1b7a9302026534abfd5986a11fb6eeb309"
+    },
+    {
+      "path": "skills/runtime.py",
+      "sha256": "3abec1cceeeda9140a75a9ca6d173b66c4c3019e10bf22545db8668c95f654dc"
+    },
+    {
+      "path": "skills/__init__.py",
+      "sha256": "c9fd73281ca7eced62d2411461c861340f5a61c4c6af94ab965df50130c55290"
+    },
+    {
+      "path": "solutions/models.py",
+      "sha256": "b00413d4efe0352482ab23ba1e9059e0141d578dfb0d37c2ec39e3ac8e4be267"
+    },
+    {
+      "path": "solutions/repository.py",
+      "sha256": "af15614c6b0ece77b713c343feaed627c4337fc170eee93ada0f9f12ea150639"
+    },
+    {
+      "path": "solutions/router.py",
+      "sha256": "09372a6795abe220e89543038b2333bb28c270805bf0f07815f6933582791ced"
+    },
+    {
+      "path": "solutions/__init__.py",
+      "sha256": "10ef1aa80193681da919cd2cbc9e8a0c8f48729ab317c8e2eb2aac3a65649255"
+    },
+    {
+      "path": "specs/generator.py",
+      "sha256": "da2c10d75248320e58e3d48e686548f656d874645bd764eb9765742ac4d31884"
+    },
+    {
+      "path": "specs/models.py",
+      "sha256": "480be0b3fdd10d91570955383a272b7d1a8e4b1d9a9407188cf8c800dae79b4b"
+    },
+    {
+      "path": "specs/repository.py",
+      "sha256": "390bacf4eb7114efd4ed65513d8dac0e7ad3f86cdb292d4176bbea3230634baa"
+    },
+    {
+      "path": "specs/router.py",
+      "sha256": "64a172cf1a393c70ec3d6014cfd035cfc59d90cd0447cc3ef7583f66434be111"
+    },
+    {
+      "path": "specs/service.py",
+      "sha256": "3d564e588276236e160095a9338f6c0616bd465703a13475c1b65ff9dc1d945b"
+    },
+    {
+      "path": "specs/workflow.py",
+      "sha256": "5666a96c361ba27a3d6a9b2a0af2d33cce434271ee753523ba328b62dd6ca195"
+    },
+    {
+      "path": "specs/__init__.py",
+      "sha256": "b8b6d29f0e7b7c1bc91670fb7161a3c921a1bb1a68386a7f4f51d31a6a896bb7"
+    },
+    {
+      "path": "v2/cad_intent.py",
+      "sha256": "24e380c93e56d93f3c68c63538bfaaee393df450013be392c56b188880f657cf"
+    },
+    {
+      "path": "v2/kernel.py",
+      "sha256": "060012e97738e6fa42ba831a20a13998b7faca3e3d6eebb49f6e5b15c348314e"
+    },
+    {
+      "path": "v2/models.py",
+      "sha256": "70293f66dc702fea731164b34937d60e86a1bae36cfc5efdca721435c287895b"
+    },
+    {
+      "path": "v2/router.py",
+      "sha256": "77843d2feb1941b4428fd77f2736027248f3e15c6667769375232a7e2690f001"
+    },
+    {
+      "path": "v2/__init__.py",
+      "sha256": "325c759824870428cdc7aa0f602c6323b6d95e8261c3fdcf108566bdb67a2432"
+    },
+    {
+      "path": "hardware/board-profiles/unihiker-k10.md",
+      "sha256": "d742d2a234b183c1794922988271d99b084a27881dfe5626894b42125804b9e3"
+    },
+    {
+      "path": "hardware/board-profiles/xiao-esp32s3-sense.md",
+      "sha256": "2f34799bdcd61307af6ef973d37b668961ecac3a46ece7928172594890f83cb0"
+    },
+    {
+      "path": "hardware/catalog-assets/unihiker-k10-cover.webp",
+      "sha256": "fcae7395e90bcef49f7c727366b12e1d3073705c0f8b36643e04466624e310e1"
+    },
+    {
+      "path": "hardware/hardware-skill-template/manifest.template.json",
+      "sha256": "0cac8b43c8af16dbc8fe481baa1291491b0b5641e52c05736aa2a4aff5938497"
+    },
+    {
+      "path": "hardware/hardware-skill-template/README.md",
+      "sha256": "487f673e41751875909691982dc91f451fc373b1fd9bea2aaf6ebc5c8bc00323"
+    },
+    {
+      "path": "hardware/hardware-skill-template/SKILL.md",
+      "sha256": "7199c0f2fadc3c60e211e8318f544196e1c511d5d1cd4983be6825f942752771"
+    },
+    {
+      "path": "hardware/hardware-skill-template/examples/usage.md",
+      "sha256": "6a6c1d564dcb28c11324dcdff876e3abb0a0bdbaca79f54c4de51459f6c54169"
+    },
+    {
+      "path": "hardware/hardware-skill-template/models/cadquery.py",
+      "sha256": "823d137af7116df2453ecf1c3a0294d433a6688c5714a6ebb5eb07bc2ce64a63"
+    },
+    {
+      "path": "hardware/hardware-skill-template/references/compatibility-rules.md",
+      "sha256": "ca655b38af296934ad5f32daadc5e184fb6f7bd105f5a0f75975efaf7dd4b6fa"
+    },
+    {
+      "path": "hardware/hardware-skill-template/references/integration.md",
+      "sha256": "ed6310e9e863d7f16791c0e76498d3798511adf747682ecaec6fa1891b94f51d"
+    },
+    {
+      "path": "hardware/hardware-skill-template/references/mechanical.md",
+      "sha256": "096a55e383f5fbcb2d9d22a1c258fb32163dfbc89645b4385c59d905bf783dc8"
+    },
+    {
+      "path": "hardware/hardware-skill-template/references/safety.md",
+      "sha256": "7164459de180399a2b1aa2767047164256fbe9fcfe3ec2b15bc409573c28db8a"
+    },
+    {
+      "path": "hardware/hardware-skill-template/references/sources.md",
+      "sha256": "6e078b48316771ff53a6b0ac142ec32b403cab4b70b625be26f9c0ffdae302f3"
+    },
+    {
+      "path": "hardware/hardware-skill-template/references/specifications.md",
+      "sha256": "a9132cedf5a1257374b853340007424e8396efd297dc25c203160434c5435a89"
+    },
+    {
+      "path": "hardware/hardware-skill-template/tests/validation-cases.md",
+      "sha256": "cd66a14da73d5f0975675ef65b5593d03f10cdd2540cc203021529e1f5f4aaa3"
+    },
+    {
+      "path": "hardware/bundled-hardware-skills/k10/CHANGELOG.md",
+      "sha256": "f18227db796da32e65be4f617df695828edd0bb71e34deb4ef874ec3348f9564"
+    },
+    {
+      "path": "hardware/bundled-hardware-skills/k10/manifest.json",
+      "sha256": "9dcf3f38e12a55163fdc8bf282a8106a3e5eb93af0b771d9bff4302dccfb15df"
+    },
+    {
+      "path": "hardware/bundled-hardware-skills/k10/README.md",
+      "sha256": "7c8e8a4b9c12fd579037a38d893b78f8411a55573bbccac6c98f1d78c21fc867"
+    },
+    {
+      "path": "hardware/bundled-hardware-skills/k10/SKILL.md",
+      "sha256": "c29080b909da172d16f4f41f51663396eeb0373ef9da177bb6d89a29a218779b"
+    },
+    {
+      "path": "hardware/bundled-hardware-skills/k10/examples/usage.md",
+      "sha256": "5938c1f4d5064c983b58a057715adc46f33b59cddeef2cb400466ba74690d351"
+    },
+    {
+      "path": "hardware/bundled-hardware-skills/k10/models/cadquery.py",
+      "sha256": "ea55ca3d986a2c36478048f0afd7a27b9b25a7986bb4b6d3ec85258bdcb7c914"
+    },
+    {
+      "path": "hardware/bundled-hardware-skills/k10/references/compatibility-rules.md",
+      "sha256": "8b03d606866140776ad1bbbcdd6d06e4c18ade63ca5a35bed5498d32e62a6e7c"
+    },
+    {
+      "path": "hardware/bundled-hardware-skills/k10/references/integration.md",
+      "sha256": "80360042890e33ab5ab71497c6e59b9223ec9dce429b4179313afc8511bdcfc1"
+    },
+    {
+      "path": "hardware/bundled-hardware-skills/k10/references/mechanical.md",
+      "sha256": "aa4ff617ef7ce09c31a329a3bcc251da5dca42c9cd5b862742b5f5b2f89ae18a"
+    },
+    {
+      "path": "hardware/bundled-hardware-skills/k10/references/safety.md",
+      "sha256": "fc01d0319d298af010263cdf9c440be3c864338661c551a3c640e9961b28e2ae"
+    },
+    {
+      "path": "hardware/bundled-hardware-skills/k10/references/sources.md",
+      "sha256": "8b4cccb925d84603493d5b9fe9d2e45981371e2b37f1ed83474d27ad57e116e3"
+    },
+    {
+      "path": "hardware/bundled-hardware-skills/k10/references/specifications.md",
+      "sha256": "38688bfc495b194561d17b0ae8bcb63cee55a9d01988d5b7ae645318ca9f0a9c"
+    },
+    {
+      "path": "hardware/bundled-hardware-skills/k10/tests/validation-cases.md",
+      "sha256": "f38adce6536352f58e14e1b3915229c74c1b9afbe59c490336277bd30c8122ae"
+    },
+    {
+      "path": "hardware/bundled-hardware-catalog/hardware-skills/dfr0029-button/CHANGELOG.md",
+      "sha256": "3ebcf7e18fc7bc4b70de95ad6f9f1b7ee3e98b870662b1c2fc45c2fc0b0ea923"
+    },
+    {
+      "path": "hardware/bundled-hardware-catalog/hardware-skills/dfr0029-button/manifest.json",
+      "sha256": "bfd6c99e721a6dfa1fd4b759290501dd40ebad9129f2bf6ba0c3c761d59c5e9a"
+    },
+    {
+      "path": "hardware/bundled-hardware-catalog/hardware-skills/dfr0029-button/README.md",
+      "sha256": "a0d8f7561770b5e05f0efe806cdacb2f583cb42af822fe3e59294519019fa407"
+    },
+    {
+      "path": "hardware/bundled-hardware-catalog/hardware-skills/dfr0029-button/SKILL.md",
+      "sha256": "1ed6a6494e3cb0c6046361d267ce8b4c2fb20284853c92e48f0d6c3b4290a437"
+    },
+    {
+      "path": "hardware/bundled-hardware-catalog/hardware-skills/dfr0486/CHANGELOG.md",
+      "sha256": "3ebcf7e18fc7bc4b70de95ad6f9f1b7ee3e98b870662b1c2fc45c2fc0b0ea923"
+    },
+    {
+      "path": "hardware/bundled-hardware-catalog/hardware-skills/dfr0486/manifest.json",
+      "sha256": "f2bc0fe80aacc8975ad3fc7f9faa44ab698a74e2a989027785b46d4d57f3d439"
+    },
+    {
+      "path": "hardware/bundled-hardware-catalog/hardware-skills/dfr0486/README.md",
+      "sha256": "220d30ea8d8a503b427bb053f9c508175a5e20f35ad56a97611ddc9766797ba3"
+    },
+    {
+      "path": "hardware/bundled-hardware-catalog/hardware-skills/dfr0486/SKILL.md",
+      "sha256": "dc7c1937d55776d07bbec8661d1826bbe92ec8953a32dfb1e83a26f95ffeab26"
+    },
+    {
+      "path": "hardware/bundled-hardware-catalog/hardware-skills/dfr0523/CHANGELOG.md",
+      "sha256": "a74da4143f3f6e3495dde44d2dde63ef5dbe9c60abf9d1d2945b6c151098d103"
+    },
+    {
+      "path": "hardware/bundled-hardware-catalog/hardware-skills/dfr0523/manifest.json",
+      "sha256": "32128c454126f0c613bb9b81ba4eae92b60f1d2a959d5e21d830dcf8f75ea3d3"
+    },
+    {
+      "path": "hardware/bundled-hardware-catalog/hardware-skills/dfr0523/README.md",
+      "sha256": "42b661c4b82b9018ba77bba501bde56e8fc8f66102751b398c3fdae871997b63"
+    },
+    {
+      "path": "hardware/bundled-hardware-catalog/hardware-skills/dfr0523/SKILL.md",
+      "sha256": "aa35486fa94865dccef44c60cd5507cf576de04b5fee2ffea878ab2e161ee584"
+    },
+    {
+      "path": "hardware/bundled-hardware-catalog/hardware-skills/regulated-5v-3a-power/CHANGELOG.md",
+      "sha256": "30f11a3f2bc39f767791f9633a00b25301dc7411b12cf7c78d7fe7f20ab5c133"
+    },
+    {
+      "path": "hardware/bundled-hardware-catalog/hardware-skills/regulated-5v-3a-power/manifest.json",
+      "sha256": "5a6e59560bafab44b6cb30bef6e9fd980af8e47c60191dfd5604ffca3e11a868"
+    },
+    {
+      "path": "hardware/bundled-hardware-catalog/hardware-skills/regulated-5v-3a-power/README.md",
+      "sha256": "303277fe66e1fe3b0236b3d3e9b875c26cd412d43920c136f9546791f2bd5777"
+    },
+    {
+      "path": "hardware/bundled-hardware-catalog/hardware-skills/regulated-5v-3a-power/SKILL.md",
+      "sha256": "1ee8e64d01958cf6eaf46e8ec08eb0f9f1b48595c56be00825b51c559ec0fb06"
+    },
+    {
+      "path": "hardware/bundled-hardware-catalog/hardware-skills/sen0193/CHANGELOG.md",
+      "sha256": "e59a54bdcbf13433b7a66081b7805eb83e30e59dc8d3ba8f73e2608b238894f3"
+    },
+    {
+      "path": "hardware/bundled-hardware-catalog/hardware-skills/sen0193/manifest.json",
+      "sha256": "42c18b574a4a5491d0df9921646e01b0f6e29fab1002699781c86f5082f46d26"
+    },
+    {
+      "path": "hardware/bundled-hardware-catalog/hardware-skills/sen0193/README.md",
+      "sha256": "c4c2bc1a228c93ac0e1b469f6b370551aa894172d8fc16b3ad379d2c9628edae"
+    },
+    {
+      "path": "hardware/bundled-hardware-catalog/hardware-skills/sen0193/SKILL.md",
+      "sha256": "f399462ea3da2cb458df7d4a0b8458dc8b11df84c5f8893ec7fba0e95c8d43cc"
+    },
+    {
+      "path": "hardware/bundled-hardware-catalog/hardware-skills/sen0388/CHANGELOG.md",
+      "sha256": "3ebcf7e18fc7bc4b70de95ad6f9f1b7ee3e98b870662b1c2fc45c2fc0b0ea923"
+    },
+    {
+      "path": "hardware/bundled-hardware-catalog/hardware-skills/sen0388/manifest.json",
+      "sha256": "6581d59a259df3318dc1e9c5193849c6c43993f2a640f24babcae0767b9ded71"
+    },
+    {
+      "path": "hardware/bundled-hardware-catalog/hardware-skills/sen0388/README.md",
+      "sha256": "92aa8d8eeffca04dd4b510e47fd90528d1e249b1f1ebcc05758a71a1a2ad86d9"
+    },
+    {
+      "path": "hardware/bundled-hardware-catalog/hardware-skills/sen0388/SKILL.md",
+      "sha256": "0b8ae42cf47a3a5b85451f3cfb7794548d92cb553f21b84705575307f876d419"
+    },
+    {
+      "path": "hardware/bundled-hardware-catalog/hardware-skills/sen0388/examples/usage.md",
+      "sha256": "e05cf469f385994317a95b943383e45fb35d9e8c6365915acf4d557451d25741"
+    },
+    {
+      "path": "hardware/bundled-hardware-catalog/hardware-skills/sen0388/references/compatibility-rules.md",
+      "sha256": "5bffd306b2b927ab5304a2f8eb568a9b0890686149b3f24845e2891bf1a4e11f"
+    },
+    {
+      "path": "hardware/bundled-hardware-catalog/hardware-skills/sen0388/references/integration.md",
+      "sha256": "292dee6a9c16a3d0ffffefcb14f251b5230b018efc6dc3626e12fa0029464db8"
+    },
+    {
+      "path": "hardware/bundled-hardware-catalog/hardware-skills/sen0388/references/safety.md",
+      "sha256": "03ad2bb343626b9ab142f2b931f15ca20c914c26cbc92687363b1a66522a1159"
+    },
+    {
+      "path": "hardware/bundled-hardware-catalog/hardware-skills/sen0388/references/sources.md",
+      "sha256": "32eda55694db82b208f964ef1686de63f1dd5cf50f2ccd2040bca9680f7127e5"
+    },
+    {
+      "path": "hardware/bundled-hardware-catalog/hardware-skills/sen0388/references/specifications.md",
+      "sha256": "4f8b088753e3acbfbca7d9e7e6db00991e18049a4580549fd18190d2311fba13"
+    },
+    {
+      "path": "hardware/bundled-hardware-catalog/hardware-skills/sen0388/tests/validation-cases.md",
+      "sha256": "e6dbacaabac8194e3c03d62b6d100db80a9c38b5729a4ec830587adaf37a418b"
+    },
+    {
+      "path": "hardware/bundled-hardware-catalog/hardware-skills/sen0193/examples/usage.md",
+      "sha256": "d2557314d54e25c136f0d3a4150166d04cb1cb12d7e41d6af31e8d690e32b16c"
+    },
+    {
+      "path": "hardware/bundled-hardware-catalog/hardware-skills/sen0193/references/compatibility-rules.md",
+      "sha256": "d79a50c507d57c76333ba52f1a7f994c83402b0c978654d609991b4649fe27de"
+    },
+    {
+      "path": "hardware/bundled-hardware-catalog/hardware-skills/sen0193/references/integration.md",
+      "sha256": "7f52d759a464d72fa8389c25db91387da38496869747a1d8a757b5b505c33aec"
+    },
+    {
+      "path": "hardware/bundled-hardware-catalog/hardware-skills/sen0193/references/safety.md",
+      "sha256": "88959861a707de7d92f5a81ddef263b0be8b6e2d9b3d6e950a33963ca5c645f4"
+    },
+    {
+      "path": "hardware/bundled-hardware-catalog/hardware-skills/sen0193/references/sources.md",
+      "sha256": "53004b003dd9eec2edc038bb749223625eec55c884400a1b143d2845654abd70"
+    },
+    {
+      "path": "hardware/bundled-hardware-catalog/hardware-skills/sen0193/references/specifications.md",
+      "sha256": "fe4f2452f5717e8e66680a56cdec96ddf1ff7afa767d28b76fbdf4d635976b81"
+    },
+    {
+      "path": "hardware/bundled-hardware-catalog/hardware-skills/sen0193/tests/validation-cases.md",
+      "sha256": "837d5b0fe5fb9c451fbe1ded3046d9970792c8c4404de0d12148cea58dfe7611"
+    },
+    {
+      "path": "hardware/bundled-hardware-catalog/hardware-skills/regulated-5v-3a-power/examples/usage.md",
+      "sha256": "356397d31cb63d9f84c1fa56894622ca3c34b753e1c7c1d59e6833d4bd0836cc"
+    },
+    {
+      "path": "hardware/bundled-hardware-catalog/hardware-skills/regulated-5v-3a-power/references/compatibility-rules.md",
+      "sha256": "45b530493f349cc9fd0eb1d24bf123684a4d9238f67b410db307e9386662b3ec"
+    },
+    {
+      "path": "hardware/bundled-hardware-catalog/hardware-skills/regulated-5v-3a-power/references/integration.md",
+      "sha256": "678ffe853eb9391551a444749cc614eeaa1912a762be9728c3963dbe5a78c93f"
+    },
+    {
+      "path": "hardware/bundled-hardware-catalog/hardware-skills/regulated-5v-3a-power/references/safety.md",
+      "sha256": "a07e613a9dda545d992e5d8bbacbf3eb3b3633e9fe279d016feb68397cc08b03"
+    },
+    {
+      "path": "hardware/bundled-hardware-catalog/hardware-skills/regulated-5v-3a-power/references/sources.md",
+      "sha256": "ab781db19cebd0ab497b403167dcbdd53c3ad4f12fc7176b94327001b7201ed0"
+    },
+    {
+      "path": "hardware/bundled-hardware-catalog/hardware-skills/regulated-5v-3a-power/references/specifications.md",
+      "sha256": "a5cc2a998118384ccec27df0fe8de4f7e5925966731ca37e6427c37ed578d541"
+    },
+    {
+      "path": "hardware/bundled-hardware-catalog/hardware-skills/regulated-5v-3a-power/tests/validation-cases.md",
+      "sha256": "b8d47f3fa9f9be8ecb343a1e91f2ab1eea1bfd3c9467f699d50559aa86d8eb8a"
+    },
+    {
+      "path": "hardware/bundled-hardware-catalog/hardware-skills/dfr0523/examples/usage.md",
+      "sha256": "2498004318c8e4f8f85822a1a4c74c73998b7eb96d86672f72b551ec8154bfdb"
+    },
+    {
+      "path": "hardware/bundled-hardware-catalog/hardware-skills/dfr0523/references/compatibility-rules.md",
+      "sha256": "9e9f9f18c7a73d1d2d33c64f5ab2eca5e82d19cf1b7015de67e296064ba1bf46"
+    },
+    {
+      "path": "hardware/bundled-hardware-catalog/hardware-skills/dfr0523/references/integration.md",
+      "sha256": "80bdb37fd7b66a952d30385aa0705238fca6f1d001a5e1854a79eb120ec7b05d"
+    },
+    {
+      "path": "hardware/bundled-hardware-catalog/hardware-skills/dfr0523/references/safety.md",
+      "sha256": "c0ea941032f0ce09ddb685ced6f000cc38a2b7d35e0a9f1b3287e44aa9288147"
+    },
+    {
+      "path": "hardware/bundled-hardware-catalog/hardware-skills/dfr0523/references/sources.md",
+      "sha256": "c9f67434af915afe262cb8e5575ff6993d3c4e61aac28dcc09893ab73c0494ca"
+    },
+    {
+      "path": "hardware/bundled-hardware-catalog/hardware-skills/dfr0523/references/specifications.md",
+      "sha256": "3fc185ac98787527dc27f441e3f21ca99ef4311e5e63f49abc6560d615224432"
+    },
+    {
+      "path": "hardware/bundled-hardware-catalog/hardware-skills/dfr0523/tests/validation-cases.md",
+      "sha256": "0ce90392f3dff3cb7a8083215ee765c3d891827712b53cd1570852807367c30d"
+    },
+    {
+      "path": "hardware/bundled-hardware-catalog/hardware-skills/dfr0486/examples/usage.md",
+      "sha256": "7bf186ad50a51526f9a147e84872580640ccd772b559589f03bab453e128b34f"
+    },
+    {
+      "path": "hardware/bundled-hardware-catalog/hardware-skills/dfr0486/references/compatibility-rules.md",
+      "sha256": "76a0f1fe3817a9101034e7d46ea3f1a7419e93f4f326352977dfd7d3a4d43761"
+    },
+    {
+      "path": "hardware/bundled-hardware-catalog/hardware-skills/dfr0486/references/integration.md",
+      "sha256": "68f0420b03cb2c5d52a2bc797b65ae252e84ae4af7c07c80a19fbdd7ee8d0918"
+    },
+    {
+      "path": "hardware/bundled-hardware-catalog/hardware-skills/dfr0486/references/safety.md",
+      "sha256": "04d498796482141444394a01e59131e2a60c58329fd99bad12be4193dad17fd1"
+    },
+    {
+      "path": "hardware/bundled-hardware-catalog/hardware-skills/dfr0486/references/sources.md",
+      "sha256": "fcf7232b6a0f3738c3398e36b3e818fe06e2d127532f500f31b8e67cc6df64d0"
+    },
+    {
+      "path": "hardware/bundled-hardware-catalog/hardware-skills/dfr0486/references/specifications.md",
+      "sha256": "db8192ae8c1e2f4ad9bfed087ef25501af16e3085e9fee0adaf31e297cc2a30a"
+    },
+    {
+      "path": "hardware/bundled-hardware-catalog/hardware-skills/dfr0486/tests/validation-cases.md",
+      "sha256": "073c95c8e189b02a73221ead9c0afa62e45e5e7530a63e3decbdae21a7581bd4"
+    },
+    {
+      "path": "hardware/bundled-hardware-catalog/hardware-skills/dfr0029-button/examples/usage.md",
+      "sha256": "72130fc83c29e9d90ff7f8cec59de55571b6513cac74c9244393129fc3192714"
+    },
+    {
+      "path": "hardware/bundled-hardware-catalog/hardware-skills/dfr0029-button/references/compatibility-rules.md",
+      "sha256": "920941e39c20d4f15bf64af8d372b7241f70ac580d28b6e4364703b9019be955"
+    },
+    {
+      "path": "hardware/bundled-hardware-catalog/hardware-skills/dfr0029-button/references/integration.md",
+      "sha256": "a60809206079fa76158f70d5fec20155546dc0e577e3e04eed81c4229cd7a277"
+    },
+    {
+      "path": "hardware/bundled-hardware-catalog/hardware-skills/dfr0029-button/references/safety.md",
+      "sha256": "85b0387598e729d54e6c44bd68486f2400ac8127fc5a8ef8b362a83a2079c9cb"
+    },
+    {
+      "path": "hardware/bundled-hardware-catalog/hardware-skills/dfr0029-button/references/sources.md",
+      "sha256": "ab3c7603ce9bf2ba8aa7d47d6793670ab2856bac0eae9cfe80d7e2a405027116"
+    },
+    {
+      "path": "hardware/bundled-hardware-catalog/hardware-skills/dfr0029-button/references/specifications.md",
+      "sha256": "ca0c7dc3154d189d554af5ca86f8eeeb817962fb3a712ab49356e2af3b434c68"
+    },
+    {
+      "path": "hardware/bundled-hardware-catalog/hardware-skills/dfr0029-button/tests/validation-cases.md",
+      "sha256": "cb4a97f0501968e99dc83f0e49ba24811e019739ef2c995afea01f1060ea7222"
+    },
+    {
+      "path": "hardware/board-skills/unihiker-k10/BUILD_REPORT.md",
+      "sha256": "655326469da796e8a4415a30cfe3d4e21da91518a5b8a296f8db152da4acb294"
+    },
+    {
+      "path": "hardware/board-skills/unihiker-k10/CHANGELOG.md",
+      "sha256": "c4c5c8718fa08d5a27dfe23f59a4e8e8f591f2d559893c68fc3a6bc2eed2414a"
+    },
+    {
+      "path": "hardware/board-skills/unihiker-k10/CHECKSUMS.sha256",
+      "sha256": "2f7ac385fe9ec6aa1aeada5584dc28f7044599da84ef403c865b42f3d01f268a"
+    },
+    {
+      "path": "hardware/board-skills/unihiker-k10/manifest.json",
+      "sha256": "f3e86acd55599092a4868de85593f058fa350c50a3b0ac70cddf14e360946dcd"
+    },
+    {
+      "path": "hardware/board-skills/unihiker-k10/NOTICE.md",
+      "sha256": "80d1e71b4bbff52bce21c6a9a49acab986f168186f1b7440c8108126cfbc0902"
+    },
+    {
+      "path": "hardware/board-skills/unihiker-k10/README.md",
+      "sha256": "4227e0c4435c792c0984173495fe67f5587f59a98527d294242eb0c47ba50c3a"
+    },
+    {
+      "path": "hardware/board-skills/unihiker-k10/SKILL.md",
+      "sha256": "74bcfc87dad44b1d92bce47de16fd15a59df444b456e48724b6c8080256e284c"
+    },
+    {
+      "path": "hardware/board-skills/xiao-esp32s3-sense/CHECKSUMS.sha256",
+      "sha256": "3a7d98818bde2144ab176693f6849ffb29542a6c52b46d818e419b6a8d049e72"
+    },
+    {
+      "path": "hardware/board-skills/xiao-esp32s3-sense/manifest.json",
+      "sha256": "bcbd876fb2e79947441302df07da98a6e3afdc5c775b98d588cc7916e909a822"
+    },
+    {
+      "path": "hardware/board-skills/xiao-esp32s3-sense/SKILL.md",
+      "sha256": "bd34912e77edc69ea30c38de6b7eb9e3d236877b404a9ed8af5fdcdf78036613"
+    },
+    {
+      "path": "hardware/board-skills/xiao-esp32s3-sense/references/00-sources-and-scope.md",
+      "sha256": "841b14b472b2eb656508d76f5d18083cc96f17f16121423478bce1416dd12470"
+    },
+    {
+      "path": "hardware/board-skills/xiao-esp32s3-sense/references/01-platform-and-firmware.md",
+      "sha256": "8bd457ca57f6184a853dc7d187e17c8ac487caa5afd3651fdc533e746f4dcbb5"
+    },
+    {
+      "path": "hardware/board-skills/xiao-esp32s3-sense/references/04-onboard-api.md",
+      "sha256": "23482fdb2d05694d94ff0ca0cdddbc057af7d360bc0919fec8660fe370a7baf5"
+    },
+    {
+      "path": "hardware/board-skills/xiao-esp32s3-sense/references/05-storage-audio-api.md",
+      "sha256": "e9410db4efa72baed6be303967ba42ba6977a41ecd9dbfc5ee094e6baaac8b8b"
+    },
+    {
+      "path": "hardware/board-skills/xiao-esp32s3-sense/references/08-external-hardware-api.md",
+      "sha256": "56fd367c9c049c3295c334542b544a08b92d1d9bb8c02f9851c957f372d9d527"
+    },
+    {
+      "path": "hardware/board-skills/xiao-esp32s3-sense/references/09-safety-and-troubleshooting.md",
+      "sha256": "d75c4517582b865ecf8d8df1c7c57c7bebac5d6561770f5c96911a0da42ac6df"
+    },
+    {
+      "path": "hardware/board-skills/xiao-esp32s3-sense/references/10-verification-matrix.md",
+      "sha256": "b0338fb5530ff51bcfd80cc8c175ef962d4c2a9dc2ec430cafc431c2d87dedf1"
+    },
+    {
+      "path": "hardware/board-skills/xiao-esp32s3-sense/templates/00_profile_probe.py",
+      "sha256": "9007a855644b6571363526a4a40178fbf54199bddc2ecc62d5aa6b474ba81286"
+    },
+    {
+      "path": "hardware/board-skills/xiao-esp32s3-sense/templates/12_gpio_test.py",
+      "sha256": "9623f0b7ffe34e90599c552f3b43183095502f91cccb1da03454bcbe05ea43c9"
+    },
+    {
+      "path": "hardware/board-skills/xiao-esp32s3-sense/templates/14_camera_preview.py",
+      "sha256": "198bd0f0938b31a946c6ca7749c789ac409042162d72be41c9c804eeacc18f04"
+    },
+    {
+      "path": "hardware/board-skills/unihiker-k10/references/00-sources-and-scope.md",
+      "sha256": "410ee5f17508a136192d40bbe723e301e9dccf56d5404db3506093312cfa2f7c"
+    },
+    {
+      "path": "hardware/board-skills/unihiker-k10/references/01-platform-and-firmware.md",
+      "sha256": "6923f9a23b873b3cf3664c1114e8c639d6cb9d3d191177c2ce22630468902739"
+    },
+    {
+      "path": "hardware/board-skills/unihiker-k10/references/02-deployment.md",
+      "sha256": "775dd76920d1f6533944687aa05af7387eec1c2844833f4e42cb1ed31f376377"
+    },
+    {
+      "path": "hardware/board-skills/unihiker-k10/references/03-screen-api.md",
+      "sha256": "ca1ac9d5cd6db0c3b4378ec2637c6ce7f9646efef836c365a965a7635e987716"
+    },
+    {
+      "path": "hardware/board-skills/unihiker-k10/references/04-onboard-api.md",
+      "sha256": "067f10b79635f0c25b9f00b29c3b124b1d543c9c8d9e5945786774c21b78251a"
+    },
+    {
+      "path": "hardware/board-skills/unihiker-k10/references/05-storage-audio-api.md",
+      "sha256": "ee766eb88442f9c72aa6f20a7350505dc63cba329b6d4808536eb0918ccb3322"
+    },
+    {
+      "path": "hardware/board-skills/unihiker-k10/references/06-connectivity-api.md",
+      "sha256": "5037a6a60854819e11d00623acc1415bc75b79477c9a529a69c078c72eae1c0a"
+    },
+    {
+      "path": "hardware/board-skills/unihiker-k10/references/07-ai-api.md",
+      "sha256": "8b0fefe13eef6440e2e03a8d23423eebbbf270e6c3563d49c792a82a0b90a8d5"
+    },
+    {
+      "path": "hardware/board-skills/unihiker-k10/references/08-external-hardware-api.md",
+      "sha256": "e5d13956594f661f017a11a7cc44149b314863b82d244ed1309f7ffd0c347861"
+    },
+    {
+      "path": "hardware/board-skills/unihiker-k10/references/09-safety-and-troubleshooting.md",
+      "sha256": "b0737e1dd2b371e66ec016021da6da0884dc5fad5d8eb16fa0f694171a579633"
+    },
+    {
+      "path": "hardware/board-skills/unihiker-k10/references/10-verification-matrix.md",
+      "sha256": "ba7874888c45c6d376cfd1e83eb823866ec5a0b1bafd8eb4ebf5ec372460fd14"
+    },
+    {
+      "path": "hardware/board-skills/unihiker-k10/templates/00_profile_probe.py",
+      "sha256": "fdc139075fea00c813e698eed5b66966eddc734140ee1d272462d51e1090d7e6"
+    },
+    {
+      "path": "hardware/board-skills/unihiker-k10/templates/01_screen_shapes.py",
+      "sha256": "653f2012487a101e6a9bd8558df2d60fcd062270ae853373e3017c3b18e772b1"
+    },
+    {
+      "path": "hardware/board-skills/unihiker-k10/templates/02_onboard_dashboard.py",
+      "sha256": "35a87c7ca82bdf98d0365bc7a2533072747c4d756eec381beb69f3c95e70925b"
+    },
+    {
+      "path": "hardware/board-skills/unihiker-k10/templates/03_button_event_safe.py",
+      "sha256": "24ed212a1abdbe7dd9b1f39a359f217dcf394250cd8abc1f4e6acaa96d7ac4ae"
+    },
+    {
+      "path": "hardware/board-skills/unihiker-k10/templates/04_rgb_status.py",
+      "sha256": "c733408cfec1f7510a612a498244ece27684ce75be17b55eec4a5ea765273262"
+    },
+    {
+      "path": "hardware/board-skills/unihiker-k10/templates/05_tf_card_list.py",
+      "sha256": "e574827c8e0cbca4f00a8decc2718cebc1325765005f13a0fa57bcc82d6d1c1c"
+    },
+    {
+      "path": "hardware/board-skills/unihiker-k10/templates/06_audio_record_play.py",
+      "sha256": "a25f8caabe834b7177c1cefb9c78070234d99892d9b16c6ac8614c0e4fc44458"
+    },
+    {
+      "path": "hardware/board-skills/unihiker-k10/templates/07_wifi_connect.py",
+      "sha256": "cbf070a715ed6a15a970d9da85feed6d625efb56736bce1881c0ee895c69f179"
+    },
+    {
+      "path": "hardware/board-skills/unihiker-k10/templates/08_mqtt_probe.py",
+      "sha256": "1ddb67a9179ff9097192ad852bc68c2a8e91e7dae060e45dff9ac38f99cf84bd"
+    },
+    {
+      "path": "hardware/board-skills/unihiker-k10/templates/09_ble_hid.py",
+      "sha256": "4cf747ec20608d82b5a78afc740907a96ad1fcd8bd698ee5ac3a483ea3d64848"
+    },
+    {
+      "path": "hardware/board-skills/unihiker-k10/templates/10_ai_qr_scanner.py",
+      "sha256": "ec622555a85f7862a12e0a61444cc1cf23ed89556af1d12918b71edda2450512"
+    },
+    {
+      "path": "hardware/board-skills/unihiker-k10/templates/11_ai_motion_detect.py",
+      "sha256": "a0fea47bf6798e724a011729c94de182653d793c8b09ca6e87599fc288846504"
+    },
+    {
+      "path": "hardware/board-skills/unihiker-k10/templates/12_gpio_test.py",
+      "sha256": "219ca79d4f8ac89e6636cee2c1e26962194c8b19d0fce22996912273c820b275"
+    },
+    {
+      "path": "hardware/board-skills/unihiker-k10/templates/13_servo_safe.py",
+      "sha256": "379e85cffffd8ec0927a21af2baf2cb758b6966c17bea109291d6ce71b8ab888"
+    },
+    {
+      "path": "hardware/board-skills/unihiker-k10/templates/14_camera_preview.py",
+      "sha256": "db225854a40be1c9a4eac590a07df82a26fef37931a8447ef69d26dddb880571"
+    },
+    {
+      "path": "hardware/board-skills/unihiker-k10/templates/15_asr_tts.py",
+      "sha256": "06321504db82ef851ecbcabdbbb035606a31f89bdaa116dee9bb9035e7625e0b"
+    },
+    {
+      "path": "hardware/board-skills/unihiker-k10/templates/16_ai_face_recognition.py",
+      "sha256": "b73d4a6fea6b98254d8d607162130c3cb5971071b3273d1ce17017f6d41b86a1"
+    },
+    {
+      "path": "hardware/board-skills/unihiker-k10/templates/17_dht_sensor.py",
+      "sha256": "ce9ea1506fcd5b766c93968470e00d045fda10e4b39cb7255e24158f99ff361e"
+    },
+    {
+      "path": "hardware/board-skills/unihiker-k10/templates/18_ds18b20_sensor.py",
+      "sha256": "24def367d84900d656d8375be36c575510c1306005f856911628c57926ed8aac"
+    },
+    {
+      "path": "hardware/board-skills/unihiker-k10/templates/19_ultrasonic.py",
+      "sha256": "bf15bef2fcc6079f1ea75db8231af1ffcae21a59a53eea0f9880a1190d9713af"
+    },
+    {
+      "path": "hardware/board-skills/unihiker-k10/templates/20_neopixel.py",
+      "sha256": "6466469aa360fec070c02217db5144c030801f48b04c995a39463ed47e06ce3b"
+    },
+    {
+      "path": "hardware/board-skills/unihiker-k10/templates/21_force_sensor_probe.py",
+      "sha256": "8c611f58708d4e3dda80b22e57d70b1f0066ff46e69eded401d5892bfa355249"
+    },
+    {
+      "path": "hardware/board-skills/unihiker-k10/templates/README.md",
+      "sha256": "bb03a5eb472d6681b4df63e4d9d63bdb5135926c936f965f77269dc30ec082e0"
+    },
+    {
+      "path": "hardware/board-skills/unihiker-k10/tests/agent_acceptance_tests.md",
+      "sha256": "c5ed95cd61c5bb60c56137802ec63bd1f8432faafb1d6234eb6fc605d160559f"
+    },
+    {
+      "path": "hardware/board-skills/unihiker-k10/tests/syntax_check.py",
+      "sha256": "e2e2d9bd1e3ba583f40cee7b5c22075c3510dd5bcfefdb2f99b7503bbf6fafc9"
+    },
+    {
+      "path": "hardware/board-skills/unihiker-k10/examples/button_rgb/main.py",
+      "sha256": "8c9264585064ac278a5bb79cc01d508f2781e52d72a9cf76e3b0f84d850e2866"
+    },
+    {
+      "path": "hardware/board-skills/unihiker-k10/examples/button_rgb/README.md",
+      "sha256": "595844985f93a6d04725832463f26a0a16dba3827fc1b4786785e2a8082b31f7"
+    },
+    {
+      "path": "hardware/board-skills/unihiker-k10/examples/environment_monitor/main.py",
+      "sha256": "cd91de984695ac4b21551749d5120c98230a76a676661b9e9cbd251007d8bf2e"
+    },
+    {
+      "path": "hardware/board-skills/unihiker-k10/examples/environment_monitor/README.md",
+      "sha256": "990f299d1ea5b87287b74a88b2cf0eae5f397416091705abf702804488188ed7"
+    },
+    {
+      "path": "hardware/board-skills/unihiker-k10/examples/qr_scanner/main.py",
+      "sha256": "ec622555a85f7862a12e0a61444cc1cf23ed89556af1d12918b71edda2450512"
+    },
+    {
+      "path": "hardware/board-skills/unihiker-k10/examples/qr_scanner/README.md",
+      "sha256": "c34ba3a0cf6a0c0d1a275268c4bb062899cb941882e59dabf7f2f011cd7a489b"
+    },
+    {
+      "path": "experts/prompts/entry-router.md",
+      "sha256": "9619b604607f4f003cbf31ced28e454a1c082a17baa6c24f238cd3913d17604a"
+    },
+    {
+      "path": "experts/prompts/problem-guide.md",
+      "sha256": "01e3c4aeebce7bf805129c535e0bcddd7547c83df1a155ac45640ad63e6e7d74"
+    },
+    {
+      "path": "experts/prompts/project-coordinator.md",
+      "sha256": "8e25d9b9d7ff6bf4e1da3cb9d430d1653aefd5a2e465c149de7bfa4cd07edb1e"
+    },
+    {
+      "path": "experts/prompts/smart-engineer.md",
+      "sha256": "7e74f37fdfd70852b5cb6dc1aa19c53cf1669125f46f982a5815c573a2251112"
+    },
+    {
+      "path": "experts/prompts/structure-engineer.md",
+      "sha256": "78c459e9f27300afb906b128af1a1c64784938e6acd6a1ae33bc048cca2e843e"
+    },
+    {
+      "path": "experts/skill-templates/micropython-board-project/SKILL.md",
+      "sha256": "3eaafead1715a3346aaf26ad9cd0cfa770ffefead1342d2184b3110791d575d8"
+    },
+    {
+      "path": "experts/skill-templates/micropython-board-project/agents/openai.yaml",
+      "sha256": "a3c00b441a818496e26cf1578f8b3717afeb452c489f5acd2cb450e7f8b09ac8"
+    },
+    {
+      "path": "experts/skill-templates/micropython-board-project/references/BOARD_PROFILE.md",
+      "sha256": "a36c5d2e5633eead501f4374ae9447096feaa573a44043d8a27878457f47a404"
+    },
+    {
+      "path": "experts/skill-templates/micropython-board-project/references/VALIDATION.md",
+      "sha256": "c5127f8468f8586dc08167c5d593495ffaa10b5332861cd1b68181e295631207"
+    },
+    {
+      "path": "experts/agent-packages/problem-guide/manifest.json",
+      "sha256": "926809a5938a25bc00de00eff6cfd3a28f03234e3072ffa42008643f75553602"
+    },
+    {
+      "path": "experts/agent-packages/problem-guide/SKILL.md",
+      "sha256": "f0679b540ce58fc8a7b75fa4a5624dc493f2f692c2f3846da80ef7d27860ce14"
+    },
+    {
+      "path": "experts/agent-packages/smart-engineer/manifest.json",
+      "sha256": "9e2b24f21e9285ba000d5bb32fd56bc13d78c877447dd176b819118f0fa0c396"
+    },
+    {
+      "path": "experts/agent-packages/smart-engineer/SKILL.md",
+      "sha256": "7432db985baaaec9ce535e6bb7a512b138fceb83a17e9ce4379d4acd6d339cfe"
+    },
+    {
+      "path": "experts/agent-packages/structure-engineer/manifest.json",
+      "sha256": "b1a881dc094dc21d7f150235f366ae3c5d9a2539f4b72daf956cf9fa305b66d9"
+    },
+    {
+      "path": "experts/agent-packages/structure-engineer/SKILL.md",
+      "sha256": "1b5c025d25804ab12f63311d4211dcfe4a6e106119276b021178a08d41708e92"
+    },
+    {
+      "path": "experts/agent-packages/structure-engineer/references/CAD_DRAFT.md",
+      "sha256": "fc636cfab106a03e5dcb7e9c8d2535a265b5dbedced3b3fa5294e5ea6353d1ed"
+    },
+    {
+      "path": "experts/agent-packages/structure-engineer/references/K10_PHOTO_ALBUM_TEMPLATE.md",
+      "sha256": "a77e424655ef078e200b0103808230439c08915b8bd72efe0a677dd13bf1e116"
+    },
+    {
+      "path": "experts/agent-packages/structure-engineer/references/MANUFACTURING.md",
+      "sha256": "14389ef6ed36b48df3edf48543c6cff83aed7af8a2227bc9425351aa66791d4f"
+    },
+    {
+      "path": "experts/agent-packages/structure-engineer/references/STRUCTURE_RULES.md",
+      "sha256": "f4065e904c9cca1edd57ca155051d679014dbf5249e2ebca6ee5e722459baf92"
+    },
+    {
+      "path": "experts/agent-packages/smart-engineer/references/ENGINEERING_RULES.md",
+      "sha256": "2217a8e231c2feea2ad2e5d8b8a40406ad30d353b5c8b6b0aabe26b9f3c6554b"
+    },
+    {
+      "path": "experts/agent-packages/smart-engineer/references/MICROPYTHON_WORKFLOW.md",
+      "sha256": "8350d945be9f2e73a3e08adec31122fb7dc74a3dcdba4dbdaf66cb4957bb9454"
+    },
+    {
+      "path": "experts/agent-packages/smart-engineer/references/VALIDATION.md",
+      "sha256": "73de5b8d252f46b807c28bc81f6381ecece689b12218c722449eac1e9eb67a8a"
+    },
+    {
+      "path": "experts/agent-packages/problem-guide/references/DELIVERABLES.md",
+      "sha256": "1f5a2a7916e33dce41b83eba19d914ac7c8788b67af77eeec0b7876a18f03aed"
+    },
+    {
+      "path": "experts/agent-packages/problem-guide/references/DISCOVERY.md",
+      "sha256": "cde61a7cd81e5e5619b65bf6eabb902270c2a7d5d03685473fc460379bb1eecb"
+    },
+    {
+      "path": "domains/classroom/models.py",
+      "sha256": "adab65e6bfe4d0ac00473a6a0abbefd0a4f66369c4abd254219ab5ad89203229"
+    },
+    {
+      "path": "domains/classroom/proposal_service.py",
+      "sha256": "f46f960db80167858f0fd9425cd2d08796fdc914d4740f7006a199ce8a52c767"
+    },
+    {
+      "path": "domains/classroom/repository.py",
+      "sha256": "5e332f630c4212b69b85898abd1982cef1cf11a0edb22960ca5aa6161a20045e"
+    },
+    {
+      "path": "domains/classroom/router.py",
+      "sha256": "c43dc3497625a4bdb7c09c5475fefc11061417e0d3c9645302afdcf194e0ab98"
+    },
+    {
+      "path": "domains/classroom/__init__.py",
+      "sha256": "5897599323a0279a2c703ce456c4a0b997555262516c34762fe3ae5123d10aae"
+    },
+    {
+      "path": "domains/deployment/models.py",
+      "sha256": "861d9a2d84d783a851e12eb55f5f79fe3f07e2b0f1c6c29d696749fc70208b4c"
+    },
+    {
+      "path": "domains/deployment/service.py",
+      "sha256": "1edc909f4979f4eb4115abeb8f0f7b6d262b365ef87468c3c24d03a506165c86"
+    },
+    {
+      "path": "domains/deployment/__init__.py",
+      "sha256": "e34b95846fbcc4b8cf6056c169c012f1a7a914e47916acca9a7538d91d6e4100"
+    },
+    {
+      "path": "domains/events/models.py",
+      "sha256": "7337320b7946446597fbd0e34091e72f2f72053356b2e4dedb2618bac799bd9c"
+    },
+    {
+      "path": "domains/events/privacy.py",
+      "sha256": "7813a97c38723655ce9f0155acd6f79e330800a08a4e5c86d5bf0f279e3245c5"
+    },
+    {
+      "path": "domains/events/router.py",
+      "sha256": "c48cbf660057ba4370642b68d3b13064edea8713cd9e4cc8620eddb13ea214bb"
+    },
+    {
+      "path": "domains/events/runtime.py",
+      "sha256": "7000e65d973a98b39537ae5152f20cd94dc00a954b92cec6056febeb4e88b00e"
+    },
+    {
+      "path": "domains/events/store.py",
+      "sha256": "fb439d4e3f877d60f22568e427c95cfd123d56ce870e2dfa8c2a49fd1c74c4cb"
+    },
+    {
+      "path": "domains/events/__init__.py",
+      "sha256": "df83c509ced1bfb1ba72408d1da78cd3bdd195e9de1e0142f9097ae716e5748c"
+    },
+    {
+      "path": "domains/inventory/models.py",
+      "sha256": "098d19910824b4b1ecf99d752e0f8c107dea78aae4dcb9396ad4eb851e22b4eb"
+    },
+    {
+      "path": "domains/inventory/repository.py",
+      "sha256": "7c8641250455de2a76f449448e0abf20b9a349f6876a1a3584a58973afcf61cd"
+    },
+    {
+      "path": "domains/inventory/router.py",
+      "sha256": "809d2111e2cc47f4c58c0dc2a4733086b50c08fca0dff00ab628a8cc41174225"
+    },
+    {
+      "path": "domains/inventory/service.py",
+      "sha256": "ba7c7d96f3156a0d2aa82e2bfae0f92f145e0413db84e0d4adf13d60ef7b9a2b"
+    },
+    {
+      "path": "domains/inventory/__init__.py",
+      "sha256": "2d6b5ed3bbce5baf0dd40a947b3e247dd6ef92efb239ddae934f8fc63daf94f1"
+    },
+    {
+      "path": "domains/making/models.py",
+      "sha256": "01b7c81cdb23fe2387a53563f6a06f4fbe2e2d64dfb95bc30f9d0459e89409e7"
+    },
+    {
+      "path": "domains/making/service.py",
+      "sha256": "f0a82b3b3bb85362b834d0fc457b06d95ea8aba6b29adf34b634d39cccf4fab1"
+    },
+    {
+      "path": "domains/making/__init__.py",
+      "sha256": "088cf487e87973de15c79c36067211b0f7b54014d6cdebce887ad374949482b4"
+    },
+    {
+      "path": "domains/mqtt_service/contracts.py",
+      "sha256": "9299127509f55c8deec744c4c62c70d2b45ce8cb8fbef8ea8d1df722ef5ad9c5"
+    },
+    {
+      "path": "domains/mqtt_service/models.py",
+      "sha256": "5fd0ff93ccc6a945bd30367fae9bb75f34e1514c85ddeae120ee3af59d90beed"
+    },
+    {
+      "path": "domains/mqtt_service/repository.py",
+      "sha256": "53950d32b17f7cee95672ec2dbbc3d65c7ee05d0a6b6f0217b48e0c076d3b5e5"
+    },
+    {
+      "path": "domains/mqtt_service/router.py",
+      "sha256": "d6a414a6d166fc8bcd9ffee6122e1ca7218d3b34da294f662c4ab33ff6590f9a"
+    },
+    {
+      "path": "domains/mqtt_service/service.py",
+      "sha256": "00a83644e2a0ba6eab73133fd4c529c9f2cdae1988b0d2ff0d0f690572ecda24"
+    },
+    {
+      "path": "domains/mqtt_service/supervisor.py",
+      "sha256": "767aaf9dd1910a3534889193ad1fd39574470d3fc1ee96ca9fdc5deaa484d904"
+    },
+    {
+      "path": "domains/mqtt_service/__init__.py",
+      "sha256": "0e74f018e96978c98c5f5a23060ad0799e601cc1fcfa836827b75a74331033dc"
+    },
+    {
+      "path": "domains/orchestration/executor.py",
+      "sha256": "ce2519776320741b6a25119b08742c96740747e8c277982a7aa806bf39d9cb09"
+    },
+    {
+      "path": "domains/orchestration/models.py",
+      "sha256": "2509e12ad249a5eaf671487fdc46dc2e4cb0efc1c7b55b50a2a0ac5fc3439a86"
+    },
+    {
+      "path": "domains/orchestration/planner.py",
+      "sha256": "6a246e0904462cc2b336df6345d56a534244890c404c1248c6d31777fe154a86"
+    },
+    {
+      "path": "domains/orchestration/repository.py",
+      "sha256": "c20f23034d3a591c685a0550564638cfddeaa35c8054832ca4ff8497ec0e9acb"
+    },
+    {
+      "path": "domains/orchestration/resolver.py",
+      "sha256": "4769337474199ff2c9590d6bc74bc15986f306cafed2764fcaf0297918a02189"
+    },
+    {
+      "path": "domains/orchestration/router.py",
+      "sha256": "3ad5229a1b45010d16e3a23544716c0ec03cff0471b795503c64d1cdb775543e"
+    },
+    {
+      "path": "domains/orchestration/service.py",
+      "sha256": "5cc6495708441fbedc21aa92cd1535a9db4a506f3f012c729220a948c47e8cd7"
+    },
+    {
+      "path": "domains/orchestration/__init__.py",
+      "sha256": "63816ee61cf636ce366c811d9936fa70858446a573183dd282ef9a380f34f279"
+    },
+    {
+      "path": "domains/packages/adapters.py",
+      "sha256": "92798b234134fcd55104bbada04efd34f2f8f3ca52edbed9db26ab7016462b51"
+    },
+    {
+      "path": "domains/packages/models.py",
+      "sha256": "1a0c1ec7a5851a21691aebdd7bf05d11a679abd128e82c76a7403adc5e572fca"
+    },
+    {
+      "path": "domains/packages/plugin_host.py",
+      "sha256": "785ea934e7e51dfc6c34f4fdc1becc7fdf39e3e0c52a4a096409367863a8afa1"
+    },
+    {
+      "path": "domains/packages/plugin_worker.py",
+      "sha256": "586e5369458beee51227dfcdf8d946e1ca68ac795b29caf310db2630140591a7"
+    },
+    {
+      "path": "domains/packages/privacy.py",
+      "sha256": "9d485e38cb1e99674ed554ef51de3f5b2b514b174ca6242b1fceace2bbc98502"
+    },
+    {
+      "path": "domains/packages/repository.py",
+      "sha256": "3f7411c6841d7b44e30e4f8d40de4a38612c1f1cbde702d5713978e3ead57630"
+    },
+    {
+      "path": "domains/packages/router.py",
+      "sha256": "bdb8d31c5ef55d89c2e3b90f694c125358aaee583f37779935f15f821c84dbcb"
+    },
+    {
+      "path": "domains/packages/service.py",
+      "sha256": "94db3699f1564b8894a0891900c141cd06830ab721306d6e2b502d10aeece202"
+    },
+    {
+      "path": "domains/packages/validation.py",
+      "sha256": "3984a13d17b44c533d81657a1eb9618cd5b2dab9c93a32cffbda6b62dfe07c8a"
+    },
+    {
+      "path": "domains/packages/validator_host.py",
+      "sha256": "3c986b3b734f726d5d9fed474d7e5db8f4aa7463b62787d1a0231663b4463123"
+    },
+    {
+      "path": "domains/packages/validator_worker.py",
+      "sha256": "65c69df4516e9c42f9edfb90d1cd06bcf9ed24e05cf87d4a1b2c6aca863111d0"
+    },
+    {
+      "path": "domains/packages/watcher.py",
+      "sha256": "8e7ccf6c863989a18747186dcc1e5f29f0c096957c5d43d3f4560addd84a4b64"
+    },
+    {
+      "path": "domains/packages/__init__.py",
+      "sha256": "9d26328d585f983f669da201467173a0410f53ed12789f6725c8c71428fb489f"
+    },
+    {
+      "path": "domains/runs/repository.py",
+      "sha256": "743cdc842fe10c0145339b8714796c3c3c54f6613f2fc4743ad50fc47b284cc8"
+    },
+    {
+      "path": "domains/runs/router.py",
+      "sha256": "5a5491748b250660f2d2e3930b1a0f91b9fb848e5d90fca47528c5d789a9e175"
+    },
+    {
+      "path": "domains/runs/service.py",
+      "sha256": "81ffde4527abe6c3ce077cf60156410b53878ae018f260040120b8f270851165"
+    },
+    {
+      "path": "domains/runs/__init__.py",
+      "sha256": "f0392d5d9aa8afcec3063733a5a5c6f3a9f16f0e22ccfc81db93c80838e87451"
+    },
+    {
+      "path": "domains/simulation/catalog.py",
+      "sha256": "7bc1f3238927d7b8363e1ac37226c8693bca3895c0f3909f07f5a4ade1e9de62"
+    },
+    {
+      "path": "domains/simulation/compiler.py",
+      "sha256": "a69b5c9d95a85f81e28255e519832cbfa7801d216690be4ec2070ef01d86c0f9"
+    },
+    {
+      "path": "domains/simulation/digest.py",
+      "sha256": "876bf0089c49ddf426773f4a962732e09024549da725832f24bd0383a80790c8"
+    },
+    {
+      "path": "domains/simulation/models.py",
+      "sha256": "1b052f6eddf41b445b871e34cf1860198b65caa9c95869a5775a9df86da35a7d"
+    },
+    {
+      "path": "domains/simulation/qemu.py",
+      "sha256": "9c23078cbd4404d40d60d0b1741de019a703ef9501f6adb2ff9ad838abdabc93"
+    },
+    {
+      "path": "domains/simulation/qemu_manifest.json",
+      "sha256": "90863656bcb5a57e3c13e886df5080ecda5e99019339c097fa2c0bcace97ac94"
+    },
+    {
+      "path": "domains/simulation/release-integrity.json",
+      "sha256": "38a61fe2c22f1695b19265e8ebd045d794b5ee33daa9b9c6b5bf2490114167cc"
+    },
+    {
+      "path": "domains/simulation/release_integrity.py",
+      "sha256": "231dbd3b54c94d8c9b39acb4d90c6df9bfe4c95360986f26704ad96b6e588a10"
+    },
+    {
+      "path": "domains/simulation/runner.py",
+      "sha256": "ef5c0122891a4d0307a7c6e70e140facd9135fcb7ed9464abab20a44a35d937c"
+    },
+    {
+      "path": "domains/simulation/run_models.py",
+      "sha256": "5abd091100362a7a7511ca3c1f4d26fd1663c12f10fab186a5391fa8be4be0e8"
+    },
+    {
+      "path": "domains/simulation/service.py",
+      "sha256": "e63809a539e0f962d9a6c24a070d77ada342962e0e899deb2bfb5469c21f657b"
+    },
+    {
+      "path": "domains/simulation/wokwi_adapter.py",
+      "sha256": "4c0c1027759af6e721db87c83c7dc6f82762ab48eb3342605bc14ab354adaa45"
+    },
+    {
+      "path": "domains/simulation/__init__.py",
+      "sha256": "a96738b372f598fa41f8e4484ab409fed298e5e3303c08db8021ae8d2e60efc2"
+    },
+    {
+      "path": "domains/submission/models.py",
+      "sha256": "55d409a04d1423d587cf95afb1dd2d939dbb7280dc6e53847e9d02a617c9ebbf"
+    },
+    {
+      "path": "domains/submission/service.py",
+      "sha256": "c8f6fd0f1b5cda8fe977b8bfd2147509a30c188014c9debffb1640d1d23b9c3a"
+    },
+    {
+      "path": "domains/submission/__init__.py",
+      "sha256": "4457dd23ce30c051178d3dd5d101855c88db83da27db96097c379ff91db52999"
+    },
+    {
+      "path": "domains/works/build_journey.py",
+      "sha256": "f4e2dda06186039ce7ed38a44ee9dce9525e9581aa53809ebd8d415e0e95aa34"
+    },
+    {
+      "path": "domains/works/canvas.py",
+      "sha256": "7d95844a385c04d595d93c9fd656df447b4f3f750c71fbabab35764df580269c"
+    },
+    {
+      "path": "domains/works/canvas_llm.py",
+      "sha256": "7292bd7556fa74082a2fe8856a68cd974675608d2102d633b1918a32d0320061"
+    },
+    {
+      "path": "domains/works/delivery.py",
+      "sha256": "bbcb344f0ce50811eb12fe9a92e07a9149993016517ea899e5882e86bda5717d"
+    },
+    {
+      "path": "domains/works/models.py",
+      "sha256": "37cb42a7c9fbc73a8bc953772eecae8db0148acc28907453d2ad462885bdaf9a"
+    },
+    {
+      "path": "domains/works/repository.py",
+      "sha256": "c3640630b12220be94de995c2850d91b451f840d22eb23860a35caa8864cc1f8"
+    },
+    {
+      "path": "domains/works/router.py",
+      "sha256": "73a509b69f372c58f48e04e4f3a865e18f56c91f03cb8d5c4bd67f729dde36a7"
+    },
+    {
+      "path": "domains/works/state_machine.py",
+      "sha256": "93fab593a37fe9dff441195f384cdfd1879a80dfc9d092cd768c748bbb1de9a3"
+    },
+    {
+      "path": "domains/works/__init__.py",
+      "sha256": "2fb2ae5882432a6fcf5b15fe5663a1ad8bf14be9f21df8e7e3bbf6fa9b308900"
+    },
+    {
+      "path": "domains/simulation/catalog/catalog.json",
+      "sha256": "bdf916b7b24ba88fb760efb75f7abeaee9e9fdf06cd00acbd71d8f29b832d3e5"
+    },
+    {
+      "path": "domains/simulation/catalog/component-symbols.svg",
+      "sha256": "62d14e1ff91e8f9f58fb9e66d16d8603c84fd7a20130b99a0dca32145864eaf4"
+    },
+    {
+      "path": "domains/simulation/catalog/licenses.json",
+      "sha256": "50a9e1f8c1f257e6a3ce9ecbb1083ab9c77d456316097e0dd3b4ba93279334b8"
+    },
+    {
+      "path": "domains/simulation/catalog/reference-boards.svg",
+      "sha256": "116fbca6ce8d903fc8250b98b2174b378a50f40c8c23c3dc22b76a45807300b0"
+    },
+    {
+      "path": "domains/simulation/LICENSES/ESPRESSIF_QEMU_NOTICE.md",
+      "sha256": "73324f11f3f26decb496be5dd0ba18a61cbbda818d5d784ab9b0cf297e6815c5"
+    },
+    {
+      "path": "domains/simulation/runtime/component_bus.py",
+      "sha256": "ecf716208f7d7c4bf7264c637cbcafe83c1137f1511c2b5c48ef73ad87c3dc37"
+    },
+    {
+      "path": "domains/simulation/runtime/host.py",
+      "sha256": "f212cd475af25da33a2c2f375a7046988eb9ee708444e370c351980cdc63acfe"
+    },
+    {
+      "path": "domains/simulation/runtime/manifest.py",
+      "sha256": "fb1ce742c3004d86b312169c6737c335d91561c37c46870808bb790a09ee488d"
+    },
+    {
+      "path": "domains/simulation/runtime/models.py",
+      "sha256": "599752fe2fc70f35e78e81bf5d6726e2f48732f68817890c326a6f066280174c"
+    },
+    {
+      "path": "domains/simulation/runtime/reference_worker.py",
+      "sha256": "11e60de713f7af2ba757f0678e0c278a66202990aeb57a04a8daaa0d5267150b"
+    },
+    {
+      "path": "domains/simulation/runtime/runtime-manifest.json",
+      "sha256": "e24ed52a91b8eb5488fa1ed8a97b3a0c62c2ae746edb3eeac12ce0d5eb78051f"
+    },
+    {
+      "path": "domains/simulation/runtime/THIRD_PARTY_NOTICES.md",
+      "sha256": "78a57f18c3ec61adf68ccbb55de5aaf38a33181b2c07c4fc4d5ee0068e83e1f9"
+    },
+    {
+      "path": "domains/simulation/runtime/__init__.py",
+      "sha256": "81319f3389ab3f239a8131331a07a8e741e328dd506eb2e1f82cf49528b0548d"
+    },
+    {
+      "path": "domains/simulation/runtime/LICENSES/MICROPYTHON-MIT.txt",
+      "sha256": "9d5857f9172fad11bf1643456f1fdbf6c149a8a68cfd884ad84104cc531b99c3"
+    }
+  ]
+}

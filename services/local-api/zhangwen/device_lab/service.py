@@ -6,6 +6,7 @@ import asyncio
 import hashlib
 import json
 import os
+import sqlite3
 import uuid
 import zipfile
 from datetime import UTC, datetime
@@ -24,9 +25,11 @@ from zhangwen.device_lab.models import (
     DeviceLabChannel,
     DeviceLabEngine,
     DeviceLabEvent,
+    DeviceLabProfileV1,
     DeviceLabRun,
     DeviceLabRunResponse,
     DeviceLabRunStatus,
+    DeviceLabScenarioResult,
     DeviceLabSceneV1,
     DeviceLabTarget,
     FirmwareApplicationListResponse,
@@ -37,6 +40,15 @@ from zhangwen.device_lab.models import (
     SupportedDeviceBoardId,
     UpdateDeviceLabChannelRequest,
 )
+from zhangwen.domains.events.runtime import telemetry_hub
+from zhangwen.domains.orchestration.models import (
+    ExecutionRevisionBinding,
+    ExecutionRevisionSet,
+    PackageKind,
+)
+from zhangwen.domains.packages.repository import PackagePlatformRepository
+from zhangwen.domains.works.models import WorkRunRevisionBindings
+from zhangwen.projects.repository import ProjectRepository
 from zhangwen.device_lab.qemu import QemuRuntimeManager
 from zhangwen.device_lab.repository import DeviceLabRepository
 from zhangwen.device_lab.scene import (
@@ -67,7 +79,12 @@ class DeviceLabError(RuntimeError):
 
 
 class DeviceLabService:
-    def __init__(self, db_path: Path, data_dir: Path) -> None:
+    def __init__(
+        self,
+        db_path: Path,
+        data_dir: Path,
+    ) -> None:
+        self._db_path = Path(db_path)
         self._data_dir = Path(data_dir)
         self._repo = DeviceLabRepository(db_path)
         self._qemu = QemuRuntimeManager(data_dir)
@@ -108,6 +125,18 @@ class DeviceLabService:
         except DeviceLabSceneProjectionError as exc:
             raise DeviceLabError(exc.code, exc.message, 409) from exc
 
+    def get_work_functional_scene(self, project_id: str) -> DeviceLabSceneV1:
+        """Project a Work simulation without claiming a physical board choice."""
+
+        try:
+            scene = self._scene_projector.project(
+                project_id,
+                allow_work_functional_proxy=True,
+            )
+            return self._repo.save_scene(scene)
+        except DeviceLabSceneProjectionError as exc:
+            raise DeviceLabError(exc.code, exc.message, 409) from exc
+
     def import_application(
         self,
         project_id: str,
@@ -142,12 +171,55 @@ class DeviceLabService:
         project_id: str,
         request: CreateDeviceLabRunRequest,
     ) -> DeviceLabRunResponse:
+        return await self._create_run(
+            project_id,
+            request,
+            work_functional=False,
+        )
+
+    async def create_work_run(
+        self,
+        project_id: str,
+        request: CreateDeviceLabRunRequest,
+    ) -> DeviceLabRunResponse:
+        """Start the unified Work run on the same bounded local executor."""
+
+        if request.target is not DeviceLabTarget.SIMULATOR:
+            raise DeviceLabError(
+                "WORK_FUNCTIONAL_TARGET_INVALID",
+                "作品数字试做只允许在本机功能仿真中启动。",
+                409,
+            )
+        return await self._create_run(
+            project_id,
+            request,
+            work_functional=True,
+        )
+
+    async def _create_run(
+        self,
+        project_id: str,
+        request: CreateDeviceLabRunRequest,
+        *,
+        work_functional: bool,
+    ) -> DeviceLabRunResponse:
+        if request.engine is DeviceLabEngine.WOKWI_CLOUD:
+            raise DeviceLabError(
+                "WOKWI_CLOUD_RETIRED",
+                "旧 Wokwi Cloud 联网运行已退役；请在项目的仿真验证章节使用掌问自研仿真。",
+                410,
+            )
+        idempotency_key = (
+            f"work-functional:{request.idempotencyKey}"
+            if work_functional
+            else request.idempotencyKey
+        )
         request_hash = _request_hash(
             request.model_dump(mode="json", exclude={"idempotencyKey"})
         )
         try:
             repeated = self._repo.find_run_by_idempotency(
-                project_id, request.idempotencyKey, request_hash
+                project_id, idempotency_key, request_hash
             )
         except ValueError as exc:
             raise DeviceLabError(
@@ -158,11 +230,13 @@ class DeviceLabService:
         if repeated is not None:
             return DeviceLabRunResponse(
                 run=repeated,
-                profile=scene_profile(repeated.scene)
-                if repeated.scene is not None
-                else board_profile(repeated.boardId),
+                profile=self._profile_for_run(repeated),
             )
-        scene = self.get_scene(project_id)
+        scene = (
+            self.get_work_functional_scene(project_id)
+            if work_functional
+            else self.get_scene(project_id)
+        )
         if (
             request.expectedSceneRevision is not None
             and request.expectedSceneRevision != scene.revision
@@ -205,7 +279,13 @@ class DeviceLabService:
         profile = scene_profile(scene)
         application: FirmwareApplicationRecord | None = None
         archive_path: Path | None = None
-        engine = DeviceLabEngine.FUNCTIONAL_MODEL
+        engine = request.engine
+        if engine is DeviceLabEngine.QEMU_ESP32S3 and not request.applicationId:
+            raise DeviceLabError(
+                "QEMU_APPLICATION_REQUIRED",
+                "QEMU 固件仿真必须选择兼容应用镜像。",
+                409,
+            )
         if request.applicationId:
             try:
                 application, archive_path = self._repo.get_application(project_id, request.applicationId)
@@ -239,23 +319,39 @@ class DeviceLabService:
                 raise DeviceLabError("PARAMETER_SET_PROFILE_MISMATCH", "参数版本与板型档案不一致。")
             values.update(parameter_set.values)
         now = _now()
+        execution_revision_set = self._execution_revision_set(scene, engine)
         run = DeviceLabRun(
             id=f"lab-{uuid.uuid4().hex}", projectId=project_id, boardId=board_id,
             target=request.target, engine=engine, status=DeviceLabRunStatus.STARTING,
             applicationId=request.applicationId, parameterSetId=request.parameterSetId,
             channelValues=values, revision=1, startedAt=now, updatedAt=now,
             scene=scene,
+            revisionBindings=WorkRunRevisionBindings(
+                solutionRevisionId=scene_solution_id,
+                codeRunId=scene_code_run_id,
+                parameterSetId=request.parameterSetId,
+                sceneRevision=scene.revision,
+                structureRevisionId=self._current_structure_revision_id(project_id),
+                canvasSpecRevisionId=self._current_canvas_spec_revision_id(project_id),
+            ),
+            executionRevisionSet=execution_revision_set,
         )
         run.status = DeviceLabRunStatus.RUNNING
+        if engine == DeviceLabEngine.QEMU_ESP32S3:
+            run_message = "固件级 QEMU 仿真已启动。"
+        elif work_functional:
+            run_message = "作品数字试作已在本机启动；结果不代表真实设备或电气时序。"
+        else:
+            run_message = "已按批准立项内容启动实物功能仿真；该模式不代表电气时序。"
         event = DeviceLabEvent(
-            revision=1, type="state", message=(
-                "固件级 QEMU 仿真已启动。" if engine == DeviceLabEngine.QEMU_ESP32S3
-                else "已按批准立项内容启动实物功能仿真；该模式不代表电气时序。"
-            ), createdAt=now,
+            revision=1,
+            type="state",
+            message=run_message,
+            createdAt=now,
         )
         try:
             persisted = self._repo.insert_run(
-                run, event, idempotency_key=request.idempotencyKey,
+                run, event, idempotency_key=idempotency_key,
                 request_hash=request_hash,
             )
         except ValueError as exc:
@@ -267,9 +363,7 @@ class DeviceLabService:
         if persisted.id != run.id:
             return DeviceLabRunResponse(
                 run=persisted,
-                profile=scene_profile(persisted.scene)
-                if persisted.scene is not None
-                else board_profile(persisted.boardId),
+                profile=self._profile_for_run(persisted),
             )
         if application is not None and archive_path is not None:
             try:
@@ -291,6 +385,7 @@ class DeviceLabService:
                     ),
                 )
                 raise DeviceLabError("QEMU_START_FAILED", "QEMU 启动失败。", 500) from exc
+        self._publish_telemetry(run, message="数字试运行已开始。")
         return DeviceLabRunResponse(run=run, profile=profile)
 
     def get_run(self, project_id: str, run_id: str) -> DeviceLabRunResponse:
@@ -298,8 +393,46 @@ class DeviceLabService:
             run = self._repo.get_run(project_id, run_id)
         except KeyError as exc:
             raise DeviceLabError("DEVICE_LAB_RUN_NOT_FOUND", "设备实验室会话不存在。", 404) from exc
-        profile = scene_profile(run.scene) if run.scene is not None else board_profile(run.boardId)
+        profile = self._profile_for_run(run)
         return DeviceLabRunResponse(run=run, profile=profile)
+
+    @staticmethod
+    def _profile_for_run(run: DeviceLabRun) -> DeviceLabProfileV1:
+        if run.wokwiBinding is not None and run.wokwiBinding.profile is not None:
+            return run.wokwiBinding.profile
+        return scene_profile(run.scene) if run.scene is not None else board_profile(run.boardId)
+
+    def recover_interrupted_runs(self) -> int:
+        """Fail closed when a persisted run outlives its local executor process."""
+
+        recovered = 0
+        for run in self._repo.list_interrupted_runs():
+            profile = self._profile_for_run(run)
+            values = dict(run.channelValues)
+            for channel in profile.channels:
+                if channel.kind == "actuator" and channel.safeValue is not None:
+                    values[channel.id] = channel.safeValue
+            now = _now()
+            stopped = run.model_copy(
+                update={
+                    "status": DeviceLabRunStatus.STOPPED,
+                    "actuatorArmed": False,
+                    "channelValues": values,
+                    "revision": run.revision + 1,
+                    "updatedAt": now,
+                }
+            )
+            if self._repo.recover_interrupted_run(
+                stopped,
+                DeviceLabEvent(
+                    revision=stopped.revision,
+                    type="state",
+                    message="本地服务进程中断；数字试运行已安全停止，执行器已恢复安全值。",
+                    createdAt=now,
+                ),
+            ):
+                recovered += 1
+        return recovered
 
     async def update_channel(
         self,
@@ -311,6 +444,12 @@ class DeviceLabService:
         async with self._locks.setdefault(run_id, asyncio.Lock()):
             current = self.get_run(project_id, run_id)
             run = current.run
+            if run.engine is DeviceLabEngine.WOKWI_CLOUD:
+                raise DeviceLabError(
+                    "WOKWI_CLOUD_RETIRED",
+                    "旧 Wokwi Cloud 运行只供历史查看，不能再发送控制命令。",
+                    410,
+                )
             if self._repo.command_seen(run_id, request.commandId):
                 return current
             if run.status != DeviceLabRunStatus.RUNNING:
@@ -374,6 +513,12 @@ class DeviceLabService:
                     createdAt=now,
                 ),
             )
+            self._publish_telemetry(
+                updated,
+                message=f"{channel.label} 已更新。",
+                channel_id=channel.id,
+                value=value,
+            )
             return DeviceLabRunResponse(run=updated, profile=current.profile)
 
     async def stop_run(self, project_id: str, run_id: str) -> DeviceLabRunResponse:
@@ -413,7 +558,141 @@ class DeviceLabService:
                     createdAt=now,
                 ),
             )
+            self._publish_telemetry(stopped, message="数字试运行已安全停止。")
             return DeviceLabRunResponse(run=stopped, profile=current.profile)
+
+    async def record_result(
+        self,
+        project_id: str,
+        run_id: str,
+        *,
+        scenario_results: list[DeviceLabScenarioResult],
+        summary: str,
+        idempotency_key: str,
+    ) -> DeviceLabRunResponse:
+        request_hash = _request_hash(
+            {
+                "scenarioResults": [
+                    item.model_dump(mode="json") for item in scenario_results
+                ],
+                "summary": summary,
+            }
+        )
+        async with self._locks.setdefault(run_id, asyncio.Lock()):
+            current = self.get_run(project_id, run_id)
+            run = current.run
+            if run.resultIdempotencyKey is not None:
+                if (
+                    run.resultIdempotencyKey != idempotency_key
+                    or run.resultRequestHash != request_hash
+                ):
+                    raise DeviceLabError(
+                        "DIGITAL_RUN_RESULT_IMMUTABLE",
+                        "这次数字试运行已经形成结果，不能在原会话上改写。",
+                        409,
+                    )
+                return current
+            if run.status is not DeviceLabRunStatus.STOPPED:
+                raise DeviceLabError(
+                    "DIGITAL_RUN_NOT_STOPPED",
+                    "数字试运行必须先安全停止，才能形成结果。",
+                    409,
+                )
+            passed = all(item.passed for item in scenario_results)
+            now = _now()
+            updated = run.model_copy(
+                update={
+                    "scenarioResults": scenario_results,
+                    "resultPassed": passed,
+                    "resultSummary": summary,
+                    "resultIdempotencyKey": idempotency_key,
+                    "resultRequestHash": request_hash,
+                    "revision": run.revision + 1,
+                    "updatedAt": now,
+                }
+            )
+            self._repo.update_run(
+                updated,
+                DeviceLabEvent(
+                    revision=updated.revision,
+                    type="state",
+                    message=summary,
+                    createdAt=now,
+                ),
+            )
+            self._publish_telemetry(updated, message=summary)
+            return DeviceLabRunResponse(run=updated, profile=current.profile)
+
+    def _execution_revision_set(
+        self,
+        scene: DeviceLabSceneV1,
+        engine: DeviceLabEngine = DeviceLabEngine.FUNCTIONAL_MODEL,
+    ) -> ExecutionRevisionSet:
+        package_id = scene.source.simulationProxyPackageId or (
+            f"device-package:board:{scene.boardId.value.replace('/', '-')}"
+        )
+        packages = PackagePlatformRepository(self._data_dir)
+        revision = packages.stable_revision(package_id)
+        now = _now()
+        bindings = [
+            ExecutionRevisionBinding(
+                packageKind=PackageKind.DEVICE_PACKAGE,
+                packageId=package_id,
+                packageRevisionId=revision.id,
+            )
+        ]
+        return ExecutionRevisionSet(
+            id=f"revision_set_run_{uuid.uuid4().hex}",
+            bindings=bindings,
+            createdAt=now,
+        )
+
+    def _current_structure_revision_id(self, project_id: str) -> str | None:
+        db_path = ProjectRepository(self._data_dir).db_path
+        with sqlite3.connect(db_path) as conn:
+            row = conn.execute(
+                """
+                SELECT id FROM cad_intent_revisions
+                WHERE project_id = ? AND status = 'CONFIRMED'
+                ORDER BY COALESCE(confirmed_at, created_at) DESC, rowid DESC LIMIT 1
+                """,
+                (project_id,),
+            ).fetchone()
+        return str(row[0]) if row is not None else None
+
+    def _current_canvas_spec_revision_id(self, project_id: str) -> str | None:
+        db_path = ProjectRepository(self._data_dir).db_path
+        with sqlite3.connect(db_path) as conn:
+            row = conn.execute(
+                """
+                SELECT id FROM canvas_spec_revisions
+                WHERE work_id = ?
+                ORDER BY revision DESC, created_at DESC, id DESC LIMIT 1
+                """,
+                (project_id,),
+            ).fetchone()
+        return str(row[0]) if row is not None else None
+
+    @staticmethod
+    def _publish_telemetry(
+        run: DeviceLabRun,
+        *,
+        message: str,
+        channel_id: str | None = None,
+        value: float | bool | str | None = None,
+    ) -> None:
+        payload: dict[str, object] = {
+            "kind": "digital_run",
+            "runId": run.id,
+            "status": run.status.value,
+            "revision": run.revision,
+            "message": message,
+        }
+        if channel_id is not None:
+            payload["channelId"] = channel_id
+        if value is not None:
+            payload["value"] = value
+        telemetry_hub().publish(work_id=run.projectId, payload=payload)
 
     def list_events(self, project_id: str, run_id: str, after_revision: int) -> list[DeviceLabEvent]:
         try:

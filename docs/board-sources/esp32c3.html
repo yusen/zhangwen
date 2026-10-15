@@ -1,0 +1,518 @@
+<!DOCTYPE html>
+
+
+
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <!-- The above 3 meta tags *must* come first in the head -->
+
+    <link rel="icon" href="/static/img/favicon.ico">
+
+    <title>MicroPython - Python for microcontrollers</title>
+
+    <link href="/static/bootstrap-3.3.7-dist/css/bootstrap.min.css" rel="stylesheet">
+
+    <link href="/static/css/style.css?v=4" rel="stylesheet">
+
+    
+  <link href="/static/download/css/style.css" rel="stylesheet">
+
+
+    <link href="https://fonts.googleapis.com/css?family=Open+Sans:400,700,800" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css?family=Montserrat:400,700" rel="stylesheet">
+
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content="http://micropython.org/" />
+    <meta property="og:title" content="MicroPython - Python for microcontrollers" />
+    <meta property="og:description" content="MicroPython is a lean and efficient
+        implementation of the Python 3 programming language
+        that includes a small subset of the Python standard library and is
+        optimised to run on microcontrollers and in constrained environments." />
+    <meta property="og:image" content="http://micropython.org/static/img/Mlogo_138wh.png" />
+
+</head>
+
+<body>
+
+<nav class="navbar navbar-dark" role="navigation">
+    <div class="main-menu">
+        <a class="navbar-brand" href='http://micropython.org'>
+            <span>
+                <img src ="/static/img/Mlogo_138wh.png" width="50px">
+            </span>
+            <span>
+                MicroPython
+            </span>
+        </a>
+
+        <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
+            <span class="sr-only">Toggle navigation</span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+        </button>
+
+        <div id="navbar" class="collapse navbar-collapse">
+        <ul class="nav navbar-nav">
+            <li class="nav-item">
+                <a class="nav-link" href="/download">DOWNLOAD</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="https://docs.micropython.org">DOCS</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="https://micropython.org/discord">DISCORD</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="https://github.com/orgs/micropython/discussions">DISCUSSIONS</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="https://github.com/micropython/micropython/wiki">WIKI</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="https://store.micropython.org">STORE</a>
+            </li>
+        </ul>
+        </div>
+    </div>
+</nav>
+
+    <div id="sidebar" style="float:right;margin-right:16px;">
+        
+        <!--ul>
+        <li><a href="/">Home</a></li>
+        <li><a href="/blog/">Blog</a></li>
+        </ul-->
+        
+    </div>
+
+    <div class="container">
+        
+        <div class="row" style="margin:30px 0;">
+          <div class="col-md-offset-2 col-md-8">
+            
+
+<h2> ESP32-C3 </h2>
+
+
+<img src="https://micropython.org/resources/micropython-media/boards/ESP32_GENERIC_C3/esp32c3_devkitmini.jpg" class="img-responsive thumb hero">
+
+
+<div>
+<strong>Vendor:</strong> Espressif
+</div>
+
+
+<div>
+<strong>Features:</strong> BLE, External Flash, WiFi
+</div>
+
+
+<div>
+    <strong>Source on GitHub:</strong> <a href="https://github.com/micropython/micropython/tree/master/ports/esp32/boards/ESP32_GENERIC_C3">esp32/ESP32_GENERIC_C3</a>
+</div>
+
+
+<div>
+<strong>More info:</strong> <a href="https://www.espressif.com/en/products/modules">Website</a>
+</div>
+
+
+<p>The following files are firmware images that should work on most
+ESP32-C3-based boards with 4MiB or more of flash, including WROOM and MINI
+modules, that use the revision 3 silicon (or newer).</p>
+<p>USB serial/JTAG support is enabled on pin 18 and 19. Note that this
+is not a full USB stack, the C3 just provides a CDC/ACM class serial
+and JTAG interface.</p>
+<h2>Installation instructions</h2>
+<p>Program your board using the esptool.py program, found <a href="https://docs.espressif.com/projects/esptool/en/latest/esp32c3/">here</a>.</p>
+<p><em>Windows users:</em> You may find the installed program is called <code>esptool</code> instead of <code>esptool.py</code>.</p>
+<h3>Erasing</h3>
+<p>If you are putting MicroPython on your board for the first time then you should
+first erase the entire flash using:</p>
+<pre><code class="language-bash">esptool.py erase_flash
+</code></pre>
+<p><code>esptool.py</code> will try to detect the serial port with the ESP32 automatically,
+but if this fails or there might be more than one Espressif-based device
+attached to your computer then pass the <code>--port</code> option with the name of the
+target serial port. For example:</p>
+<pre><code class="language-bash">esptool.py --port PORTNAME erase_flash
+</code></pre>
+<ul>
+<li>On Linux, the port name is usually similar to <code>/dev/ttyUSB</code> or <code>/dev/ttyACM0</code>.</li>
+<li>On Mac, the port name is usually similar to <code>/dev/cu.usbmodem01</code>.</li>
+<li>On Windows, the port name is usually similar to <code>COM4</code>.</li>
+</ul>
+<h3>Flashing</h3>
+<p>Then deploy the firmware to the board, starting at address 0:</p>
+<pre><code class="language-bash">esptool.py --baud 460800 write_flash 0 ESP32_BOARD_NAME-DATE-VERSION.bin
+</code></pre>
+<p>Replace <code>ESP32_BOARD_NAME-DATE-VERSION.bin</code> with the <code>.bin</code> file downloaded from this page.</p>
+<p>As above, if <code>esptool.py</code> can't automatically detect the serial port
+then you can pass it explicitly on the command line instead. For example:</p>
+<pre><code class="language-bash">esptool.py --port PORTNAME --baud 460800 write_flash 0 ESP32_BOARD_NAME-DATE-VERSION.bin
+</code></pre>
+<h3>Troubleshooting</h3>
+<p>If flashing starts and then fails partway through, try removing the <code>--baud 460800</code> option to flash at the slower default speed.</p>
+<p>If these steps don't work, consult the <a href="https://docs.micropython.org/en/latest/esp32/tutorial/intro.html#troubleshooting-installation-problems">MicroPython ESP32 Troubleshooting
+steps</a>
+and the <a href="https://docs.espressif.com/projects/esptool/en/latest/esp32c3/esptool/basic-options.html">esptool
+documentation</a>.</p>
+<p><strong>Important</strong>: From the options below, download the <code>.bin</code> file for your board.</p>
+
+
+
+
+    
+    <p>
+        
+            <h2>Firmware</h2>
+        
+
+        
+
+        
+        <h3>Releases</h3>
+        
+            <div>
+                
+                <strong>
+                
+                <a href="/resources/firmware/ESP32_GENERIC_C3-20260824-v1.29.0.bin">v1.29.0 (2026-08-24) .bin</a>
+                
+                </strong>
+                
+                
+                / <a href="/resources/firmware/ESP32_GENERIC_C3-20260824-v1.29.0.app-bin">[.app-bin]</a>
+                
+                / <a href="/resources/firmware/ESP32_GENERIC_C3-20260824-v1.29.0.meta.zip">[.elf and .map]</a>
+                
+                / <a href="https://github.com/micropython/micropython/releases/tag/v1.29.0">[Release notes]</a>
+                
+                (latest)
+                
+            </div>
+        
+            <div>
+                
+                <a href="/resources/firmware/ESP32_GENERIC_C3-20260406-v1.28.0.bin">v1.28.0 (2026-04-06) .bin</a>
+                
+                
+                / <a href="/resources/firmware/ESP32_GENERIC_C3-20260406-v1.28.0.app-bin">[.app-bin]</a>
+                
+                / <a href="/resources/firmware/ESP32_GENERIC_C3-20260406-v1.28.0.meta.zip">[.elf and .map]</a>
+                
+                / <a href="https://github.com/micropython/micropython/releases/tag/v1.28.0">[Release notes]</a>
+                
+            </div>
+        
+            <div>
+                
+                <a href="/resources/firmware/ESP32_GENERIC_C3-20251209-v1.27.0.bin">v1.27.0 (2025-12-09) .bin</a>
+                
+                
+                / <a href="/resources/firmware/ESP32_GENERIC_C3-20251209-v1.27.0.app-bin">[.app-bin]</a>
+                
+                / <a href="/resources/firmware/ESP32_GENERIC_C3-20251209-v1.27.0.meta.zip">[.elf and .map]</a>
+                
+                / <a href="https://github.com/micropython/micropython/releases/tag/v1.27.0">[Release notes]</a>
+                
+            </div>
+        
+            <div>
+                
+                <a href="/resources/firmware/ESP32_GENERIC_C3-20250911-v1.26.1.bin">v1.26.1 (2025-09-11) .bin</a>
+                
+                
+                / <a href="/resources/firmware/ESP32_GENERIC_C3-20250911-v1.26.1.app-bin">[.app-bin]</a>
+                
+                / <a href="/resources/firmware/ESP32_GENERIC_C3-20250911-v1.26.1.meta.zip">[.elf and .map]</a>
+                
+                / <a href="https://github.com/micropython/micropython/releases/tag/v1.26.1">[Release notes]</a>
+                
+            </div>
+        
+            <div>
+                
+                <a href="/resources/firmware/ESP32_GENERIC_C3-20250809-v1.26.0.bin">v1.26.0 (2025-08-09) .bin</a>
+                
+                
+                / <a href="/resources/firmware/ESP32_GENERIC_C3-20250809-v1.26.0.app-bin">[.app-bin]</a>
+                
+                / <a href="/resources/firmware/ESP32_GENERIC_C3-20250809-v1.26.0.meta.zip">[.elf and .map]</a>
+                
+                / <a href="https://github.com/micropython/micropython/releases/tag/v1.26.0">[Release notes]</a>
+                
+            </div>
+        
+            <div>
+                
+                <a href="/resources/firmware/ESP32_GENERIC_C3-20250415-v1.25.0.bin">v1.25.0 (2025-04-15) .bin</a>
+                
+                
+                / <a href="/resources/firmware/ESP32_GENERIC_C3-20250415-v1.25.0.app-bin">[.app-bin]</a>
+                
+                / <a href="/resources/firmware/ESP32_GENERIC_C3-20250415-v1.25.0.meta.zip">[.elf and .map]</a>
+                
+                / <a href="https://github.com/micropython/micropython/releases/tag/v1.25.0">[Release notes]</a>
+                
+            </div>
+        
+            <div>
+                
+                <a href="/resources/firmware/ESP32_GENERIC_C3-20241129-v1.24.1.bin">v1.24.1 (2024-11-29) .bin</a>
+                
+                
+                / <a href="/resources/firmware/ESP32_GENERIC_C3-20241129-v1.24.1.app-bin">[.app-bin]</a>
+                
+                / <a href="/resources/firmware/ESP32_GENERIC_C3-20241129-v1.24.1.meta.zip">[.elf and .map]</a>
+                
+                / <a href="https://github.com/micropython/micropython/releases/tag/v1.24.1">[Release notes]</a>
+                
+            </div>
+        
+            <div>
+                
+                <a href="/resources/firmware/ESP32_GENERIC_C3-20241025-v1.24.0.bin">v1.24.0 (2024-10-25) .bin</a>
+                
+                
+                / <a href="/resources/firmware/ESP32_GENERIC_C3-20241025-v1.24.0.app-bin">[.app-bin]</a>
+                
+                / <a href="/resources/firmware/ESP32_GENERIC_C3-20241025-v1.24.0.meta.zip">[.elf and .map]</a>
+                
+                / <a href="https://github.com/micropython/micropython/releases/tag/v1.24.0">[Release notes]</a>
+                
+            </div>
+        
+            <div>
+                
+                <a href="/resources/firmware/ESP32_GENERIC_C3-20240602-v1.23.0.bin">v1.23.0 (2024-06-02) .bin</a>
+                
+                
+                / <a href="/resources/firmware/ESP32_GENERIC_C3-20240602-v1.23.0.app-bin">[.app-bin]</a>
+                
+                / <a href="/resources/firmware/ESP32_GENERIC_C3-20240602-v1.23.0.meta.zip">[.elf and .map]</a>
+                
+                / <a href="https://github.com/micropython/micropython/releases/tag/v1.23.0">[Release notes]</a>
+                
+            </div>
+        
+            <div>
+                
+                <a href="/resources/firmware/ESP32_GENERIC_C3-20240222-v1.22.2.bin">v1.22.2 (2024-02-22) .bin</a>
+                
+                
+                / <a href="/resources/firmware/ESP32_GENERIC_C3-20240222-v1.22.2.app-bin">[.app-bin]</a>
+                
+                / <a href="/resources/firmware/ESP32_GENERIC_C3-20240222-v1.22.2.meta.zip">[.elf and .map]</a>
+                
+                / <a href="https://github.com/micropython/micropython/releases/tag/v1.22.2">[Release notes]</a>
+                
+            </div>
+        
+            <div>
+                
+                <a href="/resources/firmware/ESP32_GENERIC_C3-20240105-v1.22.1.bin">v1.22.1 (2024-01-05) .bin</a>
+                
+                
+                / <a href="/resources/firmware/ESP32_GENERIC_C3-20240105-v1.22.1.app-bin">[.app-bin]</a>
+                
+                / <a href="/resources/firmware/ESP32_GENERIC_C3-20240105-v1.22.1.meta.zip">[.elf and .map]</a>
+                
+                / <a href="https://github.com/micropython/micropython/releases/tag/v1.22.1">[Release notes]</a>
+                
+            </div>
+        
+            <div>
+                
+                <a href="/resources/firmware/ESP32_GENERIC_C3-20231227-v1.22.0.bin">v1.22.0 (2023-12-27) .bin</a>
+                
+                
+                / <a href="/resources/firmware/ESP32_GENERIC_C3-20231227-v1.22.0.app-bin">[.app-bin]</a>
+                
+                / <a href="/resources/firmware/ESP32_GENERIC_C3-20231227-v1.22.0.meta.zip">[.elf and .map]</a>
+                
+                / <a href="https://github.com/micropython/micropython/releases/tag/v1.22.0">[Release notes]</a>
+                
+            </div>
+        
+            <div>
+                
+                <a href="/resources/firmware/ESP32_GENERIC_C3-20231005-v1.21.0.bin">v1.21.0 (2023-10-05) .bin</a>
+                
+                
+                / <a href="/resources/firmware/ESP32_GENERIC_C3-20231005-v1.21.0.app-bin">[.app-bin]</a>
+                
+                / <a href="/resources/firmware/ESP32_GENERIC_C3-20231005-v1.21.0.meta.zip">[.elf and .map]</a>
+                
+                / <a href="https://github.com/micropython/micropython/releases/tag/v1.21.0">[Release notes]</a>
+                
+            </div>
+        
+            <div>
+                
+                <a href="/resources/firmware/ESP32_GENERIC_C3-20230426-v1.20.0.bin">v1.20.0 (2023-04-26) .bin</a>
+                
+                
+                / <a href="/resources/firmware/ESP32_GENERIC_C3-20230426-v1.20.0.meta.zip">[.elf and .map]</a>
+                
+                / <a href="https://github.com/micropython/micropython/releases/tag/v1.20.0">[Release notes]</a>
+                
+            </div>
+        
+            <div>
+                
+                <a href="/resources/firmware/ESP32_GENERIC_C3-20220618-v1.19.1.bin">v1.19.1 (2022-06-18) .bin</a>
+                
+                
+                / <a href="/resources/firmware/ESP32_GENERIC_C3-20220618-v1.19.1.meta.zip">[.elf and .map]</a>
+                
+                / <a href="https://github.com/micropython/micropython/releases/tag/v1.19.1">[Release notes]</a>
+                
+            </div>
+        
+            <div>
+                
+                <a href="/resources/firmware/ESP32_GENERIC_C3-20220117-v1.18.bin">v1.18 (2022-01-17) .bin</a>
+                
+                
+                / <a href="/resources/firmware/ESP32_GENERIC_C3-20220117-v1.18.meta.zip">[.elf and .map]</a>
+                
+                / <a href="https://github.com/micropython/micropython/releases/tag/v1.18">[Release notes]</a>
+                
+            </div>
+        
+            <div>
+                
+                <a href="/resources/firmware/ESP32_GENERIC_C3-20210902-v1.17.bin">v1.17 (2021-09-02) .bin</a>
+                
+                
+                / <a href="/resources/firmware/ESP32_GENERIC_C3-20210902-v1.17.meta.zip">[.elf and .map]</a>
+                
+                / <a href="https://github.com/micropython/micropython/releases/tag/v1.17">[Release notes]</a>
+                
+            </div>
+        
+        
+
+        
+        <h3>Preview builds</h3>
+        <p class="preview-note">
+            These are automatic builds of the development branch for the next release.
+        </p>
+        
+            <div>
+                <a href="/resources/firmware/ESP32_GENERIC_C3-20261013-v1.30.0-preview.127.g4a1fa4a563.bin">v1.30.0-preview.127.g4a1fa4a563 (2026-10-13) .bin</a>
+                
+                / <a href="/resources/firmware/ESP32_GENERIC_C3-20261013-v1.30.0-preview.127.g4a1fa4a563.app-bin">[.app-bin]</a>
+                
+                / <a href="/resources/firmware/ESP32_GENERIC_C3-20261013-v1.30.0-preview.127.g4a1fa4a563.elf">[.elf]</a>
+                
+                / <a href="/resources/firmware/ESP32_GENERIC_C3-20261013-v1.30.0-preview.127.g4a1fa4a563.map">[.map]</a>
+                
+            </div>
+        
+            <div>
+                <a href="/resources/firmware/ESP32_GENERIC_C3-20260929-v1.30.0-preview.95.g5b5f06cb48.bin">v1.30.0-preview.95.g5b5f06cb48 (2026-09-29) .bin</a>
+                
+                / <a href="/resources/firmware/ESP32_GENERIC_C3-20260929-v1.30.0-preview.95.g5b5f06cb48.app-bin">[.app-bin]</a>
+                
+                / <a href="/resources/firmware/ESP32_GENERIC_C3-20260929-v1.30.0-preview.95.g5b5f06cb48.elf">[.elf]</a>
+                
+                / <a href="/resources/firmware/ESP32_GENERIC_C3-20260929-v1.30.0-preview.95.g5b5f06cb48.map">[.map]</a>
+                
+            </div>
+        
+            <div>
+                <a href="/resources/firmware/ESP32_GENERIC_C3-20260921-v1.30.0-preview.71.g1ea77a5d65.bin">v1.30.0-preview.71.g1ea77a5d65 (2026-09-21) .bin</a>
+                
+                / <a href="/resources/firmware/ESP32_GENERIC_C3-20260921-v1.30.0-preview.71.g1ea77a5d65.app-bin">[.app-bin]</a>
+                
+                / <a href="/resources/firmware/ESP32_GENERIC_C3-20260921-v1.30.0-preview.71.g1ea77a5d65.elf">[.elf]</a>
+                
+                / <a href="/resources/firmware/ESP32_GENERIC_C3-20260921-v1.30.0-preview.71.g1ea77a5d65.map">[.map]</a>
+                
+            </div>
+        
+            <div>
+                <a href="/resources/firmware/ESP32_GENERIC_C3-20260919-v1.30.0-preview.69.geb1611d282.bin">v1.30.0-preview.69.geb1611d282 (2026-09-19) .bin</a>
+                
+                / <a href="/resources/firmware/ESP32_GENERIC_C3-20260919-v1.30.0-preview.69.geb1611d282.app-bin">[.app-bin]</a>
+                
+                / <a href="/resources/firmware/ESP32_GENERIC_C3-20260919-v1.30.0-preview.69.geb1611d282.elf">[.elf]</a>
+                
+                / <a href="/resources/firmware/ESP32_GENERIC_C3-20260919-v1.30.0-preview.69.geb1611d282.map">[.map]</a>
+                
+            </div>
+        
+        
+
+    </p>
+    
+
+
+
+<!--
+
+<img src="https://micropython.org/resources/micropython-media/boards/ESP32_GENERIC_C3/esp32c3_devkitmini.jpg">
+ -->
+
+
+          </div>
+        </div>
+    </div>
+
+<footer>
+    <div class="container footercontent">
+        <div class="row">
+            <div class="col-xs-12 col-sm-3 col-md-2 col-md-offset-2">
+                <h3>MicroPython</h3>
+                <ul>
+                    <li> <a href="https://micropython.org">Home</a> </li>
+                    <li> <a href="https://micropython.org/discord">Discord</a> </li>
+                    <li> <a href="https://github.com/orgs/micropython/discussions">Discussions</a> </li>
+                    <li> <a href="https://github.com/micropython/micropython/wiki">Wiki</a> </li>
+                    <li> <a href="https://www.github.com/micropython">GitHub</a> </li>
+                </ul>
+            </div>
+            <div class="col-xs-12 col-sm-3 col-md-2">
+                <h3>Resources</h3>
+                <ul>
+                    <li> <a href="http://docs.micropython.org/en/latest/pyboard/tutorial/index.html">Tutorials</a> </li>
+                    <li> <a href="http://docs.micropython.org">Documentation</a> </li>
+                    <li> <a href="/download">Download</a> </li>
+                </ul>
+            </div>
+            <div class="col-xs-12 col-sm-3 col-md-2">
+                <h3>Contact</h3>
+                <ul>
+                    <li> <a href="/contact">Contact us</a> </li>
+                    <li> <a href="irc://freenode/micropython">IRC</a> </li>
+                    <li> <a href="http://twitter.com/micropython">Twitter</a> </li>
+                    <li> <a href="http://www.facebook.com/micropython">Facebook</a> </li>
+                    <li> <a href="/privacypolicy">Privacy Policy</a> </li>
+                    <li> <a href="/termsandconditions">Terms &amp; Conditions</a> </li>
+                </ul>
+            </div>
+            <div class="col-xs-12 col-md-8 col-md-offset-2">
+                <p>A project by <a href="http://dpgeorge.net">Damien George</a></p>
+                <p>&copy; 2014-2023 George Robotics Limited</p>
+            </div>
+        </div>
+    </div>
+</footer>
+
+    <script src="/static/js/jquery-2.1.0.min.js"></script>
+    <script src="/static/bootstrap-3.3.7-dist/js/bootstrap.min.js"></script>
+    
+    
+
+    <!--                        
+        <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+        <script src="site/js/functions.js"></script>
+    -->
+</body>
+</html>

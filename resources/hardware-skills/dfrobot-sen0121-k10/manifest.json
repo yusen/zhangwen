@@ -1,0 +1,36 @@
+{
+  "schema": "zhangwen.hardware-skill-manifest/v1",
+  "schemaVersion": 1,
+  "skillName": "dfrobot-sen0121-k10",
+  "componentId": "hw_dfrobot_sen0121_k10",
+  "displayName": "DFRobot SEN0121 水分传感器",
+  "description": "为行空板 K10 MicroPython 项目提供 SEN0121 的ANALOG接入、兼容和安全边界；API 与电气值仍需按当前固件和实物复核。",
+  "status": "ACTIVE",
+  "sourceKind": "MANUAL",
+  "files": [
+    "README.md",
+    "SKILL.md",
+    "references/specifications.md",
+    "references/compatibility-rules.md",
+    "references/integration.md",
+    "references/safety.md",
+    "references/sources.md",
+    "examples/usage.md",
+    "tests/validation-cases.md"
+  ],
+  "media": [
+    {
+      "path": "assets/cover.webp",
+      "role": "cover",
+      "alt": "DFRobot SEN0121 官方产品图",
+      "contentType": "image/webp",
+      "sha256": "c2857699a4ed6b5cc57e437459b5d1054856bc50096fc2146a16acde52f8afd4",
+      "sourceUrl": "https://wiki.dfrobot.com.cn/_sku_sen0121_%E6%B0%B4%E5%88%86%E4%BC%A0%E6%84%9F%E5%99%A8",
+      "attribution": "DFRobot（取自对应官方资料页）",
+      "license": "DFRobot 官方产品图；仅随本 Skill 作来源引用，公开再分发授权未独立核验"
+    }
+  ],
+  "revision": "fae4f246d3f69e9eb8e73850",
+  "createdAt": "2026-07-17T06:57:53Z",
+  "updatedAt": "2026-07-17T10:42:11Z"
+}

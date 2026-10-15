@@ -420,7 +420,7 @@ class DeviceRepository:
         project_id: str,
         port: DevicePort,
         *,
-        board_id: SupportedDeviceBoardId = SupportedDeviceBoardId.DFROBOT_K10,
+        board_id: SupportedDeviceBoardId | str = SupportedDeviceBoardId.DFROBOT_K10,
         status: DeviceSessionStatus = DeviceSessionStatus.READY,
         messages: list[tuple[str, str]] | None = None,
     ) -> DeviceSession:
@@ -451,7 +451,7 @@ class DeviceRepository:
                     session_id,
                     project_id,
                     port.id,
-                    board_id.value,
+                    board_id.value if isinstance(board_id, SupportedDeviceBoardId) else board_id,
                     status.value,
                     _dump_logs(logs),
                     now,
@@ -514,6 +514,8 @@ class DeviceRepository:
         project_id: str,
         session_id: str,
         code_run: CodeRun,
+        device_binding_id: str | None = None,
+        execution_revision_set: dict[str, object] | None = None,
     ) -> tuple[DeviceOperation, DeviceSession]:
         if code_run.runtime != CodeRuntime.MICROPYTHON:
             raise ValueError("USB serial deployment requires a MICROPYTHON CodeRun.")
@@ -545,7 +547,11 @@ class DeviceRepository:
             session_id=session_id,
             kind=DeviceOperationKind.UPLOAD_CODE,
             command_label="mpremote",
-            log=log,
+            log=_encode_dry_run_state(
+                log,
+                device_binding_id=device_binding_id,
+                execution_revision_set=execution_revision_set,
+            ),
             now=now,
         )
         self._append_session_log(
@@ -581,6 +587,8 @@ class DeviceRepository:
         *,
         project_id: str,
         session_id: str,
+        device_binding_id: str | None = None,
+        execution_revision_set: dict[str, object] | None = None,
     ) -> tuple[DeviceOperation, DeviceSession]:
         session = self.get_serial_session(
             project_id,
@@ -604,7 +612,11 @@ class DeviceRepository:
             session_id=session_id,
             kind=DeviceOperationKind.FLASH_FIRMWARE,
             command_label="esptool",
-            log=log,
+            log=_encode_dry_run_state(
+                log,
+                device_binding_id=device_binding_id,
+                execution_revision_set=execution_revision_set,
+            ),
             now=now,
         )
         self._append_session_log(
@@ -1209,6 +1221,41 @@ def _to_operation(row: sqlite3.Row) -> DeviceOperation:
         verification=state.get("verification"),
         cancelable=bool(state.get("cancelable", False)),
         metadata=state.get("metadata", {}),
+        deviceBindingId=(
+            str(state["deviceBindingId"])
+            if state.get("deviceBindingId") is not None
+            else None
+        ),
+        executionRevisionSet=state.get("executionRevisionSet"),
+    )
+
+
+def _encode_dry_run_state(
+    log: str,
+    *,
+    device_binding_id: str | None,
+    execution_revision_set: dict[str, object] | None,
+) -> str:
+    if device_binding_id is None or execution_revision_set is None:
+        return log
+    return json.dumps(
+        {
+            "schema": "device-operation/v1",
+            "log": log,
+            "phase": DeviceOperationPhase.COMPLETE.value,
+            "progress": 100,
+            "errorCode": None,
+            "steps": [],
+            "backup": None,
+            "verification": None,
+            "cancelable": False,
+            "metadata": {"channel": DeviceDeploymentChannel.USB_SERIAL.value},
+            "deviceBindingId": device_binding_id,
+            "executionRevisionSet": execution_revision_set,
+        },
+        ensure_ascii=False,
+        sort_keys=True,
+        separators=(",", ":"),
     )
 
 

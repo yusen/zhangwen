@@ -1,0 +1,24 @@
+{
+  "schema": "zhangwen.hardware-skill-manifest/v1",
+  "schemaVersion": 1,
+  "skillName": "labplus-mpython-v2",
+  "componentId": "hw_labplus_mpython_v2",
+  "displayName": "掌控板 2.0（ESP32）",
+  "description": "掌控板 2.0，128×64 单色 OLED，使用官方 mPython 固件和 oled 绘图 API。",
+  "status": "ACTIVE",
+  "sourceKind": "MANUAL",
+  "files": [
+    "SKILL.md",
+    "references/specifications.md",
+    "references/compatibility-rules.md",
+    "references/integration.md",
+    "references/safety.md",
+    "references/sources.md",
+    "examples/usage.md",
+    "tests/validation-cases.md"
+  ],
+  "media": [],
+  "revision": "9c60bdc5a840ea9570eb2bdd",
+  "createdAt": "2026-10-14T15:59:47.285724+00:00",
+  "updatedAt": "2026-10-14T15:59:47.285724+00:00"
+}

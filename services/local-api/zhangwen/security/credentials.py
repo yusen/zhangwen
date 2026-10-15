@@ -8,6 +8,7 @@ from __future__ import annotations
 
 import ctypes
 import os
+import re
 from ctypes import wintypes
 from typing import Protocol
 
@@ -47,6 +48,14 @@ def credential_service_for_provider(provider: str) -> str:
     """Return an isolated credential target while preserving DeepSeek compatibility."""
 
     return "zhangwen.deepseek" if provider == "deepseek" else f"zhangwen.{provider}"
+
+
+def credential_service_for_configuration(configuration_id: str) -> str:
+    """Return the isolated Credential Manager target for a Provider config."""
+
+    if not re.fullmatch(r"[A-Za-z0-9][A-Za-z0-9_.-]{0,159}", configuration_id):
+        raise CredentialStoreError("模型服务配置标识无效。")
+    return f"zhangwen.provider.{configuration_id}"
 
 
 class BackendCredentialStore:

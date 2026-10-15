@@ -1,4 +1,4 @@
-"""Provider-neutral deterministic model router for ZW-008."""
+"""Deterministic routing over the single versioned Provider settings platform."""
 
 from __future__ import annotations
 
@@ -7,13 +7,18 @@ import uuid
 from datetime import UTC, datetime
 from pathlib import Path
 
-from zhangwen.llm.contracts import LLMModelId, LLMProviderId
+from zhangwen.settings.models import ModelWorkload
+from zhangwen.settings.provider_repository import (
+    ProviderSettingsConflictError,
+    ProviderSettingsRepository,
+)
 from zhangwen.skills.models import ModelRouteResult, ModelRouteStrategy
 
 
 class ModelRouter:
     def __init__(self, db_path: Path) -> None:
         self._db_path = db_path
+        self._providers = ProviderSettingsRepository.from_db_path(db_path)
 
     def route(
         self,
@@ -22,42 +27,54 @@ class ModelRouter:
         task_kind: str,
         strategy: ModelRouteStrategy,
     ) -> ModelRouteResult:
+        workload = _workload(task_kind, strategy)
+        primary = self._providers.resolve_runtime(workload)
+        try:
+            fallback = self._providers.resolve_runtime(workload, fallback=True)
+        except ProviderSettingsConflictError:
+            fallback = None
+
         if strategy == ModelRouteStrategy.QUALITY_FIRST:
-            model = LLMModelId.DEEPSEEK_V4_PRO
-            fallback = LLMModelId.DEEPSEEK_V4_FLASH
             cost = "HIGH"
             quality = "HIGH"
-            reasoning = "质量优先任务使用 deepseek-v4-pro，失败时降级到 flash。"
         elif strategy in {ModelRouteStrategy.COST_FIRST, ModelRouteStrategy.FAST_FIRST}:
-            model = LLMModelId.DEEPSEEK_V4_FLASH
-            fallback = None
             cost = "LOW"
             quality = "STANDARD"
-            reasoning = "成本或速度优先任务使用 deepseek-v4-flash。"
         else:
-            model = (
-                LLMModelId.DEEPSEEK_V4_PRO
-                if task_kind.lower() in {"spec", "code", "cad"}
-                else LLMModelId.DEEPSEEK_V4_FLASH
-            )
-            fallback = (
-                LLMModelId.DEEPSEEK_V4_FLASH
-                if model == LLMModelId.DEEPSEEK_V4_PRO
-                else None
-            )
-            cost = "MEDIUM" if model == LLMModelId.DEEPSEEK_V4_PRO else "LOW"
-            quality = "HIGH" if model == LLMModelId.DEEPSEEK_V4_PRO else "STANDARD"
-            reasoning = "平衡策略按任务复杂度选择 DeepSeek 当前正式支持模型。"
+            cost = "MEDIUM"
+            quality = "HIGH" if workload == ModelWorkload.ENGINEERING else "STANDARD"
 
+        selection = primary.selection
+        fallback_selection = fallback.selection if fallback is not None else None
         result = ModelRouteResult(
-            provider=LLMProviderId.DEEPSEEK,
-            model=model,
+            provider=selection.provider,
+            model=selection.model,
             strategy=strategy,
-            retryCount=1,
-            fallbackModel=fallback,
+            retryCount=1 if fallback_selection is not None else 0,
+            fallbackModel=(
+                fallback_selection.model if fallback_selection is not None else None
+            ),
+            providerConfigurationId=selection.provider_configuration_id,
+            providerConfigurationRevisionId=(
+                selection.provider_configuration_revision_id
+            ),
+            routingProfileRevisionId=selection.routing_profile_revision_id,
+            fallbackProviderConfigurationId=(
+                fallback_selection.provider_configuration_id
+                if fallback_selection is not None
+                else None
+            ),
+            workload=workload.value,
             costTier=cost,
             qualityTier=quality,
-            reasoning=reasoning,
+            reasoning=(
+                "已按当前模型分工固定具体服务配置、模型和路由版本。"
+                + (
+                    " 隐私设置允许失败后使用已配置的备用服务。"
+                    if fallback_selection is not None
+                    else " 当前请求不会自动切换到其他服务。"
+                )
+            ),
         )
         self._record(agent_id, task_kind, result)
         return result
@@ -75,8 +92,11 @@ class ModelRouter:
                 INSERT INTO model_route_audit (
                   id, agent_id, task_kind, strategy, provider, model,
                   fallback_model, retry_count, cost_tier, quality_tier,
-                  reasoning, created_at
-                ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+                  reasoning, created_at, provider_configuration_id,
+                  provider_configuration_revision_id,
+                  routing_profile_revision_id, workload,
+                  fallback_provider_configuration_id
+                ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
                 """,
                 (
                     _id("route"),
@@ -84,15 +104,33 @@ class ModelRouter:
                     task_kind,
                     result.strategy.value,
                     result.provider.value,
-                    result.model.value,
-                    result.fallbackModel.value if result.fallbackModel else None,
+                    str(result.model),
+                    str(result.fallbackModel) if result.fallbackModel else None,
                     result.retryCount,
                     result.costTier,
                     result.qualityTier,
                     result.reasoning,
                     now,
+                    result.providerConfigurationId,
+                    result.providerConfigurationRevisionId,
+                    result.routingProfileRevisionId,
+                    result.workload,
+                    result.fallbackProviderConfigurationId,
                 ),
             )
+
+
+def _workload(task_kind: str, strategy: ModelRouteStrategy) -> ModelWorkload:
+    if strategy in {ModelRouteStrategy.COST_FIRST, ModelRouteStrategy.FAST_FIRST}:
+        return ModelWorkload.CREATION
+    normalized = task_kind.strip().lower()
+    if normalized in {"spec", "code", "cad", "engineering", "structure"}:
+        return ModelWorkload.ENGINEERING
+    if normalized in {"vision", "image", "visual"}:
+        return ModelWorkload.VISION
+    if normalized in {"lesson", "document", "research", "long_document"}:
+        return ModelWorkload.LONG_DOCUMENT
+    return ModelWorkload.ENGINEERING if strategy == ModelRouteStrategy.QUALITY_FIRST else ModelWorkload.CREATION
 
 
 def _id(prefix: str) -> str:
