@@ -17,10 +17,13 @@ jobs:
       - name: Prepare on Windows
         if: runner.os == 'Windows'
         shell: powershell
-        run: ./install.ps1 -InstallDir "$env:RUNNER_TEMP/ZhangWen Platform" -Revision "$env:GITHUB_SHA" -DesktopDir "$env:RUNNER_TEMP/ZhangWen Desktop" -NoStart
+        run: |
+          # Hide preinstalled developer runtimes to exercise a fresh computer.
+          $env:PATH = "$env:SystemRoot\System32;$env:SystemRoot"
+          ./install.ps1 -InstallDir "$env:RUNNER_TEMP/ZhangWen Platform" -Revision "$env:GITHUB_SHA" -DesktopDir "$env:RUNNER_TEMP/ZhangWen Desktop" -NoStart
       - name: Prepare on macOS
         if: runner.os == 'macOS'
-        run: ZHANGWEN_INSTALL_DIR="$RUNNER_TEMP/ZhangWen Platform" ZHANGWEN_REVISION="$GITHUB_SHA" ZHANGWEN_NO_START=1 bash install.sh
+        run: PATH=/usr/bin:/bin:/usr/sbin:/sbin ZHANGWEN_INSTALL_DIR="$RUNNER_TEMP/ZhangWen Platform" ZHANGWEN_REVISION="$GITHUB_SHA" ZHANGWEN_NO_START=1 bash install.sh
       - name: Verify startup, catalog and local data
         shell: bash
         run: |
