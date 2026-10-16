@@ -70,9 +70,15 @@ try {
   }
   await run(localPython, ['-c', 'import platform, sys; assert sys.version_info >= (3, 12) and (sys.platform != "darwin" or platform.machine() != "x86_64" or sys.version_info < (3, 14)), "Python 3.12+ required; Intel macOS needs Python 3.12/3.13 (use bash start-web.sh)"']);
   function inspectPython() {
-    const probe = spawnSync(localPython, ['scripts/check-python-deps.py'], { cwd: root, env: { ...process.env, PYTHONUTF8: '1' }, encoding: 'utf8', timeout: 30_000, windowsHide: true });
+    // The first CadQuery/VTK import can populate native-library and font
+    // caches on a fresh Mac. Keep the probe bounded without treating that
+    // initial work as missing dependencies or downloading them again.
+    const probe = spawnSync(localPython, ['scripts/check-python-deps.py'], { cwd: root, env: { ...process.env, PYTHONUTF8: '1' }, encoding: 'utf8', timeout: 180_000, windowsHide: true });
+    if (probe.error?.code === 'ETIMEDOUT') throw new Error('Python 依赖检测超过 180 秒；首次加载结构设计库可能较慢。请关闭其他安装窗口后重试，已安装的依赖会保留。');
+    if (probe.error) throw new Error(`无法启动 Python 依赖检测（${probe.error.code || '未知错误'}），请检查 .venv 是否可运行。`);
+    if (probe.signal) throw new Error(`Python 依赖检测被 ${probe.signal} 中断，请检查 Python 和本机库兼容性。`);
     try { return JSON.parse(probe.stdout); }
-    catch { throw new Error('Python 依赖检测失败，请检查 .venv 是否可运行。'); }
+    catch { throw new Error(`Python 依赖检测未返回结果（退出码 ${probe.status ?? '未知'}），请检查 .venv 是否可运行。`); }
   }
   console.log('检测实际安装的 Python 依赖…');
   const pythonDeps = inspectPython();
