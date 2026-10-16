@@ -69,7 +69,7 @@ async def generate_reply(request: ChatInput, repo: MuRepository, history: list[d
         ) as client:
             async with client.stream("POST", base_url + "/chat/completions", headers={"Authorization": f"Bearer {key}"} if key else {},
                 json={"model": model, "messages": messages,
-                      **({"thinking": {"type": "disabled"}} if is_deepseek(base_url) else {}), "max_tokens": 4096, "stream": True}) as response:
+                      **({"thinking": {"type": "disabled"}, "response_format": {"type": "json_object"}} if is_deepseek(base_url) else {}), "max_tokens": 4096, "stream": True}) as response:
                 response.raise_for_status()
                 stage = "waiting"
                 async for line in response.aiter_lines():

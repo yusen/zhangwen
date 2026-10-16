@@ -20,6 +20,8 @@ curl -fsSL https://raw.githubusercontent.com/yusen/zhangwen/main/install.sh | ba
 
 Windows 自动创建桌面 **ZhangWen** 启动图标（掌问手掌 Logo），以后双击即可。macOS 自动创建带掌问 Logo 的 **掌问.app**，优先放入可写的 `/Applications`，否则放入个人 `~/Applications`；可从 Finder 打开或固定到 Dock。点击后在终端启动本地服务并打开浏览器。原 `~/Library/Application Support/ZhangWen/启动掌问.command` 也可继续使用。保留服务窗口，Ctrl+C 停止服务。使用桌面 Chrome / Edge 进行 Web Serial 和本地项目文件夹操作；Safari 不支持 Web Serial。
 
+macOS 找不到入口时，无需卸载或重启电脑：先在 Finder 按 `⌘⇧G` 分别查看 `/Applications` 与 `~/Applications`。从旧版平台内更新可能使用旧安装器，遗漏新增入口；新版本正常启动时会尝试补齐。也可先保存项目、在原服务终端按 `Ctrl+C`，再重跑上方安装命令，依赖完整时会复用，用户数据保留。安装输出中的 `Application:` 是实际入口路径；安装失败时先查看错误，不要删除 `data`。
+
 再次执行安装命令检查并安装 GitHub 最新版本；同一版本校验通过后跳过源码下载。每日启动使用图标/本地启动文件。平台支持启动检查和手动「检查更新」，确认后才安装，下次启动生效；检查失败不影响现有工作台。新版本准备成功才切换入口，旧版本和用户数据保留。
 
 ## 工作台

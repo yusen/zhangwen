@@ -60,3 +60,44 @@ jobs:
                   hardware = client.get('/api/hardware').json()['skills']
                   assert len(hardware) >= 258, len(hardware)
           PY
+      - name: Verify macOS startup repairs a missing application
+        if: runner.os == 'macOS'
+        run: |
+          cd "$RUNNER_TEMP/ZhangWen Platform/versions/$GITHUB_SHA"
+          .venv/bin/python - <<'PY'
+          import json, os, signal, subprocess, time, urllib.request
+          from pathlib import Path
+          temporary = Path(os.environ['RUNNER_TEMP'])
+          root = temporary / 'ZhangWen Platform'
+          application = temporary / 'Applications/掌问.app'
+          application.rename(temporary / 'original-app-before-repair.app')
+          sentinel = root / 'data/startup-repair-sentinel.txt'
+          sentinel.parent.mkdir(parents=True, exist_ok=True)
+          sentinel.write_bytes(b'preserve existing user data')
+          environment = {**os.environ, 'ZHANGWEN_DATA_DIR': str(root / 'data'),
+                         'ZHANGWEN_RUNTIME_DIR': str(root / 'runtime'),
+                         'ZHANGWEN_APPLICATIONS_DIR': str(temporary / 'Applications')}
+          opener = urllib.request.build_opener(urllib.request.ProxyHandler({}))
+          with (temporary / 'startup-repair.log').open('w') as log:
+              process = subprocess.Popen(['bash', 'start-web.sh', '--no-open'],
+                                         env=environment, stdout=log, stderr=log, start_new_session=True)
+              try:
+                  deadline = time.monotonic() + 180
+                  while True:
+                      assert process.poll() is None, (temporary / 'startup-repair.log').read_text()
+                      try:
+                          address = json.loads((root / 'data/.mu-web-address.json').read_text())
+                          with opener.open(f'http://127.0.0.1:{address["port"]}/api/health', timeout=1) as response:
+                              assert json.load(response)['instanceId'] == address['instanceId']
+                          break
+                      except (OSError, ValueError, KeyError):
+                          assert time.monotonic() < deadline, (temporary / 'startup-repair.log').read_text()
+                          time.sleep(0.2)
+                  assert os.access(application / 'Contents/MacOS/zhangwen', os.X_OK)
+                  assert (root / 'current.txt').read_text().strip() == os.environ['GITHUB_SHA']
+                  assert sentinel.read_bytes() == b'preserve existing user data'
+                  subprocess.run(['plutil', '-lint', str(application / 'Contents/Info.plist')], check=True)
+              finally:
+                  os.killpg(process.pid, signal.SIGTERM)
+                  process.wait(timeout=15)
+          PY

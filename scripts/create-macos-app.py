@@ -5,6 +5,7 @@ import argparse
 import json
 import os
 import plistlib
+import re
 import uuid
 from pathlib import Path
 
@@ -74,13 +75,45 @@ def create_app(install_root: Path, applications: Path) -> Path:
     return app
 
 
+def repair_managed_app(version: Path, applications: Path | None = None) -> Path | None:
+    """An old installer may have selected this version without creating its app.
+
+    Only the selected managed installation can repair a launcher at startup;
+    source checkouts and prepare-only/new-version setup must not change it.
+    """
+    version = version.resolve()
+    if version.parent.name != 'versions' or not re.fullmatch(r'[0-9a-f]{40}', version.name):
+        return None
+    install_root = version.parent.parent
+    try:
+        if (install_root / 'current.txt').read_text(encoding='utf-8').strip() != version.name:
+            return None
+    except OSError:
+        return None
+    if applications is None:
+        # Keep an existing managed app in its original shared/personal folder.
+        for directory in [Path('/Applications'), Path.home() / 'Applications']:
+            marker = directory / '掌问.app/Contents/Resources/install-root.txt'
+            try:
+                if marker.read_text(encoding='utf-8').strip() == str(install_root):
+                    applications = directory
+                    break
+            except OSError:
+                pass
+    return create_app(install_root, applications or default_applications())
+
+
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description='Create the macOS ZhangWen application launcher')
-    parser.add_argument('--install-root', required=True, type=Path)
+    action = parser.add_mutually_exclusive_group(required=True)
+    action.add_argument('--install-root', type=Path)
+    action.add_argument('--repair-managed', action='store_true')
     parser.add_argument('--applications-dir', type=Path, default=None)
     args = parser.parse_args()
     try:
-        path = create_app(args.install_root, args.applications_dir or default_applications())
-        print(f'Application: {path}')
+        path = (repair_managed_app(ROOT, args.applications_dir) if args.repair_managed
+                else create_app(args.install_root, args.applications_dir or default_applications()))
+        if path is not None:
+            print(f'Application: {path}')
     except (OSError, ValueError) as exc:
         parser.exit(1, f'Could not create the application launcher: {exc}\n')

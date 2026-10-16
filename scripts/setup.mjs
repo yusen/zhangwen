@@ -109,6 +109,14 @@ try {
 if (!process.exitCode) {
   if (prepareOnly) console.log('安装和构建完成。');
   else {
+    if (process.platform === 'darwin') {
+      // Older in-app updaters run their own old installer: the selected new
+      // version repairs the missing app before its first normal launch.
+      const repair = spawnSync(localPython, ['scripts/create-macos-app.py', '--repair-managed',
+        ...(process.env.ZHANGWEN_APPLICATIONS_DIR ? ['--applications-dir', process.env.ZHANGWEN_APPLICATIONS_DIR] : [])],
+      { cwd: root, stdio: 'inherit', timeout: 15_000 });
+      if (repair.error || repair.status !== 0) console.warn('应用入口未能修复；平台仍可启动。请重跑最新安装命令，查看 Application 路径和错误。');
+    }
     try { await run(process.execPath, ['scripts/start.mjs', ...serverArgs]); }
     catch (error) { console.error(error.message); process.exitCode = 1; }
   }
