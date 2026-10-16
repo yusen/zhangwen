@@ -65,10 +65,10 @@ try {
   lock = openSync(lockPath, 'wx');
   writeFileSync(lock, String(process.pid));
   if (!existsSync(localPython)) {
-    console.log('准备项目内 Python 虚拟环境（需要 Python 3.11+）…');
+    console.log('准备项目内 Python 虚拟环境（需要 Python 3.12+）…');
     await run(process.env.ZHANGWEN_PYTHON || (process.platform === 'win32' ? 'python' : 'python3'), ['-m', 'venv', resolve(root, '.venv')]);
   }
-  await run(localPython, ['-c', 'import sys; assert sys.version_info >= (3, 11), "Python 3.11+ required"']);
+  await run(localPython, ['-c', 'import platform, sys; assert sys.version_info >= (3, 12) and (sys.platform != "darwin" or platform.machine() != "x86_64" or sys.version_info < (3, 14)), "Python 3.12+ required; Intel macOS needs Python 3.12/3.13 (use bash start-web.sh)"']);
   function inspectPython() {
     const probe = spawnSync(localPython, ['scripts/check-python-deps.py'], { cwd: root, env: { ...process.env, PYTHONUTF8: '1' }, encoding: 'utf8', timeout: 30_000, windowsHide: true });
     try { return JSON.parse(probe.stdout); }

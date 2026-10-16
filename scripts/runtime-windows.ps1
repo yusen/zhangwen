@@ -48,7 +48,7 @@ function Get-PythonRuntime([string]$Executable, [string]$Prefix = '') {
     $output = Invoke-RuntimeProbe $Executable ($Prefix + ' -c ' + $code)
     if (!$output) { return $null }
     $lines = $output -split '\r?\n'
-    if ($lines.Count -ne 3 -or $lines[0] -notmatch '^3 (\d+) (\d+)$' -or [int]$Matches[1] -lt 11) { return $null }
+    if ($lines.Count -ne 3 -or $lines[0] -notmatch '^3 (\d+) (\d+)$' -or [int]$Matches[1] -lt 12) { return $null }
     return [pscustomobject]@{ Executable = $lines[1]; Version = ($lines[0] -replace ' ', '.'); IsVenv = ($lines[2] -eq '1') }
 }
 

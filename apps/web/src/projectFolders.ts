@@ -72,6 +72,33 @@ export async function writeProjectDirectory(binding: FolderBinding, snapshot: Pr
       await write(binding.handle, 'main.py', current.code);
       binding.mainHash = await hash(current.code);
     }
+    // Immutable CAD files remain visible alongside the portable checkpoint.
+    // Every path is validated again here before browser-authorized folder I/O.
+    if (snapshot.structure?.assets) {
+      const root = await binding.handle.getDirectoryHandle('structure', { create: true });
+      for (const [key, asset] of Object.entries(snapshot.structure.assets)) {
+        const parts = key.split('/');
+        if (parts.length < 3 || parts.length > 4 || !/^[a-f0-9]{32}$/.test(parts[0]) || !/^ZW-PRODUCT-\d{8}-\d{6}(?:-\d{2})?$/.test(parts[1]) || parts.slice(2).some(p => !/^[a-zA-Z0-9_.-]+$/.test(p) || p === '.' || p === '..')) throw new Error('结构资产路径无效，未覆盖文件夹快照。');
+        const bytes = Uint8Array.from(atob(asset.content), char => char.charCodeAt(0));
+        if (await sha256(bytes) !== asset.sha256) throw new Error('结构文件校验失败，未覆盖项目快照。');
+        let directory = root;
+        for (const part of parts.slice(0, -1)) directory = await directory.getDirectoryHandle(part, { create: true });
+        const name = parts.at(-1)!;
+        let existing: FileSystemFileHandle | null = null;
+        try { existing = await directory.getFileHandle(name); } catch (e) { if (!(e instanceof DOMException && e.name === 'NotFoundError')) throw e; }
+        if (existing) {
+          const previous = new Uint8Array(await (await existing.getFile()).arrayBuffer());
+          if (await sha256(previous) !== asset.sha256) throw new Error(`结构文件 ${name} 已被外部修改，未覆盖。`);
+        } else {
+          const handle = await directory.getFileHandle(name, { create: true });
+          const writer = await handle.createWritable();
+          try { await writer.write(bytes); await writer.close(); }
+          catch (e) { await writer.abort().catch(() => {}); throw e; }
+        }
+        const check = new Uint8Array(await (await (await directory.getFileHandle(name)).getFile()).arrayBuffer());
+        if (await sha256(check) !== asset.sha256) throw new Error(`结构文件 ${name} 回读不一致，未覆盖项目快照。`);
+      }
+    }
     await write(binding.handle, PROJECT_FILE, json);
     binding.checkpointHash = await hash(json);
     await rememberFolder(binding);

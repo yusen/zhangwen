@@ -67,6 +67,7 @@ export interface ProjectSnapshot {
   format: 'zhangwen-project'; schemaVersion: 1; portableId: string;
   project: { name: string; boardId: string; componentIds: string[]; revision: number };
   versions: Version[]; messages: ChatMessage[];
+  structure?: { versions: import('./structure').StructureVersion[]; messages: { id: string; role: string; content: string; createdAt: string }[]; assets: Record<string, { sha256: string; content: string }> };
 }
 /** User-named program archive in a project folder; physical results are user observations. */
 export interface ProjectProgramRecord {

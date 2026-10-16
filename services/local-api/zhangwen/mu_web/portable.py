@@ -17,6 +17,7 @@ from pydantic import Field, field_validator, model_validator
 from zhangwen.artifacts.models import ArtifactPreview, ArtifactPreviewKind
 from zhangwen.llm.contracts import ChatMessage, ChatMessageStatus, ChatRole
 from .models import Boundary, CodeInput, CreateInput
+from .structure import StructureCheckpoint, export_structure, prepare_structure_import, insert_structure_import
 
 SNAPSHOT_MAX_BYTES = 32 * 1024 * 1024
 
@@ -77,6 +78,7 @@ class ProjectSnapshot(Boundary):
     project: SnapshotProject
     versions: list[SnapshotVersion] = Field(min_length=1, max_length=1000)
     messages: list[SnapshotMessage] = Field(max_length=10000)
+    structure: StructureCheckpoint | None = None
 
     @model_validator(mode='after')
     def pointers(self):
@@ -119,6 +121,7 @@ def export_project(repo, project_id: str) -> dict:
         'project': {key: project[key] for key in ('name', 'boardId', 'componentIds', 'revision')},
         'versions': [{**item, **({'messageId': portable_messages.get(item['messageId'], item['messageId'])} if item.get('messageId') else {})} for item in versions],
         'messages': [{**item, 'id': portable_messages[item['id']]} for item in project['messages']],
+        **({'structure': structure} if (structure := export_structure(repo, project_id)) else {}),
     })
     if len(json.dumps(result, ensure_ascii=False).encode('utf-8')) > SNAPSHOT_MAX_BYTES:
         raise HTTPException(413, '项目快照超过32MiB，未截断或覆盖文件夹。请保留本机数据并另行备份。')
@@ -130,6 +133,7 @@ def import_project(repo, snapshot: ProjectSnapshot) -> dict:
     if len(json.dumps(value, ensure_ascii=False).encode('utf-8')) > SNAPSHOT_MAX_BYTES:
         raise HTTPException(413, '项目快照超过32MiB。')
     hardware = repo.hardware_revisions(snapshot.project.boardId, snapshot.project.componentIds)
+    prepare_structure_import(repo, snapshot.structure)
     # Exact checkpoints reuse their original working copy. Divergent checkpoints
     # become another project, preserving both histories rather than overwriting.
     with repo.connect() as conn:
@@ -170,6 +174,7 @@ def import_project(repo, snapshot: ProjectSnapshot) -> dict:
             message = ChatMessage(id=message_ids[item.id], role=ChatRole(item.role), content=item.content,
                 status=ChatMessageStatus(item.status), createdAt=item.createdAt, updatedAt=item.createdAt, metadata=metadata)
             repo.projects._insert_message(conn, conversation_id, project_id, message)
+        insert_structure_import(repo, conn, project_id, snapshot.structure)
 
     workspace = repo.projects.create_project_from_idea(idea='从本地项目文件夹恢复MicroPython项目',
         project_name=snapshot.project.name, initial_expert=None, participating_experts=[], after_create=after_create)

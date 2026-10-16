@@ -1,4 +1,7 @@
-"""Same-origin local Web service. No serial, shell, or Flash endpoint."""
+"""Same-origin local Web service; browser serial and a fixed deterministic CAD worker.
+
+No arbitrary source-code, shell-command or device-execution endpoint.
+"""
 from __future__ import annotations
 
 import asyncio
@@ -29,6 +32,7 @@ from zhangwen.mu_web.programming import programming_context
 from zhangwen.mu_web.portable import ProjectSnapshot, SNAPSHOT_MAX_BYTES
 from zhangwen.mu_web.replies import REPLY_INSTRUCTION
 from zhangwen.mu_web.updates import UpdateManager, InstallUpdateInput
+from zhangwen.mu_web.structure import StructureService, structure_router
 
 ROOT = Path(__file__).resolve().parents[4]
 AI_TOTAL_TIMEOUT = 300
@@ -150,6 +154,8 @@ def create_app(data_dir: Path | None = None, *, port: int = 3080, dev: bool = Fa
     app.state.chat_locks = {}
     app.state.ai_test_lock = asyncio.Lock()
     app.state.ai_settings = ai_settings
+    app.state.structure = StructureService(repo, data_dir)
+    app.include_router(structure_router(app.state.structure, lambda: app.state.ai_settings))
     app.state.updates = UpdateManager(ROOT, data_dir)
     session = secrets.token_urlsafe(32)
     allowed_hosts = {f"127.0.0.1:{port}", f"localhost:{port}"}

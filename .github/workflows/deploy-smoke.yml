@@ -39,7 +39,9 @@ jobs:
           cd "$RUNNER_TEMP/ZhangWen Platform/versions/$GITHUB_SHA"
           if [ "$RUNNER_OS" = Windows ]; then py=.venv/Scripts/python.exe; else py=.venv/bin/python; fi
           PYTHONPATH=services/local-api "$py" - <<'PY'
-          import tempfile
+          import tempfile, gc
+          import cadquery as cq
+          import trimesh
           from pathlib import Path
           from fastapi.testclient import TestClient
           from zhangwen.mu_web.app import create_app
@@ -59,6 +61,24 @@ jobs:
                   assert client.get('/').status_code == 200
                   hardware = client.get('/api/hardware').json()['skills']
                   assert len(hardware) >= 258, len(hardware)
+                  assert len(client.get('/api/structure/catalog').json()['profiles']) == 32
+                  assert abs(cq.Workplane('XY').box(5, 6, 7).val().Volume() - 210) < 0.01
+                  token = client.get('/api/session').json()['token']
+                  client.headers.update({'origin': 'http://127.0.0.1:3080', 'x-mu-session': token})
+                  project = client.post('/api/projects', json={'name':'Structure deployment smoke', 'boardId':'hw_seeed_xiao_esp32s3_sense', 'code':''})
+                  assert project.status_code == 201, project.text
+                  endpoint = '/api/projects/' + project.json()['id'] + '/structure'
+                  draft = client.post(endpoint, json={'action':'selected','expectedRevision':0,'selectedIds':['xiao_esp32s3']})
+                  assert draft.status_code == 200 and draft.json()['versions'][0]['result']['status'] == 'confirmation', draft.text
+                  built = client.post(endpoint, json={'action':'build','expectedRevision':1})
+                  assert built.status_code == 200, built.text
+                  result = built.json()['versions'][0]['result']
+                  assert result['build']['status'] == 'artifact_exports', result
+                  step = next(item for item in result['exports'] if item['id'] == 'cadquery_step')
+                  assert b'ISO-10303-21' in client.get(step['url']).content
+              # sqlite connections used by repositories can await cyclic GC;
+              # release those handles before removing a temporary Windows DB.
+              gc.collect()
           PY
       - name: Verify macOS startup repairs a missing application
         if: runner.os == 'macOS'

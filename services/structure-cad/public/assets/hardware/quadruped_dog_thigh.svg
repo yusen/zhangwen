@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 200" role="img" aria-label="Quadruped dog thigh">
+  <rect width="320" height="200" fill="#f7f5d6"/>
+  <polygon points="72,82 250,58 281,76 102,102" fill="#f6a000"/>
+  <polygon points="72,82 102,102 102,135 72,115" fill="#d18800"/>
+  <polygon points="102,102 281,76 281,109 102,135" fill="#6b4200"/>
+  <ellipse cx="77" cy="100" rx="5" ry="13" fill="#9fb2bd"/>
+  <circle cx="230" cy="82" r="4" fill="#f7f5d6"/>
+  <circle cx="248" cy="79" r="4" fill="#f7f5d6"/>
+</svg>

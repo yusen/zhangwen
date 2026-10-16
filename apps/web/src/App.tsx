@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 import palmMark from './assets/palm-mark.png';
-import { ArrowUp, BookOpen, Check, CheckCheck, ChevronRight, CircuitBoard, Download, FileCode2, Files, FolderOpen, HelpCircle, LoaderCircle, Plus, Save, Search, Sparkles, Square, Terminal, Unplug, Usb, X, Play, ZoomIn, ZoomOut, AlignLeft, Moon, Sun, Settings, PanelLeftClose, PanelLeftOpen, Maximize, Minimize, Cpu, Layers3 } from 'lucide-react';
+import { ArrowUp, BookOpen, Check, CheckCheck, ChevronRight, CircuitBoard, Download, FileCode2, Files, FolderOpen, HelpCircle, LoaderCircle, Plus, Save, Search, Sparkles, Square, Terminal, Unplug, Usb, X, Play, ZoomIn, ZoomOut, AlignLeft, Moon, Sun, Settings, PanelLeftClose, PanelLeftOpen, Maximize, Minimize, Cpu, Layers3, GraduationCap, UserRound } from 'lucide-react';
 import type { AiSettings, ChatMessage, CheckResult, CreateProject, HardwareDetail, HardwareSummary, Project, ProjectSnapshot, ProjectSummary, ProgramRunSubmission, UploadManifest, Version, WorkspaceMode } from '../../../packages/contracts/src/mu';
 import { DEFAULT_AI_MODEL } from '../../../packages/contracts/src/mu';
 import { api, bootstrap, chat } from './api';
@@ -22,7 +22,10 @@ import { DeviceFilesDialog } from './DeviceFilesDialog';
 import { copyProjectPrograms } from './projectPrograms';
 import { HardwareGuide, integrationPrompt } from './HardwareGuide';
 import { BoardArtwork } from './BoardArtwork';
-import { ModePicker, PlannedWorkspace, workspaceModes } from './WorkspaceModes';
+import { ModePicker, workspaceModes } from './WorkspaceModes';
+import { LearningWorkspace } from './LearningWorkspace';
+import type { LearningRole } from './LearningMaterials';
+import { StructureWorkspace } from './StructureWorkspace';
 import { UpdateCenter } from './UpdateCenter';
 import { FirmwareDialog } from './FirmwareDialog';
 import { ensureFolderPermission, pickProjectDirectory, pickerCancelled, prepareNewDirectory, readProjectDirectory, recallFolder, rememberFolder, writeProjectDirectory, type FolderBinding, type ProjectDirectory } from './projectFolders';
@@ -46,9 +49,13 @@ function scratchHardware(): { board: string; components: string[] } {
 
 export default function App() {
   const [mode, setMode] = useState<WorkspaceMode>(() => { const value = stored('mu-workspace-mode'); return value === 'structure' || value === 'learning' ? value : 'engineer'; });
+  const [structureBusy, setStructureBusy] = useState(false);
+  const structureBusyRef = useRef(structureBusy); structureBusyRef.current = structureBusy;
   const [modeDialog, setModeDialog] = useState(false);
+  const [learningRole, setLearningRole] = useState<LearningRole>('teacher');
+  const [learningRoleDialog, setLearningRoleDialog] = useState(false);
   const modeInfo = workspaceModes.find(item => item.id === mode)!;
-  const selectMode = (value: WorkspaceMode) => { setMode(value); store('mu-workspace-mode', value); setCodeFullscreen(false); setModeDialog(false); };
+  const selectMode = (value: WorkspaceMode) => { setMode(value); store('mu-workspace-mode', value); setCodeFullscreen(false); setModeDialog(false); setLearningRoleDialog(false); };
   const [hardware, setHardware] = useState<HardwareSummary[]>([]);
   const [projects, setProjects] = useState<ProjectSummary[]>([]);
   const [project, setProject] = useState<Project | null>(null);
@@ -285,7 +292,7 @@ export default function App() {
   }, [code, name, board, components, project, dirty, draftRevision, loading]);
   useEffect(() => {
     const prevent = (event: BeforeUnloadEvent) => {
-      if (dirtyRef.current || folderPending.current || folderErrorRef.current || sendingMessage.current || device.current?.state === 'busy' || flashingRef.current) { event.preventDefault(); event.returnValue = ''; }
+      if (dirtyRef.current || structureBusyRef.current || folderPending.current || folderErrorRef.current || sendingMessage.current || device.current?.state === 'busy' || flashingRef.current) { event.preventDefault(); event.returnValue = ''; }
     };
     window.addEventListener('beforeunload', prevent);
     return () => window.removeEventListener('beforeunload', prevent);
@@ -293,6 +300,7 @@ export default function App() {
   const save = async () => {
     if (sendingMessage.current && !project) { setNotice('正在准备首次对话项目，请稍后保存。'); return; }
     if (!project || !folderRef.current) { openSave(); return; }
+    if (mode === 'structure' && !dirty) { await ensureFolderPermission(folderRef.current, true); await syncFolder(project.id); setNotice('结构与项目文件已同步到本地文件夹。'); return project; }
     if (codePreview && manualDirty && codePreview.code !== code && !window.confirm('保存此候选会替换当前手工草稿。先返回原稿保存，或确认继续？')) return;
     await ensureFolderPermission(folderRef.current, true);
     const saved = await api<Project>('/projects/' + project.id, 'PUT', { code: visibleCode, name, boardId: board, componentIds: components, expectedRevision: draftRevision ?? project.revision });
@@ -302,7 +310,7 @@ export default function App() {
   };
   const saveRef = useRef(save); saveRef.current = save;
   useEffect(() => {
-    const key = (event: KeyboardEvent) => { if ((event.ctrlKey || event.metaKey) && event.key.toLowerCase() === 's') { event.preventDefault(); if (!busyRef.current) void action('保存', () => saveRef.current()); } };
+    const key = (event: KeyboardEvent) => { if ((event.ctrlKey || event.metaKey) && event.key.toLowerCase() === 's') { event.preventDefault(); if (!busyRef.current && !structureBusyRef.current) void action('保存', () => saveRef.current()); } };
     window.addEventListener('keydown', key); return () => window.removeEventListener('keydown', key);
   }, []);
   const chooseProject = async (id: string) => {
@@ -520,13 +528,13 @@ export default function App() {
       <a className="title-brand" href="/" aria-label="掌问工作台"><span><img src={palmMark} alt="" width={24} height={24} /></span><strong>掌问</strong></a>
       <span className="title-filename title-mode" aria-label="当前模式">{modeInfo.name}</span>
       <div className="current-project" aria-label="当前项目" title={name}><strong>{name}</strong>{dirty && <span className="dirty-dot" aria-label="代码未保存" />}</div>
-      <span className="document-info">{mode === 'engineer' ? `${dirty ? '未保存更改' : project ? '本地工作区' : '未保存'} · ${zoom}%` : '待开放'}</span>
+      <span className="document-info">{mode === 'engineer' ? `${dirty ? '未保存更改' : project ? '本地工作区' : '未保存'} · ${zoom}%` : mode === 'structure' ? '结构工作区 · 本机保存' : '学习工作区 · 界面预览'}</span>
       <button className="theme-toggle" aria-label={theme === 'light' ? '切换深色主题' : '切换浅色主题'} title={theme === 'light' ? '深色主题' : '浅色主题'} onClick={() => setTheme(value => value === 'light' ? 'dark' : 'light')}>{theme === 'light' ? <Moon size={17} /> : <Sun size={17} />}</button>
     </header>
     <header className="mu-toolbar" aria-label="Mu 工具栏">
       <div className="mu-commands">
         <div className="tool-group" role="group" aria-label="三师模式">
-        <MuTool icon={Layers3} label="模式" aria-label="模式切换" variant="brand" active={modeDialog} disabled={loading || !!busy || aiBusy || deviceBusy || running || flashing || deviceState === 'attention'} onClick={() => setModeDialog(true)} title={`切换三师模式 · ${modeInfo.name}`} />
+        <MuTool icon={Layers3} label="模式" aria-label="模式切换" variant="brand" active={modeDialog} disabled={loading || !!busy || aiBusy || structureBusy || deviceBusy || running || flashing || deviceState === 'attention'} onClick={() => setModeDialog(true)} title={`切换三师模式 · ${modeInfo.name}`} />
         </div>
         {mode === 'engineer' && <><div className="tool-group" role="group" aria-label="项目操作">
         <MuTool icon={Plus} label="新建" aria-label="新建项目" disabled={loading || !board || !!busy || aiBusy || deviceBusy} onClick={openNew} />
@@ -544,9 +552,20 @@ export default function App() {
         <MuTool icon={Terminal} label="REPL" active={terminalOpen} aria-pressed={terminalOpen} onClick={() => { setTerminalOpen(value => !value); setMobileTab('code'); }} />
         <MuTool icon={Cpu} label="固件刷入" variant="hardware" disabled={loading || !!busy || aiBusy || flashing || deviceState !== 'disconnected'} title={`刷入 ${boardInfo?.displayName ?? '当前主控'} 对应固件；请先断开设备`} onClick={() => setFirmwareDialog(true)} />
         </div></>}
+        {mode === 'structure' && <div className="tool-group" role="group" aria-label="结构项目操作">
+          <MuTool icon={Plus} label="新建" aria-label="新建项目" disabled={loading || structureBusy || !!busy} onClick={openNew} />
+          <MuTool icon={FolderOpen} label="加载" disabled={loading || structureBusy || !!busy} onClick={() => void action('读取项目', async () => { await refreshProjects(); setLoadDialog(true); })} />
+          <MuTool icon={Save} label="保存" disabled={loading || structureBusy || !!busy} onClick={() => void action('保存', save)} />
+        </div>}
+        {mode === 'learning' && <div className="tool-group" role="group" aria-label="学习工作台操作">
+          <MuTool icon={learningRole === 'teacher' ? GraduationCap : UserRound} label="切换视角" active={learningRoleDialog} onClick={() => setLearningRoleDialog(true)} title={`当前：${learningRole === 'teacher' ? '教师工作台' : '学生工作台'}，点击切换`} />
+          <MuTool icon={Plus} label="新建" aria-label="新建学习项目（待开发）" disabled title="学习项目操作待开发，当前可预览界面" />
+          <MuTool icon={FolderOpen} label="加载" disabled title="学习项目加载待开发" />
+          <MuTool icon={Save} label="保存" disabled title="学习内容保存待开发" />
+        </div>}
         <div className="tool-group" role="group" aria-label="设置与帮助">
-        <MuTool icon={Settings} label="API 设置" variant="muted" active={aiSettingsDialog} disabled={loading || !!busy || aiBusy} onClick={openAiSettings} title="设置掌问 AI API" />
-        <UpdateCenter enabled={!loading} blocked={!!busy || aiBusy || deviceBusy || running || flashing || deviceState === 'attention'} unsaved={dirty || !!folderError || folderPending.current > 0} />
+        <MuTool icon={Settings} label="API 设置" variant="muted" active={aiSettingsDialog} disabled={loading || !!busy || aiBusy || structureBusy} onClick={openAiSettings} title="设置掌问 AI API" />
+        <UpdateCenter enabled={!loading} blocked={!!busy || aiBusy || structureBusy || deviceBusy || running || flashing || deviceState === 'attention'} unsaved={dirty || !!folderError || folderPending.current > 0} />
         <MuTool icon={HelpCircle} label="帮助" variant="muted" active={helpDialog} onClick={() => setHelpDialog(true)} />
         </div>
       </div>
@@ -584,7 +603,7 @@ export default function App() {
         </div>
         {chatError && <p className="chat-error" role="alert">{chatError}</p>}
         {!project && <p className="chat-hint">首次发送会自动保存当前项目、代码和已加入模块。</p>}
-        <form className="chat-form" onSubmit={event => { event.preventDefault(); void sendMessage(); }}><label className="sr-only" htmlFor="chat-message">发送给掌问 AI</label><textarea ref={chatInput} id="chat-message" value={message} onChange={event => setMessage(event.target.value)} onKeyDown={event => { if ((event.ctrlKey || event.metaKey) && event.key === 'Enter' && !event.nativeEvent.isComposing && !loading && !busy && !aiBusy && message.trim()) { event.preventDefault(); void sendMessage(); } }} placeholder="和掌问聊聊你的想法…" maxLength={4000} /><div><span>{!aiConfigured ? "AI 未配置 · 点击 API 设置" : "候选预览后保存，设备操作单独确认"}</span><kbd className="chat-shortcut">Ctrl ↵</kbd><button className="primary icon-button" aria-label="发送" disabled={loading || !!busy || !board || !message.trim() || aiBusy}>{aiBusy ? <LoaderCircle size={19} className="spin" /> : <ArrowUp size={20} />}</button></div></form>
+        <form className="chat-form" onSubmit={event => { event.preventDefault(); void sendMessage(); }}><label className="sr-only" htmlFor="chat-message">发送给掌问 AI</label><textarea ref={chatInput} id="chat-message" value={message} onChange={event => setMessage(event.target.value)} onKeyDown={event => { if ((event.ctrlKey || event.metaKey) && event.key === 'Enter' && !event.nativeEvent.isComposing && !loading && !busy && !aiBusy && message.trim()) { event.preventDefault(); void sendMessage(); } }} placeholder="和掌问聊聊你的想法…" maxLength={4000} /><div><span>{!aiConfigured ? "AI 未配置 · 点击 API 设置" : "候选预览后保存，设备操作单独确认"}</span><button className="primary icon-button" aria-label="发送" disabled={loading || !!busy || !board || !message.trim() || aiBusy}>{aiBusy ? <LoaderCircle size={19} className="spin" /> : <ArrowUp size={20} />}</button></div></form>
       </section>
       <section className={`code-panel panel mobile-${mobileTab === 'code' ? 'show' : 'hide'}`}>
         <div className="filebar"><span><FileCode2 size={16} />main.py</span><span className="filebar-space" /><span className={dirty ? 'unsaved' : 'status-ready'}>{project ? dirty ? '未保存' : '已保存' : '项目尚未保存'}</span><select className="code-version-select" aria-label="代码历史版本" disabled={!project || !codeVersions.length || !!busy || aiBusy || deviceBusy} value={codePreview ? codePreview.revision ?? 'preview' : selectedVersion ?? 'draft'} onChange={event => { if (event.target.value === 'draft') setCodePreview(null); else selectCodeVersion(Number(event.target.value)); }}><option value="draft" disabled={!codePreview}>{project ? '未保存草稿' : '尚无版本'}</option>{codePreview && !codePreview.revision && <option value="preview">AI候选 · 未保存</option>}{codeVersions.map(version => <option key={version.revision} value={version.revision}>v{version.revision} · {version.source === 'ai' ? 'AI候选 · 未保存' : '已保存'}{version.boardId && version.boardId !== board ? ' · 其他主控' : ''}</option>)}</select><div className="editor-view-controls"><button aria-label="缩小代码" title="缩小代码" disabled={zoom <= 80} onClick={() => setZoom(value => Math.max(80, value - 10))}><ZoomOut size={16} /></button><span aria-label="代码字号比例">{zoom}%</span><button aria-label="放大代码" title="放大代码" disabled={zoom >= 160} onClick={() => setZoom(value => Math.min(160, value + 10))}><ZoomIn size={16} /></button><button aria-label={codeFullscreen ? '退出代码全屏' : '代码全屏'} title={codeFullscreen ? '退出全屏（Esc）' : '代码全屏'} onClick={() => setCodeFullscreen(value => !value)}>{codeFullscreen ? <Minimize size={16} /> : <Maximize size={16} />}</button></div><button aria-label="导出当前代码" onClick={() => download("main.py", visibleCode)}><Download size={16} />导出</button></div>
@@ -596,12 +615,13 @@ export default function App() {
       </section>
     </main>
     </div>
-    {mode !== 'engineer' && <PlannedWorkspace mode={mode} projectName={name} onEngineer={() => selectMode('engineer')} />}
-    <footer className="statusbar">{mode === 'engineer' ? <><span><span className="status-dot" />MicroPython · Web Serial</span><span>{components.length + 1} 个硬件 · main.py<span className="status-separator">/</span>{device.current?.identity?.machine ?? '设备未连接'}</span><span>本机保存 · 设备操作需确认</span></> : <><span>{modeInfo.name} · 待开放</span><span>项目内容已保留</span></>}</footer>
+    <StructureWorkspace projectId={project?.id} active={mode === 'structure'} board={boardInfo} modules={selectedSensors} onSaveProject={openSave} onSettings={openAiSettings} onBusy={setStructureBusy} onSaved={syncFolder} />
+    <LearningWorkspace active={mode === 'learning'} projectName={name} project={project} board={boardInfo} modules={selectedSensors} role={learningRole} onRole={setLearningRole} roleDialog={learningRoleDialog} onCloseRole={() => setLearningRoleDialog(false)} />
+    <footer className="statusbar">{mode === 'engineer' ? <><span><span className="status-dot" />MicroPython · Web Serial</span><span>{components.length + 1} 个硬件 · main.py<span className="status-separator">/</span>{device.current?.identity?.machine ?? '设备未连接'}</span><span>本机保存 · 设备操作需确认</span></> : <><span>{modeInfo.name}{mode === 'learning' ? ' · 界面预览' : ' · CadQuery'}</span><span>{mode === 'learning' ? '生成功能待开发' : '项目内容已保留'}</span></>}</footer>
     {modeDialog && <ModePicker current={mode} onSelect={selectMode} onClose={() => setModeDialog(false)} />}
     {boardDialog && <BoardPicker boards={hardware} selected={newDialog ? newBoard : board} onClose={() => setBoardDialog(false)} onSelect={item => { if (newDialog) setNewBoard(item.componentId); else switchBoard(item.componentId); setBoardDialog(false); }} onHelp={() => { setBoardDialog(false); setHelpDialog(true); }} />}
     {loadDialog && <Dialog title="加载项目" onClose={() => setLoadDialog(false)}><p className="muted">选择项目文件夹，恢复主控、模块、过往对话和全部代码版本。</p><button className="primary choose-project-folder" disabled={!!busy} onClick={() => void loadFolder()}><FolderOpen size={19} />选择项目文件夹</button>{error && <p className="settings-error" role="alert">{error}</p>}<h3 className="recent-projects-title">最近本机项目</h3><p className="muted">也可继续打开本机工作记录；旧项目保存时可选择项目文件夹。</p>{projects.length ? projects.map(item => <button className="load-project-row" disabled={!!busy} key={item.id} onClick={async () => { if (await chooseProject(item.id)) setLoadDialog(false); }}><FolderOpen size={22} /><span><strong>{item.name}</strong><small>版本 {item.revision} · {new Date(item.updatedAt).toLocaleString()}</small></span>{item.id === project?.id ? <Check size={18} /> : <ChevronRight size={18} />}</button>) : <p>还没有最近项目，可从文件夹加载。</p>}</Dialog>}
-    {helpDialog && <Dialog title="掌问 Mu 工作台使用说明" onClose={() => setHelpDialog(false)}><ol className="help-steps"><li>点击左上「模式」在智能工程师、结构设计师、学习设计师之间切换。后两项待开放，切换保留当前项目；主控板在智能工程师左侧选择。「检查更新」需安装器部署，确认安装后下次启动生效。</li><li>打开即进入一个未命名项目。选择主控板，添加模块并编写代码；点击「新建」或首次「保存」，选择本地项目文件夹。点击「加载→选择项目文件夹」恢复代码、对话和历史版本。</li><li>左侧用图片、名称和选项列表显示已加入的输入/输出模块，点击「添加模块」选择；任意主控均可跨品牌选择，通过品牌及传感器/执行器类型筛选。硬件栏可向左收起，点击窄栏图标恢复；收起仅增加对话宽度，代码栏保持不变。</li><li>保存项目、检查代码；连接设备后核对清单并上传。上传前备份，上传后回读校验。</li><li>点击「运行」提交设备命令，通过 REPL/串口输出与实物观察判断；运行时同一按钮变为「停止」。</li><li>编辑器顶部的版本下拉框可查看保存版本与 AI 生成版本；AI 代码在右侧以候选预览，保存后成为新的当前版本；有手工修改时保留原稿。切换主控会更新对话，之前主控的记录可展开查看。「文件」可载入/导出代码或浏览设备文件；代码栏可缩放、全屏，Esc 退出全屏。</li><li>「固件刷入」按当前主控打开。先断开编程串口，选择厂商完整 .bin，识别芯片、备份覆盖范围并下载，确认后写入和回读校验。固件未内置。</li></ol><p className="muted">启用 AI：点击「API 设置」，填写 API 基础地址、模型名称和 Key，可使用 DeepSeek 或其他兼容 OpenAI Chat Completions 的服务；本机服务可免 Key。发送时当前代码与所选硬件资料会提交给所配置的服务，代码生成后在右侧预览，保存后才成为当前程序。可先点击「测试连接」。Web Serial 需要桌面 Chrome/Edge；main.py 文件上传最多 64 KiB。</p></Dialog>}
+    {helpDialog && <Dialog title="掌问 Mu 工作台使用说明" onClose={() => setHelpDialog(false)}><ol className="help-steps"><li>点击左上「模式」在智能工程师、结构设计师、学习设计师之间切换。结构设计师支持外壳需求、尺寸确认、真实模型与导出；学习设计师可预览学习设置、目标、资料和四类学习材料，生成与保存功能待开发。切换保留当前项目；主控板在智能工程师左侧选择。「检查更新」需安装器部署，确认安装后下次启动生效。</li><li>打开即进入一个未命名项目。选择主控板，添加模块并编写代码；点击「新建」或首次「保存」，选择本地项目文件夹。点击「加载→选择项目文件夹」恢复代码、对话和历史版本。</li><li>左侧用图片、名称和选项列表显示已加入的输入/输出模块，点击「添加模块」选择；任意主控均可跨品牌选择，通过品牌及传感器/执行器类型筛选。硬件栏可向左收起，点击窄栏图标恢复；收起仅增加对话宽度，代码栏保持不变。</li><li>保存项目、检查代码；连接设备后核对清单并上传。上传前备份，上传后回读校验。</li><li>点击「运行」提交设备命令，通过 REPL/串口输出与实物观察判断；运行时同一按钮变为「停止」。</li><li>编辑器顶部的版本下拉框可查看保存版本与 AI 生成版本；AI 代码在右侧以候选预览，保存后成为新的当前版本；有手工修改时保留原稿。切换主控会更新对话，之前主控的记录可展开查看。「文件」可载入/导出代码或浏览设备文件；代码栏可缩放、全屏，Esc 退出全屏。</li><li>「固件刷入」按当前主控打开。先断开编程串口，选择厂商完整 .bin，识别芯片、备份覆盖范围并下载，确认后写入和回读校验。固件未内置。</li></ol><p className="muted">启用 AI：点击「API 设置」，填写 API 基础地址、模型名称和 Key，可使用 DeepSeek 或其他兼容 OpenAI Chat Completions 的服务；本机服务可免 Key。发送时当前代码与所选硬件资料会提交给所配置的服务，代码生成后在右侧预览，保存后才成为当前程序。可先点击「测试连接」。Web Serial 需要桌面 Chrome/Edge；main.py 文件上传最多 64 KiB。</p></Dialog>}
     {firmwareDialog && boardInfo && <FirmwareDialog board={boardInfo} onClose={() => setFirmwareDialog(false)} onBusy={setFlashing} download={download} />}
     {aiSettingsDialog && <AiSettingsDialog settings={{ aiConfigured, aiModel, aiBaseUrl }} onClose={() => setAiSettingsDialog(false)} onSaved={result => { setAiConfigured(result.aiConfigured); setAiModel(result.aiModel); setAiBaseUrl(result.aiBaseUrl ?? 'https://api.deepseek.com'); setAiSettingsDialog(false); setNotice(result.aiConfigured ? 'API 已保存到本机设置，立即生效。' : 'API 已清除，手工编程仍可继续。'); }} />}
     {newDialog && !boardDialog && !helpDialog && <Dialog title={creationMode === 'new' ? '新建项目' : '保存项目'} onClose={() => { if (!busy) { setNewDialog(false); setUploadAfterSave(false); } }}><form onSubmit={event => { event.preventDefault(); void action('保存项目文件夹', finishFolderProject); }}><label className="field">项目名称<input autoFocus value={newName} maxLength={80} onChange={event => setNewName(event.target.value)} required disabled={busy === '保存项目文件夹'} /></label><div className="field">项目文件夹<button type="button" className="choose-project-folder" disabled={!!busy} onClick={() => void selectNewFolder()}><FolderOpen size={19} />{newFolder ? '重新选择文件夹' : '选择本地文件夹'}</button><span className="selected-project-folder" aria-label="已选项目文件夹">{newFolder?.name ?? '尚未选择'}</span></div><div className="field">主控板<button type="button" className="board-control" aria-label="选择项目主控板" disabled={!!busy} onClick={() => setBoardDialog(true)}><CircuitBoard size={17} /><span>{hardware.find(item => item.componentId === newBoard)?.displayName ?? '选择主控板'}</span><ChevronRight size={14} /></button></div><p className="muted">{creationMode === 'new' ? '在所选文件夹创建空白项目。取消保留当前项目。' : '保存当前代码、主控、模块，以及已有对话和代码版本。'} 文件夹包含 main.py 和 zhangwen.project.json，可在其他电脑加载。</p>{error && <p className="settings-error" role="alert">{error}</p>}<button className="primary" disabled={!newName.trim() || !newBoard || !newFolder || !!busy}>{creationMode === 'new' ? '创建项目' : '保存项目'}</button></form></Dialog>}

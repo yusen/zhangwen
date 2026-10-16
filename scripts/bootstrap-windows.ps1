@@ -59,7 +59,7 @@ try {
             }
             if (!$basePython) {
                 foreach ($launcher in @(Get-ApplicationPaths @('py.exe', 'py'))) {
-                    foreach ($selector in @('-3', '-3.13', '-3.14', '-3.12', '-3.11')) {
+                    foreach ($selector in @('-3', '-3.13', '-3.14', '-3.12')) {
                         $basePython = Get-PythonRuntime $launcher $selector
                         if ($basePython) { break }
                     }
@@ -69,7 +69,7 @@ try {
             $uvDir = Join-Path $runtimeRoot 'uv'
             $uvExe = Get-UvRuntime (@((Join-Path $uvDir 'uv.exe')) + @(Get-ApplicationPaths @('uv.exe', 'uv')))
             if (!$basePython -and $uvExe) {
-                $uvPython = Invoke-RuntimeProbe $uvExe 'python find --offline ">=3.11"'
+                $uvPython = Invoke-RuntimeProbe $uvExe 'python find --offline ">=3.12"'
                 if ($uvPython) { $basePython = Get-PythonRuntime $uvPython }
             }
             $venvDir = Join-Path $projectRoot '.venv'
@@ -93,7 +93,7 @@ try {
                 if ($LASTEXITCODE -ne 0) { throw 'Could not create .venv using the detected Python. Check its venv support and retry.' }
             } else {
               if (!$uvExe) {
-                Write-Host 'No working Python 3.11+ was found. Preparing project-local uv/Python ...'
+                Write-Host 'No working Python 3.12+ was found. Preparing project-local uv/Python ...'
                 $uvZip = Get-VerifiedArchive 'https://github.com/astral-sh/uv/releases/download/0.8.22/uv-x86_64-pc-windows-msvc.zip' 'uv-0.8.22-win-x64.zip' '5049375aa2a5162f132b2c1cb992e25d42d47d934cab8c174dbe6f60973dcc12'
                 Expand-Archive -LiteralPath $uvZip -DestinationPath $uvDir -Force
                 $uvExe = Get-UvRuntime @((Join-Path $uvDir 'uv.exe'))

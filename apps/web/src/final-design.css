@@ -144,7 +144,6 @@ input, textarea, select { background: var(--raised); border-color: var(--border2
 .chat-form { background: var(--panel); padding: 12px 14px; border-top-color: var(--border); }
 .chat-form textarea { border: 1px solid var(--border2); border-radius: 9px; background: var(--raised); color: var(--ink-2); min-height: 64px; }
 .chat-form > div > span { color: var(--ink-3); }
-.chat-shortcut { margin-left: auto; color: var(--ink-3); font-size: 12px; font-family: Consolas, monospace; }
 .candidate { border-color: var(--border2); background: var(--sel); color: var(--ink-2); }
 .filebar { height: 40px; gap: 12px; padding: 0 12px; background: var(--panel); border-bottom: 1px solid var(--border); }
 .filebar > span:first-child { align-self: stretch; padding: 0 8px; color: var(--ink-1); border-bottom: 2px solid var(--sw); background: var(--code-bg); }
@@ -296,6 +295,8 @@ dialog::backdrop { background: #0b182d70; backdrop-filter: blur(3px); }
 .board-picker-dialog .board-product-card.is-active { border-color: var(--hw); box-shadow: inset 0 0 0 1px var(--hw); background: var(--raised); }
 .board-product-image { height: 174px; position: relative; display: grid; place-items: center; padding: 16px; background: #fff; border-bottom: 1px solid var(--border); }
 .board-product-image img { width: 100%; height: 100%; min-height: 0; object-fit: contain; }
+.board-product-image .board-artwork { width: 100%; height: 100%; max-width: none; max-height: none; object-fit: contain; }
+.board-product-caption { position: absolute; right: 6px; bottom: 5px; padding: 3px 5px; font-size: 10px; line-height: 1.5; color: var(--ink-3); background: var(--panel); border-radius: 3px; }
 .board-product-placeholder { display: grid; place-items: center; gap: 6px; color: #667990; }
 .board-product-placeholder small { font-size: 12px; }
 .board-picker-dialog .board-product-code { position: absolute; bottom: 0; left: 0; display: block; padding: 0 6px; color: #fff; background: var(--hw); font-size: 12px; }

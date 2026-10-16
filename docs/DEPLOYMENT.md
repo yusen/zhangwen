@@ -21,11 +21,13 @@ curl -fsSL https://raw.githubusercontent.com/yusen/zhangwen/main/install.sh | ba
 ## 环境准备顺序
 
 1. 读取 GitHub main 的不可变提交 SHA，复用通过文件清单校验的已安装版本；缺失才下载该 SHA 的源码 ZIP。Windows 检查压缩包路径和链接，macOS 检查路径；逐文件校验 DEPLOYMENT.sha256 后才执行包内脚本。
-2. 离线检查项目运行时和本机 Node 22+/npm、Python 3.11+；可用则复用。缺失时下载项目内 Node 24.14.0、uv 0.8.22（固定 SHA-256），由 uv 准备 Python 3.13.7。Windows x64、macOS arm64/x64 分别选择匹配运行时，不需要 sudo；安装器下载的 Node/uv/Python 放在安装根的 runtime，各程序版本共享并先检测复用。
+2. 离线检查项目运行时和本机 Node 22+/npm、Python 3.12+；可用则复用。缺失时下载项目内 Node 24.14.0、uv 0.8.22（固定 SHA-256），由 uv 准备 Python 3.13.7。Windows x64、macOS arm64/x64 分别选择匹配运行时，不需要 sudo；安装器下载的 Node/uv/Python 放在安装根的 runtime，各程序版本共享并先检测复用。
 3. Python 依赖隔离在每版 `.venv`。实际包版本和关键导入均检查；前端核对锁文件、平台及命令入口。完整依赖跳过下载，缺失才补齐，npm 优先使用缓存。源码摘要不变时跳过构建。
 4. 安装与 strict 构建成功才原子切换 current.txt。失败保留原入口及数据；安装锁防止并发。下载中断留下的 download-* 目录仅供诊断，可在关闭安装器后手动清理。
 5. Windows 建立桌面 ZhangWen.lnk，图标是随包掌问 Logo；macOS 生成启动掌问.command及掌问.app。应用放入可写的`/Applications`，否则放入个人`~/Applications`，无需sudo。应用启动终端中的本地服务并打开浏览器，同数据目录再次启动时核对标记并打开已有平台。
 6. 默认端口3080或`--port`指定的首选端口不可用时，依次尝试其后最多99个端口，再由系统分配空闲端口。实际绑定的socket直接交给服务，浏览器、健康标记和精确Host/Origin使用实际端口；不终止占用进程，不允许同一数据目录启动第二份服务。
+
+结构设计使用 CadQuery/OCP/trimesh，首次安装需要下载几何库。Intel Mac 的 numpy/numba/llvmlite/nlopt 使用独立精确版本，依赖检测与 pip 均按同一平台条件选择；Intel Mac 复用 Python 3.12/3.13，其他解释器由启动入口切换至托管 3.13.7。Windows、Apple Silicon 继续使用对应平台的锁定版本。
 
 macOS 锁目录若因强制关机留下，确认没有安装程序后再移除提示中的 install.lock 或 bootstrap-unix.lock 目录；Windows 文件锁进程结束自动释放。
 
