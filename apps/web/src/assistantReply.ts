@@ -2,10 +2,30 @@ import type { AssistantReply } from '../../../packages/contracts/src/mu';
 
 const text = (value: unknown, max: number): value is string => typeof value === 'string' && value.trim().length > 0 && [...value].length <= max;
 const strings = (value: unknown, count: number, max: number): value is string[] => Array.isArray(value) && value.length <= count && value.every(item => text(item, max) && item.trim());
-export function structuredReply(content: string): AssistantReply | null {
+function replyData(content: string): Record<string, unknown> | null {
   const source = content.trim().replace(/^```(?:json|zhangwen)\s*\n([\s\S]*?)\s*```$/, '$1');
+  if (!source.startsWith('{')) return null;
+  let depth = 0; let quoted = false; let escaped = false;
+  for (let i = 0; i < source.length; i++) {
+    const char = source[i];
+    if (quoted) {
+      if (escaped) escaped = false;
+      else if (char === '\\') escaped = true;
+      else if (char === '"') quoted = false;
+    } else if (char === '"') quoted = true;
+    else if (char === '{') depth++;
+    else if (char === '}' && --depth === 0) {
+      if (/^(?:\{|\[|```)/.test(source.slice(i + 1).trimStart())) return null;
+      try { return JSON.parse(source.slice(0, i + 1)) as Record<string, unknown>; }
+      catch { return null; }
+    }
+  }
+  return null;
+}
+
+export function structuredReply(content: string): AssistantReply | null {
   try {
-    const value = JSON.parse(source) as Record<string, unknown>;
+    const value = replyData(content);
     if (!value || typeof value !== 'object' || Array.isArray(value) || Object.keys(value).sort().join() !== 'code,details,points,question,summary') return null;
     if (!text(value.summary, 240) || !strings(value.points, 3, 240) || typeof value.details !== 'string' || [...value.details].length > 12000) return null;
     if (value.question !== null) {
@@ -18,16 +38,28 @@ export function structuredReply(content: string): AssistantReply | null {
 }
 
 export function replyCode(content: string): string | null {
-  const reply = structuredReply(content);
-  if (reply) return reply.code;
+  const data = replyData(content);
+  if (data) {
+    const code = data.code;
+    return typeof code === 'string' && code.trim() && !code.includes('\0') && new TextEncoder().encode(code).length <= 65536 ? code : null;
+  }
+  if (/^\s*(?:\{|```(?:json|zhangwen))/.test(content)) return null;
   const match = /```(?:python|micropython|py)\s*\n([\s\S]*?)```/.exec(content);
   const code = match ? match[1].trimEnd() + '\n' : null;
-  return code !== null && !code.includes('\0') && new TextEncoder().encode(code).length <= 65536 ? code : null;
+  return code !== null && code.trim() && !code.includes('\0') && new TextEncoder().encode(code).length <= 65536 ? code : null;
 }
 
 export function replyView(content: string): AssistantReply & { structured: boolean; original: string } {
   const reply = structuredReply(content);
-  if (reply) return { ...reply, structured: true, original: content };
+  if (reply) return { ...reply, code: replyCode(content), structured: true, original: content };
+  const data = replyData(content);
+  if (data && text(data.summary, 240) && strings(data.points, 12, 240) && typeof data.details === 'string' && [...data.details].length <= 12000) {
+    const points = data.points.slice(0, 3);
+    if (data.points.length > 3) points[2] = data.points.slice(2).join('；');
+    const compact = structuredReply(JSON.stringify({ ...data, points: data.points.slice(0, 3), code: replyCode(content) }));
+    return { summary: data.summary, points, question: compact?.question ?? null,
+      details: data.details, code: replyCode(content), structured: false, original: content };
+  }
   // Preserve the full original text behind disclosure. Never infer missing facts.
   const prose = content.replace(/```[\s\S]*?```/g, '').trim();
   const paragraphs = prose.split(/\n\s*\n/).filter(Boolean);

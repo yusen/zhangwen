@@ -9,6 +9,7 @@ export function AssistantMessage({ content, revision, disabled, onCode, onReply 
     <p className="answer-summary">{reply.summary}</p>
     {reply.points.length > 0 && <ul className="answer-points">{reply.points.map((point, index) => <li key={index}>{point}</li>)}</ul>}
     {reply.code !== null && <button className="answer-code-link" disabled={disabled} onClick={() => onCode(reply.code!)}><FileCode2 size={16} />main.py{revision ? ` · v${revision}` : ''} · 查看代码</button>}
+    {reply.code === null && <p className="muted answer-no-code">本条回复未附代码。</p>}
     {reply.details && <details className="answer-details"><summary>展开详情</summary><pre>{reply.details}</pre></details>}
     {reply.question && <section className="answer-question" aria-label="需要你确认"><strong>需要你确认</strong><p>{reply.question.text}</p>{onReply && reply.question.options.length > 0 && <><div className="answer-choices">{reply.question.options.map((option, index) => <button key={index} disabled={disabled} onClick={() => onReply(option)} aria-label={`填入回复：${option}`}>{option}</button>)}</div><small>选择后填入输入框，点击发送继续。</small></>}</section>}
     <details className="answer-original"><summary>原始回复</summary><pre>{reply.original}</pre></details>

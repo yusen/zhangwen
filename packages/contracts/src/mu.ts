@@ -1,4 +1,16 @@
 /** Mu Web boundary. Validated on the server by zhangwen.mu_web.models. */
+export type WorkspaceMode = 'engineer' | 'structure' | 'learning';
+export interface UpdateJob {
+  state: 'installing' | 'ready' | 'failed'; revision: string; message: string;
+  startedAt: string; finishedAt?: string;
+}
+export interface PlatformUpdate {
+  deployment: 'managed' | 'development'; currentRevision: string | null;
+  latestRevision: string | null; checkedAt: string | null;
+  state: 'unchecked' | 'available' | 'current' | 'development' | 'error';
+  message: string; canInstall: boolean; checkToken: string | null; job: UpdateJob | null;
+}
+export interface InstallUpdate { revision: string; checkToken: string; confirmed: true }
 export interface HardwareMedia { path: string; alt: string; url: string; attribution: string; license: string; sourceUrl: string }
 /** Catalog labels come from the installed Hardware Skill; selection is not compatibility approval. */
 export interface HardwareCatalog {
@@ -55,6 +67,15 @@ export interface ProjectSnapshot {
   format: 'zhangwen-project'; schemaVersion: 1; portableId: string;
   project: { name: string; boardId: string; componentIds: string[]; revision: number };
   versions: Version[]; messages: ChatMessage[];
+}
+/** User-named program archive in a project folder; physical results are user observations. */
+export interface ProjectProgramRecord {
+  format: 'zhangwen-program'; schemaVersion: 1; name: string; createdAt: string;
+  boardId: string; boardName: string; componentIds: string[]; checksum: string; sourceRevision: number | null;
+  verification: { observed: 'unconfirmed' | 'passed' | 'failed'; note: string; uploadVerifiedAt: string | null; runSubmittedAt: string | null };
+}
+export interface ProgramRunSubmission {
+  projectId: string; revision: number; boardId: string; sha256: string; submittedAt: string;
 }
 export interface CheckResult {
   valid: boolean; checksum: string;

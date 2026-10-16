@@ -1,0 +1,80 @@
+{
+  "schema": "zhangwen.programming-reference-sources/v1",
+  "boardId": "hw_labplus_mpython_v2",
+  "documentationVersion": "v2.0.1",
+  "verifiedAt": "2026-10-16T06:55:29.776063+00:00",
+  "attribution": "盛思 / Labplus mPython 官方文档；©2018–2020 labplus. All Rights Reserved；摘要不授予第三方资料额外许可。",
+  "method": "HTTP GET of the pinned official HTML and same-version Sphinx RST sources; local API summaries are authored separately.",
+  "sources": [
+    {
+      "url": "https://mpython.readthedocs.io/zh-cn/v2.0.1/index.html",
+      "bytes": 20657,
+      "sha256": "d568007a94fb5daa25e50868ec32f0607664ac3e782c9605164c215059f0d510",
+      "status": 200
+    },
+    {
+      "url": "https://mpython.readthedocs.io/zh-cn/v2.0.1/library/mPython/mpython.html",
+      "bytes": 75374,
+      "sha256": "c0d040b900c9a9bfafa6854b02a447047895eb4fbf7143893ba0a0784f039a75",
+      "status": 200
+    },
+    {
+      "url": "https://mpython.readthedocs.io/zh-cn/v2.0.1/library/mPython/mpython_code.html",
+      "bytes": 160934,
+      "sha256": "e8918e211e9e232d02ed8794156356747001cc1a6b2961a6b45d26e575230a0f",
+      "status": 200
+    },
+    {
+      "url": "https://mpython.readthedocs.io/zh-cn/v2.0.1/_sources/library/mPython/mpython.rst.txt",
+      "bytes": 17755,
+      "sha256": "b2d9aca9e92f0c518747e1478a0e27f3d02fc2e55ca5b8d46a94db5e93490740",
+      "status": 200
+    },
+    {
+      "url": "https://mpython.readthedocs.io/zh-cn/v2.0.1/_sources/library/mPython/music.rst.txt",
+      "bytes": 7388,
+      "sha256": "4c8eac6706b3a7f5b1d657377e15cf79bad572ca4ecbb370098cce487d6e74bd",
+      "status": 200
+    },
+    {
+      "url": "https://mpython.readthedocs.io/zh-cn/v2.0.1/_sources/library/mPython/gui.rst.txt",
+      "bytes": 2763,
+      "sha256": "1c8520be7bfe5df974f2ca87b66285a7607202d12e76c4e36ba218915d9ec3a0",
+      "status": 200
+    },
+    {
+      "url": "https://mpython.readthedocs.io/zh-cn/v2.0.1/_sources/library/mPython/urequests.rst.txt",
+      "bytes": 2673,
+      "sha256": "2e2214837d8812ea884869bf1c3c22f1f15f0e9118f155131c8926935ba5d8c8",
+      "status": 200
+    },
+    {
+      "url": "https://mpython.readthedocs.io/zh-cn/v2.0.1/_sources/library/mPython/umqtt.simple.rst.txt",
+      "bytes": 3090,
+      "sha256": "1a3b0c4e864e3f50e3f31c8e2aa41ca96c1308b47e0b15877cb99d00f6f0f9e1",
+      "status": 200
+    },
+    {
+      "url": "https://mpython.readthedocs.io/zh-cn/v2.0.1/_sources/library/micropython/framebuf.rst.txt",
+      "bytes": 4992,
+      "sha256": "c541fd0817e86edf664b69da01bc6b2633b5bd6c23622f50ce0b6eb980d35a72",
+      "status": 200
+    },
+    {
+      "url": "https://mpython.readthedocs.io/zh-cn/v2.0.1/_sources/library/micropython/machine/machine.Pin.rst.txt",
+      "bytes": 6963,
+      "sha256": "cb3819028e60b72fcb7deec4fc93e44cbe7dcc79720f3af5aa191cf1fe31a55b",
+      "status": 200
+    },
+    {
+      "url": "https://mpython.readthedocs.io/zh-cn/v2.0.1/_sources/library/micropython/machine/machine.I2C.rst.txt",
+      "bytes": 6073,
+      "sha256": "cd693c5ae6603ab13e22f55ae808b3196a5e6dbc5f432b07964a9bf7b56e1d76",
+      "status": 200
+    }
+  ],
+  "limits": [
+    "文档版本不代表当前板卡固件版本。",
+    "只有历史空心圆例程有独立真机及用户观察记录；本轮未调用模型或设备。"
+  ]
+}

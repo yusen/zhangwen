@@ -11,3 +11,5 @@ Windows/macOS 启动时从官方源下载 Node.js（https://nodejs.org/，含自
 旧桌面版的 Wokwi Elements、ESP32-S3 QEMU 和 ESP-Claw 声明保存在旧版恢复标签的 `docs/THIRD_PARTY_NOTICES.md` 中。本版 Web 启动不安装或调用这些仿真运行时，不包含 QEMU 或 ESP-Claw 二进制。
 
 本轮多品牌模块资料和官方产品图来自盛思（乐动）、Seeed Studio Grove及N+公开文档。逐项文档与原图URL、署名、版权状态、图像处理和SHA见 `vendor-catalog-manifest.json` 及各包 `references/sources.md`。盛思声明保留所有版权，N+文档署名©2020 nplus；未把文档/代码许可证当作产品图片许可。官方图片包含厂商产品示意图，均未由AI合成；按用户要求随部署资料保留来源与版权声明。
+
+掌控板2.0编程摘要依据用户指定的 https://mpython.readthedocs.io/zh-cn/v2.0.1/index.html 及其同版本库说明。官方署名©2018–2020 labplus，All Rights Reserved；仅保留调用摘要、来源与项目最小例程，未镜像整站或授予额外许可。核对URL与SHA见 `services/local-api/zhangwen/mu_web/programming-skills/mpython-v2/references/sources.json`。

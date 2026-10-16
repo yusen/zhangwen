@@ -1,26 +1,32 @@
 import { useState } from 'react';
 import { Download, FileCode2, Folder, LoaderCircle, RefreshCw } from 'lucide-react';
-import type { DeviceFile, DeviceFileContent, Version } from '../../../packages/contracts/src/mu';
+import type { DeviceFile, DeviceFileContent, HardwareSummary, ProgramRunSubmission, UploadReceipt, Version } from '../../../packages/contracts/src/mu';
 import type { MicroPythonDevice } from './serial';
 import { Dialog } from './Dialog';
+import { ProjectPrograms } from './ProjectProgramsPanel';
+import type { FolderBinding } from './projectFolders';
 
-export function DeviceFilesDialog({ device, connected, code, versions, disabled, onClose, onLoad, onDownload, onHistory }: {
+export function DeviceFilesDialog({ device, connected, code, versions, disabled, onClose, onLoad, onDownload, onHistory, folder, board, componentIds, programReceipt, programRun, onChooseFolder }: {
   device: MicroPythonDevice | null; connected: boolean; code: string; versions: Version[] | null; disabled: boolean;
-  onClose: () => void; onLoad: (code: string) => void; onDownload: (name: string, value: string | Uint8Array) => void;
+  onClose: () => void; onLoad: (code: string, sourceBoard?: { id: string; name: string }) => void; onDownload: (name: string, value: string | Uint8Array) => void;
   onHistory: () => void;
+  folder: FolderBinding | null; board: HardwareSummary | undefined; componentIds: string[];
+  programReceipt: UploadReceipt | null; programRun: ProgramRunSubmission | null; onChooseFolder: () => void;
 }) {
   const [files, setFiles] = useState<DeviceFile[] | null>(null);
   const [preview, setPreview] = useState<DeviceFileContent | null>(null);
   const [busy, setBusy] = useState('');
   const [error, setError] = useState('');
+  const [programBusy, setProgramBusy] = useState(false);
   const task = async (label: string, run: () => Promise<void>) => {
     setBusy(label); setError('');
     try { await run(); } catch (err) { setError(err instanceof Error ? err.message : String(err)); }
     finally { setBusy(''); }
   };
-  const locked = disabled || !!busy;
+  const locked = disabled || !!busy || programBusy;
   const decode = (value: Uint8Array) => new TextDecoder('utf-8', { fatal: true }).decode(value);
-  return <Dialog className="device-files-dialog" title="项目与设备文件" onClose={() => { if (!busy) onClose(); }}>
+  return <Dialog className="device-files-dialog" title="项目与设备文件" onClose={() => { if (!busy && !programBusy) onClose(); }}>
+    <ProjectPrograms folder={folder} code={code} board={board} componentIds={componentIds} versions={versions} receipt={programReceipt} run={programRun} disabled={disabled || !!busy} onBusy={setProgramBusy} onChooseFolder={onChooseFolder} onLoad={onLoad} onDownload={onDownload} />
     <section className="file-section"><h3>本机 main.py</h3><p className="muted">载入文件仅替换编辑器草稿。保存、检查、上传仍需分别操作。</p>
       <div className="file-actions"><button disabled={locked} onClick={() => onDownload('main.py', code)}><Download size={16} />导出当前代码</button>
         <label className="file-import">载入本机 .py<input aria-label="载入本机 Python 文件" type="file" accept=".py,text/x-python" disabled={locked} onChange={event => {

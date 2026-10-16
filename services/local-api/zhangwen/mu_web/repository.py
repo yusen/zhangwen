@@ -5,6 +5,7 @@ mu_workspaces are editable through this adapter.
 """
 from __future__ import annotations
 
+import ast
 import hashlib
 import json
 import sqlite3
@@ -60,6 +61,7 @@ class MuRepository:
             )''')
         # An interrupted provider request must never remain "generating" forever.
         self.projects.normalize_stale_streaming()
+        self.recover_ai_candidates()
 
     def connect(self) -> sqlite3.Connection:
         conn = sqlite3.connect(self.db, timeout=15)
@@ -197,6 +199,30 @@ class MuRepository:
             with self.connect() as conn:
                 conn.execute('INSERT INTO mu_code_metadata(version_id, board_id) VALUES (?, ?)', (saved.id, board_id))
             # Workspace revision/pointer stays at the last explicitly saved code.
+
+    def recover_ai_candidates(self) -> None:
+        # Idempotent startup repair for completed Mu replies previously rejected
+        # solely for presentation. Original messages and saved pointers stay intact.
+        with self.connect() as conn:
+            rows = conn.execute('''SELECT s.id, s.project_id, s.content,
+                json_extract(s.metadata_json, '$.boardId') AS board_id FROM messages s
+                JOIN mu_workspaces w ON w.project_id=s.project_id
+                LEFT JOIN artifact_versions v ON v.artifact_id='mu_code_' || s.project_id
+                    AND v.source_entity_id=s.id
+                WHERE s.role='assistant' AND s.status='COMPLETED'
+                    AND json_extract(s.metadata_json, '$.mu')=1
+                    AND json_type(s.metadata_json, '$.boardId')='text'
+                    AND v.id IS NULL ORDER BY s.rowid''').fetchall()
+        for row in rows:
+            if row['board_id']:
+                code = reply_code(row['content'])
+                if code is None:
+                    continue
+                try:
+                    ast.parse(code)
+                except SyntaxError:
+                    continue
+                self.record_ai_code(row['project_id'], row['board_id'], row['id'], row['content'])
 
     def export_project(self, project_id: str) -> dict[str, Any]:
         from .portable import export_project

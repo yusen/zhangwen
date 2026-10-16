@@ -58,27 +58,57 @@ REPLY_INSTRUCTION = '''回答使用一个JSON对象，不加Markdown围栏，所
 "question":{"text":"本轮只问一个需要用户回答的问题，最多240字", "options":["可选的简短回复，最多4个，每个最多60字"]},
 "details":"补充解释，界面默认折叠；必要的供电/电平/接线条件或警示必须出现在points，不能仅放这里；最多12000字",
 "code":"需要生成代码时给完整main.py文本（JSON字符串，换行转义），否则null"}。
-无需用户确认时question为null。不要重复整份代码到summary/points/details。
+无需用户确认时question为null。不要重复整份代码到summary/points/details。points严格最多3条，补充说明放details。
+JSON结束后不要追加文字；换行只做标准JSON转义，不要把代码重复转义。说“给出程序”时必须附code，不能只描述程序。
+当前编辑器为空不代表用户已保存、上传或运行；这些状态只能依据用户明确反馈，不能从代码是否为空推断。
 缺少接口、引脚、固件等必要条件时只澄清一个关键问题，code为null，不先猜测多个程序。
 联调一次只处理一个模块和一个步骤，先确认连接，再生成最小程序，再询问用户实际现象。不能宣称已经运行或测试通过。
 选项只是用户可选回复，不是命令或自动操作。'''
 
 
-def structured_reply(content: str) -> AssistantReply | None:
+def reply_data(content: str) -> dict | None:
+    """Accept one complete JSON object, optionally followed by plain prose.
+
+    Presentation mistakes must not discard the independent bounded code field.
+    Never repair truncated JSON or combine competing JSON/code payloads.
+    """
     value = content.strip()
     fence = re.fullmatch(r'```(?:json|zhangwen)\s*\n([\s\S]*?)\s*```', value)
     if fence:
         value = fence[1]
     try:
-        return AssistantReply.model_validate(json.loads(value))
+        data, end = json.JSONDecoder().raw_decode(value)
+        if not isinstance(data, dict) or value[end:].lstrip().startswith(('{', '[', '```')):
+            return None
+        return data
+    except (ValueError, TypeError):
+        return None
+
+
+def structured_reply(content: str) -> AssistantReply | None:
+    try:
+        data = reply_data(content)
+        return AssistantReply.model_validate(data) if data is not None else None
     except (ValueError, TypeError, ValidationError):
         return None
 
 
 def reply_code(content: str) -> str | None:
-    reply = structured_reply(content)
-    if reply:
-        return reply.code
+    data = reply_data(content)
+    if data is not None:
+        code = data.get('code')
+        try:
+            return CodeInput.code_size(code) if isinstance(code, str) and code.strip() else None
+        except ValueError:
+            return None
+    if content.lstrip().startswith(('{', '```json', '```zhangwen')):
+        return None
     # Legacy or nonconforming provider replies keep their complete text.
     match = re.search(r'```(?:python|micropython|py)\s*\n([\s\S]*?)```', content)
-    return match[1].rstrip() + '\n' if match else None
+    if match:
+        code = match[1].rstrip() + '\n'
+        try:
+            return CodeInput.code_size(code) if code.strip() else None
+        except ValueError:
+            pass
+    return None
