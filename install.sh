@@ -35,8 +35,6 @@ fi
 export ZHANGWEN_DATA_DIR="$install_root/data"
 export ZHANGWEN_RUNTIME_DIR="$install_root/runtime"
 bash "$app/scripts/bootstrap-unix.sh" --prepare-only
-printf '%s\n' "$revision" > "$install_root/current.txt.tmp"
-mv "$install_root/current.txt.tmp" "$install_root/current.txt"
 cat > "$install_root/启动掌问.command" <<'LAUNCH'
 #!/usr/bin/env bash
 set -euo pipefail
@@ -48,6 +46,11 @@ export ZHANGWEN_RUNTIME_DIR="$root/runtime"
 exec bash "$root/versions/$revision/start-web.sh"
 LAUNCH
 chmod +x "$install_root/启动掌问.command"
+app_args=(--install-root "$install_root")
+if [ -n "${ZHANGWEN_APPLICATIONS_DIR:-}" ]; then app_args+=(--applications-dir "$ZHANGWEN_APPLICATIONS_DIR"); fi
+"$app/.venv/bin/python" "$app/scripts/create-macos-app.py" "${app_args[@]}"
+printf '%s\n' "$revision" > "$install_root/current.txt.tmp"
+mv "$install_root/current.txt.tmp" "$install_root/current.txt"
 echo "Installed: $app"
 echo "Data: $ZHANGWEN_DATA_DIR"
 rmdir "$lock"

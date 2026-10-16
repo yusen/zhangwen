@@ -23,7 +23,16 @@ jobs:
           ./install.ps1 -InstallDir "$env:RUNNER_TEMP/ZhangWen Platform" -Revision "$env:GITHUB_SHA" -DesktopDir "$env:RUNNER_TEMP/ZhangWen Desktop" -NoStart
       - name: Prepare on macOS
         if: runner.os == 'macOS'
-        run: PATH=/usr/bin:/bin:/usr/sbin:/sbin ZHANGWEN_INSTALL_DIR="$RUNNER_TEMP/ZhangWen Platform" ZHANGWEN_REVISION="$GITHUB_SHA" ZHANGWEN_NO_START=1 bash install.sh
+        run: PATH=/usr/bin:/bin:/usr/sbin:/sbin ZHANGWEN_INSTALL_DIR="$RUNNER_TEMP/ZhangWen Platform" ZHANGWEN_APPLICATIONS_DIR="$RUNNER_TEMP/Applications" ZHANGWEN_REVISION="$GITHUB_SHA" ZHANGWEN_NO_START=1 bash install.sh
+      - name: Verify macOS application launcher
+        if: runner.os == 'macOS'
+        run: |
+          app="$RUNNER_TEMP/Applications/掌问.app"
+          test -x "$app/Contents/MacOS/zhangwen"
+          plutil -lint "$app/Contents/Info.plist"
+          bash -n "$app/Contents/MacOS/zhangwen"
+          iconutil -c iconset "$app/Contents/Resources/palm-logo.icns" -o "$RUNNER_TEMP/palm.iconset"
+          cmp "$app/Contents/Resources/install-root.txt" <(printf '%s\n' "$RUNNER_TEMP/ZhangWen Platform")
       - name: Verify startup, catalog and local data
         shell: bash
         run: |
@@ -34,6 +43,15 @@ jobs:
           from pathlib import Path
           from fastapi.testclient import TestClient
           from zhangwen.mu_web.app import create_app
+          from zhangwen.mu_web.__main__ import bind_available_port
+          import socket
+          with socket.socket() as occupied:
+              occupied.bind(('127.0.0.1', 0))
+              occupied.listen()
+              preferred = occupied.getsockname()[1]
+              with bind_available_port(preferred) as available:
+                  assert available.getsockname()[0] == '127.0.0.1'
+                  assert available.getsockname()[1] != preferred
           with tempfile.TemporaryDirectory() as directory:
               app = create_app(Path(directory), port=3080)
               with TestClient(app, base_url='http://127.0.0.1:3080') as client:

@@ -16,9 +16,9 @@ macOS 13.5+，Apple Silicon / Intel，在终端执行：
 curl -fsSL https://raw.githubusercontent.com/yusen/zhangwen/main/install.sh | bash
 ```
 
-无需预装 Git、Node.js 或 Python，无需先下载仓库。先检测已有环境，缺失才准备项目内运行时；依赖按锁定版本检查、补齐，随后构建并打开 http://127.0.0.1:3080 。首次安装需要联网。
+无需预装 Git、Node.js 或 Python，无需先下载仓库。先检测已有环境，缺失才准备项目内运行时；依赖按锁定版本检查、补齐，随后构建并打开浏览器。默认 http://127.0.0.1:3080 ，端口不可用时自动切换到空闲端口，实际地址显示在服务窗口。首次安装需要联网。
 
-Windows 自动创建桌面 **ZhangWen** 启动图标（掌问手掌 Logo），以后双击即可。macOS 的启动文件位于 `~/Library/Application Support/ZhangWen/启动掌问.command`，可在 Finder 中打开或在终端以 bash 执行。保留服务窗口，Ctrl+C 停止服务。使用桌面 Chrome / Edge 进行 Web Serial 和本地项目文件夹操作；Safari 不支持 Web Serial。
+Windows 自动创建桌面 **ZhangWen** 启动图标（掌问手掌 Logo），以后双击即可。macOS 自动创建带掌问 Logo 的 **掌问.app**，优先放入可写的 `/Applications`，否则放入个人 `~/Applications`；可从 Finder 打开或固定到 Dock。点击后在终端启动本地服务并打开浏览器。原 `~/Library/Application Support/ZhangWen/启动掌问.command` 也可继续使用。保留服务窗口，Ctrl+C 停止服务。使用桌面 Chrome / Edge 进行 Web Serial 和本地项目文件夹操作；Safari 不支持 Web Serial。
 
 再次执行安装命令检查并安装 GitHub 最新版本；同一版本校验通过后跳过源码下载。每日启动使用图标/本地启动文件。平台支持启动检查和手动「检查更新」，确认后才安装，下次启动生效；检查失败不影响现有工作台。新版本准备成功才切换入口，旧版本和用户数据保留。
 

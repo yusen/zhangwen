@@ -2,6 +2,7 @@
 from __future__ import annotations
 
 import argparse
+import errno
 import json
 import os
 import secrets
@@ -18,10 +19,35 @@ import uvicorn
 from zhangwen.mu_web.app import ROOT, create_app
 
 
+def bind_available_port(preferred: int) -> socket.socket:
+    """Reserve a loopback socket, trying nearby ports before an OS assignment.
+
+    Keep the successful socket open through database setup and server startup;
+    probing and then reopening would allow another process to take the port.
+    """
+    candidates = [*range(preferred, min(preferred + 100, 65536)), 0]
+    for port in candidates:
+        listener = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        try:
+            if sys.platform == "win32":
+                listener.setsockopt(socket.SOL_SOCKET, socket.SO_EXCLUSIVEADDRUSE, 1)
+            listener.bind(("127.0.0.1", port))
+            listener.setblocking(False)
+            return listener
+        except OSError as exc:
+            listener.close()
+            # Windows excluded port ranges report access denied, not in use.
+            unavailable = exc.errno in {errno.EADDRINUSE, errno.EACCES} or getattr(exc, 'winerror', None) in {10048, 10013}
+            if port and unavailable:
+                continue
+            raise
+    raise OSError("无法分配可用的本机端口")
+
+
 def main() -> None:
     parser = argparse.ArgumentParser(description="掌问本地 Web 工作台")
     parser.add_argument("--no-open", action="store_true", help="不自动打开浏览器")
-    parser.add_argument("--port", type=int, default=3080)
+    parser.add_argument("--port", type=int, default=3080, help="首选端口（默认3080），不可用时自动切换")
     parser.add_argument("--dev", action="store_true", help="允许本机 Vite 5173 代理")
     args = parser.parse_args()
     if not 1024 <= args.port <= 65535:
@@ -64,25 +90,26 @@ def main() -> None:
             parser.exit(1, "此数据目录已有掌问服务运行。请使用已有浏览器入口。\n")
         # Bind before initializing the database or opening a browser. Never kill
         # an unknown listener or accidentally open another service on this port.
-        with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as listener:
-            if sys.platform == "win32":
-                listener.setsockopt(socket.SOL_SOCKET, socket.SO_EXCLUSIVEADDRUSE, 1)
-            try:
-                listener.bind(("127.0.0.1", args.port))
-            except OSError:
-                parser.exit(1, f"端口 {args.port} 已占用。请使用 --port 指定其他端口；不会终止已有进程。\n")
-            listener.setblocking(False)
-            app = create_app(data_dir, port=args.port, dev=args.dev)
+        try:
+            reserved = bind_available_port(args.port)
+        except OSError:
+            parser.exit(1, "无法绑定本机端口，请检查网络权限后重试。\n")
+        with reserved as listener:
+            port = listener.getsockname()[1]
+            if port != args.port:
+                print(f"端口 {args.port} 不可用，已自动切换到 {port}。", flush=True)
+            app = create_app(data_dir, port=port, dev=args.dev)
             instance_id = secrets.token_hex(16)
             app.state.instance_id = instance_id
-            address_path.write_text(json.dumps({"port": args.port, "instanceId": instance_id}), encoding="utf-8")
-            url = f"http://127.0.0.1:{args.port}"
+            address_path.write_text(json.dumps({"port": port, "instanceId": instance_id}), encoding="utf-8")
+            url = f"http://127.0.0.1:{port}"
             if not args.no_open:
                 def open_when_ready() -> None:
                     for _ in range(100):
                         try:
                             with urllib.request.urlopen(url + "/api/health", timeout=0.5) as response:
-                                if response.status == 200:
+                                health = json.load(response)
+                                if response.status == 200 and health.get('instanceId') == instance_id and health.get('transport') == 'web-serial':
                                     webbrowser.open(url)
                                     return
                         except OSError:
@@ -90,7 +117,7 @@ def main() -> None:
                 threading.Thread(target=open_when_ready, daemon=True).start()
             print(f"\n掌问 Mu Web → {url}\n数据目录：{data_dir}\n按 Ctrl+C 停止服务。\n", flush=True)
             try:
-                uvicorn.Server(uvicorn.Config(app, host="127.0.0.1", port=args.port, log_level="warning", access_log=False)).run(sockets=[listener])
+                uvicorn.Server(uvicorn.Config(app, host="127.0.0.1", port=port, log_level="warning", access_log=False)).run(sockets=[listener])
             finally:
                 address_path.unlink(missing_ok=True)
 

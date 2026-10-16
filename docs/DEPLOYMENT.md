@@ -1,6 +1,6 @@
 # 安装、启动与更新
 
-本地最新开发版已加入「检查更新」：安装器部署后自动检测一次，也可从网页手动检测；确认安装后下载、校验和准备新版本，下次启动生效。开发工作区仅支持检查，禁止原地覆盖源码。更新流程及验证范围见 [三师模式与平台更新](MODES_UPDATES.md)。本次功能尚未提交或发布，GitHub 当前安装包暂未包含此入口。
+平台支持「检查更新」：安装器部署后自动检测一次，也可从网页手动检测；确认安装后下载、校验和准备新版本，下次启动生效。开发工作区仅支持检查，禁止原地覆盖源码。更新流程及验证范围见 [三师模式与平台更新](MODES_UPDATES.md)。部署版包含自动端口切换和macOS应用启动器，具体版本以安装的GitHub提交SHA为准。
 
 ## 新电脑
 
@@ -24,7 +24,8 @@ curl -fsSL https://raw.githubusercontent.com/yusen/zhangwen/main/install.sh | ba
 2. 离线检查项目运行时和本机 Node 22+/npm、Python 3.11+；可用则复用。缺失时下载项目内 Node 24.14.0、uv 0.8.22（固定 SHA-256），由 uv 准备 Python 3.13.7。Windows x64、macOS arm64/x64 分别选择匹配运行时，不需要 sudo；安装器下载的 Node/uv/Python 放在安装根的 runtime，各程序版本共享并先检测复用。
 3. Python 依赖隔离在每版 `.venv`。实际包版本和关键导入均检查；前端核对锁文件、平台及命令入口。完整依赖跳过下载，缺失才补齐，npm 优先使用缓存。源码摘要不变时跳过构建。
 4. 安装与 strict 构建成功才原子切换 current.txt。失败保留原入口及数据；安装锁防止并发。下载中断留下的 download-* 目录仅供诊断，可在关闭安装器后手动清理。
-5. Windows 建立桌面 ZhangWen.lnk，图标是随包掌问 Logo；macOS 生成启动掌问.command。启动后自动打开本机浏览器；同数据目录再次启动时核对已有实例标记，再打开已有平台。端口被其他程序占用时提示，不杀进程。
+5. Windows 建立桌面 ZhangWen.lnk，图标是随包掌问 Logo；macOS 生成启动掌问.command及掌问.app。应用放入可写的`/Applications`，否则放入个人`~/Applications`，无需sudo。应用启动终端中的本地服务并打开浏览器，同数据目录再次启动时核对标记并打开已有平台。
+6. 默认端口3080或`--port`指定的首选端口不可用时，依次尝试其后最多99个端口，再由系统分配空闲端口。实际绑定的socket直接交给服务，浏览器、健康标记和精确Host/Origin使用实际端口；不终止占用进程，不允许同一数据目录启动第二份服务。
 
 macOS 锁目录若因强制关机留下，确认没有安装程序后再移除提示中的 install.lock 或 bootstrap-unix.lock 目录；Windows 文件锁进程结束自动释放。
 
@@ -55,13 +56,15 @@ macOS 自定义路径，安装后不启动：
 curl -fsSL https://raw.githubusercontent.com/yusen/zhangwen/main/install.sh | ZHANGWEN_INSTALL_DIR="$HOME/Apps/掌问平台" ZHANGWEN_NO_START=1 bash
 ```
 
-Windows 以后双击桌面图标；macOS 可执行：
+Windows 以后双击桌面图标；macOS 在应用程序中打开掌问.app，可固定到Dock。个人Applications中的应用可在Finder「前往 → 个人文件夹 → Applications」找到。应用只保存安装根目录，依照current.txt启动当前版本，更新后无需重建Dock入口；也可执行：
 
 ```bash
 bash "$HOME/Library/Application Support/ZhangWen/启动掌问.command"
 ```
 
 源码目录仍可双击 start-web.bat / 执行 bash start-web.sh，默认该目录 `.data`。只准备环境使用 Windows `powershell -NoProfile -ExecutionPolicy Bypass -File scripts/bootstrap-windows.ps1 -PrepareOnly`，macOS `bash start-web.sh --prepare-only`。服务器支持 `--no-open`、`--port 3082`。Ctrl+C 停服务。更改端口会改变浏览器授权和草稿所属 Origin。
+
+macOS可在安装命令的环境中指定`ZHANGWEN_APPLICATIONS_DIR="$HOME/Applications"`选择应用入口位置；测试时可指向临时目录。若已有同名的其他应用或链接，安装器保留它并提示，不覆盖。更改端口后可能需要重新授予串口/项目文件夹权限；已保存到本地项目的代码与对话仍在，原端口的未保存浏览器草稿不会自动迁移。
 
 ## 更新与回退
 
