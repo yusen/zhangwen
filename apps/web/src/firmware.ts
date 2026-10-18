@@ -1,5 +1,6 @@
 import { sha256 } from './serial';
-import type { FirmwareProfile } from '../../../packages/contracts/src/mu';
+import type { FirmwareProfile } from '../../../packages/contracts/src/platform';
+import { openPlatformDatabase } from './legacyBrowserNames';
 
 export interface FlashPeer {
   chip: { CHIP_NAME: string };
@@ -55,15 +56,13 @@ export async function writeVerified(peer: FlashPeer, bytes: Uint8Array, address:
   if (await sha256(readback) !== await sha256(bytes)) throw new Error('固件 SHA-256 回读不一致，不能视为刷入成功。可用备份恢复本次覆盖范围。');
 }
 export async function persistFirmwareBackup(backup: FirmwareBackup): Promise<void> {
-  await new Promise<void>((resolve, reject) => {
-    const request = indexedDB.open('mu-firmware-backups', 1);
-    request.onupgradeneeded = () => request.result.createObjectStore('backups', { keyPath: 'id' });
-    request.onerror = () => reject(new Error('浏览器无法保存固件备份，已停止刷写。'));
-    request.onsuccess = () => {
-      const db = request.result; const tx = db.transaction('backups', 'readwrite');
+  const db = await openPlatformDatabase('zhangwen-firmware-backups', 'backups', 'id');
+  try {
+    await new Promise<void>((resolve, reject) => {
+      const tx = db.transaction('backups', 'readwrite');
       tx.objectStore('backups').put(backup);
-      tx.oncomplete = () => { db.close(); resolve(); };
-      tx.onabort = tx.onerror = () => { db.close(); reject(new Error('固件备份保存失败，已停止刷写。')); };
-    };
-  });
+      tx.oncomplete = () => resolve();
+      tx.onabort = tx.onerror = () => reject(new Error('固件备份保存失败，已停止刷写。'));
+    });
+  } finally { db.close(); }
 }

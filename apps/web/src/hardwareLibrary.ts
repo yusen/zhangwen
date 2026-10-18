@@ -1,4 +1,4 @@
-import type { HardwareSummary } from '../../../packages/contracts/src/mu';
+import type { HardwareSummary } from '../../../packages/contracts/src/platform';
 
 export type ModuleDirection = 'input' | 'output';
 

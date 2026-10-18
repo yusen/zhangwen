@@ -1,6 +1,9 @@
-import type { AiDiagnosticEvent, AiDiagnosticReport, ChatEvent, ChatInput, ChatMessage, SaveAiSettings } from '../../../packages/contracts/src/mu';
+import type { AiDiagnosticEvent, AiDiagnosticReport, ChatEvent, ChatInput, ChatMessage, SaveAiSettings } from '../../../packages/contracts/src/platform';
 
 let token = '';
+export class ApiError extends Error {
+  constructor(readonly status: number, detail: string) { super(detail); this.name = 'ApiError'; }
+}
 export async function bootstrap(signal?: AbortSignal): Promise<{ aiConfigured: boolean; aiModel: string; aiBaseUrl?: string }> {
   const response = await fetch('/api/session', { signal });
   if (!response.ok) throw new Error('无法连接本机服务，请检查启动窗口。');
@@ -10,13 +13,13 @@ export async function bootstrap(signal?: AbortSignal): Promise<{ aiConfigured: b
 }
 export async function api<T>(path: string, method = 'GET', body?: unknown): Promise<T> {
   const response = await fetch('/api' + path, {
-    method, headers: { 'Content-Type': 'application/json', 'X-Mu-Session': token },
+    method, headers: { 'Content-Type': 'application/json', 'X-Zhangwen-Session': token },
     body: body === undefined ? undefined : JSON.stringify(body),
   });
   const result: unknown = await response.json();
   if (!response.ok) {
     const detail = (result as { detail?: unknown }).detail;
-    throw new Error(typeof detail === 'string' ? detail : `请求失败（${response.status}），请核对输入和服务端状态。`);
+    throw new ApiError(response.status, typeof detail === 'string' ? detail : `请求失败（${response.status}），请核对输入和服务端状态。`);
   }
   return result as T;
 }
@@ -25,7 +28,7 @@ export async function chat(projectId: string, input: ChatInput, signal: AbortSig
   onEvent: (event: ChatEvent) => void): Promise<{ messages: ChatMessage[] }> {
   const response = await fetch(`/api/projects/${projectId}/chat`, {
     method: 'POST', signal,
-    headers: { 'Content-Type': 'application/json', 'X-Mu-Session': token, Accept: 'application/x-ndjson' },
+    headers: { 'Content-Type': 'application/json', 'X-Zhangwen-Session': token, Accept: 'application/x-ndjson' },
     body: JSON.stringify(input),
   });
   if (!response.ok) {
@@ -43,7 +46,7 @@ export async function testAiSettings(input: SaveAiSettings, signal: AbortSignal,
   onEvent: (event: AiDiagnosticEvent) => void): Promise<AiDiagnosticReport> {
   const response = await fetch('/api/settings/ai/test', {
     method: 'POST', signal,
-    headers: { 'Content-Type': 'application/json', 'X-Mu-Session': token, Accept: 'application/x-ndjson' },
+    headers: { 'Content-Type': 'application/json', 'X-Zhangwen-Session': token, Accept: 'application/x-ndjson' },
     body: JSON.stringify(input),
   });
   if (!response.ok) {

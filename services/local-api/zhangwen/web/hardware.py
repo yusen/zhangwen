@@ -267,6 +267,8 @@ class WebHardwareRepository(HardwareSkillRepository):
             if len(extra) > max_chars - 1000:
                 extra = f'\n当前主控案例范围：{guide["kind"]}；{guide["summary"]}。完整代码超出本轮资料预算，请聚焦单个模块。\n'
         title = f'当前模块 componentId：{component_id}；品牌：{self.catalog_metadata(detail)["brand"]}。\n'
+        title += ('驱动选择按当前模块型号/通信协议与当前主控固件组合：优先当前主控的本机案例，其次配套参考。'
+                  '不得因主控品牌就把其他品牌模块替换成该主控同类传感器专用库；板载屏幕等仍用对应主控API。\n')
         supported = self.supported_boards(detail)
         if supported is not None:
             names = '、'.join(self.get_active_by_component_id(item).displayName for item in supported) or '尚未标注'

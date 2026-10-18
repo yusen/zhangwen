@@ -17,6 +17,7 @@ export function LaserPreview({ result }: { result?: CadResult }) {
         const props = {className: `laser-path ${shape.operation}`, key: i, vectorEffect: 'non-scaling-stroke' as const};
         if (shape.kind === 'rect') return <rect {...props} x={shape.x} y={shape.y} width={shape.width} height={shape.height} />;
         if (shape.kind === 'circle') return <circle {...props} cx={shape.x} cy={shape.y} r={shape.radius} />;
+        if (shape.kind === 'text') return <path {...props} className="laser-path engrave laser-text" d={result?.laserTextPaths?.[String(i)] ?? ''} fillRule="evenodd" />;
         const points = shape.points.map(p => p.join(',')).join(' ');
         return shape.closed ? <polygon {...props} points={points} /> : <polyline {...props} points={points} />;
       })}

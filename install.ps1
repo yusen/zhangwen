@@ -31,7 +31,7 @@ try {
             $file = Join-Path $Directory $relative
             if (!(Test-Path -LiteralPath $file -PathType Leaf) -or (Get-FileHash -LiteralPath $file -Algorithm SHA256).Hash -ne $expected) { return $false }
         }
-        foreach ($required in @('scripts/bootstrap-windows.ps1', 'scripts/bootstrap-unix.sh', 'package-lock.json', 'services/local-api/zhangwen/mu_web/__main__.py')) {
+        foreach ($required in @('scripts/bootstrap-windows.ps1', 'scripts/bootstrap-unix.sh', 'package-lock.json', 'services/local-api/zhangwen/web/__main__.py')) {
             if (!$seen.Contains($required)) { return $false }
         }
         return $true

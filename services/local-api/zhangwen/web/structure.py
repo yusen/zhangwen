@@ -52,7 +52,7 @@ class StructureInput(BaseModel):
     rotations: dict[str, float] = Field(default_factory=dict)
     resolutionOptionId: str = Field(default='', max_length=150)
     designType: Literal['model', 'laser'] = 'model'
-    template: Literal['box', 'cup', 'bracket', 'plate', 'round-tag', 'panel-box'] | None = None
+    template: Literal['box', 'cup', 'bracket', 'plate', 'round-tag', 'panel-box', 'finger-box'] | None = None
 
     @field_validator('parameters')
     @classmethod
@@ -208,18 +208,18 @@ def prepare_structure_import(repo, checkpoint: StructureCheckpoint | None):
 def insert_structure_import(repo, conn, project_id: str, checkpoint: StructureCheckpoint | None):
     if checkpoint is None or not checkpoint.versions:
         return
-    artifact_id = 'mu_structure_' + project_id
+    artifact_id = 'zhangwen_structure_' + project_id
     now = datetime.now(UTC).isoformat()
     versions = sorted(checkpoint.versions, key=lambda v: v['revision'])
     ids = {v['revision']: 'artifact_version_' + uuid.uuid4().hex for v in versions}
     conn.execute('''INSERT INTO artifacts (id, project_id, title, kind, status, source_agent_id, current_version_id, created_at, updated_at)
-        VALUES (?, ?, '结构设计', 'MODEL_3D', 'DRAFT', 'mu-structure-import', ?, ?, ?)''', (artifact_id, project_id, ids[versions[-1]['revision']], now, now))
+        VALUES (?, ?, '结构设计', 'MODEL_3D', 'DRAFT', 'zhangwen-structure-import', ?, ?, ?)''', (artifact_id, project_id, ids[versions[-1]['revision']], now, now))
     for version in versions:
         value = json.loads(json.dumps(version).replace('/api/projects/__PROJECT__/', f'/api/projects/{project_id}/'))
         text = json.dumps(value, ensure_ascii=False)
         conn.execute('''INSERT INTO artifact_versions (id, artifact_id, project_id, version, status, mime_type,
             preview_json, dependencies_json, source_entity_type, source_entity_id, checksum, created_at)
-            VALUES (?, ?, ?, ?, 'DRAFT', 'application/json', ?, '[]', 'mu_structure', ?, ?, ?)''',
+            VALUES (?, ?, ?, ?, 'DRAFT', 'application/json', ?, '[]', 'zhangwen_structure', ?, ?, ?)''',
             (ids[version['revision']], artifact_id, project_id, version['revision'], json.dumps({'kind': 'CODE', 'code': text, 'language': 'json'}),
              uuid.uuid4().hex, hashlib.sha256(text.encode()).hexdigest(), version['createdAt']))
     conversation_id = conn.execute('SELECT id FROM conversations WHERE project_id=? ORDER BY created_at LIMIT 1', (project_id,)).fetchone()[0]
@@ -240,7 +240,7 @@ class StructureService:
         self.repo.get(project_id)
         with self.repo.connect() as conn:
             versions = conn.execute('''SELECT version, preview_json FROM artifact_versions
-                WHERE artifact_id=? ORDER BY version DESC''', ('mu_structure_' + project_id,)).fetchall()
+                WHERE artifact_id=? ORDER BY version DESC''', (self.repo.artifact_id(project_id, 'structure'),)).fetchall()
             messages = conn.execute('''SELECT COALESCE(json_extract(metadata_json, '$.portableMessageId'), id) AS id, role, content, created_at AS createdAt,
                 COALESCE(json_extract(metadata_json, '$.designType'), 'model') AS designType FROM messages
                 WHERE project_id=? AND json_extract(metadata_json, '$.structure')=1 ORDER BY rowid''', (project_id,)).fetchall()
@@ -256,7 +256,7 @@ class StructureService:
         # Reuse the original Artifact schema and context projection (as folder import does).
         with self.repo.lock:
             now = datetime.now(UTC).isoformat()
-            artifact_id = 'mu_structure_' + project_id
+            artifact_id = self.repo.artifact_id(project_id, 'structure')
             source_id = uuid.uuid4().hex
             version_id = f'artifact_version_{artifact_id}_{source_id}'
             content = json.dumps(version, ensure_ascii=False)
@@ -264,16 +264,16 @@ class StructureService:
                 summary='结构设计检查与模型产物；未证明实物可装配。')
             with self.repo.connect() as conn:
                 conn.execute('''INSERT INTO artifacts (id, project_id, title, kind, status, source_agent_id,
-                    current_version_id, created_at, updated_at) VALUES (?, ?, '结构设计', 'MODEL_3D', 'DRAFT', 'mu-structure', ?, ?, ?)
+                    current_version_id, created_at, updated_at) VALUES (?, ?, '结构设计', 'MODEL_3D', 'DRAFT', 'zhangwen-structure', ?, ?, ?)
                     ON CONFLICT(id) DO UPDATE SET current_version_id=excluded.current_version_id, updated_at=excluded.updated_at''',
                     (artifact_id, project_id, version_id, now, now))
                 conn.execute('''INSERT INTO artifact_versions (id, artifact_id, project_id, version, status,
                     mime_type, preview_json, dependencies_json, source_entity_type, source_entity_id, checksum, created_at)
-                    VALUES (?, ?, ?, ?, 'DRAFT', 'application/json', ?, '[]', 'mu_structure', ?, ?, ?)''',
+                    VALUES (?, ?, ?, ?, 'DRAFT', 'application/json', ?, '[]', 'zhangwen_structure', ?, ?, ?)''',
                     (version_id, artifact_id, project_id, version['revision'], preview.model_dump_json(), source_id,
                      hashlib.sha256(content.encode()).hexdigest(), now))
                 self.repo.artifacts._apply_artifact_context(conn, artifact_id=artifact_id, version_id=version_id,
-                    project_id=project_id, source_agent_id='mu-structure', status=ArtifactStatus.DRAFT)
+                    project_id=project_id, source_agent_id='zhangwen-structure', status=ArtifactStatus.DRAFT)
                 conversation_id = conn.execute('SELECT id FROM conversations WHERE project_id=? ORDER BY created_at LIMIT 1', (project_id,)).fetchone()[0]
                 for role, text in [('user', user), ('assistant', reply)]:
                     self.repo.projects._insert_message(conn, conversation_id, project_id,
@@ -380,9 +380,23 @@ class StructureService:
             job_root.mkdir(parents=True)
             standalone = request.designType == 'laser' or request.template or previous.get('designKind') or (not ids and request.action in {'analyze', 'revise'})
             if standalone:
-                if request.template and ((request.template in {'plate', 'round-tag', 'panel-box'}) != (request.designType == 'laser')):
+                if request.template and ((request.template in {'plate', 'round-tag', 'panel-box', 'finger-box'}) != (request.designType == 'laser')):
                     raise HTTPException(422, '设计模板与当前模式不一致。')
-                result = await design_service.act(request, previous, settings, job_root)
+                history = [v for v in reversed(workspace['versions']) if v.get('designType', 'model') == request.designType
+                           and base and v['revision'] <= base['revision']]
+                # A new template starts a new design. Never send later versions
+                # or another channel when editing a selected historical branch.
+                anchor = next((i for i in range(len(history) - 1, -1, -1) if history[i]['result'].get('designTemplate')), 0)
+                history = history[anchor:]
+                valid = next((v['result']['designSpec'] for v in reversed(history)
+                              if v['result'].get('designSpec') and not v['result']['designSpec'].get('questions')
+                              and (v['result']['designSpec'].get('drawing') or v['result']['designSpec'].get('solid'))), None)
+                conversation = {'history': [{'request': v['result'].get('requestText') or v['prompt'],
+                    'summary': v['result'].get('message', '')[:1200], 'questions': v['result'].get('questions', [])}
+                    for v in history[-8:]], 'pendingQuestions': previous.get('questions', [])}
+                if valid:
+                    conversation['spec'] = valid
+                result = await design_service.act(request, previous, settings, job_root, conversation)
                 result = self.public_result(result, project_id, job_id, job_root)
                 version = {'revision': workspace['revision'] + 1, 'createdAt': datetime.now(UTC).isoformat(), 'prompt': request.message or (base['prompt'] if base else result['title']),
                     'selectedIds': [], 'customProfiles': [], 'result': result, 'offline': bool(request.template or (base and base.get('offline') and request.action in {'build', 'parameters', 'validate'})),

@@ -1,9 +1,9 @@
 import { useEffect, useRef, useState } from 'react';
 import { Check, Download, LoaderCircle, RefreshCw } from 'lucide-react';
-import type { InstallUpdate, PlatformUpdate } from '../../../packages/contracts/src/mu';
+import type { InstallUpdate, PlatformUpdate } from '../../../packages/contracts/src/platform';
 import { api } from './api';
 import { Dialog } from './Dialog';
-import { MuTool } from './MuTool';
+import { ToolbarButton } from './ToolbarButton';
 
 export function UpdateCenter({ enabled, blocked, unsaved }: { enabled: boolean; blocked: boolean; unsaved: boolean }) {
   const [info, setInfo] = useState<PlatformUpdate | null>(null);
@@ -61,7 +61,7 @@ export function UpdateCenter({ enabled, blocked, unsaved }: { enabled: boolean; 
   }
   const actions = <div className="update-actions"><button onClick={() => setOpen(false)}>{unsaved ? '返回保存' : '稍后再说'}</button><button disabled={checking || installing || requesting} onClick={() => void check()}><RefreshCw size={16} />{checking ? '检查中…' : '重新检查'}</button>{info?.canInstall && !installing && !ready && <button className="primary" disabled={!confirmed || unsaved || blocked || checking || requesting} onClick={() => void install()}><Download size={16} />{requesting ? '正在提交…' : '确认更新'}</button>}</div>;
   return <>
-    <MuTool icon={installing ? LoaderCircle : RefreshCw} label="检查更新" variant={available || ready ? 'brand' : 'muted'} active={open} disabled={!enabled} hint={installing ? '安装中' : ready ? '待重启' : available ? '有更新' : undefined} title={ready ? '新版本已安装，下次启动生效' : available ? '发现新版本，点击查看' : '检查平台更新'} onClick={() => { setOpen(true); if (!info || info.state === 'unchecked') void check(); }} />
+    <ToolbarButton icon={installing ? LoaderCircle : RefreshCw} label="检查更新" variant={available || ready ? 'brand' : 'muted'} active={open} disabled={!enabled} hint={installing ? '安装中' : ready ? '待重启' : available ? '有更新' : undefined} title={ready ? '新版本已安装，下次启动生效' : available ? '发现新版本，点击查看' : '检查平台更新'} onClick={() => { setOpen(true); if (!info || info.state === 'unchecked') void check(); }} />
     {open && <Dialog title="平台更新" onClose={() => setOpen(false)} className="update-dialog" footer={actions}>
       <div className="update-summary"><span className="mode-mark">{installing || checking ? <LoaderCircle className="spin" size={25} /> : ready || info?.state === 'current' ? <Check size={25} /> : <RefreshCw size={25} />}</span><div><h3>{installing ? '正在安装更新' : ready ? '下次启动使用新版本' : checking ? '正在检查更新' : available ? '发现新版本' : '掌问本地平台'}</h3><p>{info?.deployment === 'managed' ? '一键部署版本 · Windows / macOS' : '本地开发工作区'}</p></div></div>
       <dl className="update-versions"><dt>当前版本</dt><dd>{info?.currentRevision?.slice(0, 12) ?? '开发版本'}</dd><dt>线上版本</dt><dd>{info?.latestRevision?.slice(0, 12) ?? '尚未检测'}</dd>{info?.checkedAt && <><dt>上次检查</dt><dd>{new Date(info.checkedAt).toLocaleString()}</dd></>}</dl>

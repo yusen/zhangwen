@@ -8,7 +8,7 @@
   --brand: #b8933c; --brand-ink: #2e2412; --logo: #c9a96e;
   --suc: #15803d; --suc-t: #e7f4ec; --dng: #b91c1c; --dng-t: #fcecec; --wrn: #a16207; --wrn-t: #fcf3e3;
   --code-bg: #fff; --code-keyword: #1e5fa8; --code-string: #9a5b00; --code-builtin: #7b3fb8; --code-comment: #5f7a66; --sel: #e3ecf8;
-  --accent: var(--sw); --accent-soft: var(--sel); --muted: var(--ink-3); --mu-editor: var(--code-bg);
+  --accent: var(--sw); --accent-soft: var(--sel); --muted: var(--ink-3); --zhangwen-editor: var(--code-bg);
   color: var(--ink-1); background: var(--canvas);
 }
 :root[data-theme="dark"] {
@@ -43,33 +43,33 @@ input, textarea, select { background: var(--raised); border-color: var(--border2
 .current-project > span { font-size: 12px; color: var(--ink-3); }
 .document-info { font-size: 12px; padding: 4px 10px; border-radius: 7px; border: 1px solid var(--border2); background: var(--raised); color: var(--ink-2); }
 .theme-toggle { display: grid; place-items: center; min-width: 44px; height: 44px; padding: 0; background: transparent; color: var(--ink-2); }
-.mu-toolbar { flex: 0 0 auto; min-height: 86px; gap: 12px; padding: 10px 12px; align-items: center; flex-wrap: nowrap; background: var(--panel); border: 1px solid var(--border2); border-top: 0; border-bottom-color: var(--border); box-shadow: none; }
-.mu-commands { flex: 1; display: flex; align-items: flex-start; min-width: 0; gap: 6px; overflow-x: auto; padding: 2px 2px 5px; scrollbar-width: thin; }
+.zhangwen-toolbar { flex: 0 0 auto; min-height: 86px; gap: 12px; padding: 10px 12px; align-items: center; flex-wrap: nowrap; background: var(--panel); border: 1px solid var(--border2); border-top: 0; border-bottom-color: var(--border); box-shadow: none; }
+.zhangwen-commands { flex: 1; display: flex; align-items: flex-start; min-width: 0; gap: 6px; overflow-x: auto; padding: 2px 2px 5px; scrollbar-width: thin; }
 .tool-group { display: flex; flex: 0 0 auto; align-items: flex-start; gap: 6px; padding-right: 12px; margin-right: 6px; border-right: 1px solid var(--border2); }
 .tool-group:last-child { padding-right: 0; margin-right: 0; border-right: 0; }
-.mu-tool { width: 48px; flex: 0 0 48px; height: 64px; padding: 0 2px; gap: 5px; background: transparent; }
-.mu-tool .tool-icon { width: 40px; height: 40px; border-radius: 9px; border: 0; color: #fff; background: var(--sw); box-shadow: inset 0 1px 0 #ffffff38, 0 1px 2px #00000014; transition: filter 120ms ease, transform 80ms ease; }
-.mu-tool .tool-icon svg { width: 22px; height: 22px; stroke-width: 2.6; }
-.mu-tool .tool-label { font-size: 12px; line-height: 16px; color: var(--ink-2); white-space: nowrap; }
-.mu-tool.tool-planned { width: 64px; flex-basis: 64px; }
-.mu-tool.tool-planned .tool-icon { position: relative; }
-.mu-tool .tool-planned-badge { position: absolute; top: -3px; right: -13px; margin: 0; padding: 1px 3px; border: 1px solid var(--border2); border-radius: 4px; background: var(--panel); color: var(--ink-3); font: 9px/12px sans-serif; white-space: nowrap; }
-.mu-tool.tool-hardware .tool-icon { background: var(--hw); color: #fff; }
-.mu-tool.tool-hardware .tool-label { color: var(--hw); }
-.mu-tool.run-tool .tool-icon { background: var(--brand); color: var(--brand-ink); }
-.mu-tool.run-tool .tool-label { color: var(--ink-2); font-weight: 600; }
-.mu-tool.tool-brand .tool-icon { background: var(--logo); color: var(--brand-ink); }
-.mu-tool.tool-muted .tool-icon { background: var(--border); color: var(--ink-2); }
-.mu-tool:hover:not(:disabled) .tool-icon { background: var(--sw); color: #fff; filter: brightness(1.08); box-shadow: inset 0 1px 0 #ffffff38, 0 1px 2px #00000014; }
-.mu-tool.tool-hardware:hover:not(:disabled) .tool-icon { background: var(--hw); }
-.mu-tool.run-tool:hover:not(:disabled) .tool-icon { background: var(--brand); color: var(--brand-ink); }
-.mu-tool.tool-brand:hover:not(:disabled) .tool-icon { background: var(--logo); color: var(--brand-ink); }
-.mu-tool.tool-muted:hover:not(:disabled) .tool-icon { background: var(--border); color: var(--ink-2); }
-.mu-tool:active:not(:disabled) .tool-icon { filter: brightness(.94); transform: translateY(1px); }
-.mu-tool.is-active .tool-icon { outline: 2px solid var(--brand); outline-offset: 2px; }
-.mu-tool:disabled { opacity: 1; }
-.mu-tool:disabled .tool-icon { color: var(--ink-4); background: var(--border); box-shadow: none; }
-.mu-tool:disabled .tool-label { color: var(--ink-3); }
+.zhangwen-tool { width: 48px; flex: 0 0 48px; height: 64px; padding: 0 2px; gap: 5px; background: transparent; }
+.zhangwen-tool .tool-icon { width: 40px; height: 40px; border-radius: 9px; border: 0; color: #fff; background: var(--sw); box-shadow: inset 0 1px 0 #ffffff38, 0 1px 2px #00000014; transition: filter 120ms ease, transform 80ms ease; }
+.zhangwen-tool .tool-icon svg { width: 22px; height: 22px; stroke-width: 2.6; }
+.zhangwen-tool .tool-label { font-size: 12px; line-height: 16px; color: var(--ink-2); white-space: nowrap; }
+.zhangwen-tool.tool-planned { width: 64px; flex-basis: 64px; }
+.zhangwen-tool.tool-planned .tool-icon { position: relative; }
+.zhangwen-tool .tool-planned-badge { position: absolute; top: -3px; right: -13px; margin: 0; padding: 1px 3px; border: 1px solid var(--border2); border-radius: 4px; background: var(--panel); color: var(--ink-3); font: 9px/12px sans-serif; white-space: nowrap; }
+.zhangwen-tool.tool-hardware .tool-icon { background: var(--hw); color: #fff; }
+.zhangwen-tool.tool-hardware .tool-label { color: var(--hw); }
+.zhangwen-tool.run-tool .tool-icon { background: var(--brand); color: var(--brand-ink); }
+.zhangwen-tool.run-tool .tool-label { color: var(--ink-2); font-weight: 600; }
+.zhangwen-tool.tool-brand .tool-icon { background: var(--logo); color: var(--brand-ink); }
+.zhangwen-tool.tool-muted .tool-icon { background: var(--border); color: var(--ink-2); }
+.zhangwen-tool:hover:not(:disabled) .tool-icon { background: var(--sw); color: #fff; filter: brightness(1.08); box-shadow: inset 0 1px 0 #ffffff38, 0 1px 2px #00000014; }
+.zhangwen-tool.tool-hardware:hover:not(:disabled) .tool-icon { background: var(--hw); }
+.zhangwen-tool.run-tool:hover:not(:disabled) .tool-icon { background: var(--brand); color: var(--brand-ink); }
+.zhangwen-tool.tool-brand:hover:not(:disabled) .tool-icon { background: var(--logo); color: var(--brand-ink); }
+.zhangwen-tool.tool-muted:hover:not(:disabled) .tool-icon { background: var(--border); color: var(--ink-2); }
+.zhangwen-tool:active:not(:disabled) .tool-icon { filter: brightness(.94); transform: translateY(1px); }
+.zhangwen-tool.is-active .tool-icon { outline: 2px solid var(--brand); outline-offset: 2px; }
+.zhangwen-tool:disabled { opacity: 1; }
+.zhangwen-tool:disabled .tool-icon { color: var(--ink-4); background: var(--border); box-shadow: none; }
+.zhangwen-tool:disabled .tool-label { color: var(--ink-3); }
 .tool-divider { flex: 0 0 1px; width: 1px; height: 42px; margin: 0 4px; background: var(--border2); }
 .toolbar-status { margin: 0; min-height: 44px; min-width: 112px; flex-shrink: 0; font-size: 13px; border: 1px solid var(--border2); background: var(--raised); color: var(--ink-2); }
 .toolbar-status.is-connected { color: var(--suc); border-color: var(--suc); background: var(--suc-t); }
@@ -364,7 +364,7 @@ dialog::backdrop { background: #0b182d70; backdrop-filter: blur(3px); }
   .app { padding: 8px; }
   .current-project > span { display: none; }
   .workbench, .workbench:has(.ai-panel.mobile-show) { grid-template-columns: 236px minmax(220px,1fr) minmax(280px,1.32fr); }
-  .mu-toolbar { gap: 8px; }
+  .zhangwen-toolbar { gap: 8px; }
   .toolbar-status { min-width: 100px; }
 }
 @media (max-width: 900px) and (min-width: 601px) {
@@ -383,10 +383,10 @@ dialog::backdrop { background: #0b182d70; backdrop-filter: blur(3px); }
   .current-project strong { max-width: 110px; }
   .document-info { border: 0; background: transparent; margin-left: auto; padding: 0; font-size: 12px; }
   .theme-toggle { width: 44px; }
-  .mu-toolbar { padding: 8px; gap: 8px; flex-wrap: wrap; min-height: 82px; }
-  .mu-commands { width: 100%; flex: 1 0 100%; }
-  .mu-tool { width: 48px; flex-basis: 48px; height: 64px; }
-  .mu-tool .tool-icon { width: 40px; height: 40px; border: 0; }
+  .zhangwen-toolbar { padding: 8px; gap: 8px; flex-wrap: wrap; min-height: 82px; }
+  .zhangwen-commands { width: 100%; flex: 1 0 100%; }
+  .zhangwen-tool { width: 48px; flex-basis: 48px; height: 64px; }
+  .zhangwen-tool .tool-icon { width: 40px; height: 40px; border: 0; }
   .toolbar-status { margin: 0 0 0 auto; min-height: 44px; }
   .workbench, .workbench:has(.ai-panel.mobile-show) { display: flex; margin: 0; padding: 0; min-height: 650px; border-width: 1px; }
   .panel { width: 100%; }
@@ -399,7 +399,7 @@ dialog::backdrop { background: #0b182d70; backdrop-filter: blur(3px); }
   .selected-sensor-list .module-grid { grid-template-columns: repeat(2, minmax(0,1fr)); }
   .sensor-picker-dialog[open] { width: calc(100vw - 20px); }
 }
-@media (prefers-reduced-motion: reduce) { button, .mu-tool .tool-icon { transition: none; } }
+@media (prefers-reduced-motion: reduce) { button, .zhangwen-tool .tool-icon { transition: none; } }
 .file-section { padding: 12px 0; border-bottom: 1px solid var(--border); }
 .file-section h3 { margin: 0 0 8px; }
 .file-actions { display: flex; gap: 10px; flex-wrap: wrap; margin: 10px 0; }
@@ -413,7 +413,7 @@ dialog::backdrop { background: #0b182d70; backdrop-filter: blur(3px); }
 .device-file-preview { margin-top: 14px; }
 .device-file-preview pre { max-height: 240px; overflow: auto; font-size: 12px; white-space: pre-wrap; overflow-wrap: anywhere; }
 .device-file-preview .checksum { overflow-wrap: anywhere; font-size: 12px; }
-.mu-tool .tool-icon > .board-artwork { width: 36px; height: 36px; padding: 2px; object-fit: contain; background: var(--raised); border-radius: 7px; stroke-width: 1; }
+.zhangwen-tool .tool-icon > .board-artwork { width: 36px; height: 36px; padding: 2px; object-fit: contain; background: var(--raised); border-radius: 7px; stroke-width: 1; }
 .hardware-collapse { min-width: 44px; min-height: 44px; }
 .hardware-restore { display: none; }
 .hardware-collapsed .hardware-panel { display: none !important; }
@@ -614,8 +614,8 @@ dialog::backdrop { background: #0b182d70; backdrop-filter: blur(3px); }
 .planned-preview h3 { font-size: 14px; margin: 14px 0 8px; }
 .planned-preview p { margin: 0 0 16px; font-size: 12px; line-height: 1.8; color: var(--ink-3); }
 .planned-preview small { font-size: 12px; color: var(--ink-3); }
-.mu-tool:has(> small) { position: relative; }
-.mu-tool > small { position: absolute; right: -5px; top: -3px; background: var(--panel); color: var(--wrn); border: 1px solid var(--border2); border-radius: 4px; font-size: 10px; padding: 1px 3px; white-space: nowrap; }
+.zhangwen-tool:has(> small) { position: relative; }
+.zhangwen-tool > small { position: absolute; right: -5px; top: -3px; background: var(--panel); color: var(--wrn); border: 1px solid var(--border2); border-radius: 4px; font-size: 10px; padding: 1px 3px; white-space: nowrap; }
 .update-dialog { width: min(600px, calc(100vw - 32px)); }
 .update-summary { display: flex; align-items: center; gap: 16px; margin-bottom: 22px; }
 .update-summary h3 { margin: 0 0 6px; font-size: 17px; }

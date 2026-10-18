@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { Cable, CircuitBoard, FileCode2 } from 'lucide-react';
-import type { HardwareSummary } from '../../../packages/contracts/src/mu';
+import type { HardwareSummary } from '../../../packages/contracts/src/platform';
 import { moduleDirection } from './hardwareLibrary';
 
 export function HardwareGuide({ board, componentIds, hardware, disabled, onTest, onDevelop }: {

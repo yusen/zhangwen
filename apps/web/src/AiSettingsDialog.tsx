@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from 'react';
 import { CheckCircle2, CircleMinus, LoaderCircle, TriangleAlert, XCircle } from 'lucide-react';
-import type { AiDiagnosticCheck, AiDiagnosticReport, AiSettings, SaveAiSettings, WorkspaceMode } from '../../../packages/contracts/src/mu';
-import { DEEPSEEK_MODELS } from '../../../packages/contracts/src/mu';
+import type { AiDiagnosticCheck, AiDiagnosticReport, AiSettings, SaveAiSettings, WorkspaceMode } from '../../../packages/contracts/src/platform';
+import { DEEPSEEK_MODELS } from '../../../packages/contracts/src/platform';
 import { api, bootstrap, testAiSettings } from './api';
 import { Dialog } from './Dialog';
 
@@ -34,6 +34,7 @@ export function AiSettingsDialog({ settings: initial, initialMode = 'engineer', 
   const [checks, setChecks] = useState<AiDiagnosticCheck[]>([]);
   const [report, setReport] = useState<AiDiagnosticReport | null>(null);
   const controller = useRef<AbortController | null>(null);
+  const keyInput = useRef<HTMLInputElement>(null);
   useEffect(() => () => { controller.current?.abort(); controller.current = null; }, []);
   useEffect(() => {
     let live = true; setLoading(true); setKey(''); setError(''); setChecks([]); setReport(null); setNoKey(false);
@@ -44,6 +45,7 @@ export function AiSettingsDialog({ settings: initial, initialMode = 'engineer', 
     }).catch(err => { if (live) setError(String(err)); }).finally(() => { if (live) setLoading(false); });
     return () => { live = false; };
   }, [mode]);
+  useEffect(() => { if (!loading) keyInput.current?.focus(); }, [loading]);
   const resetTest = () => { setReport(null); setChecks([]); setError(''); };
   const close = () => { if (!saving) { controller.current?.abort(); controller.current = null; setKey(''); onClose(); } };
   const test = async () => {
@@ -89,7 +91,7 @@ export function AiSettingsDialog({ settings: initial, initialMode = 'engineer', 
       }}>{providers.map(item => <option key={item.id} value={item.id}>{item.name}</option>)}<option value="custom">其他 / 本机 OpenAI 兼容服务</option></select></label>
       <label className="field">API 地址<input value={baseUrl} maxLength={500} placeholder="https://api.example.com/v1" onChange={event => { setBaseUrl(event.target.value); setKey(''); setNoKey(false); resetTest(); }} disabled={saving || testing} spellCheck={false} /></label>
       <p className="muted">填写基础地址（如 https://api.example.com/v1），不包含 /chat/completions。更换地址后须填写新 Key。</p>
-      <label className="field">API Key<input autoFocus data-dialog-autofocus type="password" value={key} maxLength={500} onChange={event => { setKey(event.target.value); setNoKey(false); resetTest(); }} placeholder={settings.aiConfigured ? '已配置，留空保持不变' : '输入当前服务的 API Key'} autoComplete="off" spellCheck={false} disabled={saving || testing} /></label>
+      <label className="field">API Key<input ref={keyInput} autoFocus data-dialog-autofocus type="password" value={key} maxLength={500} onChange={event => { setKey(event.target.value); setNoKey(false); resetTest(); }} placeholder={settings.aiConfigured ? '已配置，留空保持不变' : '输入当前服务的 API Key'} autoComplete="off" spellCheck={false} disabled={saving || testing} /></label>
       <label className="field">模型名称<input list="ai-model-options" value={model} maxLength={100} onChange={event => { setModel(event.target.value); resetTest(); }} disabled={saving || testing} placeholder="填写服务商提供的模型 ID" spellCheck={false} /><datalist id="ai-model-options">{(providers.find(item => item.id === provider)?.models ?? providers.flatMap(item => item.models)).map(id => <option key={id} value={id} />)}</datalist></label>
       </fieldset>
       {localEndpoint && <label className="confirm"><input type="checkbox" checked={noKey} disabled={saving || testing} onChange={event => { setNoKey(event.target.checked); setKey(''); resetTest(); }} />本机服务无需 Key（清除旧 Key）</label>}
@@ -103,7 +105,7 @@ export function AiSettingsDialog({ settings: initial, initialMode = 'engineer', 
         })}</ol>
         {report && <div className={`ai-test-summary ${report.healthy ? 'passed' : 'failed'}`}><strong>{report.healthy ? '实际生成检测通过' : '检测未通过'}</strong><p>{report.suggestion}</p><small>{report.model} · {new Date(report.checkedAt).toLocaleTimeString()}</small></div>}
       </section>}
-      <p className="muted">Key 保存在本机 .data/mu-settings.json（明文），不会存入浏览器草稿或项目。发送对话时，当前代码与所选硬件资料会提交给所填服务。</p>
+      <p className="muted">Key 保存在本机 .data/zhangwen-settings.json（明文），不会存入浏览器草稿或项目。发送对话时，当前代码与所选硬件资料会提交给所填服务。</p>
       {error && <p className="settings-error" role="alert">{error}</p>}
       <div className="dialog-actions">
         <button type="button" onClick={close} disabled={saving}>取消</button>

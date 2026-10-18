@@ -18,6 +18,7 @@ from zhangwen.artifacts.models import ArtifactPreview, ArtifactPreviewKind
 from zhangwen.llm.contracts import ChatMessage, ChatMessageStatus, ChatRole
 from .models import Boundary, CodeInput, CreateInput
 from .structure import StructureCheckpoint, export_structure, prepare_structure_import, insert_structure_import
+from .legacy_names import workspace_message
 
 SNAPSHOT_MAX_BYTES = 32 * 1024 * 1024
 
@@ -111,9 +112,9 @@ def normalized(value: dict) -> dict:
 def export_project(repo, project_id: str) -> dict:
     project = repo.get(project_id)
     with repo.connect() as conn:
-        portable_id = conn.execute('SELECT COALESCE(portable_id, project_id) FROM mu_workspaces WHERE project_id=?', (project_id,)).fetchone()[0]
+        portable_id = conn.execute('SELECT COALESCE(portable_id, project_id) FROM zhangwen_workspaces WHERE project_id=?', (project_id,)).fetchone()[0]
         portable_messages = {row['id']: json.loads(row['metadata_json'] or '{}').get('portableMessageId', row['id'])
-                             for row in conn.execute("SELECT id, metadata_json FROM messages WHERE project_id=? AND json_extract(metadata_json, '$.mu')=1", (project_id,))}
+                             for row in conn.execute(f"SELECT id, metadata_json FROM messages WHERE project_id=? AND {workspace_message()}", (project_id,))}
     if any(item['status'] not in {'COMPLETED', 'FAILED', 'CANCELED'} for item in project['messages']):
         raise HTTPException(409, '对话仍在生成，完成或取消后再保存项目文件夹。')
     versions = repo.versions(project_id)
@@ -140,7 +141,7 @@ def import_project(repo, snapshot: ProjectSnapshot) -> dict:
     # Exact checkpoints reuse their original working copy. Divergent checkpoints
     # become another project, preserving both histories rather than overwriting.
     with repo.connect() as conn:
-        matches = conn.execute('SELECT project_id FROM mu_workspaces WHERE COALESCE(portable_id, project_id)=?', (snapshot.portableId,)).fetchall()
+        matches = conn.execute('SELECT project_id FROM zhangwen_workspaces WHERE COALESCE(portable_id, project_id)=?', (snapshot.portableId,)).fetchall()
     for row in matches:
         try:
             if export_project(repo, row[0]) == value:
@@ -149,11 +150,11 @@ def import_project(repo, snapshot: ProjectSnapshot) -> dict:
             continue
 
     def after_create(conn, project_id, now):
-        artifact_id = f'mu_code_{project_id}'
+        artifact_id = f'zhangwen_code_{project_id}'
         message_ids = {item.id: 'msg_' + uuid.uuid4().hex for item in snapshot.messages}
         version_ids = {item.revision: f'artifact_version_{artifact_id}_{uuid.uuid4().hex}' for item in snapshot.versions}
         conn.execute('''INSERT INTO artifacts (id, project_id, title, kind, status, source_agent_id,
-            current_version_id, created_at, updated_at) VALUES (?, ?, 'main.py', 'CODE', 'DRAFT', 'mu-import', ?, ?, ?)''',
+            current_version_id, created_at, updated_at) VALUES (?, ?, 'main.py', 'CODE', 'DRAFT', 'zhangwen-import', ?, ?, ?)''',
             (artifact_id, project_id, version_ids[max(version_ids)], now, now))
         for item in snapshot.versions:
             preview = ArtifactPreview(kind=ArtifactPreviewKind.CODE, code=item.code, language='python', summary='从用户选择的项目文件夹恢复，未上传或运行。')
@@ -162,16 +163,16 @@ def import_project(repo, snapshot: ProjectSnapshot) -> dict:
                 VALUES (?, ?, ?, ?, ?, 'text/x-python', ?, '[]', ?, ?, ?, ?)''',
                 (version_ids[item.revision], artifact_id, project_id, item.revision,
                  'NEEDS_REVIEW' if item.source == 'ai' else 'DRAFT', preview.model_dump_json(),
-                 'mu_ai_code' if item.source == 'ai' else 'mu_code', message_ids.get(item.messageId, item.messageId or uuid.uuid4().hex), item.checksum, item.createdAt))
+                 'zhangwen_ai_code' if item.source == 'ai' else 'zhangwen_code', message_ids.get(item.messageId, item.messageId or uuid.uuid4().hex), item.checksum, item.createdAt))
             if item.boardId:
-                conn.execute('INSERT INTO mu_code_metadata(version_id, board_id) VALUES (?, ?)', (version_ids[item.revision], item.boardId))
-        conn.execute('''INSERT INTO mu_workspaces (project_id, board_id, component_ids, hardware_revisions,
+                conn.execute('INSERT INTO zhangwen_code_metadata(version_id, board_id) VALUES (?, ?)', (version_ids[item.revision], item.boardId))
+        conn.execute('''INSERT INTO zhangwen_workspaces (project_id, board_id, component_ids, hardware_revisions,
             artifact_version_id, revision, updated_at, portable_id) VALUES (?, ?, ?, ?, ?, ?, ?, ?)''',
             (project_id, snapshot.project.boardId, json.dumps(snapshot.project.componentIds), json.dumps(hardware),
              version_ids[snapshot.project.revision], snapshot.project.revision, now, snapshot.portableId))
         conversation_id = conn.execute('SELECT id FROM conversations WHERE project_id=? ORDER BY created_at LIMIT 1', (project_id,)).fetchone()[0]
         for item in snapshot.messages:
-            metadata = {'mu': True, 'portableMessageId': item.id}
+            metadata = {'zhangwen': True, 'portableMessageId': item.id}
             if item.boardId:
                 metadata['boardId'] = item.boardId
             if item.componentIds is not None:

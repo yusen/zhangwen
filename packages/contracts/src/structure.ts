@@ -26,6 +26,7 @@ export interface CadResult {
   build?: { status: string; message?: string; blocking_reason?: string };
   designKind?: 'parametric' | 'laser';
   designSpec?: DesignSpec;
+  laserTextPaths?: Record<string, string>;
   [key: string]: unknown;
 }
 export interface StructureVersion {
@@ -44,9 +45,11 @@ export interface StructureAction {
   message?: string; selectedIds?: string[]; customProfiles?: Record<string, unknown>[];
   parameters?: Record<string, number>; faces?: Record<string, 'base_floor' | 'lid_inner'>;
   rotations?: Record<string, number>; resolutionOptionId?: string;
-  designType?: 'model' | 'laser'; template?: 'box' | 'cup' | 'bracket' | 'plate' | 'round-tag' | 'panel-box';
+  designType?: 'model' | 'laser'; template?: 'box' | 'cup' | 'bracket' | 'plate' | 'round-tag' | 'panel-box' | 'finger-box';
 }
 export interface StructureCatalog { profiles: CadProfile[]; cadqueryAvailable: boolean }
 export interface SolidPart { kind: 'box' | 'cylinder' | 'sphere'; operation: 'add' | 'cut'; label: string; size: number[]; center: number[]; rotation: number[] }
-export interface LaserShape { kind: 'rect' | 'circle' | 'polyline'; operation: 'cut' | 'engrave'; x: number; y: number; width: number; height: number; radius: number; points: number[][]; closed: boolean }
-export interface DesignSpec { title: string; summary: string; questions: string[]; solid: SolidPart[]; drawing?: { width: number; height: number; thickness: number; material: string; kerf: number; shapes: LaserShape[] } | null }
+export interface LaserShape { kind: 'rect' | 'circle' | 'polyline' | 'text'; operation: 'cut' | 'engrave'; x: number; y: number; width: number; height: number; radius: number; points: number[][]; closed: boolean; text?: string; fontSize?: number }
+export interface PanelText { panel: 'left' | 'right' | 'front' | 'back' | 'bottom' | 'top'; x: number; y: number; text: string; fontSize: number }
+export interface FingerBox { width: number; depth: number; height: number; thickness: number; material: string }
+export interface DesignSpec { title: string; summary: string; questions: string[]; solid: SolidPart[]; fingerBox?: FingerBox | null; panelTexts?: PanelText[]; drawing?: { width: number; height: number; thickness: number; material: string; kerf: number; shapes: LaserShape[] } | null }

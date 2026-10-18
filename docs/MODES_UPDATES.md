@@ -18,7 +18,7 @@
 
 ## 接口与约束
 
-跨端契约先在 `packages/contracts/src/mu.ts` 定义；后端在 `mu_web/updates.py` 实现。
+跨端契约先在 `packages/contracts/src/platform.ts` 定义；后端在 `web/updates.py` 实现。
 
 - `GET /api/updates`：本进程版本、部署类型、最近检查结果和任务状态；不访问网络。
 - `POST /api/updates/check`：只访问固定的 `yusen/zhangwen` GitHub main 引用；30 秒内共享检查缓存。响应大小和等待受限，拒绝重定向，未使用模型 Key。

@@ -1,5 +1,7 @@
 # 第三方与资料来源
 
+文字雕刻随包提供Noto Sans SC可变字体（Google Fonts上游，SIL Open Font License 1.1），仅使用400字重生成确定性矢量轮廓。原字体、完整OFL许可与来源/SHA在resources/fonts；不依赖系统安装字体或在线字体服务。字体轮廓通过已锁定的fonttools生成，SVG含填充轮廓，DXF含雕刻层闭合轮廓；不附加机器加工参数。
+
 本版复用旧掌问仓库的后端源码、Hardware Skill 格式与硬件资料，部署文件摘要见根目录 `DEPLOYMENT.sha256`，资料来源见各硬件包的 `references/sources.md`。保留包内原 NOTICE、许可证及来源链接。没有为第三方资料授予额外许可。
 
 当前 Web 前端使用 React、Vite、CodeMirror、Lucide；后端使用 FastAPI、Pydantic、Uvicorn、HTTPX、PyYAML 等。精确版本由根 `package-lock.json` 与 `services/local-api/requirements-web-lock.txt` 锁定；依赖的许可证随各上游分发。
@@ -12,7 +14,7 @@ Windows/macOS 启动时从官方源下载 Node.js（https://nodejs.org/，含自
 
 本轮多品牌模块资料和官方产品图来自盛思（乐动）、Seeed Studio Grove及N+公开文档。逐项文档与原图URL、署名、版权状态、图像处理和SHA见 `vendor-catalog-manifest.json` 及各包 `references/sources.md`。盛思声明保留所有版权，N+文档署名©2020 nplus；未把文档/代码许可证当作产品图片许可。官方图片包含厂商产品示意图，均未由AI合成；按用户要求随部署资料保留来源与版权声明。
 
-掌控板2.0编程摘要依据用户指定的 https://mpython.readthedocs.io/zh-cn/v2.0.1/index.html 及其同版本库说明。官方署名©2018–2020 labplus，All Rights Reserved；仅保留调用摘要、来源与项目最小例程，未镜像整站或授予额外许可。核对URL与SHA见 `services/local-api/zhangwen/mu_web/programming-skills/mpython-v2/references/sources.json`。
+掌控板2.0编程摘要依据用户指定的 https://mpython.readthedocs.io/zh-cn/v2.0.1/index.html 及其同版本库说明。官方署名©2018–2020 labplus，All Rights Reserved；仅保留调用摘要、来源与项目最小例程，未镜像整站或授予额外许可。核对URL与SHA见 `services/local-api/zhangwen/web/programming-skills/mpython-v2/references/sources.json`。
 
 主控选择补充的三张配图来自 Espressif ESP32-C3-DevKitM-1 官方文档、Seeed Studio XIAO ESP32S3 Sense 官方文档与盛思掌控板2.0官方硬件说明。图片版权归各厂商，保留原图来源，不将文档/代码许可证当作图片的额外授权。原图URL、原始/转换SHA、尺寸与处理说明见 `apps/web/src/assets/boards/sources.json`；图片仅用于产品识别，通用C3注明开发板示例，掌控板2.0为官方产品示意图。配图不改变原Hardware Skill与硬件能力定义。
 

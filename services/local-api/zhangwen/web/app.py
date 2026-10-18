@@ -24,16 +24,17 @@ from fastapi.staticfiles import StaticFiles
 
 from zhangwen.hardware.hardware_skills import HardwareSkillNotFoundError, HardwareSkillValidationError, HardwareSkillConflictError
 from zhangwen.llm.contracts import ChatMessageStatus
-from zhangwen.mu_web.models import DEFAULT_AI_MODEL, AiSettingsInput, ChatInput, CodeInput, CreateInput, ManifestInput, SaveInput, HardwareExampleInput, current_ai_model
-from zhangwen.mu_web.repository import MuRepository
-from zhangwen.mu_web.diagnostics import diagnose_ai
-from zhangwen.mu_web.endpoints import DEFAULT_BASE_URL, configured, is_deepseek, resolve_settings
-from zhangwen.mu_web.programming import programming_context
-from zhangwen.mu_web.portable import ProjectSnapshot, SNAPSHOT_MAX_BYTES
-from zhangwen.mu_web.replies import REPLY_INSTRUCTION
-from zhangwen.mu_web.updates import UpdateManager, InstallUpdateInput
-from zhangwen.mu_web.structure import StructureService, structure_router
-from zhangwen.mu_web.mode_settings import load as load_mode_settings, for_mode
+from zhangwen.web.models import DEFAULT_AI_MODEL, AiSettingsInput, ChatInput, CodeInput, CreateInput, ManifestInput, SaveInput, HardwareExampleInput, current_ai_model
+from zhangwen.web.repository import WebRepository
+from zhangwen.web.diagnostics import diagnose_ai
+from zhangwen.web.endpoints import DEFAULT_BASE_URL, configured, is_deepseek, resolve_settings
+from zhangwen.web.programming import programming_context
+from zhangwen.web.portable import ProjectSnapshot, SNAPSHOT_MAX_BYTES
+from zhangwen.web.replies import REPLY_INSTRUCTION
+from zhangwen.web.updates import UpdateManager, InstallUpdateInput
+from zhangwen.web.structure import StructureService, structure_router
+from zhangwen.web.mode_settings import load as load_mode_settings, for_mode
+from .legacy_names import settings_path as compatible_settings_path, environment_model, session_header
 from typing import Literal
 
 ROOT = Path(__file__).resolve().parents[4]
@@ -41,7 +42,7 @@ AI_TOTAL_TIMEOUT = 300
 logger = logging.getLogger(__name__)
 
 
-async def generate_reply(request: ChatInput, repo: MuRepository, history: list[dict[str, Any]], *, api_key: str, model: str,
+async def generate_reply(request: ChatInput, repo: WebRepository, history: list[dict[str, Any]], *, api_key: str, model: str,
                          on_delta: Callable[[str], Awaitable[None]] | None = None, base_url: str = DEFAULT_BASE_URL) -> str:
     key = api_key.strip()
     provider = "DeepSeek" if is_deepseek(base_url) else "模型服务"
@@ -151,15 +152,15 @@ async def generate_reply(request: ChatInput, repo: MuRepository, history: list[d
 
 def create_app(data_dir: Path | None = None, *, port: int = 3080, dev: bool = False) -> FastAPI:
     data_dir = data_dir or Path(os.environ.get("ZHANGWEN_DATA_DIR", ROOT / ".data"))
-    repo = MuRepository(data_dir)
-    settings_path = data_dir / "mu-settings.json"
+    repo = WebRepository(data_dir)
+    settings_path = compatible_settings_path(data_dir)
     ai_settings: dict[str, str] = {
         "apiKey": os.environ.get("ZHANGWEN_DEEPSEEK_API_KEY", "").strip(),
-        "model": current_ai_model(os.environ.get("ZHANGWEN_MU_MODEL", DEFAULT_AI_MODEL)),
+        "model": current_ai_model(environment_model(DEFAULT_AI_MODEL)),
         "baseUrl": DEFAULT_BASE_URL,
     }
     ai_settings, mode_overrides = load_mode_settings(settings_path, ai_settings)
-    app = FastAPI(title="掌问 Mu Web", version="0.1.0", docs_url=None, redoc_url=None)
+    app = FastAPI(title="掌问本地 Web", version="0.1.0", docs_url=None, redoc_url=None)
     app.state.repo = repo
     app.state.chat_locks = {}
     app.state.ai_test_lock = asyncio.Lock()
@@ -182,7 +183,7 @@ def create_app(data_dir: Path | None = None, *, port: int = 3080, dev: bool = Fa
         if request.headers.get("sec-fetch-site") == "cross-site":
             return JSONResponse({"detail": "拒绝跨站请求。"}, status_code=403)
         if request.method not in {"GET", "HEAD", "OPTIONS"}:
-            if origin not in origins or not secrets.compare_digest(request.headers.get("x-mu-session", ""), session):
+            if origin not in origins or not secrets.compare_digest(session_header(request.headers), session):
                 return JSONResponse({"detail": "本机会话已失效，请刷新页面。"}, status_code=403)
             # Bound the actual bytes, including chunked requests without Content-Length.
             size = 0
@@ -393,7 +394,7 @@ def create_app(data_dir: Path | None = None, *, port: int = 3080, dev: bool = Fa
                 raise HTTPException(409, "当前项目已有一个 AI 请求，请等待完成。")
             async with lock:
                 current = repo.get(project_id)
-                hardware_metadata = {'mu': True, 'boardId': request.boardId, 'componentIds': request.componentIds}
+                hardware_metadata = {'zhangwen': True, 'boardId': request.boardId, 'componentIds': request.componentIds}
                 if request.intent:
                     hardware_metadata['intent'] = request.intent
                 _, _, assistant = repo.projects.append_user_and_assistant(project_id, request.message, model, user_metadata=hardware_metadata)

@@ -1,4 +1,4 @@
-/** Mu Web boundary. Validated on the server by zhangwen.mu_web.models. */
+/** 掌问本地 Web boundary. Validated on the server by zhangwen.web.models. */
 export type WorkspaceMode = 'engineer' | 'structure' | 'learning';
 export interface UpdateJob {
   state: 'installing' | 'ready' | 'failed'; revision: string; message: string;

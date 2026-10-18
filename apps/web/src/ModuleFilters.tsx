@@ -1,4 +1,4 @@
-import type { HardwareSummary } from '../../../packages/contracts/src/mu';
+import type { HardwareSummary } from '../../../packages/contracts/src/platform';
 import { useEffect, useId, useRef, useState } from 'react';
 import { ChevronDown, SlidersHorizontal } from 'lucide-react';
 import { moduleBrand, moduleDirection, moduleType, type ModuleDirection } from './hardwareLibrary';

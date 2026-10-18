@@ -1,4 +1,4 @@
-import type { DeviceFile, DeviceFileContent, DeviceIdentity, DeviceState, UploadManifest, UploadReceipt } from '../../../packages/contracts/src/mu';
+import type { DeviceFile, DeviceFileContent, DeviceIdentity, DeviceState, UploadManifest, UploadReceipt } from '../../../packages/contracts/src/platform';
 
 export interface SerialPortLike {
   readable: ReadableStream<Uint8Array> | null;

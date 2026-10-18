@@ -1,5 +1,5 @@
 import { Box, ChevronRight, CircuitBoard, GraduationCap } from 'lucide-react';
-import type { WorkspaceMode } from '../../../packages/contracts/src/mu';
+import type { WorkspaceMode } from '../../../packages/contracts/src/platform';
 import { Dialog } from './Dialog';
 
 export const workspaceModes = [

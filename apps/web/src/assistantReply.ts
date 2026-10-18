@@ -1,4 +1,4 @@
-import type { AssistantReply } from '../../../packages/contracts/src/mu';
+import type { AssistantReply } from '../../../packages/contracts/src/platform';
 
 const text = (value: unknown, max: number): value is string => typeof value === 'string' && value.trim().length > 0 && [...value].length <= max;
 const strings = (value: unknown, count: number, max: number): value is string[] => Array.isArray(value) && value.length <= count && value.every(item => text(item, max) && item.trim());

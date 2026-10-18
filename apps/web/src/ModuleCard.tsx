@@ -1,6 +1,6 @@
 import { useId, useRef, useState } from 'react';
 import { ArrowDownToLine, ArrowUpFromLine, BookOpen, Check, CircuitBoard, Cog, Monitor, X, MoreVertical, FileCode2 } from 'lucide-react';
-import type { HardwareSummary } from '../../../packages/contracts/src/mu';
+import type { HardwareSummary } from '../../../packages/contracts/src/platform';
 import { moduleBrand, moduleDirection, moduleType } from './hardwareLibrary';
 import { FloatingMenu } from './FloatingMenu';
 

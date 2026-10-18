@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from 'react';
 import type { ESPLoader, Transport } from 'esptool-js';
-import type { FirmwareProfile, HardwareSummary } from '../../../packages/contracts/src/mu';
+import type { FirmwareProfile, HardwareSummary } from '../../../packages/contracts/src/platform';
 import { api } from './api';
 import { Dialog } from './Dialog';
 import { BoardArtwork } from './BoardArtwork';

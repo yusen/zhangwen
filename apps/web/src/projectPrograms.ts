@@ -1,4 +1,4 @@
-import type { ProjectProgramRecord, ProgramRunSubmission, UploadReceipt } from '../../../packages/contracts/src/mu';
+import type { ProjectProgramRecord, ProgramRunSubmission, UploadReceipt } from '../../../packages/contracts/src/platform';
 import { ensureFolderPermission, PROJECT_FILE, type FolderBinding, type ProjectDirectory } from './projectFolders';
 import { sha256 } from './serial';
 

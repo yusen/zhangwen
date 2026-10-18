@@ -1,4 +1,4 @@
-import type { DeviceIdentity } from '../../../packages/contracts/src/mu';
+import type { DeviceIdentity } from '../../../packages/contracts/src/platform';
 
 /** Browser-local backups survive tab refresh. Never upload device identities to API. */
 export interface DeviceBackup { id: string; path: string; bytes: Uint8Array | null; identity: DeviceIdentity; createdAt: string }

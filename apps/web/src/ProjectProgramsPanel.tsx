@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from 'react';
 import { Download, FileCode2, FolderOpen, RefreshCw, Save } from 'lucide-react';
-import type { HardwareSummary, ProjectProgramRecord, ProgramRunSubmission, UploadReceipt, Version } from '../../../packages/contracts/src/mu';
+import type { HardwareSummary, ProjectProgramRecord, ProgramRunSubmission, UploadReceipt, Version } from '../../../packages/contracts/src/platform';
 import { ensureFolderPermission, type FolderBinding } from './projectFolders';
 import { listProjectPrograms, readProjectProgram, saveProjectProgram, type ProjectProgram } from './projectPrograms';
 

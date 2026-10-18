@@ -1,4 +1,4 @@
-import type { HardwareModuleGuide } from '../../../packages/contracts/src/mu';
+import type { HardwareModuleGuide } from '../../../packages/contracts/src/platform';
 
 export const guideValues = (guide: HardwareModuleGuide, setup?: Record<string, string>) => Object.fromEntries(
   guide.fields.map(field => [field.key, field.options.some(option => option.value === setup?.[field.key]) ? setup![field.key] : field.default]),

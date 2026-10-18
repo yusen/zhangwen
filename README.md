@@ -1,4 +1,4 @@
-# 掌问 Mu Web
+# 掌问本地 Web
 
 本地部署的创作平台：MicroPython 编程、硬件资料库、AI 对话、Web Serial 上传，以及外壳结构设计与模型导出。
 

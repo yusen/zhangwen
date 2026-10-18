@@ -1,4 +1,4 @@
-import type { HardwareDetail, HardwareSummary } from '../../../packages/contracts/src/mu';
+import type { HardwareDetail, HardwareSummary } from '../../../packages/contracts/src/platform';
 import { Dialog } from './Dialog';
 import { HardwareExampleEditor } from './HardwareExampleEditor';
 

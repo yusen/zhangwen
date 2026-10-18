@@ -1,4 +1,5 @@
-import type { ProjectSnapshot } from '../../../packages/contracts/src/mu';
+import type { ProjectSnapshot } from '../../../packages/contracts/src/platform';
+import { openPlatformDatabase, lockProjectFolder } from './legacyBrowserNames';
 import { sha256 } from './serial';
 
 export const PROJECT_FILE = 'zhangwen.project.json';
@@ -104,17 +105,11 @@ export async function writeProjectDirectory(binding: FolderBinding, snapshot: Pr
     await rememberFolder(binding);
   };
   // Serializes folder checkpoints across tabs; fingerprints also reject stale writers.
-  if (navigator.locks) await navigator.locks.request('mu-project-folder-' + snapshot.portableId, task);
-  else await task();
+  await lockProjectFolder(snapshot.portableId, task);
 }
 
 function database(): Promise<IDBDatabase> {
-  return new Promise((resolve, reject) => {
-    const request = indexedDB.open('mu-project-folders', 1);
-    request.onupgradeneeded = () => request.result.createObjectStore('folders', { keyPath: 'projectId' });
-    request.onsuccess = () => resolve(request.result);
-    request.onerror = () => reject(new Error('浏览器无法保存项目文件夹关联，请重新选择文件夹。'));
-  });
+  return openPlatformDatabase('zhangwen-project-folders', 'folders', 'projectId');
 }
 export async function rememberFolder(binding: FolderBinding): Promise<void> {
   const db = await database();

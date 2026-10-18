@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import type { HardwareSummary } from '../../../packages/contracts/src/mu';
+import type { HardwareSummary } from '../../../packages/contracts/src/platform';
 import { boardImages } from './boardImages';
 
 /** Package media first, then bundled official images, then a labelled diagram. */

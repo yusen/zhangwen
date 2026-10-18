@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { Check, Search } from 'lucide-react';
-import type { HardwareSummary } from '../../../packages/contracts/src/mu';
+import type { HardwareSummary } from '../../../packages/contracts/src/platform';
 import { Dialog } from './Dialog';
 import { BoardArtwork } from './BoardArtwork';
 import { boardImages } from './boardImages';

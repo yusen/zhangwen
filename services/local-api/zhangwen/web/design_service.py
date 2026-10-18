@@ -8,6 +8,7 @@ from datetime import datetime
 
 from fastapi import HTTPException
 from .design_specs import DesignSpec, template_spec, propose, solid_code, svg, dxf
+from . import laser_text
 
 
 def solid_bounds(spec, scale):
@@ -24,7 +25,7 @@ def solid_bounds(spec, scale):
     return [round((max(b[i][1] for b in bounds) - min(b[i][0] for b in bounds)) * scale, 3) for i in range(3)]
 
 
-async def act(request, previous, settings, job_root):
+async def act(request, previous, settings, job_root, conversation=None):
     kind = 'laser' if request.designType == 'laser' else 'parametric'
     # Text revisions must reach the model, even when the source was a template.
     editing = request.action in {'analyze', 'revise', 'selected'}
@@ -35,14 +36,20 @@ async def act(request, previous, settings, job_root):
             if template:
                 spec = template_spec(template, params)
             else:
-                context = {'spec': previous.get('designSpec'), 'priorRequest': previous.get('requestText', '')}
+                context = {'spec': previous.get('designSpec'), 'priorRequest': previous.get('requestText', ''), **(conversation or {})}
                 spec = await propose(request.message, request.designType, settings, context)
                 params = {'scale': 1}
         elif previous.get('designSpec'):
+            if template == 'finger-box':
+                params['material'] = (previous['designSpec'].get('fingerBox') or {}).get('material', '待确认材料')
+                params['panelTexts'] = previous['designSpec'].get('panelTexts', [])
             spec = template_spec(template, params) if template else DesignSpec.model_validate(previous['designSpec'])
         else:
             raise HTTPException(422, '请先输入需求或选择设计模板。')
         spec.check_kind(request.designType)
+        if spec.fingerBox and not spec.questions:
+            template = 'finger-box'
+            params = {key: getattr(spec.fingerBox, key) for key in ['width', 'depth', 'height', 'thickness']}
     except ValueError as exc:
         raise HTTPException(422, str(exc)) from exc
     result = {'designKind': kind, 'designSpec': spec.model_dump(mode='json'), 'designTemplate': template,
@@ -63,7 +70,7 @@ async def act(request, previous, settings, job_root):
             data = spec.drawing.model_dump()
             data['width'] *= scale; data['height'] *= scale
             for shape in data['shapes']:
-                for key in ['x', 'y', 'width', 'height', 'radius']:
+                for key in ['x', 'y', 'width', 'height', 'radius', 'fontSize']:
                     shape[key] *= scale
                 shape['points'] = [[n * scale for n in point] for point in shape['points']]
             from .design_specs import Drawing
@@ -71,8 +78,13 @@ async def act(request, previous, settings, job_root):
         else:
             drawing = spec.drawing
         result['laserDrawing'] = drawing.model_dump(mode='json')
+        result['laserTextPaths'] = {str(i):laser_text.svg_path(shape) for i,shape in enumerate(drawing.shapes) if shape.kind == 'text'}
         result['checks'] = [{'id': 'paths', 'status': 'pass', 'message': f'{len(drawing.shapes)}条路径；坐标范围、闭合要求与完全重复路径检查通过。'},
                             {'id': 'fabrication', 'status': 'warning', 'message': '名义尺寸，未补偿刀缝；材料、孔间距、交叉路径与装配需加工前复核。'}]
+        if spec.fingerBox:
+            result['checks'].insert(1, {'id': 'joinery', 'status': 'pass', 'message': '六块板按同一边长分段生成交替互补榫齿，三面角部统一分配；改变尺寸或板厚会重新生成轮廓。'})
+        if result['laserTextPaths']:
+            result['checks'].append({'id':'text', 'status':'pass', 'message':'文字已使用随包中文字体转为矢量轮廓，SVG填充雕刻区域、DXF为ENGRAVE层闭合轮廓；加工填充方式需在加工软件中选择。'})
     else:
         size = solid_bounds(spec, scale)
         result['design_state'] = {'id': '', 'parameters': {}, 'enclosure_parameters': {'outer_box_size': dict(zip(['length_x', 'width_y', 'height_z'], size))}, 'bom': []}
@@ -95,7 +107,7 @@ async def act(request, previous, settings, job_root):
     else:
         (output / 'design-spec.json').write_text(json.dumps({'spec': spec.model_dump(mode='json'), 'scale': scale}), encoding='utf-8')
         (output / 'cadquery.py').write_text(result['cadquery_code'], encoding='utf-8')
-        process = await asyncio.create_subprocess_exec(sys.executable, '-m', 'zhangwen.mu_web.solid_worker', str(output),
+        process = await asyncio.create_subprocess_exec(sys.executable, '-m', 'zhangwen.web.solid_worker', str(output),
             stdout=asyncio.subprocess.PIPE, stderr=asyncio.subprocess.PIPE, env={**os.environ, 'PYTHONUTF8': '1'},
             **({'creationflags': 0x08000000} if sys.platform == 'win32' else {}))
         try:

@@ -1,8 +1,8 @@
 import { lazy, Suspense, useEffect, useRef, useState } from 'react';
 import { ArrowUp, Box, CheckCheck, ChevronRight, Download, FileCode2, FolderOpen, LoaderCircle, Maximize, Minimize, PanelLeftClose, PanelLeftOpen, Plus, Settings, SlidersHorizontal, Sparkles, X } from 'lucide-react';
-import type { HardwareSummary } from '../../../packages/contracts/src/mu';
+import type { HardwareSummary } from '../../../packages/contracts/src/platform';
 import type { CadProfile, CadResult, StructureAction, StructureCatalog, StructureWorkspace as Workspace } from '../../../packages/contracts/src/structure';
-import { api, bootstrap } from './api';
+import { api, ApiError, bootstrap } from './api';
 import { Dialog } from './Dialog';
 import { LaserPreview } from './LaserPreview';
 const StructurePreview = lazy(() => import('./StructurePreview').then(module => ({default: module.StructurePreview})));
@@ -43,6 +43,7 @@ export function StructureWorkspace({ projectId, active, board, modules, designTy
   const [busy, setBusy] = useState('');
   const busyRef = useRef(false);
   const [error, setError] = useState('');
+  const [errorStatus, setErrorStatus] = useState(0);
   const [picker, setPicker] = useState(false);
   const [pendingIds, setPendingIds] = useState<string[]>([]);
   const [search, setSearch] = useState('');
@@ -65,7 +66,7 @@ export function StructureWorkspace({ projectId, active, board, modules, designTy
     return () => { live = false; };
   }, [active, projectId]);
   useEffect(() => {
-    setWorkspace(empty); setSelectedVersion(null); setSelected([]); setCustomProfiles([]); setError('');
+    setWorkspace(empty); setSelectedVersion(null); setSelected([]); setCustomProfiles([]); setError(''); setErrorStatus(0);
   }, [projectId]);
   useEffect(() => { if (current) { setSelected(current.selectedIds); setCustomProfiles(current.customProfiles); setParams(flatten(current.result)); setFaces({}); setRotations({}); } }, [current]);
   useEffect(() => { if (!busy) return; setElapsed(0); const timer = setInterval(() => setElapsed(n => n + 1), 1000); return () => clearInterval(timer); }, [busy]);
@@ -74,7 +75,7 @@ export function StructureWorkspace({ projectId, active, board, modules, designTy
 
   const act = async (action: StructureAction['action'], message = '', option = '', template?: StructureAction['template']) => {
     if (!projectId || busyRef.current) return;
-    const id = projectId; busyRef.current = true; onBusy(true); setError(''); setBusy(action === 'build' || action === 'parameters' ? '正在检查并构建模型' : action === 'selected' ? '正在生成尺寸草案' : '正在处理结构需求');
+    const id = projectId; busyRef.current = true; onBusy(true); setError(''); setErrorStatus(0); setBusy(action === 'build' || action === 'parameters' ? '正在检查并构建模型' : action === 'selected' ? '正在生成尺寸草案' : '正在处理结构需求');
     try {
       await bootstrap();
       const value = await api<Workspace>(`/projects/${id}/structure`, 'POST', {action, expectedRevision: workspace.revision,
@@ -82,7 +83,7 @@ export function StructureWorkspace({ projectId, active, board, modules, designTy
       if (scope.current !== id) return;
       setWorkspace(value); setSelectedVersion(null); setInput(''); setTab('chat');
       await onSaved(id);
-    } catch (e) { if (scope.current === id) setError(errorText(e)); }
+    } catch (e) { if (scope.current === id) { setError(errorText(e)); setErrorStatus(e instanceof ApiError ? e.status : 0); } }
     finally { busyRef.current = false; setBusy(''); onBusy(false); }
   };
   const selectedProfiles = selected.map(id => catalog?.profiles.find(p => p.id === id) ?? customProfiles.find(p => p.id === id) as unknown as CadProfile).filter(Boolean);
@@ -102,7 +103,7 @@ export function StructureWorkspace({ projectId, active, board, modules, designTy
         <div className="panel-head"><h2><Box size={17} />{laser ? "图纸模板" : "设计与硬件"}</h2><button aria-label="收起结构硬件" onClick={() => setCollapsed(true)}><PanelLeftClose size={17} /></button></div>
         <div className="structure-parts-scroll">{!laser && <div className="structure-project-context"><small>当前工程配置</small><strong>{board?.displayName ?? '未选择主控'}</strong><span>{modules.length} 个模块</span></div>}
           <p className="structure-caption">{laser ? '先描述材料、厚度与轮廓，或从模板开始。' : '可以直接描述无硬件作品；需要安装电路时再加入结构硬件。'}</p>
-          <div className="structure-templates" aria-label={laser ? '激光图纸模板' : '无硬件3D模板'}>{(laser ? [['plate', '矩形挂牌'], ['round-tag', '圆形挂牌'], ['panel-box', '胶合收纳盒板件']] : [['box', '开口收纳盒'], ['cup', '圆柱笔筒'], ['bracket', 'L形支架']]).map(([id, name]) => <button key={id} disabled={!projectId || !!busy} onClick={() => void act('selected', '使用' + name + '模板', '', id as StructureAction['template'])}>{name}<ChevronRight size={14} /></button>)}</div>
+          <div className="structure-templates" aria-label={laser ? '激光图纸模板' : '无硬件3D模板'}>{(laser ? [['plate', '矩形挂牌'], ['round-tag', '圆形挂牌'], ['finger-box', '榫齿盒'], ['panel-box', '胶合收纳盒板件']] : [['box', '开口收纳盒'], ['cup', '圆柱笔筒'], ['bracket', 'L形支架']]).map(([id, name]) => <button key={id} disabled={!projectId || !!busy} onClick={() => void act('selected', '使用' + name + '模板', '', id as StructureAction['template'])}>{name}<ChevronRight size={14} /></button>)}</div>
           {!laser && <>
           {!!matchedIds.length && <button className="structure-text-action" disabled={!!busy} onClick={() => setSelected(v => [...new Set([...v, ...matchedIds])].slice(0, 32))}>加入工程中匹配的硬件 · {matchedIds.length}</button>}
           {catalog && missingParts.length > 0 && <details className="structure-missing"><summary>{missingParts.length} 个工程硬件缺结构资料</summary><p className="structure-caption">{missingParts.map(h => h.displayName).join('、')}。请补充尺寸、安装孔与开孔资料。</p></details>}
@@ -134,7 +135,7 @@ export function StructureWorkspace({ projectId, active, board, modules, designTy
           </section>}
           {busy && <p className="ai-progress" role="status"><LoaderCircle size={16} className="spin" />{busy} · {elapsed} 秒</p>}
         </div>
-        {error && <p className="chat-error" role="alert">{error}<button disabled={!!busy} onClick={() => void api<Workspace>(`/projects/${projectId}/structure`).then(v => {setWorkspace(v); setSelectedVersion(null); setError('');}).catch(e => setError(errorText(e)))}>重新加载记录</button></p>}
+        {error && <p className="chat-error" role="alert">{error}{errorStatus === 409 ? <button disabled={!!busy} onClick={() => void api<Workspace>(`/projects/${projectId}/structure`).then(v => {setWorkspace(v); setSelectedVersion(null); setError('');}).catch(e => setError(errorText(e)))}>重新加载记录</button> : <>{input.trim() && <button disabled={!!busy} onClick={() => void act(current ? 'revise' : 'analyze', input)}>重试当前需求</button>}{errorStatus === 502 && <button disabled={!!busy} onClick={onSettings}>API 设置</button>}</>}</p>}
         <form className="chat-form" onSubmit={e => {e.preventDefault(); void act(current ? 'revise' : 'analyze', input);}}><label className="sr-only" htmlFor="structure-message">发送给结构设计师</label><textarea id="structure-message" placeholder={laser ? "描述材料、厚度、图案轮廓与毫米尺寸…" : "描述3D作品与毫米尺寸，或说明希望修改的地方…"} value={input} maxLength={4000} disabled={!projectId || !!busy} onChange={e => setInput(e.target.value)} onKeyDown={e => {if ((e.ctrlKey || e.metaKey) && e.key === 'Enter' && !e.nativeEvent.isComposing && input.trim()) {e.preventDefault(); void act(current ? 'revise' : 'analyze', input);}}} /><div><span>{laser ? "独立激光对话 → 确认尺寸 → 导出图纸" : "独立3D对话 → 确认尺寸 → 生成模型"}</span><button className="primary icon-button" aria-label="发送结构需求" disabled={!projectId || !input.trim() || !!busy}>{busy ? <LoaderCircle size={19} className="spin" /> : <ArrowUp size={20} />}</button></div></form>
       </section>
       <section className={`panel structure-model structure-mobile-${tab === 'model' ? 'show' : 'hide'}`}>

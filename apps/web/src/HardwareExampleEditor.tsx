@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import type { HardwareDetail, HardwareSummary, SaveHardwareExample } from '../../../packages/contracts/src/mu';
+import type { HardwareDetail, HardwareSummary, SaveHardwareExample } from '../../../packages/contracts/src/platform';
 import { api } from './api';
 import { guideCode, guideKind, guideLabels, guideValues, renderGuideText } from './moduleExamples';
 
@@ -8,6 +8,7 @@ export function HardwareExampleEditor({ detail, board, boards, startEditing, onS
 }) {
   const saved = detail.localExamples?.find(item => item.boardId === board?.componentId);
   const guide = detail.moduleGuides?.find(item => item.boardId === board?.componentId);
+  const otherExamples = detail.localExamples?.filter(item => item.boardId !== board?.componentId) ?? [];
   const initialSetup = guide ? guideValues(guide, saved?.setup) : {};
   const [editing, setEditing] = useState(startEditing);
   const [notes, setNotes] = useState(saved?.notes ?? '');
@@ -43,6 +44,7 @@ export function HardwareExampleEditor({ detail, board, boards, startEditing, onS
   return <section className="sensor-section module-example" aria-label="我的模块案例">
     <div className="module-example-head"><h3>接线与案例</h3><button type="button" disabled={!board || saving} onClick={() => setEditing(value => !value)}>{editing ? '收起编辑' : '编辑案例'}</button></div>
     <p className="muted">当前编辑主控：{board?.displayName ?? '请先选择主控'}{saved ? ' · 已有本机案例' : guide ? ' · 内置参考可用' : ' · 尚无本机案例'}</p>
+    <p className="muted" aria-label="案例来源">{saved ? '案例来源：当前主控的本机保存版本（优先用于对话）。' : guide ? '案例来源：当前主控的内置参考。' : '当前主控暂无可用案例。'}{otherExamples.length > 0 && ` 其他主控已有本机案例：${otherExamples.map(item => boards.find(b => b.componentId === item.boardId)?.displayName ?? item.boardId).join('、')}；代码与接线按主控分别保存。`}</p>
     {editing && <>
       <fieldset className="module-supported-boards" disabled={saving} aria-describedby="module-support-help">
         <legend>支持的主控（可多选）</legend>

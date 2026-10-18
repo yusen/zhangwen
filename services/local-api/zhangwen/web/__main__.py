@@ -1,4 +1,4 @@
-"""python -m zhangwen.mu_web — one loopback instance, build/run separated."""
+"""python -m zhangwen.web — one loopback instance, build/run separated."""
 from __future__ import annotations
 
 import argparse
@@ -16,7 +16,8 @@ from pathlib import Path
 
 import uvicorn
 
-from zhangwen.mu_web.app import ROOT, create_app
+from zhangwen.web.app import ROOT, create_app
+from .legacy_names import previous_service_lock
 
 
 def bind_available_port(preferred: int) -> socket.socket:
@@ -54,9 +55,9 @@ def main() -> None:
         parser.error("端口须为 1024–65535")
     data_dir = Path(os.environ.get("ZHANGWEN_DATA_DIR", ROOT / ".data")).resolve()
     data_dir.mkdir(parents=True, exist_ok=True)
-    lock_path = data_dir / ".mu-web.lock"
-    address_path = data_dir / ".mu-web-address.json"
-    with lock_path.open("a+b") as lock:
+    lock_path = data_dir / ".zhangwen-web.lock"
+    address_path = data_dir / ".zhangwen-web-address.json"
+    with previous_service_lock(data_dir, args.no_open), lock_path.open("a+b") as lock:
         lock.seek(0, 2)
         if lock.tell() == 0:
             lock.write(b"0")
@@ -115,7 +116,7 @@ def main() -> None:
                         except OSError:
                             time.sleep(0.1)
                 threading.Thread(target=open_when_ready, daemon=True).start()
-            print(f"\n掌问 Mu Web → {url}\n数据目录：{data_dir}\n按 Ctrl+C 停止服务。\n", flush=True)
+            print(f"\n掌问本地 Web → {url}\n数据目录：{data_dir}\n按 Ctrl+C 停止服务。\n", flush=True)
             try:
                 uvicorn.Server(uvicorn.Config(app, host="127.0.0.1", port=port, log_level="warning", access_log=False)).run(sockets=[listener])
             finally:

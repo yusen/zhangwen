@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { Download, FileCode2, Folder, LoaderCircle, RefreshCw } from 'lucide-react';
-import type { DeviceFile, DeviceFileContent, HardwareSummary, ProgramRunSubmission, UploadReceipt, Version } from '../../../packages/contracts/src/mu';
+import type { DeviceFile, DeviceFileContent, HardwareSummary, ProgramRunSubmission, UploadReceipt, Version } from '../../../packages/contracts/src/platform';
 import type { MicroPythonDevice } from './serial';
 import { Dialog } from './Dialog';
 import { ProjectPrograms } from './ProjectProgramsPanel';

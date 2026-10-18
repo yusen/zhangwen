@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState, type KeyboardEvent } from 'react';
 import { ArrowUp, BookOpen, Check, ChevronRight, Download, FilePenLine, FileText, GraduationCap, Image, Layers3, LayoutTemplate, Lightbulb, Link2, Maximize, Minimize, NotebookPen, PanelLeftClose, PanelLeftOpen, Settings2, Sparkles, Target, UploadCloud, UserRound } from 'lucide-react';
-import type { HardwareSummary, Project } from '../../../packages/contracts/src/mu';
+import type { HardwareSummary, Project } from '../../../packages/contracts/src/platform';
 import { Dialog } from './Dialog';
 import { goals, pending, stages, type LearningRole, type Material, type CompetitionPage } from './LearningMaterials';
 import { learningTemplates, LearningMaterialPreview, templateIcons } from './LearningTemplates';
@@ -58,7 +58,7 @@ export function LearningWorkspace({active, projectName, project, board, modules,
   useEffect(() => { if (!active) {setDialog(null); setTemplateDraft(null); setFullscreen(false);} }, [active]);
   useEffect(() => {
     if (!active || !fullscreen) return;
-    const outside=Array.from(document.querySelectorAll<HTMLElement>('.workspace-titlebar, .mu-toolbar, .learning-conditions, .learning-restore, .learning-chat, .statusbar')).map(node=>({node, inert:node.inert}));
+    const outside=Array.from(document.querySelectorAll<HTMLElement>('.workspace-titlebar, .zhangwen-toolbar, .learning-conditions, .learning-restore, .learning-chat, .statusbar')).map(node=>({node, inert:node.inert}));
     outside.forEach(({node})=>{node.inert=true;});
     const close = (e: globalThis.KeyboardEvent) => {if (e.key === 'Escape' && !document.querySelector('dialog[open]')) setFullscreen(false);};
     window.addEventListener('keydown', close);

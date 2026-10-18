@@ -44,9 +44,9 @@ jobs:
           import trimesh
           from pathlib import Path
           from fastapi.testclient import TestClient
-          from zhangwen.mu_web.app import create_app
-          from zhangwen.mu_web.__main__ import bind_available_port
-          from zhangwen.mu_web.firmware import PROFILES, firmware_image, firmware_profile
+          from zhangwen.web.app import create_app
+          from zhangwen.web.__main__ import bind_available_port
+          from zhangwen.web.firmware import PROFILES, firmware_image, firmware_profile
           import socket
           with socket.socket() as occupied:
               occupied.bind(('127.0.0.1', 0))
@@ -65,7 +65,7 @@ jobs:
                   assert len(client.get('/api/structure/catalog').json()['profiles']) == 32
                   assert abs(cq.Workplane('XY').box(5, 6, 7).val().Volume() - 210) < 0.01
                   token = client.get('/api/session').json()['token']
-                  client.headers.update({'origin': 'http://127.0.0.1:3080', 'x-mu-session': token})
+                  client.headers.update({'origin': 'http://127.0.0.1:3080', 'x-zhangwen-session': token})
                   for board in PROFILES:
                       image = firmware_profile(board)['image']
                       assert hashlib.sha256(firmware_image(board).read_bytes()).hexdigest() == image['sha256']
@@ -135,7 +135,7 @@ jobs:
                   while True:
                       assert process.poll() is None, (temporary / 'startup-repair.log').read_text()
                       try:
-                          address = json.loads((root / 'data/.mu-web-address.json').read_text())
+                          address = json.loads((root / 'data/.zhangwen-web-address.json').read_text())
                           with opener.open(f'http://127.0.0.1:{address["port"]}/api/health', timeout=1) as response:
                               assert json.load(response)['instanceId'] == address['instanceId']
                           break
