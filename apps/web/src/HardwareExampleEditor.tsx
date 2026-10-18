@@ -37,7 +37,7 @@ export function HardwareExampleEditor({ detail, board, boards, startEditing, onS
       const value = await api<HardwareDetail>(`/hardware/${detail.skillName}/example`, 'PUT', {
         boardId: board.componentId, notes, code, ...(guide ? { setup } : {}), supportedBoardIds, expectedRevision: detail.revision,
       } satisfies SaveHardwareExample);
-      onSaved(value); setStatus('已保存，下次对话会自动参考；尚未验证或上传到设备。');
+      onSaved(value); setStatus('已保存，下次对话会自动参考；本次未上传或运行。');
     } catch (err) { setError(err instanceof Error ? err.message : String(err)); }
     finally { setSaving(false); }
   };

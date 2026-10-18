@@ -8,7 +8,7 @@ from datetime import datetime
 
 from fastapi import HTTPException
 from .design_specs import DesignSpec, template_spec, propose, solid_code, svg, dxf
-from . import laser_text
+from . import laser_text, laser_rounded_box
 
 
 def solid_bounds(spec, scale):
@@ -43,13 +43,18 @@ async def act(request, previous, settings, job_root, conversation=None):
             if template == 'finger-box':
                 params['material'] = (previous['designSpec'].get('fingerBox') or {}).get('material', '待确认材料')
                 params['panelTexts'] = previous['designSpec'].get('panelTexts', [])
-            spec = template_spec(template, params) if template else DesignSpec.model_validate(previous['designSpec'])
+            if template == 'rounded-box':
+                params['material'] = (previous['designSpec'].get('roundedBox') or {}).get('material', '待确认材料')
+            spec = DesignSpec.model_validate(previous['designSpec']) if request.action == 'validate' or not template else template_spec(template, params)
         else:
             raise HTTPException(422, '请先输入需求或选择设计模板。')
         spec.check_kind(request.designType)
         if spec.fingerBox and not spec.questions:
             template = 'finger-box'
             params = {key: getattr(spec.fingerBox, key) for key in ['width', 'depth', 'height', 'thickness']}
+        if spec.roundedBox and not spec.questions:
+            template = 'rounded-box'
+            params = {key: float(getattr(spec.roundedBox, key)) for key in laser_rounded_box.DEFAULTS}
     except ValueError as exc:
         raise HTTPException(422, str(exc)) from exc
     result = {'designKind': kind, 'designSpec': spec.model_dump(mode='json'), 'designTemplate': template,
@@ -57,7 +62,10 @@ async def act(request, previous, settings, job_root, conversation=None):
               'requestText': request.message or previous.get('requestText', ''), 'exports': [], 'checks': []}
     if spec.questions:
         return {**result, 'status': 'needs_input', 'blocking_reason': 'llm_unavailable' if spec.title == '需要配置模型' else 'design_questions'}
-    if template:
+    if template == 'rounded-box':
+        result['parameters'] = {'design': params}
+        result['parameters']['design'].pop('material', None)
+    elif template:
         keys = {'cup': {'width', 'height', 'thickness'}, 'plate': {'width', 'depth', 'thickness'}, 'round-tag': {'width', 'thickness'}}.get(template, {'width', 'depth', 'height', 'thickness'})
         result['parameters'] = {'design': {key: params.get(key, default) for key, default in [('width', 80), ('depth', 60), ('height', 40), ('thickness', 3)] if key in keys}}
     else:
@@ -83,6 +91,12 @@ async def act(request, previous, settings, job_root, conversation=None):
                             {'id': 'fabrication', 'status': 'warning', 'message': '名义尺寸，未补偿刀缝；材料、孔间距、交叉路径与装配需加工前复核。'}]
         if spec.fingerBox:
             result['checks'].insert(1, {'id': 'joinery', 'status': 'pass', 'message': '六块板按同一边长分段生成交替互补榫齿，三面角部统一分配；改变尺寸或板厚会重新生成轮廓。'})
+        if spec.roundedBox:
+            result['checks'].insert(1, {'id':'living-hinge',
+                'status':'pass' if spec.roundedBox.pattern_version == 2 else 'warning',
+                'message':'圆角盖板榫与围板凹槽同源生成；四个弯折区按中性层弧长展开，切缝交错接到上下边缘，保留中间连接桥。'
+                    if spec.roundedBox.pattern_version == 2 else '旧版切缝未接通上下边缘；应用参数重新生成可保留历史并创建修正版。'})
+            result['checks'].append({'id':'bend-material','status':'warning','message':'切缝为切穿线段；仅适用于经试切可弯折的材料，不能保证普通亚克力或任意木板可弯折。围板中间接缝需胶合，实际装配、桥宽与刀缝须试切确认。'})
         if result['laserTextPaths']:
             result['checks'].append({'id':'text', 'status':'pass', 'message':'文字已使用随包中文字体转为矢量轮廓，SVG填充雕刻区域、DXF为ENGRAVE层闭合轮廓；加工填充方式需在加工软件中选择。'})
     else:

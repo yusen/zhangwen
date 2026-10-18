@@ -517,6 +517,12 @@ dialog::backdrop { background: #0b182d70; backdrop-filter: blur(3px); }
 .selected-sensor-list .module-row .module-visual svg { width: 22px; height: 22px; }
 .selected-sensor-list .module-row .module-name { display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; font-size: 12px; line-height: 1.5; }
 .module-options-toggle { padding: 0; width: 26px; min-width: 26px; min-height: 44px; justify-content: center; }
+.module-verification-status { color: var(--ink-3); font-size: 11px; line-height: 1.5; overflow-wrap: anywhere; }
+.module-verification-status.is-verified { color: var(--code-keyword); }
+.selected-sensor-list .module-verification-status { grid-column: 1 / -1; justify-content: flex-start; min-height: 28px; padding: 3px 7px 6px; text-align: left; }
+.sensor-picker-list .module-verification-status { display: block; grid-column: 2 / -1; }
+.module-verification-summary { color: var(--ink-1); line-height: 1.6; }
+.module-verification .module-supported-boards label { display: flex; align-items: center; gap: 8px; min-height: 44px; padding: 6px 10px; border: 1px solid var(--border); border-radius: 7px; cursor: pointer; }
 .module-context-menu { position: fixed; z-index: 70; display: grid; min-width: 168px; max-width: calc(100vw - 16px); max-height: calc(100dvh - 16px); overflow-y: auto; padding: 5px; background: var(--raised); color: var(--ink-1); border: 1px solid var(--border2); border-radius: 8px; box-shadow: 0 6px 24px #00000028; }
 .module-context-menu button { justify-content: flex-start; gap: 10px; min-height: 44px; width: 100%; padding: 8px 12px; border-radius: 5px; font-size: 13px; color: var(--ink-2); }
 .module-context-menu button.danger { color: var(--dng); }

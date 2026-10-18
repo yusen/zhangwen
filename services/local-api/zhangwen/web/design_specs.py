@@ -14,7 +14,7 @@ from pydantic import BaseModel, ConfigDict, Field, ValidationError, model_valida
 
 from .endpoints import configured, is_deepseek
 from .diagnostics import status_detail
-from . import laser_joinery, laser_text
+from . import laser_joinery, laser_text, laser_rounded_box
 
 
 class Strict(BaseModel):
@@ -41,14 +41,14 @@ class SolidPart(Strict):
 
 
 class LaserShape(Strict):
-    kind: Literal['rect', 'circle', 'polyline', 'text']
+    kind: Literal['rect', 'circle', 'polyline', 'line', 'text']
     operation: Literal['cut', 'engrave'] = 'cut'
     x: float = 0
     y: float = 0
     width: float = Field(default=1, gt=0, le=1000)
     height: float = Field(default=1, gt=0, le=1000)
     radius: float = Field(default=1, gt=0, le=500)
-    points: list[list[float]] = Field(default_factory=list, max_length=120)
+    points: list[list[float]] = Field(default_factory=list, max_length=256)
     closed: bool = True
     text: str = Field(default='', max_length=40)
     fontSize: float = Field(default=10, ge=1, le=150, description='文字实际轮廓高度，毫米')
@@ -63,6 +63,8 @@ class LaserShape(Strict):
             return self.x, self.y, self.x + self.width, self.y + self.height
         if self.kind == 'circle':
             return self.x - self.radius, self.y - self.radius, self.x + self.radius, self.y + self.radius
+        if self.kind == 'line' and (self.closed or len(self.points) != 2 or self.points[0] == self.points[1]):
+            raise ValueError('切缝线段需要两个不同端点，并明确closed=false。')
         if len(self.points) < (3 if self.closed else 2) or any(len(point) != 2 or not all(math.isfinite(x) for x in point) for point in self.points):
             raise ValueError('折线至少需要两个点，闭合轮廓至少三个点。')
         return min(p[0] for p in self.points), min(p[1] for p in self.points), max(p[0] for p in self.points), max(p[1] for p in self.points)
@@ -74,7 +76,7 @@ class Drawing(Strict):
     thickness: float = Field(default=3, gt=0, le=30)
     material: str = Field(default='待确认材料', min_length=1, max_length=80)
     kerf: float = Field(default=0, ge=0, le=1)
-    shapes: list[LaserShape] = Field(min_length=1, max_length=160)
+    shapes: list[LaserShape] = Field(min_length=1, max_length=512)
 
     @model_validator(mode='after')
     def bounds(self):
@@ -102,6 +104,18 @@ class FingerBox(Strict):
     material: str = Field(default='待确认材料', min_length=1, max_length=80)
 
 
+class RoundedBox(FingerBox):
+    # Missing in old checkpoints: retain their original canonical paths.
+    pattern_version: Literal[1, 2] = 1
+    corner_radius: float = Field(default=12, gt=0, le=200, description='外圆角半径，毫米')
+    tab_width: float = Field(default=5, gt=0, le=100, description='目标榫宽，平台对称分段后实际宽度可能略有调整')
+    slot_spacing: float = Field(default=1.2, ge=.6, le=8)
+    slot_bridge: float = Field(default=2, ge=.8, le=8)
+    slot_rows: int = Field(default=2, ge=1, le=6)
+    top_lid: bool = True
+    bottom_lid: bool = True
+
+
 class PanelText(Strict):
     panel: Literal['left', 'right', 'front', 'back', 'bottom', 'top']
     x: float = Field(ge=0, le=1000)
@@ -117,10 +131,18 @@ class DesignSpec(Strict):
     solid: list[SolidPart] = Field(default_factory=list, max_length=32)
     drawing: Drawing | None = None
     fingerBox: FingerBox | None = None
+    roundedBox: RoundedBox | None = None
     panelTexts: list[PanelText] = Field(default_factory=list, max_length=16)
 
     @model_validator(mode='after')
     def joinery(self):
+        if self.roundedBox:
+            if self.fingerBox or self.panelTexts:
+                raise ValueError('圆角盒与六面榫齿盒不能混用；圆角盒文字雕刻另行设计。')
+            canonical = Drawing.model_validate(laser_rounded_box.drawing(**self.roundedBox.model_dump()))
+            if self.drawing and self.drawing != canonical:
+                raise ValueError('roundedBox由平台生成盖板、围板与弯折切缝，drawing应省略，不能附加不同路径。')
+            self.drawing = canonical
         if self.fingerBox:
             data = laser_joinery.drawing(**self.fingerBox.model_dump())
             faces = laser_joinery.panels(self.fingerBox.width, self.fingerBox.depth, self.fingerBox.height, self.fingerBox.thickness)
@@ -150,12 +172,21 @@ class DesignSpec(Strict):
         if design_type == 'laser':
             if not self.drawing or self.solid:
                 raise ValueError('激光图纸需要平面路径，不接受实体代码。')
-        elif not self.solid or self.solid[0].operation != 'add' or self.drawing or self.fingerBox:
+        elif not self.solid or self.solid[0].operation != 'add' or self.drawing or self.fingerBox or self.roundedBox:
             raise ValueError('3D模型需要从一个实体开始，不接受图纸或可执行代码。')
         return self
 
 
 def template_spec(template, params):
+    if template == 'rounded-box':
+        options = {key:params.get(key, default) for key,default in laser_rounded_box.DEFAULTS.items()}
+        if any(options[key] not in (0,1) for key in ['top_lid','bottom_lid']):
+            raise ValueError('顶盖、底盖选项须为0或1。')
+        options['material'] = params.get('material', '待确认材料')
+        options['pattern_version'] = 2
+        return DesignSpec(title=f'{options["width"]:g}×{options["depth"]:g}×{options["height"]:g}mm 圆角盒',
+            summary='圆角盖板与连续围板，四角切缝交错接到上下边缘，中间保留连接桥，盖板榫与围板凹槽配对；尺寸为外尺寸，围板按中性层展开。接缝需胶合，材料弯折与榫接须先试切；未补偿刀缝。',
+            roundedBox=RoundedBox.model_validate(options))
     width, depth, height = (params.get(k, default) for k, default in [('width', 80), ('depth', 60), ('height', 40)])
     thickness = params.get('thickness', 3)
     if min(width, depth, height) <= thickness * 2 or not .8 <= thickness <= 30:
@@ -216,14 +247,17 @@ def design_instructions(design_type):
         '保留未要求修改的内容，不要重新引入历史中已替换的方案。pendingQuestions可用于理解本次回答。'
         + ('本次只做激光平面图纸：solid=[]，drawing包含完整图纸。rect的x/y为左上角，circle为圆心，'
            'polyline用points二维坐标，不要给不适用字段填null；不需要的字段可省略。'
-           '全部路径必须在画布0..width/height内，最多160项，每条折线最多120点，画布最大1000mm。'
-           '切割折线必须闭合，不得重复；kerf只能为0，不自动补偿刀缝或设置加工功率。'
+           '全部路径必须在画布0..width/height内，最多512项，每条折线最多256点，画布最大1000mm。'
+           '切割折线必须闭合，不得重复；有意的单段弯折切缝可用kind=line、points两个不同端点、closed=false、operation=cut。'
+           'kerf只能为0，不自动补偿刀缝或设置加工功率。'
            '文字雕刻支持常用中英文：shapes中kind=text、operation=engrave、text文字、fontSize实际字高mm、x/y为文字轮廓左上角。'
            '平台用随包字体转真实矢量轮廓，最多40字/项，不支持换行或切穿文字；不要用矩形代替文字。'
            '按名义尺寸输出；若请求含目前不支持的曲线等，先用questions确认可接受的替代方案。'
            '矩形六面榫卯盒/榫齿盒必须使用fingerBox，只返回width/depth/height外尺寸、thickness实际板厚和material，'
            'drawing省略或null，平台生成六块互补的闭合榫齿轮廓。每个外尺寸至少为板厚6倍。'
            '例如50毫米立方盒用fingerBox:{"width":50,"depth":50,"height":50,"thickness":3}。'
+           '圆角弯折盒改用roundedBox:{width:50,depth:50,height:50,thickness:3,corner_radius:12,tab_width:5,slot_spacing:1.2,slot_bridge:2,slot_rows:2,top_lid:true,bottom_lid:true}；'
+           'drawing省略，由平台确定性生成两圆角盖板与四个弯折区的连续围板，不用普通六面盒代替。宽深是外尺寸，板厚0.8至12、圆角至少2倍板厚，直边至少5倍板厚。'
            '榫齿盒文字用顶层panelTexts:[{panel:front,x:6,y:10,text:掌问,fontSize:10}]；panel选left/right/front/back/bottom/top。'
            '坐标相对该面板左上角，文字须完全处于四边各扣除一倍板厚后的矩形内，drawing仍省略。'
            '不得用六个矩形或圆孔假称榫卯；不支持的开盖方式、额外孔、非矩形榫卯先用questions确认。'
@@ -238,7 +272,7 @@ def design_instructions(design_type):
 
 def design_validation_detail(exc):
     if isinstance(exc, ValidationError):
-        fields = set(DesignSpec.model_fields) | set(SolidPart.model_fields) | set(Drawing.model_fields) | set(LaserShape.model_fields) | set(FingerBox.model_fields) | set(PanelText.model_fields)
+        fields = set(DesignSpec.model_fields) | set(SolidPart.model_fields) | set(Drawing.model_fields) | set(LaserShape.model_fields) | set(FingerBox.model_fields) | set(RoundedBox.model_fields) | set(PanelText.model_fields)
         errors = []
         for item in exc.errors(include_url=False, include_input=False)[:3]:
             path = '.'.join(str(n) if isinstance(n, int) else n if n in fields else '未知字段' for n in item['loc'])
@@ -258,10 +292,14 @@ def parse_design_reply(choice, design_type):
         header, separator, body = content.partition('\n')
         if separator and header.strip().lower() in {'```', '```json'}:
             content = body[:-3].strip()
-    spec = DesignSpec.model_validate_json(content).check_kind(design_type)
+    data = json.loads(content)
+    if isinstance(data, dict) and isinstance(data.get('roundedBox'), dict):
+        # Only new model replies are upgraded; saved checkpoints validate as-is.
+        data['roundedBox']['pattern_version'] = 2
+    spec = DesignSpec.model_validate(data).check_kind(design_type)
     # New responses must not repeat the old false label. Historical specs remain
     # readable: this semantic guard applies only at the model reply boundary.
-    if (design_type == 'laser' and not spec.questions and not spec.fingerBox
+    if (design_type == 'laser' and not spec.questions and not spec.fingerBox and not spec.roundedBox
         and re.search(r'榫|指接|finger|tenon', spec.title, re.I) and re.search(r'盒|箱|box', spec.title, re.I)):
         raise ValueError('榫卯盒请返回fingerBox尺寸与板厚，由平台生成互补榫齿，不能只把普通板件命名为榫卯。')
     return spec
@@ -350,6 +388,9 @@ def svg(drawing: Drawing, preview=False):
             elements.append(f'<path d="{laser_text.svg_path(shape)}" fill="{color}" fill-rule="evenodd" stroke="none" data-operation="engrave"/>')
         elif shape.kind == 'circle':
             elements.append(f'<circle cx="{shape.x}" cy="{shape.y}" r="{shape.radius}" {attrs}/>')
+        elif shape.kind == 'line':
+            (x1,y1),(x2,y2) = shape.points
+            elements.append(f'<line x1="{x1}" y1="{y1}" x2="{x2}" y2="{y2}" {attrs}/>')
         else:
             points = ' '.join(f'{x},{y}' for x, y in shape.points)
             tag = 'polygon' if shape.closed else 'polyline'
@@ -372,7 +413,10 @@ def dxf(drawing: Drawing):
                 for x,y in contour:
                     out += ['10', str(x), '20', str(round(drawing.height-y,6))]
             continue
-        if shape.kind == 'circle':
+        if shape.kind == 'line':
+            (x1,y1),(x2,y2) = shape.points
+            out += ['0','LINE','100','AcDbEntity','8',layer,'100','AcDbLine','10',str(x1),'20',str(drawing.height-y1),'30','0','11',str(x2),'21',str(drawing.height-y2),'31','0']
+        elif shape.kind == 'circle':
             out += ['0', 'CIRCLE', '100', 'AcDbEntity', '8', layer, '100', 'AcDbCircle', '10', str(shape.x), '20', str(drawing.height - shape.y), '30', '0', '40', str(shape.radius)]
         else:
             points = shape.points if shape.kind == 'polyline' else [[shape.x, shape.y], [shape.x + shape.width, shape.y], [shape.x + shape.width, shape.y + shape.height], [shape.x, shape.y + shape.height]]

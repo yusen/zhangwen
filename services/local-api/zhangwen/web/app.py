@@ -24,7 +24,7 @@ from fastapi.staticfiles import StaticFiles
 
 from zhangwen.hardware.hardware_skills import HardwareSkillNotFoundError, HardwareSkillValidationError, HardwareSkillConflictError
 from zhangwen.llm.contracts import ChatMessageStatus
-from zhangwen.web.models import DEFAULT_AI_MODEL, AiSettingsInput, ChatInput, CodeInput, CreateInput, ManifestInput, SaveInput, HardwareExampleInput, current_ai_model
+from zhangwen.web.models import DEFAULT_AI_MODEL, AiSettingsInput, ChatInput, CodeInput, CreateInput, ManifestInput, SaveInput, HardwareExampleInput, HardwareVerificationInput, current_ai_model
 from zhangwen.web.repository import WebRepository
 from zhangwen.web.diagnostics import diagnose_ai
 from zhangwen.web.endpoints import DEFAULT_BASE_URL, configured, is_deepseek, resolve_settings
@@ -319,6 +319,10 @@ def create_app(data_dir: Path | None = None, *, port: int = 3080, dev: bool = Fa
     def save_example(skill_name: str, request: HardwareExampleInput):
         return repo.skills.web_detail(repo.skills.save_example(skill_name, request))
 
+    @app.put('/api/hardware/{skill_name}/verification')
+    def save_verification(skill_name: str, request: HardwareVerificationInput):
+        return repo.skills.web_detail(repo.skills.save_verification(skill_name, request))
+
     @app.get("/api/firmware/{board_id}")
     def firmware(board_id: str):
         from .firmware import PROFILES, firmware_profile
@@ -371,6 +375,16 @@ def create_app(data_dir: Path | None = None, *, port: int = 3080, dev: bool = Fa
     @app.post("/api/check")
     def check(request: CodeInput):
         return repo.check(request)
+
+    @app.post('/api/code/repair-k10-screen')
+    def repair_screen(request: CodeInput):
+        from .programming import repair_k10_screen
+        try:
+            code = repair_k10_screen(request.code, request.boardId)
+        except (SyntaxError, ValueError) as exc:
+            raise HTTPException(422, str(exc)) from exc
+        checked = repo.check(request.model_copy(update={'code':code}))
+        return {'code':code,'check':checked,'summary':'已按K10官方接口修复文字绘制，加入一次初始化与提交显示。原代码、测距逻辑与历史保留；请审阅保存后上传，尚未实机验证。'}
 
     @app.post("/api/projects/{project_id}/upload-manifest")
     def manifest(project_id: str, request: ManifestInput):

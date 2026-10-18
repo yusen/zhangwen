@@ -1,8 +1,8 @@
-import type { AiDiagnosticEvent, AiDiagnosticReport, ChatEvent, ChatInput, ChatMessage, SaveAiSettings } from '../../../packages/contracts/src/platform';
+import type { AiDiagnosticEvent, AiDiagnosticReport, ChatEvent, ChatInput, ChatMessage, SaveAiSettings, CheckResult } from '../../../packages/contracts/src/platform';
 
 let token = '';
 export class ApiError extends Error {
-  constructor(readonly status: number, detail: string) { super(detail); this.name = 'ApiError'; }
+  constructor(readonly status: number, detail: string, readonly check?: CheckResult) { super(detail); this.name = 'ApiError'; }
 }
 export async function bootstrap(signal?: AbortSignal): Promise<{ aiConfigured: boolean; aiModel: string; aiBaseUrl?: string }> {
   const response = await fetch('/api/session', { signal });
@@ -19,6 +19,10 @@ export async function api<T>(path: string, method = 'GET', body?: unknown): Prom
   const result: unknown = await response.json();
   if (!response.ok) {
     const detail = (result as { detail?: unknown }).detail;
+    if (detail && typeof detail === 'object' && 'message' in detail && typeof detail.message === 'string') {
+      const check = 'check' in detail ? detail.check as CheckResult : undefined;
+      throw new ApiError(response.status, detail.message, check);
+    }
     throw new ApiError(response.status, typeof detail === 'string' ? detail : `请求失败（${response.status}），请核对输入和服务端状态。`);
   }
   return result as T;

@@ -3,6 +3,7 @@ import { ArrowDownToLine, ArrowUpFromLine, BookOpen, Check, CircuitBoard, Cog, M
 import type { HardwareSummary } from '../../../packages/contracts/src/platform';
 import { moduleBrand, moduleDirection, moduleType } from './hardwareLibrary';
 import { FloatingMenu } from './FloatingMenu';
+import { verifiedBoardNames } from './HardwareVerification';
 
 function ModuleVisual({ item }: { item: HardwareSummary }) {
   const [failed, setFailed] = useState(false);
@@ -13,8 +14,9 @@ function ModuleVisual({ item }: { item: HardwareSummary }) {
     : <Icon size={48} strokeWidth={1.5} aria-hidden="true" />}</span>;
 }
 
-export function ModuleCard({ item, checked, added, disabled, outside, onToggle, onDetail, onEditExample, onRemove, onLoad }: {
+export function ModuleCard({ item, boards, checked, added, disabled, outside, onToggle, onDetail, onEditExample, onRemove, onLoad }: {
   item: HardwareSummary; checked?: boolean; added?: boolean; disabled?: boolean; outside?: boolean;
+  boards: HardwareSummary[];
   onToggle?: (checked: boolean) => void; onDetail: () => void; onRemove?: () => void; onLoad?: () => void;
   onEditExample?: () => void;
 }) {
@@ -22,6 +24,8 @@ export function ModuleCard({ item, checked, added, disabled, outside, onToggle, 
   const options = useRef<HTMLButtonElement>(null);
   const menuId = useId();
   const direction = moduleDirection(item);
+  const verified = verifiedBoardNames(item, boards);
+  const verificationText = verified ? `已核实：${verified}` : '主控待核实';
   const DirectionIcon = direction === 'input' ? ArrowDownToLine : ArrowUpFromLine;
   const content = <><ModuleVisual item={item} /><strong className="module-name" title={item.displayName}>{item.displayName}</strong>
     <span className="module-brand">{moduleBrand(item)}{item.catalog?.programmingSupport === 'reference' && <small className="module-reference-status" title="编程参考资料，尚待硬件联调"> · 待联调</small>}</span>
@@ -31,6 +35,7 @@ export function ModuleCard({ item, checked, added, disabled, outside, onToggle, 
     return <article className="hardware-card module-card selected module-row" onContextMenu={event => { event.preventDefault(); if (!disabled) setExpanded(true); }}>
       <button className="module-open" aria-label={`资料：${item.displayName}`} title={item.displayName} onClick={onDetail}><ModuleVisual item={item} /><strong className="module-name">{shortName}</strong></button>
       <button ref={options} className="module-options-toggle" aria-label={`模块选项：${item.displayName}`} aria-expanded={expanded} aria-haspopup="menu" aria-controls={expanded ? menuId : undefined} disabled={disabled} onClick={() => setExpanded(value => !value)} onKeyDown={event => { if (event.key === 'ArrowDown') { event.preventDefault(); setExpanded(true); } }}><MoreVertical size={16} /></button>
+      <button className={`module-verification-status${verified ? ' is-verified' : ''}`} type="button" disabled={disabled} aria-label={`核实状态：${item.displayName}`} title={`${verificationText}；点击修改`} onClick={onDetail}>{verificationText}</button>
       {outside && <small className="module-warning">资料需核对</small>}
       {expanded && options.current && <FloatingMenu id={menuId} label={`${item.displayName}的操作`} anchor={options.current} onClose={restore => { setExpanded(false); if (restore) options.current?.focus({ preventScroll: true }); }} items={[
         { label: '查看资料', icon: BookOpen, action: onDetail },
@@ -44,6 +49,7 @@ export function ModuleCard({ item, checked, added, disabled, outside, onToggle, 
     <label className="module-select">
       <input type="checkbox" aria-label={`选择${item.displayName}`} checked={checked} disabled={disabled} onChange={event => onToggle(event.target.checked)} />
       {content}
+      <span className={`module-verification-status${verified ? ' is-verified' : ''}`} title={verificationText}>{verificationText}</span>
     </label>
     {outside && <small className="module-warning">资料需核对</small>}
     <div className="module-actions">

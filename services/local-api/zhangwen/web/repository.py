@@ -28,6 +28,7 @@ from zhangwen.web.hardware import WebHardwareRepository
 from zhangwen.web.replies import reply_code
 from zhangwen.web.version_names import code_name
 from .legacy_names import migrate_tables, workspace_message, artifact_id, AI_SOURCES
+from .programming import programming_diagnostics
 
 
 def checksum(code: str) -> str:
@@ -256,7 +257,8 @@ class WebRepository:
             diagnostics.append({"severity": "FAIL", "message": str(exc), "line": getattr(exc, "lineno", None)})
         rules = self.skills.validate_component_ids([request.boardId, *request.componentIds])
         diagnostics.extend({"severity": item.severity.value, "message": item.message + " " + item.details} for item in rules.checks)
-        diagnostics.append({"severity": "WARNING", "message": "检查不覆盖 MicroPython 专用 API、实际接线、引脚占用或实物行为，请核对硬件资料。"})
+        diagnostics.extend(programming_diagnostics(request.code, request.boardId))
+        diagnostics.append({"severity": "WARNING", "message": "静态检查仅覆盖语法与部分已知 API 错误，不能验证设备固件、实际接线、引脚占用或实物行为。"})
         return {"valid": not any(item["severity"] == "FAIL" for item in diagnostics), "checksum": checksum(request.code), "diagnostics": diagnostics}
 
     def manifest(self, project_id: str, revision: int) -> dict[str, Any]:
@@ -267,8 +269,9 @@ class WebRepository:
             if project["revision"] != revision:
                 raise HTTPException(409, "上传版本已变更，请重新保存并核对清单。")
             request = CodeInput(**{key: project[key] for key in ("code", "boardId", "componentIds")})
-            if not self.check(request)["valid"]:
-                raise HTTPException(422, "代码或硬件检查未通过，不能建立上传清单。")
+            checked = self.check(request)
+            if not checked['valid']:
+                raise HTTPException(422, {'message':'上传被检查拦住，请先修复下方错误。', 'check':checked})
             revisions = self.hardware_revisions(project["boardId"], project["componentIds"])
             with self.connect() as conn:
                 frozen = json.loads(conn.execute("SELECT hardware_revisions FROM zhangwen_workspaces WHERE project_id=?", (project_id,)).fetchone()[0])

@@ -39,7 +39,8 @@ jobs:
           cd "$RUNNER_TEMP/ZhangWen Platform/versions/$GITHUB_SHA"
           if [ "$RUNNER_OS" = Windows ]; then py=.venv/Scripts/python.exe; else py=.venv/bin/python; fi
           PYTHONPATH=services/local-api "$py" - <<'PY'
-          import tempfile, gc, hashlib
+          import tempfile, gc, hashlib, ast, io
+          import ezdxf
           import cadquery as cq
           import trimesh
           from pathlib import Path
@@ -47,6 +48,24 @@ jobs:
           from zhangwen.web.app import create_app
           from zhangwen.web.__main__ import bind_available_port
           from zhangwen.web.firmware import PROFILES, firmware_image, firmware_profile
+          from zhangwen.web.design_specs import template_spec, dxf
+          from zhangwen.web.programming import repair_k10_screen, programming_diagnostics
+          # Verify the deployed rounded-wall pattern and K10 repair without AI/devices.
+          rounded = template_spec('rounded-box', {})
+          assert rounded.roundedBox.pattern_version == 2
+          wall = [s for s in rounded.drawing.shapes if s.kind == 'polyline'][-1]
+          ymin, ymax = min(p[1] for p in wall.points), max(p[1] for p in wall.points)
+          slots = [s for s in rounded.drawing.shapes if s.kind == 'line']
+          assert sum(s.points[0][1] == ymin for s in slots) == 24
+          assert sum(s.points[1][1] == ymax for s in slots) == 24
+          cutting = ezdxf.read(io.StringIO(dxf(rounded.drawing)))
+          assert cutting.units == 4 and len(cutting.modelspace().query('LINE[layer=="CUT"]')) == len(slots)
+          k10 = 'hw_seed_unihiker_k10'
+          old = 'import unihiker_k10 as unihiker\nunihiker.draw.text("OK",20,40)\n'
+          assert any(d['severity'] == 'FAIL' for d in programming_diagnostics(old, k10))
+          repaired = repair_k10_screen(old, k10)
+          ast.parse(repaired)
+          assert not programming_diagnostics(repaired, k10)
           import socket
           with socket.socket() as occupied:
               occupied.bind(('127.0.0.1', 0))

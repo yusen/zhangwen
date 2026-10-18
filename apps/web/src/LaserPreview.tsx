@@ -18,10 +18,11 @@ export function LaserPreview({ result }: { result?: CadResult }) {
         if (shape.kind === 'rect') return <rect {...props} x={shape.x} y={shape.y} width={shape.width} height={shape.height} />;
         if (shape.kind === 'circle') return <circle {...props} cx={shape.x} cy={shape.y} r={shape.radius} />;
         if (shape.kind === 'text') return <path {...props} className="laser-path engrave laser-text" d={result?.laserTextPaths?.[String(i)] ?? ''} fillRule="evenodd" />;
+        if (shape.kind === 'line') return <line {...props} x1={shape.points[0][0]} y1={shape.points[0][1]} x2={shape.points[1][0]} y2={shape.points[1][1]} />;
         const points = shape.points.map(p => p.join(',')).join(' ');
         return shape.closed ? <polygon {...props} points={points} /> : <polyline {...props} points={points} />;
       })}
     </svg><p>红线切割 · 蓝线雕刻 · 毫米尺寸{result?.status !== 'artifact' && ' · 待确认草案'}</p></div>
-      : <div className="structure-preview-empty"><ScanLine size={44} strokeWidth={1.3} /><h3>把想法变成激光切割图纸</h3><p>描述尺寸、材料与轮廓，或先选择左侧模板。</p><span>SVG / DXF · 不依赖 LaserMaker</span></div>}
+      : <div className="structure-preview-empty"><ScanLine size={44} strokeWidth={1.3} /><h3>开启你的激光造物</h3><p>描述尺寸、材料与轮廓，或先选择左侧模板。</p><span>SVG / DXF · 不依赖 LaserMaker</span></div>}
   </div>;
 }

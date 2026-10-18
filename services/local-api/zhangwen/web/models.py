@@ -106,6 +106,11 @@ class HardwareExampleInput(Boundary):
         return value
 
 
+class HardwareVerificationInput(Boundary):
+    expectedRevision: str = Field(pattern=r'^[a-f0-9]{24}$')
+    verifiedBoardIds: list[str] = Field(max_length=5)
+
+
 class ManifestInput(Boundary):
     expectedRevision: int = Field(ge=1)
 

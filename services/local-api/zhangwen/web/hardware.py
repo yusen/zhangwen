@@ -5,7 +5,7 @@ Preserves copied V1 files and never exposes unrelated archived controllers.
 import json
 import re
 from pathlib import Path
-from . import module_guides, module_support
+from . import module_guides, module_support, module_verification
 
 from zhangwen.hardware.hardware_skills import HardwareSkillRepository, HardwareSkillNotFoundError, HardwareSkillValidationError, _mechanical_snapshot
 from zhangwen.cad_agent.profile_repository import MechanicalProfileSnapshot
@@ -139,8 +139,27 @@ class WebHardwareRepository(HardwareSkillRepository):
     def web_detail(self, detail) -> dict:
         supported = self.supported_boards(detail)
         return {**detail.model_dump(mode='json'), 'catalog': self.catalog_metadata(detail),
+                'verifiedBoardIds': self.verified_boards(detail),
                 'localExamples': self.local_examples(detail), 'moduleGuides': module_guides.guides(detail, WEB_CONTROLLERS),
                 **({'supportedBoardIds': supported} if supported is not None else {})}
+
+    @staticmethod
+    def verified_boards(detail) -> list[str]:
+        content = next((file.content for file in detail.files if file.path == 'examples/usage.md'), '')
+        return module_verification.parse(content, detail.componentId, WEB_CONTROLLERS)
+
+    def save_verification(self, skill_name, request):
+        detail = self.get_skill(skill_name)
+        if detail.category == HardwareCategory.MCU:
+            raise HardwareSkillValidationError('请在模块中标注已核实主控。')
+        selected = module_verification.board_ids(request.verifiedBoardIds, WEB_CONTROLLERS)
+        for board_id in selected:
+            if self.get_active_by_component_id(board_id).category != HardwareCategory.MCU:
+                raise HardwareSkillValidationError('请选择有效主控。')
+        content = next(file.content for file in detail.files if file.path == 'examples/usage.md')
+        updated = module_verification.replace(content, detail.componentId, selected, WEB_CONTROLLERS)
+        return self.update_file(skill_name, path='examples/usage.md', content=updated,
+                                expected_revision=request.expectedRevision)
 
     @staticmethod
     def supported_boards(detail) -> list[str] | None:
@@ -210,16 +229,25 @@ class WebHardwareRepository(HardwareSkillRepository):
 
     def web_summaries(self) -> list[dict]:
         # Parsed from installed packages, including user-maintained packages;
-        # no parallel hardware registry. Cache is keyed by package revision.
-        cache = getattr(self, '_web_metadata_cache', {})
-        result = []
-        for item in self.list_skills():
-            key = (item.skillName, item.revision)
-            if key not in cache:
-                cache[key] = self.catalog_metadata(self.get_skill(item.skillName))
-            result.append({**item.model_dump(mode='json'), 'catalog': cache[key]})
-        self._web_metadata_cache = {(item['skillName'], item['revision']): item['catalog'] for item in result}
-        return result
+        # the display index can retain a pre-edit revision, including across a
+        # restart. Read the live manifest before reusing parsed metadata. This
+        # keeps the existing package authoritative without rescanning its files.
+        with self._lock:
+            cache = getattr(self, '_web_metadata_cache', {})
+            current = {}
+            result = []
+            for item in self.list_skills():
+                manifest = self._read_manifest(self._root / item.skillName)
+                key = (item.skillName, manifest.revision)
+                if key not in cache:
+                    detail = self.get_skill(item.skillName)
+                    summary = HardwareSkillSummary(**detail.model_dump(exclude={'files', 'specification', 'rules'}))
+                    cache[key] = {**summary.model_dump(mode='json'), 'catalog': self.catalog_metadata(detail),
+                                  'verifiedBoardIds': self.verified_boards(detail)}
+                result.append(cache[key])
+                current[key] = cache[key]
+            self._web_metadata_cache = current
+            return result
 
     @staticmethod
     def reference_only(detail) -> bool:
@@ -270,6 +298,10 @@ class WebHardwareRepository(HardwareSkillRepository):
         title += ('驱动选择按当前模块型号/通信协议与当前主控固件组合：优先当前主控的本机案例，其次配套参考。'
                   '不得因主控品牌就把其他品牌模块替换成该主控同类传感器专用库；板载屏幕等仍用对应主控API。\n')
         supported = self.supported_boards(detail)
+        verified = self.verified_boards(detail)
+        if verified:
+            names = '、'.join(self.get_active_by_component_id(item).displayName for item in verified)
+            title += f'用户标注已核实的主控：{names}。这是用户手动记录，不是平台自动实测；不证明当前接线或本次程序已运行。\n'
         if supported is not None:
             names = '、'.join(self.get_active_by_component_id(item).displayName for item in supported) or '尚未标注'
             title += f'用户标注的支持主控：{names}（非实测认证）。各主控代码与接线独立，不可跨板套用。\n'

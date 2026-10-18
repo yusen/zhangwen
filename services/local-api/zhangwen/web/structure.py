@@ -52,7 +52,7 @@ class StructureInput(BaseModel):
     rotations: dict[str, float] = Field(default_factory=dict)
     resolutionOptionId: str = Field(default='', max_length=150)
     designType: Literal['model', 'laser'] = 'model'
-    template: Literal['box', 'cup', 'bracket', 'plate', 'round-tag', 'panel-box', 'finger-box'] | None = None
+    template: Literal['box', 'cup', 'bracket', 'plate', 'round-tag', 'panel-box', 'finger-box', 'rounded-box'] | None = None
 
     @field_validator('parameters')
     @classmethod
@@ -367,10 +367,6 @@ class StructureService:
                 'conversationContext': {'hasRequirementAnalysis': previous.get('status') == 'requirement_analysis',
                     'hasArtifact': previous.get('status') == 'artifact', 'hasDraft': previous.get('status') == 'confirmation'},
                 'routeAction': 'confirm_requirement_analysis' if request.action == 'confirm' else ''}
-            project = self.repo.get(project_id)
-            selected_hardware = {project['boardId'], *project['componentIds']}
-            body['engineeringHardware'] = [{'componentId': item['componentId'], 'name': item['displayName']}
-                for item in self.repo.skills.web_summaries() if item['componentId'] in selected_hardware]
             # Never trust a persisted task path or source code as an execution input.
             if state:
                 body['currentDesignState'] = {**state, 'id': ''}
@@ -380,7 +376,7 @@ class StructureService:
             job_root.mkdir(parents=True)
             standalone = request.designType == 'laser' or request.template or previous.get('designKind') or (not ids and request.action in {'analyze', 'revise'})
             if standalone:
-                if request.template and ((request.template in {'plate', 'round-tag', 'panel-box', 'finger-box'}) != (request.designType == 'laser')):
+                if request.template and ((request.template in {'plate', 'round-tag', 'panel-box', 'finger-box', 'rounded-box'}) != (request.designType == 'laser')):
                     raise HTTPException(422, '设计模板与当前模式不一致。')
                 history = [v for v in reversed(workspace['versions']) if v.get('designType', 'model') == request.designType
                            and base and v['revision'] <= base['revision']]
@@ -403,6 +399,10 @@ class StructureService:
                     'jobId': job_id, 'designType': request.designType, 'name': short_name(result['title'])}
                 self.commit(project_id, version, request.message or result['title'], result.get('message') or result['title'])
                 return self.get(project_id)
+            project = self.repo.get(project_id)
+            selected_hardware = {project['boardId'], *project['componentIds']}
+            body['engineeringHardware'] = [{'componentId': item['componentId'], 'name': item['displayName']}
+                for item in self.repo.skills.web_summaries() if item['componentId'] in selected_hardware]
             available = all(importlib.util.find_spec(x) is not None for x in ['cadquery', 'OCP'])
             result = await self.worker({'action': request.action, 'body': body, 'rootDir': str(job_root),
                 'python': sys.executable, 'settings': settings, 'offline': offline, 'previousResult': previous,

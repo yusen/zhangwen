@@ -22,6 +22,8 @@ export interface HardwareSummary {
   category: 'MCU' | 'SENSOR' | 'ACTUATOR' | 'DISPLAY' | 'POWER' | 'STRUCTURE';
   status: string; revision: string; verificationStatus: string; media: HardwareMedia[];
   catalog?: HardwareCatalog;
+  /** User-marked module/controller checks. Never inferred from code or catalog status. */
+  verifiedBoardIds?: string[];
 }
 export interface HardwareDetail extends HardwareSummary {
   files: { path: string; content: string; title: string }[];
@@ -34,6 +36,7 @@ export interface HardwareDetail extends HardwareSummary {
 /** Stored inside the canonical Hardware Skill examples/usage.md, scoped by board. */
 export interface HardwareExample { boardId: string; notes: string; code: string; setup?: Record<string, string> }
 export interface SaveHardwareExample extends HardwareExample { expectedRevision: string; supportedBoardIds?: string[] }
+export interface SaveHardwareVerification { expectedRevision: string; verifiedBoardIds: string[] }
 /** Source-reviewed recipe supplements, installed into the same Hardware Skill document.
  * Functional/diagnostic describes the example's scope, never physical verification.
  */
@@ -101,8 +104,9 @@ export interface ProgramRunSubmission {
 }
 export interface CheckResult {
   valid: boolean; checksum: string;
-  diagnostics: { severity: 'PASS' | 'WARNING' | 'FAIL'; message: string; line?: number | null }[];
+  diagnostics: { severity: 'PASS' | 'WARNING' | 'FAIL'; message: string; line?: number | null; repair?: 'k10-screen' }[];
 }
+export interface CodeRepair { code: string; check: CheckResult; summary: string }
 export interface UploadManifest {
   projectId: string; revision: number; boardId: string; hardwareRevisions: Record<string, string>;
   files: { path: 'main.py'; content: string; sha256: string; size: number }[];
