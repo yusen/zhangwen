@@ -76,7 +76,7 @@ macOS可在安装命令的环境中指定`ZHANGWEN_APPLICATIONS_DIR="$HOME/Appli
 
 ## 发布范围
 
-DEPLOYMENT.sha256 是部署文件摘要清单；源码仓库不上传 node_modules、.venv、dist、运行环境二进制、用户数据、Key、备份、演示材料、开发记录或截图。构建工具保留 TypeScript/Vite，Playwright/Vitest/pytest 等测试工具不在部署依赖中。少量 CAD/旧项目模型代码仍属于原硬件与项目仓库的导入依赖，保留源码不表示已开放 CAD 界面或安装 CAD 运行时。
+DEPLOYMENT.sha256 是部署文件摘要清单；源码仓库不上传 node_modules、.venv、dist、运行环境二进制、用户数据、Key、备份、演示材料、开发记录或截图。构建工具保留 TypeScript/Vite，Playwright/Vitest/pytest 等测试工具不在部署依赖中。结构设计使用的 CadQuery/OCP/trimesh 按平台锁定安装；五款主控的官方默认固件属于本地部署资源，随包校验摘要。用户项目、设备备份和本机编辑的案例均不从开发电脑上传。
 
 依赖及完整硬件包保留其来源/许可证。Git 历史中既有资料通过旧提交/备份标签可查，此次精简针对 main 当前文件树，不重写历史。
 

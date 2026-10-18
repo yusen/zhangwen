@@ -1,46 +1,47 @@
 import { useEffect, useRef, useState, type KeyboardEvent } from 'react';
-import { ArrowUp, BookOpen, Check, ChevronRight, ClipboardList, Download, FilePenLine, FileText, Flag, FolderOpen, GraduationCap, Image, Layers3, LayoutTemplate, Lightbulb, Link2, Maximize, Minimize, NotebookPen, PanelLeftClose, PanelLeftOpen, Settings2, Sparkles, Target, Trophy, UploadCloud, UserRound, type LucideIcon } from 'lucide-react';
+import { ArrowUp, BookOpen, Check, ChevronRight, Download, FilePenLine, FileText, GraduationCap, Image, Layers3, LayoutTemplate, Lightbulb, Link2, Maximize, Minimize, NotebookPen, PanelLeftClose, PanelLeftOpen, Settings2, Sparkles, Target, UploadCloud, UserRound } from 'lucide-react';
 import type { HardwareSummary, Project } from '../../../packages/contracts/src/mu';
 import { Dialog } from './Dialog';
-import { goals, pending, stages, roleMaterials, type LearningRole, type Material, type CompetitionPage } from './LearningMaterials';
+import { goals, pending, stages, type LearningRole, type Material, type CompetitionPage } from './LearningMaterials';
 import { learningTemplates, LearningMaterialPreview, templateIcons } from './LearningTemplates';
+import { learningSections, sectionMaterials, sectionNavigation, type LearningSection, type PreviewDialog } from './LearningSections';
 import './learning.css';
 
-type PreviewDialog = 'settings' | 'goals' | 'resources' | 'project';
-type LearningAction = {icon: LucideIcon; title: string; hint: string; material?: Material; dialog?: PreviewDialog};
-const navigation: Record<LearningRole, LearningAction[]> = {
-  teacher: [
-    {icon:Settings2, title:'学习设置', hint:'学段、课时与学情', dialog:'settings'},
-    {icon:Target, title:'目标与任务', hint:'学习目标与活动', dialog:'goals'},
-    {icon:FolderOpen, title:'教学资料', hint:'教材与课程参考', dialog:'resources'},
-    {icon:Flag, title:'评价设计', hint:'观察点与反馈', material:'rubric'},
-    {icon:Image, title:'成果海报', hint:'活动与班级展示', material:'poster'},
-    {icon:Trophy, title:'赛事资料', hint:'要求、清单与归档', material:'competition'},
-  ],
-  student: [
-    {icon:ClipboardList, title:'我的任务', hint:'看清问题与完成要求', material:'task'},
-    {icon:NotebookPen, title:'探究记录', hint:'预测、测试与发现', material:'record'},
-    {icon:FileText, title:'作品说明', hint:'讲清我的设计与证据', material:'work'},
-    {icon:Flag, title:'自评与反思', hint:'回看收获与同伴反馈', material:'reflection'},
-    {icon:Image, title:'作品海报', hint:'作品介绍与探究展示', material:'poster'},
-    {icon:Trophy, title:'参赛材料', hint:'跟着清单准备材料', material:'competition'},
-  ],
-};
-const materialActions: Record<Material, string> = {plan:'生成任务单', task:'整理任务记录', rubric:'生成评价量规', portfolio:'记录学习证据', record:'保存探究记录', work:'整理作品说明', reflection:'保存自评反思', poster:'生成海报', competition:'导出材料包'};
+const materialActions: Record<Material, string> = {definition:'确认项目定义卡', questions:'保存问题记录', plan:'生成任务单', task:'整理任务记录', rubric:'生成评价量规', portfolio:'记录学习证据', record:'保存探究记录', work:'整理作品说明', reflection:'保存自评反思', poster:'生成海报', competition:'导出材料包'};
 
 /** UI preview only. No API, file picker, model call, or persisted learning state. */
-export function LearningWorkspace({active, projectName, project, board, modules, role, onRole, roleDialog, onCloseRole}: {
+export function LearningWorkspace({active, projectName, project, board, modules, role, onRole, section, onSection, roleDialog, onCloseRole}: {
   active: boolean; projectName: string; project: Project | null; board?: HardwareSummary; modules: HardwareSummary[];
   role: LearningRole; onRole: (role: LearningRole) => void; roleDialog: boolean; onCloseRole: () => void;
+  section: LearningSection; onSection: (section: LearningSection) => void;
 }) {
-  const [selectedMaterials, setSelectedMaterials] = useState<Record<LearningRole, Material>>({teacher:'plan', student:'task'});
+  const [selectedMaterials, setSelectedMaterials] = useState<Record<LearningRole, Record<LearningSection, Material>>>({
+    teacher:{guidance:'definition', project:'plan', outcomes:'portfolio'},
+    student:{guidance:'definition', project:'task', outcomes:'work'},
+  });
   const [templateChoices, setTemplateChoices] = useState<Record<string, string>>({});
   const [templateDraft, setTemplateDraft] = useState<string | null>(null);
   const [templatePage, setTemplatePage] = useState<CompetitionPage>('requirements');
   const [competitionPages, setCompetitionPages] = useState<Record<LearningRole, CompetitionPage>>({teacher:'requirements', student:'requirements'});
-  const material=selectedMaterials[role], materials=roleMaterials[role], teacher=role === 'teacher';
-  const roleName=teacher ? '教师工作台' : '学生工作台', sideTitle=teacher ? '教学准备' : '我的任务';
-  const setMaterial = (id: Material) => setSelectedMaterials(value=>({...value, [role]:id}));
+  const material=selectedMaterials[role][section], materials=sectionMaterials[section][role], teacher=role === 'teacher';
+  const sectionInfo=learningSections.find(item=>item.id === section)!;
+  const roleName=teacher ? '教师工作台' : '学生工作台';
+  const sideTitle=section === 'guidance' ? '梳理想法' : section === 'outcomes' ? (teacher ? '成果整理' : '我的成果') : (teacher ? '教学准备' : '我的任务');
+  const setMaterial = (id: Material) => setSelectedMaterials(value=>({...value, [role]:{...value[role], [section]:id}}));
+  const changeSection = (id: LearningSection) => onSection(id);
+  const welcome=section === 'guidance' ? {
+    tag:'先把问题想清楚', title:<>从一个想法<br/>找到值得做的项目</>, intro:'从兴趣或生活中的困惑出发，澄清需求，整理当前推荐方案与待确认事项。',
+    step:'从一个真实问题开始', question:'这个想法，想帮助谁？', detail:'观察他们在什么场景遇到困难，再想想怎样知道作品有效。还没有想法也可以从身边的问题开始。',
+    button:'查看项目定义卡示例', flow:'创意 → 追问 → 整理 → 方案 → 确认', generate:'整理项目定义卡',
+  } : section === 'outcomes' ? {
+    tag:teacher ? '让学习成果被看见' : '把我的作品讲清楚', title:<>整理作品与证据<br/>分享创造的价值</>, intro:teacher ? '回看班级作品与学习证据，准备成果展示和赛事材料。' : '整理作品说明、图片和测试记录，准备海报与参赛材料。',
+    step:'从已有作品与证据开始', question:teacher ? '这次想展示哪些学习成果？' : '你最想展示作品的哪一点？', detail:'先整理做了什么、为什么这样设计，以及能够说明效果的测试证据。',
+    button:teacher ? '查看成果总览示例' : '查看作品说明示例', flow:'整理作品 → 补充证据 → 展示与参赛', generate:'整理成果材料',
+  } : {
+    tag:teacher ? '陪你设计学习' : '陪你发现与创造', title:teacher ? <>让作品成为一次<br/>有目标的学习</> : <>把我的想法<br/>变成有证据的作品</>, intro:teacher ? '从学生需要学会什么出发，组织探索、实践与反思。' : '一起提出问题、动手验证，记录发现并分享你的创造。',
+    step:teacher ? '先了解学习条件' : '从一个好问题开始', question:teacher ? '这次学习面向哪些学生？' : '你的作品想解决什么问题？', detail:teacher ? '先确认学段、课时与已有基础，再细化目标和任务。' : '先说清想帮助谁、为什么需要它，再看看可以怎样验证。',
+    button:teacher ? '查看学习设置' : '查看我的任务示例', flow:teacher ? '确认目标 → 设计活动 → 整理材料' : '提出问题 → 动手验证 → 分享收获', generate:teacher ? '生成学习方案' : '开始我的探究',
+  };
   const options=learningTemplates(role, material), templateKey=`${role}:${material}`;
   const selectedTemplate=options.find(item=>item.id === templateChoices[templateKey]) ?? options[0];
   const draftTemplate=options.find(item=>item.id === templateDraft) ?? selectedTemplate;
@@ -52,7 +53,8 @@ export function LearningWorkspace({active, projectName, project, board, modules,
   const templatePane=useRef<HTMLDivElement>(null);
   useEffect(()=>{documentPane.current?.scrollTo({top:0});},[role, material, selectedTemplate.id, competitionPages[role]]);
   useEffect(()=>{templatePane.current?.scrollTo({top:0});},[templateDraft, templatePage]);
-  useEffect(()=>{conditionsPane.current?.scrollTo({top:0}); conversationPane.current?.scrollTo({top:0});},[role]);
+  useEffect(()=>{conditionsPane.current?.scrollTo({top:0}); conversationPane.current?.scrollTo({top:0}); documentPane.current?.scrollTo({top:0});},[role, section]);
+  useEffect(()=>{setDialog(null); setTemplateDraft(null);},[section]);
   useEffect(() => { if (!active) {setDialog(null); setTemplateDraft(null); setFullscreen(false);} }, [active]);
   useEffect(() => {
     if (!active || !fullscreen) return;
@@ -72,23 +74,24 @@ export function LearningWorkspace({active, projectName, project, board, modules,
   };
   const dialogTitles = {settings:'学习设置', goals:'目标与任务', resources:'添加教学资料', project:'关联项目成果'};
   return <div className={`learning-surface ${collapsed ? 'learning-collapsed' : ''} ${fullscreen ? 'learning-fullscreen' : ''}`} hidden={!active}>
-    <main className="learning-workbench" aria-label="学习设计师工作区">
+    <p className="sr-only" id="learning-section-description">{sectionInfo.description}</p>
+    <main className="learning-workbench" id="learning-section-content" aria-label="学习设计师工作区" aria-describedby="learning-section-description">
       <aside className="panel learning-conditions">
         <div className="panel-head"><h2>{teacher ? <GraduationCap size={18}/> : <UserRound size={18}/>} {sideTitle}</h2><button className="icon-button" aria-label="收起学习侧栏" onClick={() => setCollapsed(true)}><PanelLeftClose size={17} /></button></div>
         <div className="learning-conditions-scroll" ref={conditionsPane}><div className="learning-project"><small>当前项目</small><strong>{projectName}</strong><span>{teacher ? '围绕作品设计学习与评价' : '围绕作品探索、记录与表达'}</span><button onClick={()=>setDialog('project')}><Link2 size={13}/>查看项目成果<ChevronRight size={12}/></button></div>
-          <nav className="learning-condition-actions" aria-label={`${roleName}操作`}>{navigation[role].map(({icon:Icon,title,hint,material:target,dialog:targetDialog}) => <button key={title} aria-current={target && material === target ? 'page' : undefined} onClick={() => {if(target)showMaterial(target); else if(targetDialog)setDialog(targetDialog);}}><Icon size={17} /><span><strong>{title}</strong><small>{hint}</small></span><ChevronRight size={13} /></button>)}</nav>
-          {teacher ? <section className="learning-condition-summary"><h3>学习概况</h3><dl><div><dt>适用学段</dt><dd>待设置</dd></div><div><dt>课时安排</dt><dd>待设置</dd></div><div><dt>学生基础</dt><dd>待补充</dd></div></dl></section> : <section className="learning-condition-summary"><h3>我的学习进度</h3><p className="learning-caption">尚未分配学习任务。可先查看右侧示例，了解怎样记录与展示。</p></section>}
-          <section className="learning-stage-guide"><h3>{teacher ? '任务阶段' : '我的探究路径'}</h3>{stages.map((stage,i) => <div key={stage.name}><span>0{i + 1}</span><strong>{stage.name}</strong></div>)}<p>{teacher ? '各阶段围绕学习目标安排，六维观察点在评价中配置。' : '提出问题，动手验证，再把收获讲给别人听。'}</p></section>
+          <nav className="learning-condition-actions" aria-label={`${roleName}操作`}>{sectionNavigation[section][role].map(({icon:Icon,title,hint,material:target,dialog:targetDialog,pending:unavailable}) => <button key={title} disabled={unavailable} title={unavailable ? pending : undefined} aria-current={target && material === target ? 'page' : undefined} onClick={() => {if(target)showMaterial(target); else if(targetDialog)setDialog(targetDialog);}}><Icon size={17} /><span><strong>{title}</strong><small>{unavailable ? `${hint} · 待开发` : hint}</small></span>{!unavailable && <ChevronRight size={13} />}</button>)}</nav>
+          {section === 'project' && (teacher ? <section className="learning-condition-summary"><h3>学习概况</h3><dl><div><dt>适用学段</dt><dd>待设置</dd></div><div><dt>课时安排</dt><dd>待设置</dd></div><div><dt>学生基础</dt><dd>待补充</dd></div></dl></section> : <section className="learning-condition-summary"><h3>我的学习进度</h3><p className="learning-caption">尚未分配学习任务。可先查看右侧示例，了解怎样记录与展示。</p></section>)}
+          <section className="learning-stage-guide"><h3>{section === 'guidance' ? '从想法到定义' : section === 'outcomes' ? '成果整理路径' : teacher ? '任务阶段' : '我的探究路径'}</h3>{(section === 'project' ? stages.map(stage=>stage.name) : section === 'guidance' ? ['接收创意，追问澄清','整合事实，收敛方案','确认项目定义卡'] : ['回看作品与过程','整理说明与测试证据','准备展示与参赛材料']).map((name,i) => <div key={name}><span>0{i + 1}</span><strong>{name}</strong></div>)}<p>{section === 'guidance' ? '先澄清问题与条件，再进入项目学习。' : section === 'outcomes' ? '模板仅作预览，尚未核验或归档项目产物。' : teacher ? '各阶段围绕学习目标安排，六维观察点在评价中配置。' : '提出问题，动手验证，再把收获讲给别人听。'}</p></section>
         </div><footer className="learning-side-foot"><span className="learning-preview-dot" />界面预览 · 功能待开发</footer>
       </aside>
       <button className="learning-restore" aria-label="展开学习侧栏" onClick={() => setCollapsed(false)}><PanelLeftOpen size={18} /></button>
       <section className="panel ai-panel learning-chat">
         <div className="panel-head"><h2><Sparkles size={18} />掌问 AI</h2><span className="learning-preview-tag" aria-label="当前学习视角" role="status">{roleName} · 预览</span></div>
-        <div className="learning-conversation" ref={conversationPane}><div className="learning-welcome"><span>{teacher ? <GraduationCap size={30} strokeWidth={1.5}/> : <Lightbulb size={30} strokeWidth={1.5}/>}</span><small>掌问 · {teacher ? '陪你设计学习' : '陪你发现与创造'}</small><h2>{teacher ? <>让作品成为一次<br/>有目标的学习</> : <>把我的想法<br/>变成有证据的作品</>}</h2><p>{teacher ? '从学生需要学会什么出发，组织探索、实践与反思。' : '一起提出问题、动手验证，记录发现并分享你的创造。'}</p></div>
-          <section className="learning-next-step" aria-label="学习设计下一步"><span><Target size={14}/>{teacher ? '先了解学习条件' : '从一个好问题开始'}</span><h3>{teacher ? '这次学习面向哪些学生？' : '你的作品想解决什么问题？'}</h3><p>{teacher ? '先确认学段、课时与已有基础，再细化目标和任务。' : '先说清想帮助谁、为什么需要它，再看看可以怎样验证。'}</p><button onClick={() => teacher ? setDialog('settings') : showMaterial('task')}>{teacher ? '查看学习设置' : '查看我的任务示例'}<ChevronRight size={15}/></button></section>
-          <div className="learning-example-links"><small>{teacher ? '先看看材料的呈现方式' : '也可以从这些地方开始'}</small><div><button onClick={() => showMaterial(teacher ? 'plan' : 'record')}><NotebookPen size={14}/>{teacher ? '方案示例' : '记录一次尝试'}</button><button onClick={() => showMaterial('poster')}><Image size={14}/>{teacher ? '海报示例' : '看看作品海报'}</button></div></div>
+        <div className="learning-conversation" ref={conversationPane}><div className="learning-welcome"><span>{section === 'guidance' ? <Lightbulb size={30} strokeWidth={1.5}/> : <sectionInfo.icon size={30} strokeWidth={1.5}/>}</span><small>掌问 · {welcome.tag}</small><h2>{welcome.title}</h2><p>{welcome.intro}</p></div>
+          <section className="learning-next-step" aria-label="学习设计下一步"><span><Target size={14}/>{welcome.step}</span><h3>{welcome.question}</h3><p>{welcome.detail}</p><button onClick={() => section === 'guidance' ? showMaterial('definition') : section === 'outcomes' ? showMaterial(teacher ? 'portfolio' : 'work') : teacher ? setDialog('settings') : showMaterial('task')}>{welcome.button}<ChevronRight size={15}/></button></section>
+          <div className="learning-example-links"><small>先看看材料的呈现方式</small><div>{section === 'guidance' ? <><button onClick={()=>showMaterial('questions')}><NotebookPen size={14}/>问题记录示例</button><button onClick={()=>changeSection('project')}><BookOpen size={14}/>查看项目学习</button></> : section === 'outcomes' ? <><button onClick={()=>showMaterial('poster')}><Image size={14}/>海报示例</button><button onClick={()=>showMaterial('competition')}><FileText size={14}/>赛事材料示例</button></> : <><button onClick={() => showMaterial(teacher ? 'plan' : 'record')}><NotebookPen size={14}/>{teacher ? '方案示例' : '记录一次尝试'}</button><button onClick={() => showMaterial(teacher ? 'rubric' : 'reflection')}><FileText size={14}/>{teacher ? '评价示例' : '反思示例'}</button></>}</div></div>
         </div>
-        <div className="chat-form learning-composer"><label className="sr-only" htmlFor="learning-message">发送给学习设计师</label><textarea id="learning-message" disabled placeholder={teacher ? '教师对话待接入，可先查看方案与材料示例…' : '学习对话待接入，可先看看任务、记录与海报…'}/><div><span>{teacher ? '确认目标 → 设计活动 → 整理材料' : '提出问题 → 动手验证 → 分享收获'}</span><button className="primary icon-button" aria-label="发送学习需求（待开发）" disabled title={pending}><ArrowUp size={19}/></button></div><button className="learning-generate" disabled title={pending}><Sparkles size={15}/>{teacher ? '生成学习方案' : '开始我的探究'}<span>待开发</span></button></div>
+        <div className="chat-form learning-composer"><label className="sr-only" htmlFor="learning-message">发送给学习设计师</label><textarea id="learning-message" disabled placeholder={`${sectionInfo.label}对话待接入，可先查看右侧材料示例…`}/><div><span>{welcome.flow}</span><button className="primary icon-button" aria-label="发送学习需求（待开发）" disabled title={pending}><ArrowUp size={19}/></button></div><button className="learning-generate" disabled title={pending}><Sparkles size={15}/>{welcome.generate}<span>待开发</span></button></div>
       </section>
       <section className="panel learning-materials">
         <div className="filebar learning-filebar"><span><BookOpen size={16} />学习材料</span><label className="sr-only" htmlFor="learning-version">学习材料版本</label><select id="learning-version" disabled title="版本管理待开发"><option>示例 · 未保存</option></select><span className="filebar-space" /><button className="learning-choose-template" onClick={()=>{setTemplatePage('requirements'); setTemplateDraft(selectedTemplate.id);}}><LayoutTemplate size={15}/>选择模板</button><button className="icon-button" aria-label={fullscreen ? '退出学习材料全屏' : '学习材料全屏'} title={fullscreen ? '退出全屏' : '全屏预览'} onClick={() => setFullscreen(v => !v)}>{fullscreen ? <Minimize size={16} /> : <Maximize size={16} />}</button><button disabled title={pending}><Download size={15} />导出</button></div>

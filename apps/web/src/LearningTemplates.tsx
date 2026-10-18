@@ -1,8 +1,10 @@
 import { BookOpen, ClipboardList, FileText, Flag, Image, LayoutTemplate } from 'lucide-react';
-import { PlanPreview, TaskPreview, RubricPreview, PortfolioPreview, StudentPreview, PosterPreview, CompetitionPreview, type LearningRole, type Material, type PosterTemplate, type CompetitionPage } from './LearningMaterials';
+import { DefinitionPreview, QuestionsPreview, PlanPreview, TaskPreview, RubricPreview, PortfolioPreview, StudentPreview, PosterPreview, CompetitionPreview, type LearningRole, type Material, type PosterTemplate, type CompetitionPage } from './LearningMaterials';
 
 export type LearningTemplate = {id: string; name: string; description: string; layout: 'overview' | 'sheet' | 'table' | 'timeline' | 'poster'};
 const templates: Record<Material, LearningTemplate[]> = {
+  definition: [{id:'standard', name:'项目定义卡', description:'问题、推荐方案、约束与待确认事项', layout:'sheet'}],
+  questions: [{id:'standard', name:'问题记录', description:'真实观察、已知事实与待确认问题', layout:'sheet'}],
   plan: [{id:'standard', name:'活动总览', description:'目标、任务阶段与学习证据', layout:'overview'}, {id:'lessons', name:'课时安排', description:'按课时梳理活动、支持与产出', layout:'table'}],
   task: [{id:'standard', name:'引导任务单', description:'用问题引导发现、方案与验证', layout:'sheet'}, {id:'checklist', name:'步骤清单', description:'逐步呈现行动与完成要求', layout:'table'}],
   rubric: [{id:'standard', name:'观察量规', description:'观察点、具体表现与证据来源', layout:'table'}, {id:'feedback', name:'反馈卡', description:'用证据组织肯定、问题和建议', layout:'sheet'}],
@@ -31,6 +33,8 @@ export function LearningMaterialPreview({role, material, template, projectName, 
 }) {
   if (material === 'poster') return <PosterPreview role={role} template={template as PosterTemplate} projectName={projectName}/>;
   if (template === 'standard') {
+    if (material === 'definition') return <DefinitionPreview projectName={projectName}/>;
+    if (material === 'questions') return <QuestionsPreview/>;
     if (material === 'plan') return <PlanPreview/>;
     if (material === 'task') return <TaskPreview role={role}/>;
     if (material === 'rubric') return <RubricPreview/>;

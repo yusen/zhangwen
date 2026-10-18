@@ -28,7 +28,7 @@ def sha(code: str) -> str:
 
 class SnapshotProject(Boundary):
     name: str = Field(min_length=1, max_length=80)
-    boardId: str = Field(min_length=1, max_length=150)
+    boardId: str = Field(max_length=150)
     componentIds: list[str] = Field(max_length=32)
     revision: int = Field(ge=1, strict=True)
 
@@ -46,6 +46,7 @@ class SnapshotVersion(Boundary):
     source: Literal['saved', 'ai'] = 'saved'
     boardId: str | None = Field(default=None, min_length=1, max_length=150)
     messageId: str | None = Field(default=None, min_length=1, max_length=150)
+    name: str | None = Field(default=None, max_length=80)
 
     @model_validator(mode='after')
     def integrity(self):
@@ -59,6 +60,8 @@ class SnapshotVersion(Boundary):
 class SnapshotMessage(Boundary):
     id: str = Field(min_length=1, max_length=150)
     role: Literal['user', 'assistant']
+    componentIds: list[str] | None = Field(default=None, max_length=32)
+    intent: Literal['integration'] | None = None
     content: str = Field(max_length=80_000)
     status: Literal['COMPLETED', 'FAILED', 'CANCELED']
     boardId: str | None = Field(default=None, min_length=1, max_length=150)
@@ -171,6 +174,10 @@ def import_project(repo, snapshot: ProjectSnapshot) -> dict:
             metadata = {'mu': True, 'portableMessageId': item.id}
             if item.boardId:
                 metadata['boardId'] = item.boardId
+            if item.componentIds is not None:
+                metadata['componentIds'] = item.componentIds
+            if item.intent:
+                metadata['intent'] = item.intent
             message = ChatMessage(id=message_ids[item.id], role=ChatRole(item.role), content=item.content,
                 status=ChatMessageStatus(item.status), createdAt=item.createdAt, updatedAt=item.createdAt, metadata=metadata)
             repo.projects._insert_message(conn, conversation_id, project_id, message)

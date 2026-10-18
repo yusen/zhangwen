@@ -1,6 +1,8 @@
 """Strict MVP API contracts; MicroPython file transport lives in the browser."""
 from __future__ import annotations
 
+from typing import Literal
+
 from pydantic import BaseModel, ConfigDict, Field, field_validator
 
 MAX_CODE_BYTES = 65_536
@@ -37,7 +39,7 @@ class CodeInput(Boundary):
 
 class CreateInput(Boundary):
     name: str = Field(min_length=1, max_length=80)
-    boardId: str = Field(min_length=1, max_length=150)
+    boardId: str = Field(max_length=150)  # Empty for a project awaiting controller selection.
     code: str = Field(default=DEFAULT_CODE, max_length=MAX_CODE_BYTES)
     componentIds: list[str] = Field(default_factory=list, max_length=32)
 
@@ -55,6 +57,7 @@ class CreateInput(Boundary):
 
 
 class SaveInput(CodeInput):
+    boardId: str = Field(max_length=150)
     expectedRevision: int = Field(ge=1)
     name: str = Field(min_length=1, max_length=80)
 
@@ -66,6 +69,41 @@ class SaveInput(CodeInput):
 
 class ChatInput(CodeInput):
     message: str = Field(min_length=1, max_length=4000)
+    intent: Literal['integration'] | None = None
+
+
+class HardwareExampleInput(Boundary):
+    expectedRevision: str = Field(pattern=r'^[a-f0-9]{24}$')
+    boardId: str = Field(min_length=1, max_length=150)
+    notes: str = Field(max_length=2000)
+    code: str = Field(max_length=16000)
+    setup: dict[str, str] | None = None
+    supportedBoardIds: list[str] | None = Field(default=None, max_length=5)
+
+    @field_validator('supportedBoardIds')
+    @classmethod
+    def supported_boards_boundary(cls, value):
+        if value is not None and (len(set(value)) != len(value) or any(
+                not board_id or len(board_id) > 150 or not board_id.isascii()
+                or not board_id.replace('_', '').isalnum() for board_id in value)):
+            raise ValueError('支持的主控选项无效或重复。')
+        return value
+
+    @field_validator('setup')
+    @classmethod
+    def setup_boundary(cls, value):
+        if value is not None and (len(value) > 16 or any(
+                not key.isascii() or not key.replace('_', '').isalnum() or len(key) > 32
+                or len(text) > 160 or '\x00' in text for key, text in value.items())):
+            raise ValueError('接线选项格式无效。')
+        return value
+
+    @field_validator('notes', 'code')
+    @classmethod
+    def text_boundary(cls, value: str) -> str:
+        if '\x00' in value:
+            raise ValueError('案例不能包含NUL。')
+        return value
 
 
 class ManifestInput(Boundary):
@@ -77,6 +115,7 @@ class AiSettingsInput(Boundary):
     apiKey: str | None = Field(default=None, max_length=500, repr=False)
     model: str = Field(default=DEFAULT_AI_MODEL, min_length=1, max_length=100)
     baseUrl: str | None = Field(default=None, max_length=500)
+    mode: Literal['engineer', 'structure', 'learning'] = 'engineer'
 
     @field_validator("baseUrl")
     @classmethod

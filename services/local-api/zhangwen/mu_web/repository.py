@@ -26,6 +26,7 @@ from zhangwen.projects.repository import ProjectRepository
 from zhangwen.mu_web.models import CodeInput, CreateInput, DEFAULT_CODE, SaveInput
 from zhangwen.mu_web.hardware import WebHardwareRepository
 from zhangwen.mu_web.replies import reply_code
+from zhangwen.mu_web.version_names import code_name
 
 
 def checksum(code: str) -> str:
@@ -45,6 +46,7 @@ class MuRepository:
         self.skills.migrate_legacy_rows()
         self.skills.install_web_boards()
         self.skills.install_vendor_catalog()
+        self.skills.install_module_guides()
         self.skills.refresh_active_catalog()
         with self.connect() as conn:
             conn.execute('''CREATE TABLE IF NOT EXISTS mu_workspaces (
@@ -73,12 +75,12 @@ class MuRepository:
         if len(set(components)) != len(components) or board in components:
             raise HTTPException(422, "器件重复或将主控板加入了外设清单。")
         revisions: dict[str, str] = {}
-        for index, component in enumerate([board, *components]):
+        for component in ([board] if board else []) + components:
             try:
                 skill = self.skills.get_active_by_component_id(component)
             except (ValueError, KeyError, HardwareSkillNotFoundError, HardwareSkillValidationError) as exc:
                 raise HTTPException(422, "所选硬件不存在或未激活，请刷新硬件库。") from exc
-            if (index == 0) != (skill.category == HardwareCategory.MCU):
+            if (bool(board) and component == board) != (skill.category == HardwareCategory.MCU):
                 raise HTTPException(422, "须选择一个主控板；外设清单不能包含其他主控板。")
             revisions[component] = skill.revision
         return revisions
@@ -104,12 +106,15 @@ class MuRepository:
             if row is None:
                 raise HTTPException(404, "此项目不属于独立 Mu 工作区。历史课程项目未被转换。")
             messages = conn.execute('''SELECT id, role, content, status, created_at AS createdAt,
-                COALESCE(json_extract(metadata_json, '$.boardId'), ?) AS boardId FROM messages
+                COALESCE(json_extract(metadata_json, '$.boardId'), ?) AS boardId,
+                json_extract(metadata_json, '$.componentIds') AS componentIds,
+                json_extract(metadata_json, '$.intent') AS intent FROM messages
                 WHERE project_id=? AND json_extract(metadata_json, '$.mu')=1
                 ORDER BY rowid''', (row['board_id'], project_id)).fetchall()
         return {**self.summary(row), "code": json.loads(row["preview_json"])["code"] if row["preview_json"] else DEFAULT_CODE,
                 "checksum": row["checksum"] or checksum(DEFAULT_CODE),
-                "messages": [{key: value for key, value in dict(item).items() if value is not None} for item in messages]}
+                "messages": [{key: json.loads(value) if key == 'componentIds' else value
+                              for key, value in dict(item).items() if value is not None} for item in messages]}
 
     def create(self, request: CreateInput) -> dict[str, Any]:
         revisions = self.hardware_revisions(request.boardId, request.componentIds)
@@ -167,13 +172,14 @@ class MuRepository:
         self.get(project_id)
         with self.connect() as conn:
             rows = conn.execute('''SELECT v.version, v.preview_json, v.checksum, v.created_at,
-                v.source_entity_type, s.id AS message_id, m.board_id FROM artifact_versions v
+                v.source_entity_type, s.id AS message_id, s.content AS reply, m.board_id FROM artifact_versions v
                 LEFT JOIN mu_code_metadata m ON m.version_id=v.id
                 LEFT JOIN messages s ON s.id=v.source_entity_id AND s.project_id=v.project_id
                 WHERE v.artifact_id=? ORDER BY v.version DESC''', (f"mu_code_{project_id}",)).fetchall()
         return [{"revision": row["version"], "code": json.loads(row["preview_json"])["code"],
                  "checksum": row["checksum"], "createdAt": row["created_at"],
                  "source": "ai" if row["source_entity_type"] == 'mu_ai_code' else "saved",
+                 "name": code_name(json.loads(row['preview_json'])['code'], row['reply']),
                  **({"messageId": row['message_id']} if row['source_entity_type'] == 'mu_ai_code' and row['message_id'] else {}),
                  **({"boardId": row["board_id"]} if row["board_id"] else {})} for row in rows]
 
@@ -250,6 +256,8 @@ class MuRepository:
     def manifest(self, project_id: str, revision: int) -> dict[str, Any]:
         with self.lock:
             project = self.get(project_id)
+            if not project['boardId']:
+                raise HTTPException(422, '请先在主界面选择主控板，再上传程序。')
             if project["revision"] != revision:
                 raise HTTPException(409, "上传版本已变更，请重新保存并核对清单。")
             request = CodeInput(**{key: project[key] for key in ("code", "boardId", "componentIds")})

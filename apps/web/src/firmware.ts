@@ -7,6 +7,16 @@ export interface FlashPeer {
   writeFlash(options: { fileArray: { data: string; address: number }[]; flashSize: string; flashMode: string; flashFreq: string; eraseAll: boolean; compress: boolean; reportProgress?: (index: number, written: number, total: number) => void }): Promise<void>;
 }
 export interface FirmwareBackup { id: string; boardId: string; chip: string; address: number; bytes: Uint8Array; sha256: string; createdAt: string }
+export async function loadDefaultFirmware(profile: FirmwareProfile, signal?: AbortSignal): Promise<Uint8Array> {
+  const image = profile.image;
+  if (!image || image.url !== `/api/firmware/${profile.boardId}/image`) throw new Error('默认固件地址无效。');
+  const response = await fetch(image.url, {signal, cache: 'no-store'});
+  if (!response.ok) throw new Error('本地默认固件无法读取，请检查部署文件。');
+  const bytes = new Uint8Array(await response.arrayBuffer());
+  if (bytes.length !== image.size || await sha256(bytes) !== image.sha256) throw new Error('默认固件大小或SHA-256不符，已阻止刷入。');
+  checkImage(bytes, profile, profile.offset);
+  return bytes;
+}
 export function checkImage(bytes: Uint8Array, profile: FirmwareProfile, address: number): void {
   if (bytes.length < 24 || bytes.length > 16 * 1024 * 1024 || !Number.isInteger(address) || address < 0 || address % 4096 || address + bytes.length > 16 * 1024 * 1024) throw new Error('固件须为24字节至16MiB的 .bin，偏移须为4KiB对齐的有效地址。');
   const header = bytes[0] === 0xe9 ? 0 : address === 0 && bytes[0x1000] === 0xe9 ? 0x1000 : -1;

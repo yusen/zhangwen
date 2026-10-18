@@ -24,12 +24,15 @@ from fastapi import APIRouter, HTTPException
 from fastapi.responses import FileResponse
 from pydantic import BaseModel, ConfigDict, Field, field_validator, model_validator
 
-from zhangwen.artifacts.models import ArtifactKind, ArtifactStatus
+from zhangwen.artifacts.models import ArtifactStatus, ArtifactPreview, ArtifactPreviewKind
 from zhangwen.llm.contracts import ChatMessage, ChatMessageStatus, ChatRole
+from . import design_service
+from .version_names import short_name
 
 ROOT = Path(__file__).resolve().parents[4]
 CAD_ROOT = ROOT / 'services/structure-cad'
 FILES = {'cadquery.py', 'design-state.json', 'checks.json', 'artifact.json', 'preview.gltf',
+         'design-spec.json', 'cut.svg', 'cut.dxf', 'preview.svg',
          'base.stl', 'lid.stl', 'hardware-reference.stl', 'opening-reference.stl',
          'model.step', 'base.step', 'lid.step', 'hardware.step', 'model.stl', 'hardware.stl', 'mesh-checks.json'}
 FILES.update(f'workflow/{name}' for name in ['00_requirement_analysis.json', '01_intent.json', '02_bom.json',
@@ -48,6 +51,8 @@ class StructureInput(BaseModel):
     faces: dict[str, Literal['base_floor', 'lid_inner']] = Field(default_factory=dict)
     rotations: dict[str, float] = Field(default_factory=dict)
     resolutionOptionId: str = Field(default='', max_length=150)
+    designType: Literal['model', 'laser'] = 'model'
+    template: Literal['box', 'cup', 'bracket', 'plate', 'round-tag', 'panel-box'] | None = None
 
     @field_validator('parameters')
     @classmethod
@@ -83,11 +88,21 @@ class StructureCheckpoint(BaseModel):
                 datetime.fromisoformat(version['createdAt'])
             except (KeyError, TypeError, ValueError) as exc:
                 raise ValueError('结构版本时间无效。') from exc
+            if version.get('designType', 'model') not in {'model', 'laser'}:
+                raise ValueError('结构设计类型无效。')
             if not isinstance(version.get('prompt'), str) or not isinstance(version.get('selectedIds'), list) or not isinstance(version.get('customProfiles'), list):
                 raise ValueError('结构上下文无效。')
             if len(version['selectedIds']) > 32 or not all(isinstance(x, str) for x in version['selectedIds']) or not all(isinstance(x, dict) and isinstance(x.get('id'), str) for x in version['customProfiles']):
                 raise ValueError('结构硬件格式无效。')
             result = version['result']
+            if 'designKind' in result and result['designKind'] not in {'parametric', 'laser'}:
+                raise ValueError('未知的结构几何类型。')
+            if 'designSpec' in result or 'laserDrawing' in result:
+                from .design_specs import DesignSpec, Drawing
+                if result.get('designSpec') is not None:
+                    DesignSpec.model_validate(result['designSpec']).check_kind(version.get('designType', 'model'))
+                if result.get('laserDrawing') is not None:
+                    Drawing.model_validate(result['laserDrawing'])
             if not isinstance(result.get('parameters', {}), dict) or not isinstance(result.get('questions', []), list):
                 raise ValueError('结构参数或问题格式无效。')
             for key in ('checks', 'exports', 'resolution_options', 'bom', 'partial_bom'):
@@ -137,6 +152,8 @@ class StructureCheckpoint(BaseModel):
                     if not item['url'].startswith(prefix) or item['url'][len(prefix):] not in self.assets:
                         raise ValueError('导出文件未随项目保存。')
         for message in self.messages:
+            if message.get('designType', 'model') not in {'model', 'laser'}:
+                raise ValueError('结构对话类型无效。')
             if message.get('role') not in {'user', 'assistant'} or not all(k in message for k in ['id', 'content', 'createdAt']):
                 raise ValueError('结构对话无效。')
             datetime.fromisoformat(message['createdAt'])
@@ -209,7 +226,7 @@ def insert_structure_import(repo, conn, project_id: str, checkpoint: StructureCh
     for m in checkpoint.messages:
         repo.projects._insert_message(conn, conversation_id, project_id,
             ChatMessage(id='msg_' + uuid.uuid4().hex, role=ChatRole(m['role']), content=m['content'],
-                status=ChatMessageStatus.COMPLETED, createdAt=m['createdAt'], updatedAt=m['createdAt'], metadata={'structure': True, 'portableMessageId': m['id']}))
+                status=ChatMessageStatus.COMPLETED, createdAt=m['createdAt'], updatedAt=m['createdAt'], metadata={'structure': True, 'portableMessageId': m['id'], 'designType': m.get('designType', 'model')}))
 
 
 class StructureService:
@@ -224,27 +241,44 @@ class StructureService:
         with self.repo.connect() as conn:
             versions = conn.execute('''SELECT version, preview_json FROM artifact_versions
                 WHERE artifact_id=? ORDER BY version DESC''', ('mu_structure_' + project_id,)).fetchall()
-            messages = conn.execute('''SELECT COALESCE(json_extract(metadata_json, '$.portableMessageId'), id) AS id, role, content, created_at AS createdAt FROM messages
+            messages = conn.execute('''SELECT COALESCE(json_extract(metadata_json, '$.portableMessageId'), id) AS id, role, content, created_at AS createdAt,
+                COALESCE(json_extract(metadata_json, '$.designType'), 'model') AS designType FROM messages
                 WHERE project_id=? AND json_extract(metadata_json, '$.structure')=1 ORDER BY rowid''', (project_id,)).fetchall()
         values = [json.loads(row['preview_json'])['code'] for row in versions]
-        return {'revision': versions[0]['version'] if versions else 0, 'versions': [json.loads(x) for x in values],
+        parsed = [json.loads(x) for x in values]
+        for version in parsed:
+            version.setdefault('name', short_name(version['result'].get('title') or version.get('prompt', ''), '结构设计'))
+        return {'revision': versions[0]['version'] if versions else 0, 'versions': parsed,
                 'messages': [dict(row) for row in messages]}
 
     def commit(self, project_id: str, version: dict, user: str, reply: str):
+        # The immutable version and its dialogue must succeed in one transaction.
+        # Reuse the original Artifact schema and context projection (as folder import does).
         with self.repo.lock:
-            self.repo.artifacts.upsert_text_artifact(artifact_id='mu_structure_' + project_id,
-                project_id=project_id, title='结构设计', kind=ArtifactKind.MODEL_3D,
-                status=ArtifactStatus.DRAFT, source_agent_id='mu-structure', source_entity_type='mu_structure',
-                source_entity_id=uuid.uuid4().hex, source_version=version['revision'],
-                content=json.dumps(version, ensure_ascii=False), summary='结构设计检查与模型产物；未证明实物可装配。',
-                mime_type='application/json', language='json')
             now = datetime.now(UTC).isoformat()
+            artifact_id = 'mu_structure_' + project_id
+            source_id = uuid.uuid4().hex
+            version_id = f'artifact_version_{artifact_id}_{source_id}'
+            content = json.dumps(version, ensure_ascii=False)
+            preview = ArtifactPreview(kind=ArtifactPreviewKind.CODE, code=content, language='json',
+                summary='结构设计检查与模型产物；未证明实物可装配。')
             with self.repo.connect() as conn:
+                conn.execute('''INSERT INTO artifacts (id, project_id, title, kind, status, source_agent_id,
+                    current_version_id, created_at, updated_at) VALUES (?, ?, '结构设计', 'MODEL_3D', 'DRAFT', 'mu-structure', ?, ?, ?)
+                    ON CONFLICT(id) DO UPDATE SET current_version_id=excluded.current_version_id, updated_at=excluded.updated_at''',
+                    (artifact_id, project_id, version_id, now, now))
+                conn.execute('''INSERT INTO artifact_versions (id, artifact_id, project_id, version, status,
+                    mime_type, preview_json, dependencies_json, source_entity_type, source_entity_id, checksum, created_at)
+                    VALUES (?, ?, ?, ?, 'DRAFT', 'application/json', ?, '[]', 'mu_structure', ?, ?, ?)''',
+                    (version_id, artifact_id, project_id, version['revision'], preview.model_dump_json(), source_id,
+                     hashlib.sha256(content.encode()).hexdigest(), now))
+                self.repo.artifacts._apply_artifact_context(conn, artifact_id=artifact_id, version_id=version_id,
+                    project_id=project_id, source_agent_id='mu-structure', status=ArtifactStatus.DRAFT)
                 conversation_id = conn.execute('SELECT id FROM conversations WHERE project_id=? ORDER BY created_at LIMIT 1', (project_id,)).fetchone()[0]
                 for role, text in [('user', user), ('assistant', reply)]:
                     self.repo.projects._insert_message(conn, conversation_id, project_id,
                         ChatMessage(id='msg_' + uuid.uuid4().hex, role=ChatRole(role), content=text,
-                            status=ChatMessageStatus.COMPLETED, createdAt=now, updatedAt=now, metadata={'structure': True}))
+                            status=ChatMessageStatus.COMPLETED, createdAt=now, updatedAt=now, metadata={'structure': True, 'designType': version.get('designType', 'model')}))
 
     async def worker(self, payload: dict) -> dict:
         node = os.environ.get('ZHANGWEN_NODE') or shutil.which('node')
@@ -277,7 +311,8 @@ class StructureService:
                 raise HTTPException(413, '当前项目已有200个结构版本，请保存归档后新建项目。')
             if workspace['revision'] != request.expectedRevision:
                 raise HTTPException(409, '结构版本已在另一页面更新，请重新加载后再操作。')
-            base = next((v for v in workspace['versions'] if v['revision'] == (request.sourceRevision or workspace['revision'])), None)
+            base = next((v for v in workspace['versions'] if (not request.sourceRevision or v['revision'] == request.sourceRevision)
+                         and v.get('designType', 'model') == request.designType), None)
             if request.sourceRevision and not base:
                 raise HTTPException(404, '结构历史版本不存在。')
             if request.action not in {'analyze', 'selected'} and not base:
@@ -307,12 +342,12 @@ class StructureService:
                 raise HTTPException(422, '结构资料超出尺寸、数量或嵌套限制。')
             if len(set(ids)) != len(ids) or any(x not in known for x in ids):
                 raise HTTPException(422, '存在未提供结构资料的硬件，请先补充尺寸资料。')
-            if request.action == 'selected' and not ids:
+            if request.action == 'selected' and not ids and not request.template:
                 raise HTTPException(422, '请先选择至少一个有结构尺寸的硬件。')
-            if request.action in {'analyze', 'revise'} and not request.message.strip() and not request.resolutionOptionId:
+            if request.action in {'analyze', 'revise'} and not request.message.strip() and not request.resolutionOptionId and not request.template:
                 raise HTTPException(422, '请填写结构需求。')
             state = previous.get('design_state')
-            if request.action in {'build', 'parameters', 'validate'} and not state:
+            if request.action in {'build', 'parameters', 'validate'} and not state and not previous.get('designSpec'):
                 raise HTTPException(422, '当前版本没有可建模的参数草案。')
             if request.action == 'build' and previous.get('status') != 'confirmation':
                 raise HTTPException(422, '请先确认需求并生成参数草案。')
@@ -343,6 +378,17 @@ class StructureService:
             job_id = uuid.uuid4().hex
             job_root = self.root / job_id
             job_root.mkdir(parents=True)
+            standalone = request.designType == 'laser' or request.template or previous.get('designKind') or (not ids and request.action in {'analyze', 'revise'})
+            if standalone:
+                if request.template and ((request.template in {'plate', 'round-tag', 'panel-box'}) != (request.designType == 'laser')):
+                    raise HTTPException(422, '设计模板与当前模式不一致。')
+                result = await design_service.act(request, previous, settings, job_root)
+                result = self.public_result(result, project_id, job_id, job_root)
+                version = {'revision': workspace['revision'] + 1, 'createdAt': datetime.now(UTC).isoformat(), 'prompt': request.message or (base['prompt'] if base else result['title']),
+                    'selectedIds': [], 'customProfiles': [], 'result': result, 'offline': bool(request.template or (base and base.get('offline') and request.action in {'build', 'parameters', 'validate'})),
+                    'jobId': job_id, 'designType': request.designType, 'name': short_name(result['title'])}
+                self.commit(project_id, version, request.message or result['title'], result.get('message') or result['title'])
+                return self.get(project_id)
             available = all(importlib.util.find_spec(x) is not None for x in ['cadquery', 'OCP'])
             result = await self.worker({'action': request.action, 'body': body, 'rootDir': str(job_root),
                 'python': sys.executable, 'settings': settings, 'offline': offline, 'previousResult': previous,
@@ -354,7 +400,8 @@ class StructureService:
                 result = self.public_result(result, project_id, job_id, job_root)
             revision = workspace['revision'] + 1
             version = {'revision': revision, 'createdAt': datetime.now(UTC).isoformat(), 'prompt': prompt,
-                'selectedIds': ids, 'customProfiles': profiles, 'result': result, 'offline': offline, 'jobId': job_id}
+                'selectedIds': ids, 'customProfiles': profiles, 'result': result, 'offline': offline, 'jobId': job_id, 'designType': 'model',
+                'name': short_name(result.get('title') or prompt)}
             labels = {'confirm': '确认需求，生成参数草案', 'build': '确认参数并生成真实模型', 'parameters': '应用尺寸与安装参数',
                 'validate': '重新检查结构', 'selected': prompt}
             self.commit(project_id, version, request.message or labels.get(request.action, request.resolutionOptionId),

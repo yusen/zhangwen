@@ -1,19 +1,9 @@
 import { BookOpen, ChevronRight, ClipboardList, FileText, Flag, FolderOpen, ImagePlus, Lightbulb, Plus, Target, Trophy, UploadCloud } from 'lucide-react';
 
 export type LearningRole = 'teacher' | 'student';
-export type Material = 'plan' | 'task' | 'rubric' | 'portfolio' | 'record' | 'work' | 'reflection' | 'poster' | 'competition';
+export type Material = 'definition' | 'questions' | 'plan' | 'task' | 'rubric' | 'portfolio' | 'record' | 'work' | 'reflection' | 'poster' | 'competition';
 export type PosterTemplate = 'activity' | 'class' | 'work' | 'science' | 'contest';
 export type CompetitionPage = 'requirements' | 'archive';
-export const roleMaterials: Record<LearningRole, {id: Material; label: string}[]> = {
-  teacher: [
-    {id:'plan', label:'学习方案'}, {id:'task', label:'学生任务单'}, {id:'rubric', label:'评价量规'},
-    {id:'portfolio', label:'学习档案'}, {id:'poster', label:'成果海报'}, {id:'competition', label:'赛事资料'},
-  ],
-  student: [
-    {id:'task', label:'我的任务'}, {id:'record', label:'探究记录'}, {id:'work', label:'作品说明'},
-    {id:'reflection', label:'自评与反思'}, {id:'poster', label:'作品海报'}, {id:'competition', label:'参赛材料'},
-  ],
-};
 
 export const stages = [
   {name: '探索发现', title: '从生活中发现问题', description: '观察使用场景，提出值得解决的问题，说明自己的初步想法。', evidence: '问题清单 · 观察记录'},
@@ -22,6 +12,32 @@ export const stages = [
 ];
 export const goals = ['说清作品要解决的问题，以及判断成功的依据。', '通过制作、实验与调试验证想法，解释调整的理由。', '与同伴分工协作，记录遇到的困难和自己的收获。'];
 export const pending = '待开发：当前仅展示界面，不生成或保存学习内容。';
+
+export function QuestionsPreview() {
+  return <>
+    <div className="learning-paper-heading"><small>先观察，再追问 · 问题记录示例</small><h1>把想法与疑问留在这里</h1><p>先记录真实观察，再区分已知事实、自己的推测与还需要确认的问题。</p></div>
+    {[
+      ['我观察到了什么','谁在什么情况下遇到困难？有哪些具体例子？'],
+      ['我知道什么，还在猜什么','哪些已经有事实支持？哪些只是我的假设？'],
+      ['下一步想问什么','为了想清楚这个项目，还需要向谁了解什么？'],
+    ].map(([title,question],i)=><section className="learning-paper-section" key={title}><h2><span>0{i+1}</span>{title}</h2><p>{question}</p><div className="learning-writing-space">观察、想法与问题待记录……</div></section>)}
+    <p className="learning-caption">仅预览记录版式；填写、对话与保存待开发。</p>
+  </>;
+}
+
+export function DefinitionPreview({projectName}: {projectName: string}) {
+  return <>
+    <div className="learning-paper-heading"><small>问题引导 · 定义卡示例</small><h1>先想清楚，再开始一个项目</h1><p>围绕真实问题逐步澄清想法，整理一个当前推荐方案与待确认事项。</p></div>
+    <div className="learning-meta"><div><span>当前项目</span><strong>{projectName}</strong></div><div><span>定义状态</span><strong>示例 · 未确认</strong></div><div><span>定义版本</span><strong>尚未生成</strong></div></div>
+    {[
+      ['想解决的问题','谁在什么场景遇到什么困难？为什么值得解决？'],
+      ['当前推荐方案','作品准备怎样帮助他们？先做出哪一个可以验证的小功能？'],
+      ['条件与可行性','现有器材、课时、技能与预算有哪些？哪些风险需要先验证？'],
+      ['成功标准与待确认事项','怎样判断方案有效？还有哪些问题需要和教师或同伴确认？'],
+    ].map(([title,question],i)=><section className="learning-paper-section" key={title}><h2><span>0{i+1}</span>{title}</h2><p>{question}</p><div className="learning-writing-space">内容待澄清与确认……</div></section>)}
+    <p className="learning-caption">仅展示定义卡版式；追问、推荐方案、确认与版本保存待开发。</p>
+  </>;
+}
 
 export function PlanPreview() {
   return <>

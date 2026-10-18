@@ -4,7 +4,7 @@
 
 当前 Web 前端使用 React、Vite、CodeMirror、Lucide；后端使用 FastAPI、Pydantic、Uvicorn、HTTPX、PyYAML 等。精确版本由根 `package-lock.json` 与 `services/local-api/requirements-web-lock.txt` 锁定；依赖的许可证随各上游分发。
 
-浏览器固件功能使用 Espressif [esptool-js](https://github.com/espressif/esptool-js) 0.5.6（Apache-2.0），由package-lock锁定。本地构建包含其芯片支持和RAM stub资源，不通过CDN加载；依赖安装目录保留上游LICENSE。厂商固件未随本项目分发，官方说明链接不表示固件再授权。
+浏览器固件功能使用 Espressif [esptool-js](https://github.com/espressif/esptool-js) 0.5.6（Apache-2.0），由package-lock锁定。本地构建包含其芯片支持和RAM stub资源，不通过CDN加载；依赖安装目录保留上游LICENSE。默认官方固件现保存在resources/firmware，并被部署导出白名单包含；来源、版本、摘要与原版权声明见该目录README/manifest和许可证，不新增第三方授权。
 
 Windows/macOS 启动时从官方源下载 Node.js（https://nodejs.org/，含自身第三方许可证）与 uv（https://github.com/astral-sh/uv，MIT/Apache-2.0），通过 uv 下载 python-build-standalone 的 CPython 发行版。运行环境下载后保留其自带的许可证文件，源码仓库不包含这些二进制。
 

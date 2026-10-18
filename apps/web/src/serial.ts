@@ -338,9 +338,12 @@ export class MicroPythonDevice {
   }
   async repl(command: string): Promise<void> {
     if (this.busy || this.state !== 'connected' || this.mode !== 'friendly') throw new Error('先停止程序并等待设备空闲。');
+    if (!command.trim() || command.length > 4000 || /[\r\n\x00-\x1f\x7f]/.test(command)) throw new Error('REPL请输入一条不含控制字符的命令，最多4000字符。');
     this.receipt = null; // arbitrary REPL can modify files; never reuse an old receipt.
-    await this.send(command.replace(/[\r\n\x00-\x1f]/g, '') + '\r');
-    this.changed();
+    this.outputTail = ''; this.runTraceback = false;
+    this.setState('running');
+    try { await this.send(command + '\r'); }
+    catch (err) { this.setState('attention'); throw err; }
   }
   async disconnect(): Promise<void> {
     this.closing = true;

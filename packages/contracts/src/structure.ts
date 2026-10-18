@@ -24,16 +24,19 @@ export interface CadResult {
   resolution_options?: { id: string; label?: string; title?: string; description?: string }[];
   requirement_analysis?: Record<string, unknown>;
   build?: { status: string; message?: string; blocking_reason?: string };
+  designKind?: 'parametric' | 'laser';
+  designSpec?: DesignSpec;
   [key: string]: unknown;
 }
 export interface StructureVersion {
   revision: number; createdAt: string; prompt: string; selectedIds: string[];
   customProfiles: Record<string, unknown>[]; result: CadResult; offline: boolean;
   jobId: string;
+  designType?: 'model' | 'laser'; name?: string;
 }
 export interface StructureWorkspace {
   revision: number; versions: StructureVersion[];
-  messages: { id: string; role: 'user' | 'assistant'; content: string; createdAt: string }[];
+  messages: { id: string; role: 'user' | 'assistant'; content: string; createdAt: string; designType?: 'model' | 'laser' }[];
 }
 export interface StructureAction {
   action: 'analyze' | 'confirm' | 'build' | 'revise' | 'parameters' | 'validate' | 'selected';
@@ -41,5 +44,9 @@ export interface StructureAction {
   message?: string; selectedIds?: string[]; customProfiles?: Record<string, unknown>[];
   parameters?: Record<string, number>; faces?: Record<string, 'base_floor' | 'lid_inner'>;
   rotations?: Record<string, number>; resolutionOptionId?: string;
+  designType?: 'model' | 'laser'; template?: 'box' | 'cup' | 'bracket' | 'plate' | 'round-tag' | 'panel-box';
 }
 export interface StructureCatalog { profiles: CadProfile[]; cadqueryAvailable: boolean }
+export interface SolidPart { kind: 'box' | 'cylinder' | 'sphere'; operation: 'add' | 'cut'; label: string; size: number[]; center: number[]; rotation: number[] }
+export interface LaserShape { kind: 'rect' | 'circle' | 'polyline'; operation: 'cut' | 'engrave'; x: number; y: number; width: number; height: number; radius: number; points: number[][]; closed: boolean }
+export interface DesignSpec { title: string; summary: string; questions: string[]; solid: SolidPart[]; drawing?: { width: number; height: number; thickness: number; material: string; kerf: number; shapes: LaserShape[] } | null }

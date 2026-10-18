@@ -13,9 +13,10 @@ function ModuleVisual({ item }: { item: HardwareSummary }) {
     : <Icon size={48} strokeWidth={1.5} aria-hidden="true" />}</span>;
 }
 
-export function ModuleCard({ item, checked, added, disabled, outside, onToggle, onDetail, onRemove, onLoad }: {
+export function ModuleCard({ item, checked, added, disabled, outside, onToggle, onDetail, onEditExample, onRemove, onLoad }: {
   item: HardwareSummary; checked?: boolean; added?: boolean; disabled?: boolean; outside?: boolean;
   onToggle?: (checked: boolean) => void; onDetail: () => void; onRemove?: () => void; onLoad?: () => void;
+  onEditExample?: () => void;
 }) {
   const [expanded, setExpanded] = useState(false);
   const options = useRef<HTMLButtonElement>(null);
@@ -33,6 +34,7 @@ export function ModuleCard({ item, checked, added, disabled, outside, onToggle, 
       {outside && <small className="module-warning">资料需核对</small>}
       {expanded && options.current && <FloatingMenu id={menuId} label={`${item.displayName}的操作`} anchor={options.current} onClose={restore => { setExpanded(false); if (restore) options.current?.focus({ preventScroll: true }); }} items={[
         { label: '查看资料', icon: BookOpen, action: onDetail },
+        ...(onEditExample ? [{ label: '编辑案例', icon: FileCode2, disabled, action: onEditExample }] : []),
         ...(onLoad ? [{ label: '载入示例', ariaLabel: `载入模块：${item.displayName}`, icon: FileCode2, disabled, action: onLoad }] : []),
         ...(onRemove ? [{ label: '移除模块', ariaLabel: `移除${item.displayName}`, icon: X, disabled, danger: true, action: onRemove }] : []),
       ]} />}
