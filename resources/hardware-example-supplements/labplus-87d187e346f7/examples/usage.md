@@ -55,10 +55,13 @@
         }
       ],
       "notes": [
+        "pm25.PM25()固定P0模拟采样/P1发光控制，不能据此直接接旧裸探头；需探头型号、配套电路、额定供电和采样极性。本项保留参考，不套用PM25_DC串口协议。",
+        "已对照用户提供的bluebit.py固定版本核对；资料/功能案例不等于实物验收，也不会自动标记主控已核实。",
         "默认接线只是建议；先断电接线，模块与主控共地。保存、语法检查及串口回读均不代表实际测量通过。",
         "此条为旧版裸探头，官方页通讯与引脚说明不一致，需明确探头型号与配套电路。"
       ],
       "sources": [
+        "https://github.com/labplus-cn/mpython/blob/80bbda23f3ae28e8edbff7c47dc5990a108eba30/port/modules/bluebit.py",
         "https://labplus-ledong-module-documentation.readthedocs.io/zh-cn/latest/%E4%BC%A0%E6%84%9F%E5%99%A8%E7%B1%BB/PM2.5.html",
         "https://mpython.readthedocs.io/zh-cn/v2.0.1/library/mPython/mpython.html"
       ],
@@ -115,10 +118,14 @@
         }
       ],
       "notes": [
+        "pm25.PM25()固定P0模拟采样/P1发光控制，不能据此直接接旧裸探头；需探头型号、配套电路、额定供电和采样极性。本项保留参考，不套用PM25_DC串口协议。",
+        "bluebit依赖mpython与多个外部库；不能把掌控板2.0库直接认作此主控已适配。当前板独立单文件案例可按所列接口使用。",
+        "已对照用户提供的bluebit.py固定版本核对；资料/功能案例不等于实物验收，也不会自动标记主控已核实。",
         "默认接线只是建议；先断电接线，模块与主控共地。保存、语法检查及串口回读均不代表实际测量通过。",
         "此条为旧版裸探头，官方页通讯与引脚说明不一致，需明确探头型号与配套电路。"
       ],
       "sources": [
+        "https://github.com/labplus-cn/mpython/blob/80bbda23f3ae28e8edbff7c47dc5990a108eba30/port/modules/bluebit.py",
         "https://labplus-ledong-module-documentation.readthedocs.io/zh-cn/latest/%E4%BC%A0%E6%84%9F%E5%99%A8%E7%B1%BB/PM2.5.html",
         "https://mpython-esp32s3-doc.readthedocs.io/zh-cn/latest/5_api/library/micropython/machine/machine.Pin.html"
       ],
@@ -175,10 +182,14 @@
         }
       ],
       "notes": [
+        "pm25.PM25()固定P0模拟采样/P1发光控制，不能据此直接接旧裸探头；需探头型号、配套电路、额定供电和采样极性。本项保留参考，不套用PM25_DC串口协议。",
+        "bluebit依赖mpython与多个外部库；不能把掌控板2.0库直接认作此主控已适配。当前板独立单文件案例可按所列接口使用。",
+        "已对照用户提供的bluebit.py固定版本核对；资料/功能案例不等于实物验收，也不会自动标记主控已核实。",
         "默认接线只是建议；先断电接线，模块与主控共地。保存、语法检查及串口回读均不代表实际测量通过。",
         "此条为旧版裸探头，官方页通讯与引脚说明不一致，需明确探头型号与配套电路。"
       ],
       "sources": [
+        "https://github.com/labplus-cn/mpython/blob/80bbda23f3ae28e8edbff7c47dc5990a108eba30/port/modules/bluebit.py",
         "https://labplus-ledong-module-documentation.readthedocs.io/zh-cn/latest/%E4%BC%A0%E6%84%9F%E5%99%A8%E7%B1%BB/PM2.5.html",
         "https://www.unihiker.com.cn/wiki/k10/micropython_unihiker_k10"
       ],
@@ -235,11 +246,15 @@
         }
       ],
       "notes": [
+        "pm25.PM25()固定P0模拟采样/P1发光控制，不能据此直接接旧裸探头；需探头型号、配套电路、额定供电和采样极性。本项保留参考，不套用PM25_DC串口协议。",
+        "bluebit依赖mpython与多个外部库；不能把掌控板2.0库直接认作此主控已适配。当前板独立单文件案例可按所列接口使用。",
+        "已对照用户提供的bluebit.py固定版本核对；资料/功能案例不等于实物验收，也不会自动标记主控已核实。",
         "默认接线只是建议；先断电接线，模块与主控共地。保存、语法检查及串口回读均不代表实际测量通过。",
         "此条为旧版裸探头，官方页通讯与引脚说明不一致，需明确探头型号与配套电路。",
         "XIAO：D0=GPIO1，D1=GPIO2，D2=GPIO3，D4/SDA=GPIO5，D5/SCL=GPIO6；D号不等于GPIO号。"
       ],
       "sources": [
+        "https://github.com/labplus-cn/mpython/blob/80bbda23f3ae28e8edbff7c47dc5990a108eba30/port/modules/bluebit.py",
         "https://labplus-ledong-module-documentation.readthedocs.io/zh-cn/latest/%E4%BC%A0%E6%84%9F%E5%99%A8%E7%B1%BB/PM2.5.html",
         "https://wiki.seeedstudio.com/xiao_esp32s3_getting_started/"
       ],
@@ -296,11 +311,15 @@
         }
       ],
       "notes": [
+        "pm25.PM25()固定P0模拟采样/P1发光控制，不能据此直接接旧裸探头；需探头型号、配套电路、额定供电和采样极性。本项保留参考，不套用PM25_DC串口协议。",
+        "bluebit依赖mpython与多个外部库；不能把掌控板2.0库直接认作此主控已适配。当前板独立单文件案例可按所列接口使用。",
+        "已对照用户提供的bluebit.py固定版本核对；资料/功能案例不等于实物验收，也不会自动标记主控已核实。",
         "默认接线只是建议；先断电接线，模块与主控共地。保存、语法检查及串口回读均不代表实际测量通过。",
         "此条为旧版裸探头，官方页通讯与引脚说明不一致，需明确探头型号与配套电路。",
         "通用C3没有统一D/P别名；确认GPIO3/4实际引出且未被板载功能占用。"
       ],
       "sources": [
+        "https://github.com/labplus-cn/mpython/blob/80bbda23f3ae28e8edbff7c47dc5990a108eba30/port/modules/bluebit.py",
         "https://labplus-ledong-module-documentation.readthedocs.io/zh-cn/latest/%E4%BC%A0%E6%84%9F%E5%99%A8%E7%B1%BB/PM2.5.html",
         "https://docs.micropython.org/en/latest/esp32/quickref.html"
       ],

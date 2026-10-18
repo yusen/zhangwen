@@ -8,7 +8,7 @@
       "boardId": "hw_labplus_mpython_v2",
       "kind": "functional",
       "title": "盛思 热敏电阻 · ADC",
-      "summary": "读取一路ADC原始量；未做物理单位转换或校准。",
+      "summary": "据Thermistor默认10kΩ/B3935/25℃高侧分压模型估温，适配掌控2.0的0–4095 ADC并检查饱和。 接线与实物结果待测试。",
       "fields": [
         {
           "key": "firmware",
@@ -78,15 +78,19 @@
         }
       ],
       "notes": [
+        "案例为有限次采样；含button_b轮询的案例可按B停止，其他案例可用工作台停止。接线选项中的P号不是原始GPIO号。",
+        "NTC=Thermistor别名；本例高侧/10kΩ/B3935仅为库默认假设，不是本产品标定证据，需核对电路和阻值；原始ADC同时保留。",
+        "已对照用户提供的bluebit.py固定版本核对；资料/功能案例不等于实物验收，也不会自动标记主控已核实。",
         "默认接线只是建议；先断电接线，模块与主控共地。保存、语法检查及串口回读均不代表实际测量通过。",
         "示例只显示ADC原始量，不直接标为℃、分贝、ppm、湿度百分比或重量；物理单位需此型号的转换公式和校准。",
         "只把已确认不超过3.3V的信号接入主控；模块5V供电不表示信号可直连。"
       ],
       "sources": [
+        "https://github.com/labplus-cn/mpython/blob/80bbda23f3ae28e8edbff7c47dc5990a108eba30/port/modules/bluebit.py",
         "https://labplus-ledong-module-documentation.readthedocs.io/zh-cn/latest/%E4%BC%A0%E6%84%9F%E5%99%A8%E7%B1%BB/%E7%83%AD%E6%95%8F%E7%94%B5%E9%98%BB.html",
         "https://mpython.readthedocs.io/zh-cn/v2.0.1/library/mPython/mpython.html"
       ],
-      "codeTemplate": "# 盛思 热敏电阻\n# 掌控板2.0官方MicroPython\n# 功能示例，待实物测试。\nfrom mpython import MPythonPin, PinMode\nfrom utime import sleep_ms\nadc0 = MPythonPin({{sig}}, PinMode.ANALOG)\nfor _ in range(40):\n    print(\"ADC raw =\", adc0.read_analog())\n    sleep_ms(250)\n"
+      "codeTemplate": "# 盛思 热敏电阻\n# 官方来源核对；待实物测试。\nfrom mpython import i2c, button_b\nfrom utime import sleep_ms\nfrom mpython import MPythonPin, PinMode\nfrom math import log\nadc = MPythonPin({{sig}}, PinMode.ANALOG)\ndef read_temperature():\n    raw = adc.read_analog()\n    if raw <= 0 or raw >= 4095:\n        return raw, None\n    # bluebit.Thermistor默认高侧分压；参数必须与实物一致。\n    resistance = 10000.0 * (4095.0 / raw - 1.0)\n    temperature = 1.0 / (log(resistance / 10000.0) / 3935.0 + 1.0 / 298.15) - 273.15\n    return raw, temperature\nfor _ in range(40):\n    if button_b.value() == 0:\n        break\n    raw, celsius = read_temperature()\n    print(\"ADC:\", raw, \"估算℃:\", celsius if celsius is not None else \"开路/短路/饱和\")\n    sleep_ms(300)\n"
     },
     {
       "boardId": "hw_labplus_mpython_esp32s3_v3",
@@ -158,11 +162,14 @@
         }
       ],
       "notes": [
+        "bluebit依赖mpython与多个外部库；不能把掌控板2.0库直接认作此主控已适配。当前板独立单文件案例可按所列接口使用。",
+        "已对照用户提供的bluebit.py固定版本核对；资料/功能案例不等于实物验收，也不会自动标记主控已核实。",
         "默认接线只是建议；先断电接线，模块与主控共地。保存、语法检查及串口回读均不代表实际测量通过。",
         "示例只显示ADC原始量，不直接标为℃、分贝、ppm、湿度百分比或重量；物理单位需此型号的转换公式和校准。",
         "只把已确认不超过3.3V的信号接入主控；模块5V供电不表示信号可直连。"
       ],
       "sources": [
+        "https://github.com/labplus-cn/mpython/blob/80bbda23f3ae28e8edbff7c47dc5990a108eba30/port/modules/bluebit.py",
         "https://labplus-ledong-module-documentation.readthedocs.io/zh-cn/latest/%E4%BC%A0%E6%84%9F%E5%99%A8%E7%B1%BB/%E7%83%AD%E6%95%8F%E7%94%B5%E9%98%BB.html",
         "https://mpython-esp32s3-doc.readthedocs.io/zh-cn/latest/5_api/library/micropython/machine/machine.Pin.html"
       ],
@@ -238,11 +245,14 @@
         }
       ],
       "notes": [
+        "bluebit依赖mpython与多个外部库；不能把掌控板2.0库直接认作此主控已适配。当前板独立单文件案例可按所列接口使用。",
+        "已对照用户提供的bluebit.py固定版本核对；资料/功能案例不等于实物验收，也不会自动标记主控已核实。",
         "默认接线只是建议；先断电接线，模块与主控共地。保存、语法检查及串口回读均不代表实际测量通过。",
         "示例只显示ADC原始量，不直接标为℃、分贝、ppm、湿度百分比或重量；物理单位需此型号的转换公式和校准。",
         "只把已确认不超过3.3V的信号接入主控；模块5V供电不表示信号可直连。"
       ],
       "sources": [
+        "https://github.com/labplus-cn/mpython/blob/80bbda23f3ae28e8edbff7c47dc5990a108eba30/port/modules/bluebit.py",
         "https://labplus-ledong-module-documentation.readthedocs.io/zh-cn/latest/%E4%BC%A0%E6%84%9F%E5%99%A8%E7%B1%BB/%E7%83%AD%E6%95%8F%E7%94%B5%E9%98%BB.html",
         "https://www.unihiker.com.cn/wiki/k10/micropython_unihiker_k10"
       ],
@@ -322,12 +332,15 @@
         }
       ],
       "notes": [
+        "bluebit依赖mpython与多个外部库；不能把掌控板2.0库直接认作此主控已适配。当前板独立单文件案例可按所列接口使用。",
+        "已对照用户提供的bluebit.py固定版本核对；资料/功能案例不等于实物验收，也不会自动标记主控已核实。",
         "默认接线只是建议；先断电接线，模块与主控共地。保存、语法检查及串口回读均不代表实际测量通过。",
         "示例只显示ADC原始量，不直接标为℃、分贝、ppm、湿度百分比或重量；物理单位需此型号的转换公式和校准。",
         "只把已确认不超过3.3V的信号接入主控；模块5V供电不表示信号可直连。",
         "XIAO：D0=GPIO1，D1=GPIO2，D2=GPIO3，D4/SDA=GPIO5，D5/SCL=GPIO6；D号不等于GPIO号。"
       ],
       "sources": [
+        "https://github.com/labplus-cn/mpython/blob/80bbda23f3ae28e8edbff7c47dc5990a108eba30/port/modules/bluebit.py",
         "https://labplus-ledong-module-documentation.readthedocs.io/zh-cn/latest/%E4%BC%A0%E6%84%9F%E5%99%A8%E7%B1%BB/%E7%83%AD%E6%95%8F%E7%94%B5%E9%98%BB.html",
         "https://wiki.seeedstudio.com/xiao_esp32s3_getting_started/"
       ],
@@ -403,12 +416,15 @@
         }
       ],
       "notes": [
+        "bluebit依赖mpython与多个外部库；不能把掌控板2.0库直接认作此主控已适配。当前板独立单文件案例可按所列接口使用。",
+        "已对照用户提供的bluebit.py固定版本核对；资料/功能案例不等于实物验收，也不会自动标记主控已核实。",
         "默认接线只是建议；先断电接线，模块与主控共地。保存、语法检查及串口回读均不代表实际测量通过。",
         "示例只显示ADC原始量，不直接标为℃、分贝、ppm、湿度百分比或重量；物理单位需此型号的转换公式和校准。",
         "只把已确认不超过3.3V的信号接入主控；模块5V供电不表示信号可直连。",
         "通用C3没有统一D/P别名；确认GPIO3/4实际引出且未被板载功能占用。"
       ],
       "sources": [
+        "https://github.com/labplus-cn/mpython/blob/80bbda23f3ae28e8edbff7c47dc5990a108eba30/port/modules/bluebit.py",
         "https://labplus-ledong-module-documentation.readthedocs.io/zh-cn/latest/%E4%BC%A0%E6%84%9F%E5%99%A8%E7%B1%BB/%E7%83%AD%E6%95%8F%E7%94%B5%E9%98%BB.html",
         "https://docs.micropython.org/en/latest/esp32/quickref.html"
       ],

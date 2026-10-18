@@ -6,9 +6,9 @@
   "guides": [
     {
       "boardId": "hw_labplus_mpython_v2",
-      "kind": "diagnostic",
+      "kind": "functional",
       "title": "盛思 电子标签RFID · I2C",
-      "summary": "提供当前固件的环境/连通检查；尚未包含此型号完整的测量或控制驱动。",
+      "summary": "官方Scan_Rfid.scanning(i2c)读取卡号；无卡返回None，约20秒自动结束。 接线与实物结果待测试。",
       "fields": [
         {
           "key": "firmware",
@@ -70,14 +70,18 @@
         }
       ],
       "notes": [
+        "案例为有限次采样；含button_b轮询的案例可按B停止，其他案例可用工作台停止。接线选项中的P号不是原始GPIO号。",
+        "依赖固件的bluebit和rfid；只读取serial_number()，不调用初始化钱包、写块、充值或扣费。",
+        "已对照用户提供的bluebit.py固定版本核对；资料/功能案例不等于实物验收，也不会自动标记主控已核实。",
         "默认接线只是建议；先断电接线，模块与主控共地。保存、语法检查及串口回读均不代表实际测量通过。",
         "先记录主控空载I2C地址，再断电接入单个模块比较；扫描不能证明型号或测量成功。"
       ],
       "sources": [
+        "https://github.com/labplus-cn/mpython/blob/80bbda23f3ae28e8edbff7c47dc5990a108eba30/port/modules/bluebit.py",
         "https://labplus-ledong-module-documentation.readthedocs.io/zh-cn/latest/%E4%BC%A0%E6%84%9F%E5%99%A8%E7%B1%BB/RFID.html",
         "https://mpython.readthedocs.io/zh-cn/v2.0.1/library/mPython/mpython.html"
       ],
-      "codeTemplate": "# 盛思 电子标签RFID\n# 掌控板2.0官方MicroPython\n# 诊断/参考，不代表完整测量驱动。\nfrom mpython import i2c\nfrom utime import sleep_ms\nbefore = i2c.scan()\nprint(\"I2C addresses =\", [hex(address) for address in before])\nprint(\"Disconnect power before changing wiring; compare with board-only addresses.\")\nprint(\"Address detection is not a measurement or model identification.\")\n"
+      "codeTemplate": "# 盛思 电子标签RFID\n# 官方来源核对；待实物测试。\nfrom mpython import i2c, button_b\nfrom utime import sleep_ms\ntry:\n    from bluebit import Scan_Rfid\nexcept ImportError as error:\n    print(\"缺少此型号驱动或其依赖:\", error)\n    raise RuntimeError(\"请核对此主控固件的库版本；不能仅复制整个bluebit.py解决依赖\")\nfor _ in range(40):\n    if button_b.value() == 0:\n        break\n    card = Scan_Rfid.scanning(i2c)\n    print(\"未发现卡\" if card is None else \"卡号: %s\" % card.serial_number())\n    sleep_ms(500)\n"
     },
     {
       "boardId": "hw_labplus_mpython_esp32s3_v3",
@@ -145,10 +149,13 @@
         }
       ],
       "notes": [
+        "bluebit依赖mpython与多个外部库；不能把掌控板2.0库直接认作此主控已适配。当前板独立单文件案例可按所列接口使用。",
+        "已对照用户提供的bluebit.py固定版本核对；资料/功能案例不等于实物验收，也不会自动标记主控已核实。",
         "默认接线只是建议；先断电接线，模块与主控共地。保存、语法检查及串口回读均不代表实际测量通过。",
         "先记录主控空载I2C地址，再断电接入单个模块比较；扫描不能证明型号或测量成功。"
       ],
       "sources": [
+        "https://github.com/labplus-cn/mpython/blob/80bbda23f3ae28e8edbff7c47dc5990a108eba30/port/modules/bluebit.py",
         "https://labplus-ledong-module-documentation.readthedocs.io/zh-cn/latest/%E4%BC%A0%E6%84%9F%E5%99%A8%E7%B1%BB/RFID.html",
         "https://mpython-esp32s3-doc.readthedocs.io/zh-cn/latest/5_api/library/micropython/machine/machine.Pin.html"
       ],
@@ -220,11 +227,14 @@
         }
       ],
       "notes": [
+        "bluebit依赖mpython与多个外部库；不能把掌控板2.0库直接认作此主控已适配。当前板独立单文件案例可按所列接口使用。",
+        "已对照用户提供的bluebit.py固定版本核对；资料/功能案例不等于实物验收，也不会自动标记主控已核实。",
         "默认接线只是建议；先断电接线，模块与主控共地。保存、语法检查及串口回读均不代表实际测量通过。",
         "先记录主控空载I2C地址，再断电接入单个模块比较；扫描不能证明型号或测量成功。",
         "K10官方代码模式未公开通用I2C对象和原生引脚映射；本例不猜测machine.Pin端口。"
       ],
       "sources": [
+        "https://github.com/labplus-cn/mpython/blob/80bbda23f3ae28e8edbff7c47dc5990a108eba30/port/modules/bluebit.py",
         "https://labplus-ledong-module-documentation.readthedocs.io/zh-cn/latest/%E4%BC%A0%E6%84%9F%E5%99%A8%E7%B1%BB/RFID.html",
         "https://www.unihiker.com.cn/wiki/k10/micropython_unihiker_k10"
       ],
@@ -296,11 +306,14 @@
         }
       ],
       "notes": [
+        "bluebit依赖mpython与多个外部库；不能把掌控板2.0库直接认作此主控已适配。当前板独立单文件案例可按所列接口使用。",
+        "已对照用户提供的bluebit.py固定版本核对；资料/功能案例不等于实物验收，也不会自动标记主控已核实。",
         "默认接线只是建议；先断电接线，模块与主控共地。保存、语法检查及串口回读均不代表实际测量通过。",
         "先记录主控空载I2C地址，再断电接入单个模块比较；扫描不能证明型号或测量成功。",
         "XIAO：D0=GPIO1，D1=GPIO2，D2=GPIO3，D4/SDA=GPIO5，D5/SCL=GPIO6；D号不等于GPIO号。"
       ],
       "sources": [
+        "https://github.com/labplus-cn/mpython/blob/80bbda23f3ae28e8edbff7c47dc5990a108eba30/port/modules/bluebit.py",
         "https://labplus-ledong-module-documentation.readthedocs.io/zh-cn/latest/%E4%BC%A0%E6%84%9F%E5%99%A8%E7%B1%BB/RFID.html",
         "https://wiki.seeedstudio.com/xiao_esp32s3_getting_started/"
       ],
@@ -372,11 +385,14 @@
         }
       ],
       "notes": [
+        "bluebit依赖mpython与多个外部库；不能把掌控板2.0库直接认作此主控已适配。当前板独立单文件案例可按所列接口使用。",
+        "已对照用户提供的bluebit.py固定版本核对；资料/功能案例不等于实物验收，也不会自动标记主控已核实。",
         "默认接线只是建议；先断电接线，模块与主控共地。保存、语法检查及串口回读均不代表实际测量通过。",
         "先记录主控空载I2C地址，再断电接入单个模块比较；扫描不能证明型号或测量成功。",
         "通用C3没有统一D/P别名；确认GPIO3/4实际引出且未被板载功能占用。"
       ],
       "sources": [
+        "https://github.com/labplus-cn/mpython/blob/80bbda23f3ae28e8edbff7c47dc5990a108eba30/port/modules/bluebit.py",
         "https://labplus-ledong-module-documentation.readthedocs.io/zh-cn/latest/%E4%BC%A0%E6%84%9F%E5%99%A8%E7%B1%BB/RFID.html",
         "https://docs.micropython.org/en/latest/esp32/quickref.html"
       ],

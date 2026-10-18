@@ -98,10 +98,14 @@
         }
       ],
       "notes": [
+        "案例为有限次采样；含button_b轮询的案例可按B停止，其他案例可用工作台停止。接线选项中的P号不是原始GPIO号。",
+        "震动信号可能是短脉冲，当前100ms轮询只适合观察原始电平；未检测到不代表未发生震动，计次应用需中断/锁存与消抖。",
+        "已对照用户提供的bluebit.py固定版本核对；资料/功能案例不等于实物验收，也不会自动标记主控已核实。",
         "默认接线只是建议；先断电接线，模块与主控共地。保存、语法检查及串口回读均不代表实际测量通过。",
         "只把已确认不超过3.3V的信号接入主控；模块5V供电不表示信号可直连。"
       ],
       "sources": [
+        "https://github.com/labplus-cn/mpython/blob/80bbda23f3ae28e8edbff7c47dc5990a108eba30/port/modules/bluebit.py",
         "https://labplus-ledong-module-documentation.readthedocs.io/zh-cn/latest/%E4%BC%A0%E6%84%9F%E5%99%A8%E7%B1%BB/%E9%9C%87%E5%8A%A8.html",
         "https://mpython.readthedocs.io/zh-cn/v2.0.1/library/mPython/mpython.html"
       ],
@@ -177,10 +181,14 @@
         }
       ],
       "notes": [
+        "震动信号可能是短脉冲，当前100ms轮询只适合观察原始电平；未检测到不代表未发生震动，计次应用需中断/锁存与消抖。",
+        "bluebit依赖mpython与多个外部库；不能把掌控板2.0库直接认作此主控已适配。当前板独立单文件案例可按所列接口使用。",
+        "已对照用户提供的bluebit.py固定版本核对；资料/功能案例不等于实物验收，也不会自动标记主控已核实。",
         "默认接线只是建议；先断电接线，模块与主控共地。保存、语法检查及串口回读均不代表实际测量通过。",
         "只把已确认不超过3.3V的信号接入主控；模块5V供电不表示信号可直连。"
       ],
       "sources": [
+        "https://github.com/labplus-cn/mpython/blob/80bbda23f3ae28e8edbff7c47dc5990a108eba30/port/modules/bluebit.py",
         "https://labplus-ledong-module-documentation.readthedocs.io/zh-cn/latest/%E4%BC%A0%E6%84%9F%E5%99%A8%E7%B1%BB/%E9%9C%87%E5%8A%A8.html",
         "https://mpython-esp32s3-doc.readthedocs.io/zh-cn/latest/5_api/library/micropython/machine/machine.Pin.html"
       ],
@@ -256,10 +264,14 @@
         }
       ],
       "notes": [
+        "震动信号可能是短脉冲，当前100ms轮询只适合观察原始电平；未检测到不代表未发生震动，计次应用需中断/锁存与消抖。",
+        "bluebit依赖mpython与多个外部库；不能把掌控板2.0库直接认作此主控已适配。当前板独立单文件案例可按所列接口使用。",
+        "已对照用户提供的bluebit.py固定版本核对；资料/功能案例不等于实物验收，也不会自动标记主控已核实。",
         "默认接线只是建议；先断电接线，模块与主控共地。保存、语法检查及串口回读均不代表实际测量通过。",
         "只把已确认不超过3.3V的信号接入主控；模块5V供电不表示信号可直连。"
       ],
       "sources": [
+        "https://github.com/labplus-cn/mpython/blob/80bbda23f3ae28e8edbff7c47dc5990a108eba30/port/modules/bluebit.py",
         "https://labplus-ledong-module-documentation.readthedocs.io/zh-cn/latest/%E4%BC%A0%E6%84%9F%E5%99%A8%E7%B1%BB/%E9%9C%87%E5%8A%A8.html",
         "https://www.unihiker.com.cn/wiki/k10/micropython_unihiker_k10"
       ],
@@ -339,11 +351,15 @@
         }
       ],
       "notes": [
+        "震动信号可能是短脉冲，当前100ms轮询只适合观察原始电平；未检测到不代表未发生震动，计次应用需中断/锁存与消抖。",
+        "bluebit依赖mpython与多个外部库；不能把掌控板2.0库直接认作此主控已适配。当前板独立单文件案例可按所列接口使用。",
+        "已对照用户提供的bluebit.py固定版本核对；资料/功能案例不等于实物验收，也不会自动标记主控已核实。",
         "默认接线只是建议；先断电接线，模块与主控共地。保存、语法检查及串口回读均不代表实际测量通过。",
         "只把已确认不超过3.3V的信号接入主控；模块5V供电不表示信号可直连。",
         "XIAO：D0=GPIO1，D1=GPIO2，D2=GPIO3，D4/SDA=GPIO5，D5/SCL=GPIO6；D号不等于GPIO号。"
       ],
       "sources": [
+        "https://github.com/labplus-cn/mpython/blob/80bbda23f3ae28e8edbff7c47dc5990a108eba30/port/modules/bluebit.py",
         "https://labplus-ledong-module-documentation.readthedocs.io/zh-cn/latest/%E4%BC%A0%E6%84%9F%E5%99%A8%E7%B1%BB/%E9%9C%87%E5%8A%A8.html",
         "https://wiki.seeedstudio.com/xiao_esp32s3_getting_started/"
       ],
@@ -419,11 +435,15 @@
         }
       ],
       "notes": [
+        "震动信号可能是短脉冲，当前100ms轮询只适合观察原始电平；未检测到不代表未发生震动，计次应用需中断/锁存与消抖。",
+        "bluebit依赖mpython与多个外部库；不能把掌控板2.0库直接认作此主控已适配。当前板独立单文件案例可按所列接口使用。",
+        "已对照用户提供的bluebit.py固定版本核对；资料/功能案例不等于实物验收，也不会自动标记主控已核实。",
         "默认接线只是建议；先断电接线，模块与主控共地。保存、语法检查及串口回读均不代表实际测量通过。",
         "只把已确认不超过3.3V的信号接入主控；模块5V供电不表示信号可直连。",
         "通用C3没有统一D/P别名；确认GPIO3/4实际引出且未被板载功能占用。"
       ],
       "sources": [
+        "https://github.com/labplus-cn/mpython/blob/80bbda23f3ae28e8edbff7c47dc5990a108eba30/port/modules/bluebit.py",
         "https://labplus-ledong-module-documentation.readthedocs.io/zh-cn/latest/%E4%BC%A0%E6%84%9F%E5%99%A8%E7%B1%BB/%E9%9C%87%E5%8A%A8.html",
         "https://docs.micropython.org/en/latest/esp32/quickref.html"
       ],

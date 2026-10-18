@@ -98,11 +98,15 @@
         }
       ],
       "notes": [
+        "案例为有限次采样；含button_b轮询的案例可按B停止，其他案例可用工作台停止。接线选项中的P号不是原始GPIO号。",
+        "DHT11使用当前板固件的DHT接口（通用方案dht.DHT11、K10专用封装），不是SHT20 I2C；采样间隔2.2秒、异常单独报告，核对DATA上拉，不替换为其他型号驱动。",
+        "已对照用户提供的bluebit.py固定版本核对；资料/功能案例不等于实物验收，也不会自动标记主控已核实。",
         "默认接线只是建议；先断电接线，模块与主控共地。保存、语法检查及串口回读均不代表实际测量通过。",
         "只把已确认不超过3.3V的信号接入主控；模块5V供电不表示信号可直连。",
         "DATA需要上拉到3.3V；先确认模块是否已带上拉，读取失败也可能是供电、线长或采样过快。"
       ],
       "sources": [
+        "https://github.com/labplus-cn/mpython/blob/80bbda23f3ae28e8edbff7c47dc5990a108eba30/port/modules/bluebit.py",
         "https://labplus-ledong-module-documentation.readthedocs.io/zh-cn/latest/%E4%BC%A0%E6%84%9F%E5%99%A8%E7%B1%BB/DHT%E6%B8%A9%E6%B9%BF%E5%BA%A6%E4%BC%A0%E6%84%9F%E5%99%A8.html",
         "https://mpython.readthedocs.io/zh-cn/v2.0.1/library/mPython/mpython.html"
       ],
@@ -178,11 +182,15 @@
         }
       ],
       "notes": [
+        "DHT11使用当前板固件的DHT接口（通用方案dht.DHT11、K10专用封装），不是SHT20 I2C；采样间隔2.2秒、异常单独报告，核对DATA上拉，不替换为其他型号驱动。",
+        "bluebit依赖mpython与多个外部库；不能把掌控板2.0库直接认作此主控已适配。当前板独立单文件案例可按所列接口使用。",
+        "已对照用户提供的bluebit.py固定版本核对；资料/功能案例不等于实物验收，也不会自动标记主控已核实。",
         "默认接线只是建议；先断电接线，模块与主控共地。保存、语法检查及串口回读均不代表实际测量通过。",
         "只把已确认不超过3.3V的信号接入主控；模块5V供电不表示信号可直连。",
         "DATA需要上拉到3.3V；先确认模块是否已带上拉，读取失败也可能是供电、线长或采样过快。"
       ],
       "sources": [
+        "https://github.com/labplus-cn/mpython/blob/80bbda23f3ae28e8edbff7c47dc5990a108eba30/port/modules/bluebit.py",
         "https://labplus-ledong-module-documentation.readthedocs.io/zh-cn/latest/%E4%BC%A0%E6%84%9F%E5%99%A8%E7%B1%BB/DHT%E6%B8%A9%E6%B9%BF%E5%BA%A6%E4%BC%A0%E6%84%9F%E5%99%A8.html",
         "https://mpython-esp32s3-doc.readthedocs.io/zh-cn/latest/5_api/library/micropython/machine/machine.Pin.html"
       ],
@@ -258,11 +266,15 @@
         }
       ],
       "notes": [
+        "DHT11使用当前板固件的DHT接口（通用方案dht.DHT11、K10专用封装），不是SHT20 I2C；采样间隔2.2秒、异常单独报告，核对DATA上拉，不替换为其他型号驱动。",
+        "bluebit依赖mpython与多个外部库；不能把掌控板2.0库直接认作此主控已适配。当前板独立单文件案例可按所列接口使用。",
+        "已对照用户提供的bluebit.py固定版本核对；资料/功能案例不等于实物验收，也不会自动标记主控已核实。",
         "默认接线只是建议；先断电接线，模块与主控共地。保存、语法检查及串口回读均不代表实际测量通过。",
         "只把已确认不超过3.3V的信号接入主控；模块5V供电不表示信号可直连。",
         "DATA需要上拉到3.3V；先确认模块是否已带上拉，读取失败也可能是供电、线长或采样过快。"
       ],
       "sources": [
+        "https://github.com/labplus-cn/mpython/blob/80bbda23f3ae28e8edbff7c47dc5990a108eba30/port/modules/bluebit.py",
         "https://labplus-ledong-module-documentation.readthedocs.io/zh-cn/latest/%E4%BC%A0%E6%84%9F%E5%99%A8%E7%B1%BB/DHT%E6%B8%A9%E6%B9%BF%E5%BA%A6%E4%BC%A0%E6%84%9F%E5%99%A8.html",
         "https://www.unihiker.com.cn/wiki/k10/micropython_unihiker_k10"
       ],
@@ -342,12 +354,16 @@
         }
       ],
       "notes": [
+        "DHT11使用当前板固件的DHT接口（通用方案dht.DHT11、K10专用封装），不是SHT20 I2C；采样间隔2.2秒、异常单独报告，核对DATA上拉，不替换为其他型号驱动。",
+        "bluebit依赖mpython与多个外部库；不能把掌控板2.0库直接认作此主控已适配。当前板独立单文件案例可按所列接口使用。",
+        "已对照用户提供的bluebit.py固定版本核对；资料/功能案例不等于实物验收，也不会自动标记主控已核实。",
         "默认接线只是建议；先断电接线，模块与主控共地。保存、语法检查及串口回读均不代表实际测量通过。",
         "只把已确认不超过3.3V的信号接入主控；模块5V供电不表示信号可直连。",
         "DATA需要上拉到3.3V；先确认模块是否已带上拉，读取失败也可能是供电、线长或采样过快。",
         "XIAO：D0=GPIO1，D1=GPIO2，D2=GPIO3，D4/SDA=GPIO5，D5/SCL=GPIO6；D号不等于GPIO号。"
       ],
       "sources": [
+        "https://github.com/labplus-cn/mpython/blob/80bbda23f3ae28e8edbff7c47dc5990a108eba30/port/modules/bluebit.py",
         "https://labplus-ledong-module-documentation.readthedocs.io/zh-cn/latest/%E4%BC%A0%E6%84%9F%E5%99%A8%E7%B1%BB/DHT%E6%B8%A9%E6%B9%BF%E5%BA%A6%E4%BC%A0%E6%84%9F%E5%99%A8.html",
         "https://wiki.seeedstudio.com/xiao_esp32s3_getting_started/"
       ],
@@ -423,12 +439,16 @@
         }
       ],
       "notes": [
+        "DHT11使用当前板固件的DHT接口（通用方案dht.DHT11、K10专用封装），不是SHT20 I2C；采样间隔2.2秒、异常单独报告，核对DATA上拉，不替换为其他型号驱动。",
+        "bluebit依赖mpython与多个外部库；不能把掌控板2.0库直接认作此主控已适配。当前板独立单文件案例可按所列接口使用。",
+        "已对照用户提供的bluebit.py固定版本核对；资料/功能案例不等于实物验收，也不会自动标记主控已核实。",
         "默认接线只是建议；先断电接线，模块与主控共地。保存、语法检查及串口回读均不代表实际测量通过。",
         "只把已确认不超过3.3V的信号接入主控；模块5V供电不表示信号可直连。",
         "DATA需要上拉到3.3V；先确认模块是否已带上拉，读取失败也可能是供电、线长或采样过快。",
         "通用C3没有统一D/P别名；确认GPIO3/4实际引出且未被板载功能占用。"
       ],
       "sources": [
+        "https://github.com/labplus-cn/mpython/blob/80bbda23f3ae28e8edbff7c47dc5990a108eba30/port/modules/bluebit.py",
         "https://labplus-ledong-module-documentation.readthedocs.io/zh-cn/latest/%E4%BC%A0%E6%84%9F%E5%99%A8%E7%B1%BB/DHT%E6%B8%A9%E6%B9%BF%E5%BA%A6%E4%BC%A0%E6%84%9F%E5%99%A8.html",
         "https://docs.micropython.org/en/latest/esp32/quickref.html"
       ],

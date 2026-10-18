@@ -6,9 +6,9 @@
   "guides": [
     {
       "boardId": "hw_labplus_mpython_v2",
-      "kind": "diagnostic",
+      "kind": "functional",
       "title": "盛思 手势传感器 · I2C",
-      "summary": "提供当前固件的环境/连通检查；尚未包含此型号完整的测量或控制驱动。",
+      "summary": "依据bluebit导出的Gesture/PAJ7620分别调用实际驱动，先选择实物芯片。 接线与实物结果待测试。",
       "fields": [
         {
           "key": "firmware",
@@ -53,6 +53,25 @@
               "label": "P19 / SCL；P20 / SDA"
             }
           ]
+        },
+        {
+          "key": "chip",
+          "label": "实物手势芯片",
+          "default": "0",
+          "options": [
+            {
+              "value": "0",
+              "label": "请先核对实物芯片"
+            },
+            {
+              "value": "1",
+              "label": "APDS9960 / Gesture"
+            },
+            {
+              "value": "2",
+              "label": "PAJ7620"
+            }
+          ]
         }
       ],
       "connections": [
@@ -70,14 +89,20 @@
         }
       ],
       "notes": [
+        "案例为有限次采样；含button_b轮询的案例可按B停止，其他案例可用工作台停止。接线选项中的P号不是原始GPIO号。",
+        "APDS9960地址0x39、readGesture方向码0无/1左/2右/3上/4下/5近/6远；PAJ7620地址0x73、return_gesture码0无/1前/2后/3右/4左/5上/6下/7顺/8逆/9挥手；两者不可混解。",
+        "已对照用户提供的bluebit.py固定版本核对；资料/功能案例不等于实物验收，也不会自动标记主控已核实。",
         "默认接线只是建议；先断电接线，模块与主控共地。保存、语法检查及串口回读均不代表实际测量通过。",
         "先记录主控空载I2C地址，再断电接入单个模块比较；扫描不能证明型号或测量成功。"
       ],
       "sources": [
+        "https://github.com/labplus-cn/mpython/blob/80bbda23f3ae28e8edbff7c47dc5990a108eba30/port/modules/bluebit.py",
+        "https://github.com/labplus-cn/mpython/blob/80bbda23f3ae28e8edbff7c47dc5990a108eba30/port/modules/paj7620.py",
+        "https://github.com/labplus-cn/mpython/blob/80bbda23f3ae28e8edbff7c47dc5990a108eba30/port/modules/apds9960.py",
         "https://labplus-ledong-module-documentation.readthedocs.io/zh-cn/latest/%E4%BC%A0%E6%84%9F%E5%99%A8%E7%B1%BB/%E6%89%8B%E5%8A%BF%E4%BC%A0%E6%84%9F%E5%99%A8.html",
         "https://mpython.readthedocs.io/zh-cn/v2.0.1/library/mPython/mpython.html"
       ],
-      "codeTemplate": "# 盛思 手势传感器\n# 掌控板2.0官方MicroPython\n# 诊断/参考，不代表完整测量驱动。\nfrom mpython import i2c\nfrom utime import sleep_ms\nbefore = i2c.scan()\nprint(\"I2C addresses =\", [hex(address) for address in before])\nprint(\"Disconnect power before changing wiring; compare with board-only addresses.\")\nprint(\"Address detection is not a measurement or model identification.\")\n"
+      "codeTemplate": "# 盛思 手势传感器\n# 官方来源核对；待实物测试。\nfrom mpython import i2c, button_b\nfrom utime import sleep_ms\nchip = {{chip}}\nif chip == 0:\n    raise RuntimeError(\"请在接线选项中选择已确认的手势芯片；仅扫描地址不能证明型号\")\nif chip == 1:\n    try:\n        from apds9960 import Gesture\n    except ImportError as error:\n        print(\"缺少此型号驱动或其依赖:\", error)\n        raise RuntimeError(\"请核对此主控固件的库版本；不能仅复制整个bluebit.py解决依赖\")\n    sensor = Gesture(i2c)\nelse:\n    try:\n        from paj7620 import PAJ7620\n    except ImportError as error:\n        print(\"缺少此型号驱动或其依赖:\", error)\n        raise RuntimeError(\"请核对此主控固件的库版本；不能仅复制整个bluebit.py解决依赖\")\n    sensor = PAJ7620()\nfor _ in range(40):\n    if button_b.value() == 0:\n        break\n    value = sensor.readGesture() if chip == 1 else sensor.return_gesture()\n    print(\"APDS9960方向码:\" if chip == 1 else \"PAJ7620手势码:\", value)\n    sleep_ms(200)\n"
     },
     {
       "boardId": "hw_labplus_mpython_esp32s3_v3",
@@ -145,10 +170,15 @@
         }
       ],
       "notes": [
+        "bluebit依赖mpython与多个外部库；不能把掌控板2.0库直接认作此主控已适配。当前板独立单文件案例可按所列接口使用。",
+        "已对照用户提供的bluebit.py固定版本核对；资料/功能案例不等于实物验收，也不会自动标记主控已核实。",
         "默认接线只是建议；先断电接线，模块与主控共地。保存、语法检查及串口回读均不代表实际测量通过。",
         "先记录主控空载I2C地址，再断电接入单个模块比较；扫描不能证明型号或测量成功。"
       ],
       "sources": [
+        "https://github.com/labplus-cn/mpython/blob/80bbda23f3ae28e8edbff7c47dc5990a108eba30/port/modules/bluebit.py",
+        "https://github.com/labplus-cn/mpython/blob/80bbda23f3ae28e8edbff7c47dc5990a108eba30/port/modules/paj7620.py",
+        "https://github.com/labplus-cn/mpython/blob/80bbda23f3ae28e8edbff7c47dc5990a108eba30/port/modules/apds9960.py",
         "https://labplus-ledong-module-documentation.readthedocs.io/zh-cn/latest/%E4%BC%A0%E6%84%9F%E5%99%A8%E7%B1%BB/%E6%89%8B%E5%8A%BF%E4%BC%A0%E6%84%9F%E5%99%A8.html",
         "https://mpython-esp32s3-doc.readthedocs.io/zh-cn/latest/5_api/library/micropython/machine/machine.Pin.html"
       ],
@@ -220,11 +250,16 @@
         }
       ],
       "notes": [
+        "bluebit依赖mpython与多个外部库；不能把掌控板2.0库直接认作此主控已适配。当前板独立单文件案例可按所列接口使用。",
+        "已对照用户提供的bluebit.py固定版本核对；资料/功能案例不等于实物验收，也不会自动标记主控已核实。",
         "默认接线只是建议；先断电接线，模块与主控共地。保存、语法检查及串口回读均不代表实际测量通过。",
         "先记录主控空载I2C地址，再断电接入单个模块比较；扫描不能证明型号或测量成功。",
         "K10官方代码模式未公开通用I2C对象和原生引脚映射；本例不猜测machine.Pin端口。"
       ],
       "sources": [
+        "https://github.com/labplus-cn/mpython/blob/80bbda23f3ae28e8edbff7c47dc5990a108eba30/port/modules/bluebit.py",
+        "https://github.com/labplus-cn/mpython/blob/80bbda23f3ae28e8edbff7c47dc5990a108eba30/port/modules/paj7620.py",
+        "https://github.com/labplus-cn/mpython/blob/80bbda23f3ae28e8edbff7c47dc5990a108eba30/port/modules/apds9960.py",
         "https://labplus-ledong-module-documentation.readthedocs.io/zh-cn/latest/%E4%BC%A0%E6%84%9F%E5%99%A8%E7%B1%BB/%E6%89%8B%E5%8A%BF%E4%BC%A0%E6%84%9F%E5%99%A8.html",
         "https://www.unihiker.com.cn/wiki/k10/micropython_unihiker_k10"
       ],
@@ -296,11 +331,16 @@
         }
       ],
       "notes": [
+        "bluebit依赖mpython与多个外部库；不能把掌控板2.0库直接认作此主控已适配。当前板独立单文件案例可按所列接口使用。",
+        "已对照用户提供的bluebit.py固定版本核对；资料/功能案例不等于实物验收，也不会自动标记主控已核实。",
         "默认接线只是建议；先断电接线，模块与主控共地。保存、语法检查及串口回读均不代表实际测量通过。",
         "先记录主控空载I2C地址，再断电接入单个模块比较；扫描不能证明型号或测量成功。",
         "XIAO：D0=GPIO1，D1=GPIO2，D2=GPIO3，D4/SDA=GPIO5，D5/SCL=GPIO6；D号不等于GPIO号。"
       ],
       "sources": [
+        "https://github.com/labplus-cn/mpython/blob/80bbda23f3ae28e8edbff7c47dc5990a108eba30/port/modules/bluebit.py",
+        "https://github.com/labplus-cn/mpython/blob/80bbda23f3ae28e8edbff7c47dc5990a108eba30/port/modules/paj7620.py",
+        "https://github.com/labplus-cn/mpython/blob/80bbda23f3ae28e8edbff7c47dc5990a108eba30/port/modules/apds9960.py",
         "https://labplus-ledong-module-documentation.readthedocs.io/zh-cn/latest/%E4%BC%A0%E6%84%9F%E5%99%A8%E7%B1%BB/%E6%89%8B%E5%8A%BF%E4%BC%A0%E6%84%9F%E5%99%A8.html",
         "https://wiki.seeedstudio.com/xiao_esp32s3_getting_started/"
       ],
@@ -372,17 +412,33 @@
         }
       ],
       "notes": [
+        "bluebit依赖mpython与多个外部库；不能把掌控板2.0库直接认作此主控已适配。当前板独立单文件案例可按所列接口使用。",
+        "已对照用户提供的bluebit.py固定版本核对；资料/功能案例不等于实物验收，也不会自动标记主控已核实。",
         "默认接线只是建议；先断电接线，模块与主控共地。保存、语法检查及串口回读均不代表实际测量通过。",
         "先记录主控空载I2C地址，再断电接入单个模块比较；扫描不能证明型号或测量成功。",
         "通用C3没有统一D/P别名；确认GPIO3/4实际引出且未被板载功能占用。"
       ],
       "sources": [
+        "https://github.com/labplus-cn/mpython/blob/80bbda23f3ae28e8edbff7c47dc5990a108eba30/port/modules/bluebit.py",
+        "https://github.com/labplus-cn/mpython/blob/80bbda23f3ae28e8edbff7c47dc5990a108eba30/port/modules/paj7620.py",
+        "https://github.com/labplus-cn/mpython/blob/80bbda23f3ae28e8edbff7c47dc5990a108eba30/port/modules/apds9960.py",
         "https://labplus-ledong-module-documentation.readthedocs.io/zh-cn/latest/%E4%BC%A0%E6%84%9F%E5%99%A8%E7%B1%BB/%E6%89%8B%E5%8A%BF%E4%BC%A0%E6%84%9F%E5%99%A8.html",
         "https://docs.micropython.org/en/latest/esp32/quickref.html"
       ],
       "codeTemplate": "# 盛思 手势传感器\n# ESP32_GENERIC_C3官方MicroPython\n# 诊断/参考，不代表完整测量驱动。\nfrom machine import Pin, SoftI2C\nfrom utime import sleep_ms\ni2c = SoftI2C(sda=Pin(3), scl=Pin(4), freq=100000)\nbefore = i2c.scan()\nprint(\"I2C addresses =\", [hex(address) for address in before])\nprint(\"Disconnect power before changing wiring; compare with board-only addresses.\")\nprint(\"Address detection is not a measurement or model identification.\")\n"
     }
-  ]
+  ],
+  "i2c": {
+    "defaultAddress": null,
+    "addresses": [
+      "0x39",
+      "0x73"
+    ],
+    "notes": "APDS9960/Gesture为0x39，PAJ7620为0x73；依实物芯片选择，扫描地址不能单独认证型号。",
+    "sources": [
+      "https://github.com/labplus-cn/mpython/blob/80bbda23f3ae28e8edbff7c47dc5990a108eba30/port/modules/bluebit.py"
+    ]
+  }
 }
 ```
 <!-- /zhangwen:module-guides:v1 -->

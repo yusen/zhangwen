@@ -6,9 +6,9 @@
   "guides": [
     {
       "boardId": "hw_labplus_mpython_v2",
-      "kind": "diagnostic",
+      "kind": "functional",
       "title": "盛思 细微颗粒物PM2.5(新版，模块+探头) · UART",
-      "summary": "仅接收原始串口字节，不含型号协议解码；先按手册选择波特率。",
+      "summary": "据PM25_DC的A5四字节帧读取新版串口模块，分包/噪声/校验与2秒总超时，K=0.4需标定。 接线与实物结果待测试。",
       "fields": [
         {
           "key": "firmware",
@@ -124,27 +124,11 @@
         {
           "key": "baud",
           "label": "模块波特率",
-          "default": "0",
+          "default": "9600",
           "options": [
             {
-              "value": "0",
-              "label": "请按模块手册选择"
-            },
-            {
               "value": "9600",
-              "label": "9600（8N1）"
-            },
-            {
-              "value": "19200",
-              "label": "19200（8N1）"
-            },
-            {
-              "value": "38400",
-              "label": "38400（8N1）"
-            },
-            {
-              "value": "115200",
-              "label": "115200（8N1）"
+              "label": "9600"
             }
           ]
         }
@@ -168,20 +152,23 @@
         }
       ],
       "notes": [
+        "仅适用于新版9600串口模块及PM25_DC协议，非旧裸探头、模拟pm25.PM25或其他PMS帧；无有效帧不报告0浓度。上游PM25_DC在持续错误数据时可能无限等待，本例增加总超时。",
+        "已对照用户提供的bluebit.py固定版本核对；资料/功能案例不等于实物验收，也不会自动标记主控已核实。",
         "默认接线只是建议；先断电接线，模块与主控共地。保存、语法检查及串口回读均不代表实际测量通过。",
         "模块TX接主控RX、模块RX接主控TX，不能同名对接；只收原始字节，不发送控制命令。波特率/8N1需按该型号手册确认。"
       ],
       "sources": [
+        "https://github.com/labplus-cn/mpython/blob/80bbda23f3ae28e8edbff7c47dc5990a108eba30/port/modules/bluebit.py",
         "https://labplus-ledong-module-documentation.readthedocs.io/zh-cn/latest/%E4%BC%A0%E6%84%9F%E5%99%A8%E7%B1%BB/PM2.5%EF%BC%88%E5%90%AB%E6%A8%A1%E5%9D%97%EF%BC%89.html",
         "https://mpython.readthedocs.io/zh-cn/v2.0.1/library/mPython/mpython.html"
       ],
-      "codeTemplate": "# 盛思 细微颗粒物PM2.5(新版，模块+探头)\n# 掌控板2.0官方MicroPython\n# 诊断/参考，不代表完整测量驱动。\nfrom mpython import MPythonPin, PinMode\nfrom machine import Pin\nfrom utime import sleep_ms, sleep_us\nfrom machine import UART\nbaud = {{baud}}\nif baud == 0:\n    raise RuntimeError(\"Select the baud rate from the module's official specification first\")\nuart = UART(1, baudrate=baud, bits=8, parity=None, stop=1,\n            rx=MPythonPin({{rx}}, PinMode.IN).Pin, tx=MPythonPin({{tx}}, PinMode.OUT).Pin)\ntry:\n    for _ in range(20):\n        data = uart.read(128)\n        if data:\n            print(\"UART raw bytes =\", data)\n        sleep_ms(250)\nfinally:\n    uart.deinit()\nprint(\"Raw receive only; no command sent, no protocol decoding or measurement.\")\n"
+      "codeTemplate": "# 盛思 细微颗粒物PM2.5(新版，模块+探头)\n# 官方来源核对；待实物测试。\nfrom mpython import MPythonPin, PinMode\nfrom machine import Pin\nfrom utime import sleep_ms, sleep_us\nfrom machine import UART\nuart = UART(1, baudrate={{baud}}, bits=8, parity=None, stop=1, timeout=10,\n            rx=MPythonPin({{rx}}, PinMode.IN).Pin, tx=MPythonPin({{tx}}, PinMode.IN).Pin)\n# The MIT License (MIT)\n\n# Copyright (c) 2018, Tangliufeng. LabPlus\n\n# Permission is hereby granted, free of charge, to any person obtaining a copy\n# of this software and associated documentation files (the \"Software\"), to deal\n# in the Software without restriction, including without limitation the rights\n# to use, copy, modify, merge, publish, distribute, sublicense, and/or sell\n# copies of the Software, and to permit persons to whom the Software is\n# furnished to do so, subject to the following conditions:\n\n# The above copyright notice and this permission notice shall be included in\n# all copies or substantial portions of the Software.\n\n# THE SOFTWARE IS PROVIDED \"AS IS\", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR\n# IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,\n# FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE\n# AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER\n# LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,\n# OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN\n# THE SOFTWARE.\n# 据bluebit.PM25_DC：A5+两字节7位数据+校验；K=0.4仅为库默认标定系数。\nfrom utime import ticks_ms, ticks_diff\ndef read_pm25(uart, timeout_ms=2000):\n    started = ticks_ms()\n    packet = bytearray()\n    while ticks_diff(ticks_ms(), started) < timeout_ms:\n        chunk = uart.read(32)\n        if chunk:\n            packet.extend(chunk)\n            while len(packet) >= 4:\n                if packet[0] != 0xA5:\n                    del packet[0]\n                    continue\n                high, low, check = packet[1], packet[2], packet[3]\n                # 保留上游的异或校验表达式，不将PMS5003等其他帧格式混入。\n                if ((0xA5 + high + low) ^ 0x80) == check:\n                    del packet[:4]\n                    return 0.4 * ((high << 7) | (low & 0x7F))\n                del packet[0]\n        sleep_ms(5)\n    return None\nprint(\"等待模块上电稳定10秒\")\nsleep_ms(10000)\ntry:\n    for _ in range(10):\n        value = read_pm25(uart)\n        print(\"无有效帧/校验失败\" if value is None else \"PM2.5估计 ug/m3: %.1f\" % value)\n        sleep_ms(1000)\nfinally:\n    uart.deinit()\n"
     },
     {
       "boardId": "hw_labplus_mpython_esp32s3_v3",
-      "kind": "diagnostic",
+      "kind": "functional",
       "title": "盛思 细微颗粒物PM2.5(新版，模块+探头) · UART",
-      "summary": "仅接收原始串口字节，不含型号协议解码；先按手册选择波特率。",
+      "summary": "据PM25_DC的A5四字节帧读取新版串口模块，分包/噪声/校验与2秒总超时，K=0.4需标定。 接线与实物结果待测试。",
       "fields": [
         {
           "key": "firmware",
@@ -249,27 +236,11 @@
         {
           "key": "baud",
           "label": "模块波特率",
-          "default": "0",
+          "default": "9600",
           "options": [
             {
-              "value": "0",
-              "label": "请按模块手册选择"
-            },
-            {
               "value": "9600",
-              "label": "9600（8N1）"
-            },
-            {
-              "value": "19200",
-              "label": "19200（8N1）"
-            },
-            {
-              "value": "38400",
-              "label": "38400（8N1）"
-            },
-            {
-              "value": "115200",
-              "label": "115200（8N1）"
+              "label": "9600"
             }
           ]
         }
@@ -293,14 +264,18 @@
         }
       ],
       "notes": [
+        "仅适用于新版9600串口模块及PM25_DC协议，非旧裸探头、模拟pm25.PM25或其他PMS帧；无有效帧不报告0浓度。上游PM25_DC在持续错误数据时可能无限等待，本例增加总超时。",
+        "bluebit依赖mpython与多个外部库；不能把掌控板2.0库直接认作此主控已适配。当前板独立单文件案例可按所列接口使用。",
+        "已对照用户提供的bluebit.py固定版本核对；资料/功能案例不等于实物验收，也不会自动标记主控已核实。",
         "默认接线只是建议；先断电接线，模块与主控共地。保存、语法检查及串口回读均不代表实际测量通过。",
         "模块TX接主控RX、模块RX接主控TX，不能同名对接；只收原始字节，不发送控制命令。波特率/8N1需按该型号手册确认。"
       ],
       "sources": [
+        "https://github.com/labplus-cn/mpython/blob/80bbda23f3ae28e8edbff7c47dc5990a108eba30/port/modules/bluebit.py",
         "https://labplus-ledong-module-documentation.readthedocs.io/zh-cn/latest/%E4%BC%A0%E6%84%9F%E5%99%A8%E7%B1%BB/PM2.5%EF%BC%88%E5%90%AB%E6%A8%A1%E5%9D%97%EF%BC%89.html",
         "https://mpython-esp32s3-doc.readthedocs.io/zh-cn/latest/5_api/library/micropython/machine/machine.Pin.html"
       ],
-      "codeTemplate": "# 盛思 细微颗粒物PM2.5(新版，模块+探头)\n# 掌控板3.0官方MicroPython\n# 诊断/参考，不代表完整测量驱动。\nfrom machine import Pin\nfrom utime import sleep_ms, sleep_us\nfrom machine import UART\nbaud = {{baud}}\nif baud == 0:\n    raise RuntimeError(\"Select the baud rate from the module's official specification first\")\nuart = UART(1, baudrate=baud, bits=8, parity=None, stop=1,\n            rx=Pin({{rx}}, Pin.IN), tx=Pin({{tx}}, Pin.OUT))\ntry:\n    for _ in range(20):\n        data = uart.read(128)\n        if data:\n            print(\"UART raw bytes =\", data)\n        sleep_ms(250)\nfinally:\n    uart.deinit()\nprint(\"Raw receive only; no command sent, no protocol decoding or measurement.\")\n"
+      "codeTemplate": "# 盛思 细微颗粒物PM2.5(新版，模块+探头)\n# 官方来源核对；待实物测试。\nfrom machine import Pin\nfrom utime import sleep_ms, sleep_us\nfrom machine import UART\nuart = UART(1, baudrate={{baud}}, bits=8, parity=None, stop=1, timeout=10,\n            rx=Pin({{rx}}), tx=Pin({{tx}}))\n# The MIT License (MIT)\n\n# Copyright (c) 2018, Tangliufeng. LabPlus\n\n# Permission is hereby granted, free of charge, to any person obtaining a copy\n# of this software and associated documentation files (the \"Software\"), to deal\n# in the Software without restriction, including without limitation the rights\n# to use, copy, modify, merge, publish, distribute, sublicense, and/or sell\n# copies of the Software, and to permit persons to whom the Software is\n# furnished to do so, subject to the following conditions:\n\n# The above copyright notice and this permission notice shall be included in\n# all copies or substantial portions of the Software.\n\n# THE SOFTWARE IS PROVIDED \"AS IS\", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR\n# IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,\n# FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE\n# AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER\n# LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,\n# OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN\n# THE SOFTWARE.\n# 据bluebit.PM25_DC：A5+两字节7位数据+校验；K=0.4仅为库默认标定系数。\nfrom utime import ticks_ms, ticks_diff\ndef read_pm25(uart, timeout_ms=2000):\n    started = ticks_ms()\n    packet = bytearray()\n    while ticks_diff(ticks_ms(), started) < timeout_ms:\n        chunk = uart.read(32)\n        if chunk:\n            packet.extend(chunk)\n            while len(packet) >= 4:\n                if packet[0] != 0xA5:\n                    del packet[0]\n                    continue\n                high, low, check = packet[1], packet[2], packet[3]\n                # 保留上游的异或校验表达式，不将PMS5003等其他帧格式混入。\n                if ((0xA5 + high + low) ^ 0x80) == check:\n                    del packet[:4]\n                    return 0.4 * ((high << 7) | (low & 0x7F))\n                del packet[0]\n        sleep_ms(5)\n    return None\nprint(\"等待模块上电稳定10秒\")\nsleep_ms(10000)\ntry:\n    for _ in range(10):\n        value = read_pm25(uart)\n        print(\"无有效帧/校验失败\" if value is None else \"PM2.5估计 ug/m3: %.1f\" % value)\n        sleep_ms(1000)\nfinally:\n    uart.deinit()\n"
     },
     {
       "boardId": "hw_seed_unihiker_k10",
@@ -353,11 +328,14 @@
         }
       ],
       "notes": [
+        "bluebit依赖mpython与多个外部库；不能把掌控板2.0库直接认作此主控已适配。当前板独立单文件案例可按所列接口使用。",
+        "已对照用户提供的bluebit.py固定版本核对；资料/功能案例不等于实物验收，也不会自动标记主控已核实。",
         "默认接线只是建议；先断电接线，模块与主控共地。保存、语法检查及串口回读均不代表实际测量通过。",
         "模块TX接主控RX、模块RX接主控TX，不能同名对接；只收原始字节，不发送控制命令。波特率/8N1需按该型号手册确认。",
         "K10官方接口未公开可用通用UART端口映射；不能将I2C扩展GPIO当串口。"
       ],
       "sources": [
+        "https://github.com/labplus-cn/mpython/blob/80bbda23f3ae28e8edbff7c47dc5990a108eba30/port/modules/bluebit.py",
         "https://labplus-ledong-module-documentation.readthedocs.io/zh-cn/latest/%E4%BC%A0%E6%84%9F%E5%99%A8%E7%B1%BB/PM2.5%EF%BC%88%E5%90%AB%E6%A8%A1%E5%9D%97%EF%BC%89.html",
         "https://www.unihiker.com.cn/wiki/k10/micropython_unihiker_k10"
       ],
@@ -365,9 +343,9 @@
     },
     {
       "boardId": "hw_seeed_xiao_esp32s3_sense",
-      "kind": "diagnostic",
+      "kind": "functional",
       "title": "盛思 细微颗粒物PM2.5(新版，模块+探头) · UART",
-      "summary": "仅接收原始串口字节，不含型号协议解码；先按手册选择波特率。",
+      "summary": "据PM25_DC的A5四字节帧读取新版串口模块，分包/噪声/校验与2秒总超时，K=0.4需标定。 接线与实物结果待测试。",
       "fields": [
         {
           "key": "firmware",
@@ -443,27 +421,11 @@
         {
           "key": "baud",
           "label": "模块波特率",
-          "default": "0",
+          "default": "9600",
           "options": [
             {
-              "value": "0",
-              "label": "请按模块手册选择"
-            },
-            {
               "value": "9600",
-              "label": "9600（8N1）"
-            },
-            {
-              "value": "19200",
-              "label": "19200（8N1）"
-            },
-            {
-              "value": "38400",
-              "label": "38400（8N1）"
-            },
-            {
-              "value": "115200",
-              "label": "115200（8N1）"
+              "label": "9600"
             }
           ]
         }
@@ -487,21 +449,25 @@
         }
       ],
       "notes": [
+        "仅适用于新版9600串口模块及PM25_DC协议，非旧裸探头、模拟pm25.PM25或其他PMS帧；无有效帧不报告0浓度。上游PM25_DC在持续错误数据时可能无限等待，本例增加总超时。",
+        "bluebit依赖mpython与多个外部库；不能把掌控板2.0库直接认作此主控已适配。当前板独立单文件案例可按所列接口使用。",
+        "已对照用户提供的bluebit.py固定版本核对；资料/功能案例不等于实物验收，也不会自动标记主控已核实。",
         "默认接线只是建议；先断电接线，模块与主控共地。保存、语法检查及串口回读均不代表实际测量通过。",
         "模块TX接主控RX、模块RX接主控TX，不能同名对接；只收原始字节，不发送控制命令。波特率/8N1需按该型号手册确认。",
         "XIAO：D0=GPIO1，D1=GPIO2，D2=GPIO3，D4/SDA=GPIO5，D5/SCL=GPIO6；D号不等于GPIO号。"
       ],
       "sources": [
+        "https://github.com/labplus-cn/mpython/blob/80bbda23f3ae28e8edbff7c47dc5990a108eba30/port/modules/bluebit.py",
         "https://labplus-ledong-module-documentation.readthedocs.io/zh-cn/latest/%E4%BC%A0%E6%84%9F%E5%99%A8%E7%B1%BB/PM2.5%EF%BC%88%E5%90%AB%E6%A8%A1%E5%9D%97%EF%BC%89.html",
         "https://wiki.seeedstudio.com/xiao_esp32s3_getting_started/"
       ],
-      "codeTemplate": "# 盛思 细微颗粒物PM2.5(新版，模块+探头)\n# XIAO ESP32S3官方MicroPython\n# 诊断/参考，不代表完整测量驱动。\nfrom machine import Pin\nfrom utime import sleep_ms, sleep_us\nfrom machine import UART\nbaud = {{baud}}\nif baud == 0:\n    raise RuntimeError(\"Select the baud rate from the module's official specification first\")\nuart = UART(1, baudrate=baud, bits=8, parity=None, stop=1,\n            rx=Pin({{rx}}, Pin.IN), tx=Pin({{tx}}, Pin.OUT))\ntry:\n    for _ in range(20):\n        data = uart.read(128)\n        if data:\n            print(\"UART raw bytes =\", data)\n        sleep_ms(250)\nfinally:\n    uart.deinit()\nprint(\"Raw receive only; no command sent, no protocol decoding or measurement.\")\n"
+      "codeTemplate": "# 盛思 细微颗粒物PM2.5(新版，模块+探头)\n# 官方来源核对；待实物测试。\nfrom machine import Pin\nfrom utime import sleep_ms, sleep_us\nfrom machine import UART\nuart = UART(1, baudrate={{baud}}, bits=8, parity=None, stop=1, timeout=10,\n            rx=Pin({{rx}}), tx=Pin({{tx}}))\n# The MIT License (MIT)\n\n# Copyright (c) 2018, Tangliufeng. LabPlus\n\n# Permission is hereby granted, free of charge, to any person obtaining a copy\n# of this software and associated documentation files (the \"Software\"), to deal\n# in the Software without restriction, including without limitation the rights\n# to use, copy, modify, merge, publish, distribute, sublicense, and/or sell\n# copies of the Software, and to permit persons to whom the Software is\n# furnished to do so, subject to the following conditions:\n\n# The above copyright notice and this permission notice shall be included in\n# all copies or substantial portions of the Software.\n\n# THE SOFTWARE IS PROVIDED \"AS IS\", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR\n# IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,\n# FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE\n# AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER\n# LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,\n# OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN\n# THE SOFTWARE.\n# 据bluebit.PM25_DC：A5+两字节7位数据+校验；K=0.4仅为库默认标定系数。\nfrom utime import ticks_ms, ticks_diff\ndef read_pm25(uart, timeout_ms=2000):\n    started = ticks_ms()\n    packet = bytearray()\n    while ticks_diff(ticks_ms(), started) < timeout_ms:\n        chunk = uart.read(32)\n        if chunk:\n            packet.extend(chunk)\n            while len(packet) >= 4:\n                if packet[0] != 0xA5:\n                    del packet[0]\n                    continue\n                high, low, check = packet[1], packet[2], packet[3]\n                # 保留上游的异或校验表达式，不将PMS5003等其他帧格式混入。\n                if ((0xA5 + high + low) ^ 0x80) == check:\n                    del packet[:4]\n                    return 0.4 * ((high << 7) | (low & 0x7F))\n                del packet[0]\n        sleep_ms(5)\n    return None\nprint(\"等待模块上电稳定10秒\")\nsleep_ms(10000)\ntry:\n    for _ in range(10):\n        value = read_pm25(uart)\n        print(\"无有效帧/校验失败\" if value is None else \"PM2.5估计 ug/m3: %.1f\" % value)\n        sleep_ms(1000)\nfinally:\n    uart.deinit()\n"
     },
     {
       "boardId": "hw_esp32_generic_c3",
-      "kind": "diagnostic",
+      "kind": "functional",
       "title": "盛思 细微颗粒物PM2.5(新版，模块+探头) · UART",
-      "summary": "仅接收原始串口字节，不含型号协议解码；先按手册选择波特率。",
+      "summary": "据PM25_DC的A5四字节帧读取新版串口模块，分包/噪声/校验与2秒总超时，K=0.4需标定。 接线与实物结果待测试。",
       "fields": [
         {
           "key": "firmware",
@@ -569,27 +535,11 @@
         {
           "key": "baud",
           "label": "模块波特率",
-          "default": "0",
+          "default": "9600",
           "options": [
             {
-              "value": "0",
-              "label": "请按模块手册选择"
-            },
-            {
               "value": "9600",
-              "label": "9600（8N1）"
-            },
-            {
-              "value": "19200",
-              "label": "19200（8N1）"
-            },
-            {
-              "value": "38400",
-              "label": "38400（8N1）"
-            },
-            {
-              "value": "115200",
-              "label": "115200（8N1）"
+              "label": "9600"
             }
           ]
         }
@@ -613,15 +563,19 @@
         }
       ],
       "notes": [
+        "仅适用于新版9600串口模块及PM25_DC协议，非旧裸探头、模拟pm25.PM25或其他PMS帧；无有效帧不报告0浓度。上游PM25_DC在持续错误数据时可能无限等待，本例增加总超时。",
+        "bluebit依赖mpython与多个外部库；不能把掌控板2.0库直接认作此主控已适配。当前板独立单文件案例可按所列接口使用。",
+        "已对照用户提供的bluebit.py固定版本核对；资料/功能案例不等于实物验收，也不会自动标记主控已核实。",
         "默认接线只是建议；先断电接线，模块与主控共地。保存、语法检查及串口回读均不代表实际测量通过。",
         "模块TX接主控RX、模块RX接主控TX，不能同名对接；只收原始字节，不发送控制命令。波特率/8N1需按该型号手册确认。",
         "通用C3没有统一D/P别名；确认GPIO3/4实际引出且未被板载功能占用。"
       ],
       "sources": [
+        "https://github.com/labplus-cn/mpython/blob/80bbda23f3ae28e8edbff7c47dc5990a108eba30/port/modules/bluebit.py",
         "https://labplus-ledong-module-documentation.readthedocs.io/zh-cn/latest/%E4%BC%A0%E6%84%9F%E5%99%A8%E7%B1%BB/PM2.5%EF%BC%88%E5%90%AB%E6%A8%A1%E5%9D%97%EF%BC%89.html",
         "https://docs.micropython.org/en/latest/esp32/quickref.html"
       ],
-      "codeTemplate": "# 盛思 细微颗粒物PM2.5(新版，模块+探头)\n# ESP32_GENERIC_C3官方MicroPython\n# 诊断/参考，不代表完整测量驱动。\nfrom machine import Pin\nfrom utime import sleep_ms, sleep_us\nfrom machine import UART\nbaud = {{baud}}\nif baud == 0:\n    raise RuntimeError(\"Select the baud rate from the module's official specification first\")\nuart = UART(1, baudrate=baud, bits=8, parity=None, stop=1,\n            rx=Pin({{rx}}, Pin.IN), tx=Pin({{tx}}, Pin.OUT))\ntry:\n    for _ in range(20):\n        data = uart.read(128)\n        if data:\n            print(\"UART raw bytes =\", data)\n        sleep_ms(250)\nfinally:\n    uart.deinit()\nprint(\"Raw receive only; no command sent, no protocol decoding or measurement.\")\n"
+      "codeTemplate": "# 盛思 细微颗粒物PM2.5(新版，模块+探头)\n# 官方来源核对；待实物测试。\nfrom machine import Pin\nfrom utime import sleep_ms, sleep_us\nfrom machine import UART\nuart = UART(1, baudrate={{baud}}, bits=8, parity=None, stop=1, timeout=10,\n            rx=Pin({{rx}}), tx=Pin({{tx}}))\n# The MIT License (MIT)\n\n# Copyright (c) 2018, Tangliufeng. LabPlus\n\n# Permission is hereby granted, free of charge, to any person obtaining a copy\n# of this software and associated documentation files (the \"Software\"), to deal\n# in the Software without restriction, including without limitation the rights\n# to use, copy, modify, merge, publish, distribute, sublicense, and/or sell\n# copies of the Software, and to permit persons to whom the Software is\n# furnished to do so, subject to the following conditions:\n\n# The above copyright notice and this permission notice shall be included in\n# all copies or substantial portions of the Software.\n\n# THE SOFTWARE IS PROVIDED \"AS IS\", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR\n# IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,\n# FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE\n# AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER\n# LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,\n# OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN\n# THE SOFTWARE.\n# 据bluebit.PM25_DC：A5+两字节7位数据+校验；K=0.4仅为库默认标定系数。\nfrom utime import ticks_ms, ticks_diff\ndef read_pm25(uart, timeout_ms=2000):\n    started = ticks_ms()\n    packet = bytearray()\n    while ticks_diff(ticks_ms(), started) < timeout_ms:\n        chunk = uart.read(32)\n        if chunk:\n            packet.extend(chunk)\n            while len(packet) >= 4:\n                if packet[0] != 0xA5:\n                    del packet[0]\n                    continue\n                high, low, check = packet[1], packet[2], packet[3]\n                # 保留上游的异或校验表达式，不将PMS5003等其他帧格式混入。\n                if ((0xA5 + high + low) ^ 0x80) == check:\n                    del packet[:4]\n                    return 0.4 * ((high << 7) | (low & 0x7F))\n                del packet[0]\n        sleep_ms(5)\n    return None\nprint(\"等待模块上电稳定10秒\")\nsleep_ms(10000)\ntry:\n    for _ in range(10):\n        value = read_pm25(uart)\n        print(\"无有效帧/校验失败\" if value is None else \"PM2.5估计 ug/m3: %.1f\" % value)\n        sleep_ms(1000)\nfinally:\n    uart.deinit()\n"
     }
   ]
 }
