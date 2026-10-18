@@ -1,6 +1,7 @@
 """Strict MVP API contracts; MicroPython file transport lives in the browser."""
 from __future__ import annotations
 
+import re
 from typing import Literal
 
 from pydantic import BaseModel, ConfigDict, Field, field_validator
@@ -78,7 +79,17 @@ class HardwareExampleInput(Boundary):
     notes: str = Field(max_length=2000)
     code: str = Field(max_length=16000)
     setup: dict[str, str] | None = None
+    i2cAddress: str | None = Field(default=None, max_length=4)
     supportedBoardIds: list[str] | None = Field(default=None, max_length=5)
+
+    @field_validator('i2cAddress')
+    @classmethod
+    def i2c_address_valid(cls, value):
+        if value is None or value == '':
+            return value
+        if not re.fullmatch(r'0[xX][0-9a-fA-F]{1,2}', value) or not 1 <= int(value, 16) <= 0x7f:
+            raise ValueError('请填写7位I²C设备地址（0x01～0x7F），不要填写8位读写地址。')
+        return f'0x{int(value, 16):02x}'
 
     @field_validator('supportedBoardIds')
     @classmethod

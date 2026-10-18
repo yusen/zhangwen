@@ -387,7 +387,17 @@
       ],
       "codeTemplate": "# Grove - 气体传感器 V2（多通道）\n# ESP32_GENERIC_C3官方MicroPython\n# 诊断/参考，不代表完整测量驱动。\nfrom machine import Pin, SoftI2C\nfrom utime import sleep_ms\ni2c = SoftI2C(sda=Pin(3), scl=Pin(4), freq=100000)\nbefore = i2c.scan()\nprint(\"I2C addresses =\", [hex(address) for address in before])\nprint(\"Disconnect power before changing wiring; compare with board-only addresses.\")\nprint(\"Address detection is not a measurement or model identification.\")\n"
     }
-  ]
+  ],
+  "i2c": {
+    "defaultAddress": "0x08",
+    "addresses": [
+      "0x08"
+    ],
+    "notes": "此条是多通道气体V2；不要套用旧版本0x04。 地址是资料参考，不代表实物已连接或测试通过。",
+    "sources": [
+      "https://wiki.seeedstudio.com/cn/Grove-Multichannel-Gas-Sensor-V2/"
+    ]
+  }
 }
 ```
 <!-- /zhangwen:module-guides:v1 -->

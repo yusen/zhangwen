@@ -442,7 +442,18 @@
       ],
       "codeTemplate": "# Grove - I2C 高精度温湿度传感器 (SHT35)\n# ESP32_GENERIC_C3官方MicroPython\n# 功能示例，待实物测试。\nfrom machine import Pin, SoftI2C\nfrom utime import sleep_ms\ni2c = SoftI2C(sda=Pin(3), scl=Pin(4), freq=100000)\nADDR = {{address}}\nif ADDR not in i2c.scan():\n    raise RuntimeError(\"Sensor address absent; check wiring\")\ndef crc8(data):\n    crc = 0xFF\n    for value in data:\n        crc ^= value\n        for _ in range(8):\n            crc = ((crc << 1) ^ 0x31) & 0xFF if crc & 0x80 else (crc << 1) & 0xFF\n    return crc\ndef read():\n    i2c.writeto(ADDR, bytes([0x24, 0x00]))\n    sleep_ms(20)\n    data = i2c.readfrom(ADDR, 6)\n    if crc8(data[:2]) != data[2] or crc8(data[3:5]) != data[5]:\n        raise RuntimeError(\"SHT3x CRC mismatch\")\n    temperature = -45 + 175 * int.from_bytes(data[:2], \"big\") / 65535\n    humidity = 100 * int.from_bytes(data[3:5], \"big\") / 65535\n    print(\"Temperature C =\", temperature, \"Humidity %:\", humidity)\n\nfor _ in range(20):\n    try:\n        read()\n    except (OSError, RuntimeError) as error:\n        print(\"Sensor read error =\", error)\n    sleep_ms(1000)\n"
     }
-  ]
+  ],
+  "i2c": {
+    "defaultAddress": "0x45",
+    "addresses": [
+      "0x45",
+      "0x44"
+    ],
+    "notes": "该Grove SHT35模块默认0x45，可选0x44；不是所有SHT3x模块都默认0x44。 地址是资料参考，不代表实物已连接或测试通过。",
+    "sources": [
+      "https://wiki.seeedstudio.com/cn/Grove-I2C_High_Accuracy_Temp-Humi_Sensor-SHT35/"
+    ]
+  }
 }
 ```
 <!-- /zhangwen:module-guides:v1 -->

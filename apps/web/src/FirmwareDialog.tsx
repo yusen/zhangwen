@@ -14,7 +14,6 @@ export function FirmwareDialog({ board, onClose, onBusy, download }: { board: Ha
   const [status, setStatus] = useState('正在核对本地默认固件…');
   const [identity, setIdentity] = useState('');
   const [backup, setBackup] = useState<FirmwareBackup | null>(null);
-  const [confirmed, setConfirmed] = useState(false);
   const [written, setWritten] = useState(false);
   const loader = useRef<ESPLoader | null>(null);
   const transport = useRef<Transport | null>(null);
@@ -50,7 +49,7 @@ export function FirmwareDialog({ board, onClose, onBusy, download }: { board: Ha
     download(`flash-backup-${saved.id}.json`, JSON.stringify({ ...saved, bytes: undefined, size: saved.bytes.length }, null, 2));
   };
   const flash = () => {
-    if (!nativeSerial || !navigator.locks || !profile || !file || !confirmed || working.current) return;
+    if (!nativeSerial || !navigator.locks || !profile || !file || working.current) return;
     // Port selection must begin in the button gesture. No backend serial access.
     const portPromise = nativeSerial.requestPort();
     void operation(async () => {
@@ -71,7 +70,7 @@ export function FirmwareDialog({ board, onClose, onBusy, download }: { board: Ha
             setIdentity(`${peer.chip.CHIP_NAME} · ${capacity / 1024 / 1024} MiB`);
             saved = await backupFirmware(peer, profile, file, profile.offset, capacity, value => setStatus(`备份读取 · ${Math.round(value * 100)}%`));
             await persistFirmwareBackup(saved);
-            setBackup(saved); saveBackup(saved);
+            setBackup(saved);
             setWritten(true);
             await writeVerified(peer, file, profile.offset, (phase, value) => setStatus(`${phase} · ${Math.round(value * 100)}%`));
             setStatus('固件已写入，SHA-256回读一致。关闭后按RESET重启，再连接检查MicroPython及板载功能。');
@@ -88,12 +87,12 @@ export function FirmwareDialog({ board, onClose, onBusy, download }: { board: Ha
   };
   return <Dialog title="固件刷入" onClose={close} className="firmware-dialog">
     <div className="firmware-board"><BoardArtwork board={board} /><div><strong>{board.displayName}</strong><p>{profile?.image?.version ?? '读取板型配置…'}</p></div></div>
-    <p className="firmware-warning">刷入会覆盖固件及部分设备程序、数据。请先保存设备文件。平台会自动备份本次覆盖范围、刷入并回读核对，不整片擦除。</p>
+    <p className="firmware-warning">刷入会覆盖固件及部分设备程序、数据。点击下方按键即可更新；平台自动备份覆盖范围并回读校验。</p>
     {profile?.image && <><p>默认固件：<strong>{profile.image.version}</strong> · {(profile.image.size / 1024 / 1024).toFixed(2)} MiB</p><p className="muted">{profile.image.notes}</p><a href={profile.image.sourceUrl} target="_blank" rel="noreferrer">官方来源与版本说明</a><details><summary>镜像校验信息</summary><p className="checksum">{profile.image.name} · 偏移 0x{profile.offset.toString(16)}<br />SHA-256：{profile.image.sha256}</p></details></>}
-    <p className="muted">按主控说明进入下载模式（通常按住BOOT再按RESET），再点击刷入；写入期间请勿拔线或关闭页面。备份保存在当前浏览器并尝试下载，可在下方重新下载。</p>
-    {!written && <><label className="confirm"><input type="checkbox" checked={confirmed} disabled={busy || !file} onChange={event => setConfirmed(event.target.checked)} />我已保存设备文件，确认将所选设备刷为当前主控的默认固件。</label><button className="primary" disabled={!file || !confirmed || busy || !nativeSerial || !navigator.locks || !!identity} onClick={flash}>一键刷入默认固件</button></>}
+    <p className="muted">按主控说明进入下载模式（通常按住BOOT再按RESET），再点击刷入；写入期间请勿拔线或关闭页面。无需保存项目或下载备份。</p>
+    {!written && <button className="primary" disabled={!file || busy || !nativeSerial || !navigator.locks || !!identity} onClick={flash}>一键刷入默认固件</button>}
     {identity && <p>实际设备：<strong>{identity}</strong></p>}
-    {backup && <button disabled={busy} onClick={() => saveBackup(backup)}>重新下载覆盖范围备份与恢复信息</button>}
+    {backup && <details><summary>恢复选项</summary><p className="muted">覆盖范围备份已自动保存在本浏览器，按需导出。</p><button disabled={busy} onClick={() => saveBackup(backup)}>导出覆盖范围备份</button></details>}
     {backup && written && <button disabled={busy} onClick={() => { if (window.confirm('用本次备份恢复覆盖区域？')) void operation(async () => { await writeVerified(loader.current!, backup.bytes, backup.address, (phase, value) => setStatus(`恢复${phase} · ${Math.round(value * 100)}%`)); setStatus('备份范围已恢复并回读一致。关闭后按RESET重启。'); }); }}>恢复本次覆盖范围</button>}
     {status && <p role="status">{status}</p>}{error && <p role="alert" className="settings-error">{error}</p>}
     <div className="dialog-actions"><button disabled={busy} onClick={close}>关闭</button></div>

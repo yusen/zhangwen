@@ -85,6 +85,24 @@ jobs:
                   assert abs(cq.Workplane('XY').box(5, 6, 7).val().Volume() - 210) < 0.01
                   token = client.get('/api/session').json()['token']
                   client.headers.update({'origin': 'http://127.0.0.1:3080', 'x-zhangwen-session': token})
+                  # Exercise the shipped user-supplied Labplus protocol against
+                  # a fake I2C bus; never access hardware or call a real model.
+                  labplus = client.get('/api/hardware/labplus-318357bd10f2').json()
+                  assert labplus['i2c']['defaultAddress'] == '0x0b'
+                  guide = next(g for g in labplus['moduleGuides'] if g['boardId'] == 'hw_labplus_mpython_v2')
+                  cls = next(n for n in ast.parse(guide['codeTemplate']).body if isinstance(n, ast.ClassDef) and n.name == 'Ultrasonic')
+                  events = []
+                  class FakeI2C:
+                      def writeto(self, address, value): events.append(('write', address, bytes(value)))
+                      def readfrom(self, address, count):
+                          events.append(('read', address, count))
+                          return b'\xd2\x04'
+                  scope = {'i2c': FakeI2C(), 'sleep_ms': lambda value: events.append(('wait', value))}
+                  exec(compile(ast.Module(body=[cls], type_ignores=[]), '<labplus-fake>', 'exec'), scope)
+                  assert scope['Ultrasonic']().distance() == 123.4
+                  assert events == [('write', 0x0b, b'\x01'), ('wait', 2), ('read', 0x0b, 2)]
+                  context = app.state.repo.skills.render_context(labplus['componentId'], board_id='hw_labplus_mpython_v2', max_chars=20000)
+                  assert guide['codeTemplate'] in context
                   for board in PROFILES:
                       image = firmware_profile(board)['image']
                       assert hashlib.sha256(firmware_image(board).read_bytes()).hexdigest() == image['sha256']

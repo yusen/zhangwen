@@ -120,6 +120,7 @@ class WebRepository:
                 ORDER BY rowid''', (row['board_id'], project_id)).fetchall()
         return {**self.summary(row), "code": json.loads(row["preview_json"])["code"] if row["preview_json"] else DEFAULT_CODE,
                 "checksum": row["checksum"] or checksum(DEFAULT_CODE),
+                "hardwareRevisions": json.loads(row['hardware_revisions']),
                 "messages": [{key: json.loads(value) if key == 'componentIds' else value
                               for key, value in dict(item).items() if value is not None} for item in messages]}
 

@@ -32,9 +32,12 @@ export interface HardwareDetail extends HardwareSummary {
   moduleGuides?: HardwareModuleGuide[];
   /** User-declared module scope, not physical verification. Empty means unmarked. */
   supportedBoardIds?: string[];
+  i2c?: HardwareI2CInfo;
 }
+/** 7-bit device addresses from the canonical skill, not a scan or verification. */
+export interface HardwareI2CInfo { defaultAddress: string | null; addresses: string[]; notes: string; sources: string[] }
 /** Stored inside the canonical Hardware Skill examples/usage.md, scoped by board. */
-export interface HardwareExample { boardId: string; notes: string; code: string; setup?: Record<string, string> }
+export interface HardwareExample { boardId: string; notes: string; code: string; setup?: Record<string, string>; i2cAddress?: string }
 export interface SaveHardwareExample extends HardwareExample { expectedRevision: string; supportedBoardIds?: string[] }
 export interface SaveHardwareVerification { expectedRevision: string; verifiedBoardIds: string[] }
 /** Source-reviewed recipe supplements, installed into the same Hardware Skill document.
@@ -69,7 +72,7 @@ export interface AiDiagnosticReport { model: string; checkedAt: string; healthy:
 /** Testing uses the form's values without saving them or submitting a project. */
 export type AiDiagnosticEvent = { type: 'check'; check: AiDiagnosticCheck }
   | { type: 'done'; report: AiDiagnosticReport } | { type: 'error'; detail: string };
-export interface Project extends ProjectSummary { code: string; checksum: string; messages: ChatMessage[] }
+export interface Project extends ProjectSummary { code: string; checksum: string; messages: ChatMessage[]; hardwareRevisions?: Record<string, string> }
 export interface ChatMessage { id: string; role: 'user' | 'assistant'; content: string; status: string; boardId?: string; componentIds?: string[]; intent?: 'integration'; createdAt?: string }
 export interface ChatInput { message: string; code: string; boardId: string; componentIds: string[]; intent?: 'integration' }
 /** Text-only model output; complete code remains a candidate, never a device action. */
@@ -104,7 +107,7 @@ export interface ProgramRunSubmission {
 }
 export interface CheckResult {
   valid: boolean; checksum: string;
-  diagnostics: { severity: 'PASS' | 'WARNING' | 'FAIL'; message: string; line?: number | null; repair?: 'k10-screen' }[];
+  diagnostics: { severity: 'PASS' | 'WARNING' | 'FAIL'; message: string; line?: number | null; repair?: 'k10-screen' | 'mpython-pins' }[];
 }
 export interface CodeRepair { code: string; check: CheckResult; summary: string }
 export interface UploadManifest {

@@ -8,7 +8,7 @@
       "boardId": "hw_labplus_mpython_v2",
       "kind": "functional",
       "title": "盛思 超声波传感器 · I2C",
-      "summary": "沿用官方bluebit.Ultrasonic接口；要求当前固件已有此库，缺库会停止，不更换固件。",
+      "summary": "采用用户2026-10-18提供的Ultrasonic控制实现；单文件I2C测距，不依赖bluebit、不更换固件，实物待测试。",
       "fields": [
         {
           "key": "firmware",
@@ -72,15 +72,15 @@
       "notes": [
         "默认接线只是建议；先断电接线，模块与主控共地。保存、语法检查及串口回读均不代表实际测量通过。",
         "这是I2C乐动超声波，不能套用Grove单线或K10 SEN0388驱动。",
-        "先记录主控空载I2C地址，再断电接入单个模块比较；扫描不能证明型号或测量成功。",
-        "库缺失不能证明接线错误；不自动安装或刷固件。"
+        "用户提供的控制流程：7位地址0x0B写入[1]，等待2ms，读取2字节；小端整数/10换算厘米，超过200返回200。不能仅readfrom(address, 1)。",
+        "原bluebit.Ultrasonic()调用同样可保留；此单文件实现用于明确协议并避免依赖缺库，不表示平台已完成实物验证。"
       ],
       "sources": [
         "https://labplus-ledong-module-documentation.readthedocs.io/zh-cn/latest/%E4%BC%A0%E6%84%9F%E5%99%A8%E7%B1%BB/%E8%B6%85%E5%A3%B0%E6%B3%A2.html",
         "https://mpython.readthedocs.io/zh-cn/v2.0.1/library/mPython/mpython.html",
         "https://mpython.readthedocs.io/zh-cn/v2.0.1/library/mPython/bluebit.html"
       ],
-      "codeTemplate": "# 盛思 超声波传感器\n# 掌控板2.0官方MicroPython\n# 功能示例，待实物测试。\nfrom mpython import i2c\nfrom utime import sleep_ms\ntry:\n    from bluebit import Ultrasonic\nexcept ImportError:\n    raise RuntimeError(\"Firmware lacks bluebit; obtain a compatible pure-Python driver without replacing firmware\")\nsensor = Ultrasonic(i2c)\nfor _ in range(20):\n    print(sensor.distance())\n    sleep_ms(300)\n"
+      "codeTemplate": "# 盛思 超声波传感器\n# 掌控板2.0官方MicroPython\n# 功能示例，待实物测试。\nfrom mpython import i2c\nfrom utime import sleep_ms\nclass Ultrasonic(object):\n    \"\"\"盛思超声波控制；默认使用当前主控的i2c对象，distance返回厘米。\"\"\"\n    def __init__(self, i2c=i2c):\n        self.i2c = i2c\n\n    def distance(self):\n        self.i2c.writeto(0x0b, bytearray([1]))\n        sleep_ms(2)\n        temp = self.i2c.readfrom(0x0b, 2)\n        distanceCM = (temp[0] + temp[1] * 256) / 10\n        if distanceCM > 200:\n            distanceCM = 200\n        return distanceCM\n\nsensor = Ultrasonic()\nfor _ in range(20):\n    print(sensor.distance(), \"cm\")\n    sleep_ms(300)\n"
     },
     {
       "boardId": "hw_labplus_mpython_esp32s3_v3",
@@ -389,7 +389,17 @@
       ],
       "codeTemplate": "# 盛思 超声波传感器\n# ESP32_GENERIC_C3官方MicroPython\n# 诊断/参考，不代表完整测量驱动。\nfrom machine import Pin, SoftI2C\nfrom utime import sleep_ms\ni2c = SoftI2C(sda=Pin(3), scl=Pin(4), freq=100000)\nbefore = i2c.scan()\nprint(\"I2C addresses =\", [hex(address) for address in before])\nprint(\"Disconnect power before changing wiring; compare with board-only addresses.\")\nprint(\"Address detection is not a measurement or model identification.\")\n"
     }
-  ]
+  ],
+  "i2c": {
+    "defaultAddress": "0x0b",
+    "addresses": [
+      "0x0b"
+    ],
+    "notes": "用户于2026-10-18提供的盛思Ultrasonic控制实现：向7位设备地址0x0B写入[1]，等待2ms，读取2字节；(低字节+高字节*256)/10为厘米，超过200返回200。不可只读1字节，不是Grove单线或SEN0388脉宽协议。此为用户资料，尚未由平台实物核验；官方链接供交叉核对。",
+    "sources": [
+      "https://mpython.readthedocs.io/zh-cn/v2.0.1/library/mPython/bluebit.html"
+    ]
+  }
 }
 ```
 <!-- /zhangwen:module-guides:v1 -->

@@ -180,6 +180,13 @@ input, textarea, select { background: var(--raised); border-color: var(--border2
 .module-guide-kind.diagnostic, .module-guide-kind.reference { background: var(--wrn-t); color: var(--wrn); }
 .module-guide-interface { margin-left: 10px; font-size: 12px; color: var(--ink-2); }
 .module-guide-summary { margin: 10px 0; font-size: 13px; line-height: 1.65; color: var(--ink-2); overflow-wrap: anywhere; }
+.module-i2c-reference { margin: 12px 0; padding: 12px; border: 1px solid var(--border); border-radius: 8px; background: var(--panel); overflow-wrap: anywhere; }
+.module-i2c-reference p { margin: 6px 0; font-size: 13px; }
+.module-i2c-reference small { display: block; color: var(--ink-2); line-height: 1.6; }
+.module-i2c-reference .field { margin: 10px 0; max-width: 320px; }
+.module-i2c-reference input { width: 100%; min-height: 38px; border: 1px solid var(--border); border-radius: 7px; padding: 6px 8px; background: var(--panel); color: var(--ink-1); font: inherit; }
+.module-i2c-reference input[aria-invalid=true] { border-color: var(--dng); }
+.module-i2c-reference details { margin-top: 8px; font-size: 12px; }
 .module-guide-fields { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; }
 .module-example .module-guide-fields label { margin: 0; min-width: 0; }
 .module-guide-fields label > span { display: block; margin-bottom: 5px; }
@@ -441,7 +448,12 @@ dialog::backdrop { background: #0b182d70; backdrop-filter: blur(3px); }
 .choose-project-folder { display: inline-flex; align-items: center; justify-content: center; gap: 8px; min-height: 44px; padding: 10px 14px; }
 .selected-project-folder { display: block; font-size: 13px; font-weight: 400; color: var(--ink-3); overflow-wrap: anywhere; padding-top: 8px; }
 .recent-projects-title { font-size: 14px; margin: 24px 0 6px; }
-.app.code-fullscreen .code-panel { position: fixed; inset: 0; z-index: 100; width: 100vw; height: 100dvh; display: flex !important; border: 0; }
+.app.code-fullscreen .workbench { display: flex; }
+.app.code-fullscreen .hardware-panel,
+.app.code-fullscreen .hardware-restore,
+.app.code-fullscreen .ai-panel,
+.app.code-fullscreen .mobile-tabs { display: none !important; }
+.app.code-fullscreen .code-panel { display: flex !important; flex: 1; min-width: 0; width: 100%; border: 0; }
 .firmware-dialog { width: min(640px, calc(100vw - 24px)); }
 .firmware-board { display: flex; gap: 16px; align-items: center; }
 .firmware-board .board-artwork { width: 72px; height: 72px; object-fit: contain; }
@@ -674,3 +686,5 @@ dialog::backdrop { background: #0b182d70; backdrop-filter: blur(3px); }
   .current-project strong { width: auto; min-width: 0; }
 }
 .selected-sensors-toolbar .board-control > .board-artwork:first-child { display: block; }
+
+.answer-run-hint { padding: 10px 12px; border-left: 3px solid var(--accent); background: var(--accent-soft); border-radius: 5px; font-size: 12px; line-height: 1.7; }

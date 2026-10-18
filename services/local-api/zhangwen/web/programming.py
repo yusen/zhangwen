@@ -48,14 +48,95 @@ def _k10_calls(tree):
     return [(node, path(node.func)) for node in nodes if isinstance(node, ast.Call)]
 
 
+def _mpython_raw_pins(tree):
+    """Only unshadowed machine.Pin calls with literal/single constant 0 or 1.
+
+    These are possible P-number mistakes, not proof: intentional raw GPIO use
+    stays a warning. Dynamic values and locally shadowed names are left alone.
+    """
+    stores, imports = {}, {}
+    for node in ast.walk(tree):
+        if isinstance(node, (ast.Import, ast.ImportFrom)):
+            for item in node.names:
+                bound = item.asname or item.name.split('.')[0]
+                imports[bound] = imports.get(bound, 0) + 1
+        if isinstance(node, ast.Name) and isinstance(node.ctx, (ast.Store, ast.Del)):
+            stores[node.id] = stores.get(node.id, 0) + 1
+        elif isinstance(node, (ast.FunctionDef, ast.AsyncFunctionDef, ast.ClassDef)):
+            stores[node.name] = stores.get(node.name, 0) + 1
+        elif isinstance(node, ast.arg):
+            stores[node.arg] = stores.get(node.arg, 0) + 1
+    aliases, constants = {}, {}
+    for node in tree.body:
+        if isinstance(node, ast.Import):
+            for item in node.names:
+                bound = item.asname or item.name
+                if item.name == 'machine' and bound not in stores and imports.get(bound) == 1:
+                    aliases[item.asname or item.name] = 'machine'
+        elif isinstance(node, ast.ImportFrom) and node.module == 'machine':
+            for item in node.names:
+                if item.name == 'Pin' and (item.asname or item.name) not in stores and imports.get(item.asname or item.name) == 1:
+                    aliases[item.asname or item.name] = 'machine.Pin'
+        elif isinstance(node, ast.Assign) and len(node.targets) == 1 and isinstance(node.targets[0], ast.Name):
+            name = node.targets[0].id
+            if stores.get(name) == 1 and name not in imports and isinstance(node.value, ast.Constant) and type(node.value.value) is int:
+                constants[name] = node.value.value
+    found = []
+    for node in ast.walk(tree):
+        if not isinstance(node, ast.Call) or not node.args:
+            continue
+        func = node.func
+        path = aliases.get(func.id) if isinstance(func, ast.Name) else (
+            aliases.get(func.value.id, '') + '.' + func.attr
+            if isinstance(func, ast.Attribute) and isinstance(func.value, ast.Name) else None)
+        if path != 'machine.Pin':
+            continue
+        arg = node.args[0]
+        value = arg.value if isinstance(arg, ast.Constant) and type(arg.value) is int else (
+            constants.get(arg.id) if isinstance(arg, ast.Name) else None)
+        if value in (0, 1):
+            found.append((arg, value))
+    return sorted(found, key=lambda item: (item[0].lineno, item[0].col_offset))
+
+
+def repair_mpython_pins(code: str, board_id: str) -> str:
+    """Preview only: interpret the flagged 0/1 as board P0/P1, preserving modes."""
+    if board_id != 'hw_labplus_mpython_v2':
+        raise ValueError('P号修复仅适用于掌控板2.0。')
+    tree = ast.parse(code)
+    found = _mpython_raw_pins(tree)
+    if not found:
+        raise ValueError('未发现可可靠定位的 machine.Pin(0/1) 调用，动态引脚或重绑定请手动核对；原代码保留。')
+    starts, offset = [], 0
+    for line in code.encode('utf-8').splitlines(keepends=True):
+        starts.append(offset)
+        offset += len(line)
+    data = code.encode('utf-8')
+    for node, value in reversed(found):
+        start, end = starts[node.lineno-1]+node.col_offset, starts[node.end_lineno-1]+node.end_col_offset
+        # Keep the user's P-number variable effective when switching P0/P1.
+        replacement = ('{0: 33, 1: 32}[' + node.id + ']' if isinstance(node, ast.Name) else str((33, 32)[value]))
+        data = data[:start]+replacement.encode()+data[end:]
+    note = '# 掌控板2.0引脚修复预览：原始Pin构造已映射P0=GPIO33、P1=GPIO32；变量映射仅含P0/P1。\n'
+    result = note + data.decode('utf-8')
+    if len(result.encode('utf-8')) > 65536:
+        raise ValueError('修复后程序超过64KiB；原代码保留。')
+    ast.parse(result)
+    return result
+
+
 def programming_diagnostics(code: str, board_id: str) -> list[dict]:
-    """Bounded source checks for known K10 display mistakes; never execute code."""
-    if board_id != 'hw_seed_unihiker_k10':
+    """Bounded source checks for known board API/pin mistakes; never execute."""
+    if board_id not in {'hw_seed_unihiker_k10', 'hw_labplus_mpython_v2'}:
         return []
     try:
         tree = ast.parse(code)
     except SyntaxError:
         return []
+    if board_id == 'hw_labplus_mpython_v2':
+        return [{'severity': 'WARNING', 'repair': 'mpython-pins', 'line': node.lineno,
+                 'message': f'machine.Pin({value}) 操作原始 GPIO{value}，不是板上 P{value}。掌控板2.0 P0=GPIO33、P1=GPIO32；若接的是板上P口，请用 MPythonPin(P号, PinMode.OUT).Pin。可按P号预览修复；若刻意使用原始GPIO则保留原稿。错误引脚上的超时/上拉读数不能证明传感器损坏。'}
+                for node, value in _mpython_raw_pins(tree)]
     calls = {name for _,name in _k10_calls(tree)} - {None}
     errors = []
     if any(call.startswith('unihiker_k10.draw.') or call in {

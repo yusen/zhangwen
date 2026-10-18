@@ -67,10 +67,31 @@ class ModuleGuide(Boundary):
         return self
 
 
+class I2CInfo(Boundary):
+    defaultAddress: str | None = None
+    addresses: list[str] = Field(max_length=32)
+    notes: str = Field(max_length=1200)
+    sources: list[str] = Field(max_length=8)
+
+    @model_validator(mode='after')
+    def addresses_valid(self):
+        if (len(set(self.addresses)) != len(self.addresses)
+                or any(not valid_i2c_address(value) for value in self.addresses)
+                or (self.defaultAddress is not None and self.defaultAddress not in self.addresses)
+                or any(not url.startswith('https://') for url in self.sources)):
+            raise ValueError('invalid I2C address reference')
+        return self
+
+
+def valid_i2c_address(value):
+    return isinstance(value, str) and re.fullmatch(r'0[xX][0-9a-fA-F]{1,2}', value) is not None and 1 <= int(value, 16) <= 0x7f
+
+
 class GuideDocument(Boundary):
     format: Literal['zhangwen.module-guides/v1'] = Field(alias='schema')
     componentId: str
     guides: list[ModuleGuide] = Field(min_length=1, max_length=5)
+    i2c: I2CInfo | None = None
 
 
 def parse_document(content, component_id, boards):
@@ -96,11 +117,36 @@ def guides(detail, boards):
     return parse_document(content, detail.componentId, boards)
 
 
+def i2c_info(detail, boards):
+    content = next((item.content for item in detail.files if item.path == 'examples/usage.md'), '')
+    items = guides(detail, boards)
+    match = PATTERN.search(content)
+    explicit = GuideDocument.model_validate_json(match[1]).i2c if match else None
+    uses_i2c = explicit or re.search(r'I2C|I²C|IIC', detail.specification.electrical.communicationProtocol, re.I) or any(
+        field['key'] == 'interface' and any(choice['value'] == 'I2C' for choice in field['options'])
+        for item in items for field in item['fields'])
+    if not uses_i2c or detail.category.value == 'MCU':
+        return None
+    if explicit:
+        return explicit.model_dump()
+    raw = detail.specification.electrical.i2cAddress
+    addresses = [f'0x{int(raw, 16):02x}'] if valid_i2c_address(raw) else []
+    for item in items:
+        for field in item['fields']:
+            if field['key'] == 'address':
+                addresses.extend(f'0x{int(choice["value"], 16):02x}' for choice in field['options'] if valid_i2c_address(choice['value']))
+    addresses = list(dict.fromkeys(addresses))
+    return dict(defaultAddress=addresses[0] if addresses else None, addresses=addresses,
+                notes='地址来自模块原规格或配套案例，实际以模块版本、跳线及扫描结果为准。' if addresses else '地址待核实：查阅官方资料，或使用当前主控适用的I²C扫描程序确认；不猜测地址。',
+                sources=list(dict.fromkeys(url for item in items for url in item['sources']))[:3])
+
+
 def values(guide, setup=None):
     result = {field['key']: field['default'] for field in guide['fields']}
     for key, value in (setup or {}).items():
         field = next((field for field in guide['fields'] if field['key'] == key), None)
-        if field is None or value not in {choice['value'] for choice in field['options']}:
+        if field is None or (value not in {choice['value'] for choice in field['options']}
+                             and not (key == 'address' and valid_i2c_address(value))):
             raise HardwareSkillValidationError('接线选项已变化，请刷新模块资料后重新选择。')
         result[key] = value
     pins = [value for key, value in result.items() if key in {'sig', 'sig2', 'sig3', 'rx', 'tx'}]
@@ -116,8 +162,8 @@ def render(guide, setup=None):
 
 def setup_text(guide, setup=None):
     selected = values(guide, setup)
-    return '；'.join(field['label'] + '：' + next(choice['label'] for choice in field['options']
-        if choice['value'] == selected[field['key']]) for field in guide['fields'])
+    return '；'.join(field['label'] + '：' + next((choice['label'] for choice in field['options']
+        if choice['value'] == selected[field['key']]), selected[field['key']]) for field in guide['fields'])
 
 
 def install(repository, boards):

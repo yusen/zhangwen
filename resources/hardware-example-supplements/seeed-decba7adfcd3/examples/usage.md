@@ -447,7 +447,18 @@
       ],
       "codeTemplate": "# Grove - 气压传感器（BMP280）\n# ESP32_GENERIC_C3官方MicroPython\n# 功能示例，待实物测试。\nfrom machine import Pin, SoftI2C\nfrom utime import sleep_ms\ni2c = SoftI2C(sda=Pin(3), scl=Pin(4), freq=100000)\nADDR = {{address}}\nif ADDR not in i2c.scan():\n    raise RuntimeError(\"Sensor address absent; check wiring\")\nimport struct\nchip = i2c.readfrom_mem(ADDR, 0xD0, 1)[0]\nif chip not in (0x58, 0x60):\n    raise RuntimeError(\"Expected BMP280/BME280 chip ID\")\ncal = struct.unpack(\"<HhhHhhhhhhhh\", i2c.readfrom_mem(ADDR, 0x88, 24))\ni2c.writeto_mem(ADDR, 0xF4, bytes([0x27]))\nsleep_ms(100)\ndef read():\n    data = i2c.readfrom_mem(ADDR, 0xF7, 6)\n    p_raw = (data[0] << 12) | (data[1] << 4) | (data[2] >> 4)\n    t_raw = (data[3] << 12) | (data[4] << 4) | (data[5] >> 4)\n    t1, t2, t3 = cal[:3]\n    v1 = (t_raw / 16384 - t1 / 1024) * t2\n    v2 = (t_raw / 131072 - t1 / 8192) ** 2 * t3\n    fine = v1 + v2\n    temperature = fine / 5120\n    p1, p2, p3, p4, p5, p6, p7, p8, p9 = cal[3:]\n    v1 = fine / 2 - 64000\n    v2 = v1 * v1 * p6 / 32768 + v1 * p5 * 2\n    v2 = v2 / 4 + p4 * 65536\n    v1 = (p3 * v1 * v1 / 524288 + p2 * v1) / 524288\n    v1 = (1 + v1 / 32768) * p1\n    if v1 == 0:\n        raise RuntimeError(\"Invalid pressure calibration\")\n    pressure = (1048576 - p_raw - v2 / 4096) * 6250 / v1\n    pressure += (p9 * pressure * pressure / 2147483648 + pressure * p8 / 32768 + p7) / 16\n    print(\"Temperature C =\", temperature, \"Pressure hPa =\", pressure / 100)\n\nfor _ in range(20):\n    try:\n        read()\n    except (OSError, RuntimeError) as error:\n        print(\"Sensor read error =\", error)\n    sleep_ms(1000)\n"
     }
-  ]
+  ],
+  "i2c": {
+    "defaultAddress": "0x77",
+    "addresses": [
+      "0x77",
+      "0x76"
+    ],
+    "notes": "该Grove BMP280模块默认0x77，可选0x76，按焊盘及扫描结果核对。 地址是资料参考，不代表实物已连接或测试通过。",
+    "sources": [
+      "https://wiki.seeedstudio.com/cn/Grove-Barometer_Sensor-BMP280/"
+    ]
+  }
 }
 ```
 <!-- /zhangwen:module-guides:v1 -->

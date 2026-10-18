@@ -382,7 +382,18 @@
       ],
       "codeTemplate": "# Grove - 水位传感器\n# ESP32_GENERIC_C3官方MicroPython\n# 诊断/参考，不代表完整测量驱动。\nfrom machine import Pin, SoftI2C\nfrom utime import sleep_ms\ni2c = SoftI2C(sda=Pin(3), scl=Pin(4), freq=100000)\nbefore = i2c.scan()\nprint(\"I2C addresses =\", [hex(address) for address in before])\nprint(\"Disconnect power before changing wiring; compare with board-only addresses.\")\nprint(\"Address detection is not a measurement or model identification.\")\n"
     }
-  ]
+  ],
+  "i2c": {
+    "defaultAddress": null,
+    "addresses": [
+      "0x77",
+      "0x78"
+    ],
+    "notes": "水位模块有两颗控制器，0x77和0x78需分别读取，不是二选一。0x78在常规保留范围，部分扫描程序不扫描此地址，应按厂商驱动核对。 地址是资料参考，不代表实物已连接或测试通过。",
+    "sources": [
+      "https://wiki.seeedstudio.com/cn/Grove-Water-Level-Sensor/"
+    ]
+  }
 }
 ```
 <!-- /zhangwen:module-guides:v1 -->

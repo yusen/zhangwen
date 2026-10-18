@@ -80,6 +80,18 @@ finally:
 
 `from mpython import MPythonPin, PinMode`，构造签名 `MPythonPin(pin, mode=PinMode.IN, pull=None)`。pin 是掌控板 P 号，如 `MPythonPin(0, PinMode.IN)` 指 P0，不能据此写成 `machine.Pin(0)`；后者按 ESP32 原始 GPIO 编号解释。使用 P 号前仍需确认模块接线、电平和该引脚支持模式。
 
+**P1=GPIO32、P0=GPIO33**，由官方同版本[源码](https://mpython.readthedocs.io/zh-cn/v2.0.1/library/mPython/mpython_code.html)的 `pins_remap_esp32=(33,32,…)` 核对。用户说“接P1”时，不得生成 `machine.Pin(1)` 或 `SIG_PIN=1; Pin(SIG_PIN, …)`；后者实际使用GPIO1，不能据此建议更换P口或判定模块损坏。需要 `time_pulse_us` 或切换输入输出时，使用底层Pin对象：
+
+```python
+from mpython import MPythonPin, PinMode
+from machine import Pin, time_pulse_us
+sig = MPythonPin(1, PinMode.OUT).Pin  # 板上P1，底层GPIO32
+sig.init(Pin.IN, pull=None)
+# time_pulse_us(sig, 1, 40000) 仅是脉宽采样；先按所选模块协议触发。
+```
+
+本机旧案例的引脚不是用户当前接线；用户明确改为P1时更新逻辑引脚，不能继续沿用P0。内部上拉读1、输出回读高或单次超时都不是断线、端口正常或传感器损坏的充分证据。
+
 - `PinMode.IN` → `read_digital()`；`PinMode.OUT` → `write_digital(0或1)`。
 - `PinMode.ANALOG` → `read_analog()`，返回 0–4095。
 - `PinMode.PWM` → `write_analog(duty, freq=1000)`，duty 为 0–1023，频率 1–78125 Hz。
@@ -97,6 +109,6 @@ finally:
 
 ## 其他库与缺失资料
 
-官方该版还列出 `audio`、`radio`、`sdcard`、`bluebit`、`parrot`、`ds18x20`，这是库目录，**不保证外接模块已连接、驱动已安装或可直接跨品牌替代**。这些库的具体调用需匹配选中的模块 Skill、准确型号及相应官方同版本章节；摘要未给出签名时，先说明需补充的资料或检查固件，不自行编造。
+官方该版还列出 `audio`、`radio`、`sdcard`、`bluebit`、`parrot`、`ds18x20`，这是库目录，**不保证外接模块已连接、驱动已安装或可直接跨品牌替代**。这些库的具体调用需匹配选中的模块 Skill、准确型号及相应官方同版本章节。若当前模块的掌控板2.0本机案例已给出库导入、构造和方法，优先沿用其调用；本摘要未穷举该签名不是弃用案例或索要寄存器协议的理由。没有适用案例与参考，或实际导入/调用报错时，再针对缺少的资料或固件检查，不自行编造。
 
 例如 DS18B20 是外接器件，不能当作板载温度计；BME280、磁力计和加速度计也不能互相替代。生成的程序只是待检查/接受代码；保存、检查、上传回读、运行提交与用户实物观察分别报告。
