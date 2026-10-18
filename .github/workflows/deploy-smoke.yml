@@ -20,6 +20,9 @@ jobs:
         run: |
           # Hide preinstalled developer runtimes to exercise a fresh computer.
           $env:PATH = "$env:SystemRoot\System32;$env:SystemRoot"
+          # Reproduce a service started from PowerShell 7 / an automation host.
+          # The standalone installer must isolate modules before auto-loading.
+          $env:PSModulePath = "$env:ProgramFiles\PowerShell\7\Modules"
           ./install.ps1 -InstallDir "$env:RUNNER_TEMP/ZhangWen Platform" -Revision "$env:GITHUB_SHA" -DesktopDir "$env:RUNNER_TEMP/ZhangWen Desktop" -NoStart
       - name: Prepare on macOS
         if: runner.os == 'macOS'

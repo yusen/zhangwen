@@ -12,6 +12,12 @@
 irm https://raw.githubusercontent.com/yusen/zhangwen/main/install.ps1 | iex
 ```
 
+Windows CMD 使用显式 PowerShell 入口：
+
+```cmd
+powershell.exe -NoLogo -NoProfile -ExecutionPolicy Bypass -Command "irm https://raw.githubusercontent.com/yusen/zhangwen/main/install.ps1 | iex"
+```
+
 macOS 13.5+（Intel / Apple Silicon）：
 
 ```bash
@@ -77,6 +83,21 @@ macOS可在安装命令的环境中指定`ZHANGWEN_APPLICATIONS_DIR="$HOME/Appli
 先保存工作并关闭服务，再执行同一安装命令。已安装的同一提交校验通过时跳过源码下载；有更新则安装新目录，成功才切换入口，数据不移动、不重置。安装失败后修复网络再次执行。发现已安装源码被手工改动时会保留并报错，不覆盖；需要另行保存改动并移开该版本目录再试。
 
 回退前先停止服务、备份 data，再把 current.txt 改成 versions 内已成功安装的旧提交 SHA。数据库若已经迁移，应连同更新前的数据备份一起回退；仅保留旧程序目录不等于数据库可逆。旧版本不会自动删除。
+
+## Windows PowerShell 模块冲突
+
+Windows 更新器固定使用系统 Windows PowerShell 5.1。服务若由 PowerShell 7、IDE 或自动化工具启动，父进程的 `PSModulePath` 可能含另一版本的模块；`-NoProfile` 不会清除这个环境变量，因而可能出现 `Get-FileHash` 无法识别或模块无法加载。
+
+安装器、源码启动和生成的桌面启动脚本在调用模块前仅使用当前宿主自带的 `Modules` 目录；后台更新启动子进程时丢弃继承的 `PSModulePath`。桌面快捷方式明确指向系统 Windows PowerShell，避免在 PowerShell 7 目录拼接不存在的 `powershell.exe`。仅调整应用进程环境，不更改系统或用户级环境变量；直接运行安装器或快捷方式创建脚本后恢复调用方的模块路径。
+
+旧版因模块冲突无法更新时，先保存项目并关闭原服务，然后打开 **CMD** 执行下面两行（自定义安装位置须继续使用原位置）：
+
+```cmd
+set "PSModulePath="
+"%SystemRoot%\System32\WindowsPowerShell\v1.0\powershell.exe" -NoLogo -NoProfile -ExecutionPolicy Bypass -Command "irm https://raw.githubusercontent.com/yusen/zhangwen/main/install.ps1 | iex"
+```
+
+第一行仅清除当前 CMD 窗口及其子进程的模块路径，让新启动的 Windows PowerShell 建立自己的默认路径。不需要卸载 PowerShell 7、重装平台、删除数据或使用 `setx`。原版本有下载、清单或环境准备错误时仍会保留当前版本，详情查看安装目录 `updates` 中的日志。
 
 ## 发布范围
 

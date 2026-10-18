@@ -1,5 +1,8 @@
 param([switch]$PrepareOnly, [Parameter(ValueFromRemainingArguments=$true)][string[]]$ServerArgs)
 $ErrorActionPreference = 'Stop'
+# Use this host's bundled modules before any command can trigger auto-loading.
+# A PowerShell 7/automation parent may have supplied incompatible module paths.
+$env:PSModulePath = [IO.Path]::Combine($PSHOME, 'Modules')
 $projectRoot = Split-Path -Parent $PSScriptRoot
 $runtimeRoot = Join-Path $projectRoot '.runtime'
 if ($env:ZHANGWEN_RUNTIME_DIR) { $runtimeRoot = [IO.Path]::GetFullPath($env:ZHANGWEN_RUNTIME_DIR) }

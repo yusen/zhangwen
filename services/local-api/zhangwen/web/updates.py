@@ -169,6 +169,11 @@ class UpdateManager:
             env = dict(os.environ)
             env.update(ZHANGWEN_INSTALL_DIR=str(self.install_root), ZHANGWEN_REVISION=revision, ZHANGWEN_NO_START="1")
             if sys.platform == "win32":
+                # -NoProfile does not discard paths inherited from PowerShell 7.
+                # Let Windows PowerShell construct its own module search path.
+                for key in tuple(env):
+                    if key.casefold() == "psmodulepath":
+                        del env[key]
                 powershell = Path(os.environ.get("SystemRoot", r"C:\Windows")) / "System32/WindowsPowerShell/v1.0/powershell.exe"
                 command = [str(powershell), "-NoLogo", "-NoProfile", "-ExecutionPolicy", "Bypass", "-File", str(self.root / "install.ps1"), "-InstallDir", str(self.install_root), "-Revision", revision, "-NoStart"]
                 options = {"creationflags": subprocess.CREATE_NO_WINDOW}

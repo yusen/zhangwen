@@ -10,6 +10,12 @@ Windows 10/11 x64，在 **PowerShell** 执行：
 irm https://raw.githubusercontent.com/yusen/zhangwen/main/install.ps1 | iex
 ```
 
+在 Windows CMD 中执行：
+
+```cmd
+powershell.exe -NoLogo -NoProfile -ExecutionPolicy Bypass -Command "irm https://raw.githubusercontent.com/yusen/zhangwen/main/install.ps1 | iex"
+```
+
 macOS 13.5+，Apple Silicon / Intel，在终端执行：
 
 ```bash
@@ -23,6 +29,8 @@ Windows 自动创建桌面 **ZhangWen** 启动图标（掌问手掌 Logo），�
 macOS 找不到入口时，无需卸载或重启电脑：先在 Finder 按 `⌘⇧G` 分别查看 `/Applications` 与 `~/Applications`。从旧版平台内更新可能使用旧安装器，遗漏新增入口；新版本正常启动时会尝试补齐。也可先保存项目、在原服务终端按 `Ctrl+C`，再重跑上方安装命令，依赖完整时会复用，用户数据保留。安装输出中的 `Application:` 是实际入口路径；安装失败时先查看错误，不要删除 `data`。
 
 再次执行安装命令检查并安装 GitHub 最新版本；同一版本校验通过后跳过源码下载。每日启动使用图标/本地启动文件。平台支持启动检查和手动「检查更新」，确认后才安装，下次启动生效；检查失败不影响现有工作台。新版本准备成功才切换入口，旧版本和用户数据保留。
+
+Windows 安装、启动和后台更新会隔离当前进程的 PowerShell 模块路径，避免 PowerShell 7 / 自动化环境与系统 Windows PowerShell 5.1 混用。旧版更新出现 `Get-FileHash` 加载失败时，见[部署指南中的恢复步骤](docs/DEPLOYMENT.md#windows-powershell-模块冲突)。
 
 ## 工作台
 
