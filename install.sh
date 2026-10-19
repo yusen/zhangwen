@@ -9,11 +9,9 @@ lock="$install_root/install.lock"
 mkdir "$lock" 2>/dev/null || { echo "Another installer may be running; interrupted setup lock: $lock" >&2; exit 1; }
 trap 'rmdir "$lock" 2>/dev/null || true' EXIT
 revision=${ZHANGWEN_REVISION:-}
-source=${ZHANGWEN_SOURCE:-gitee}
-case "$source" in gitee|github) ;; *) echo 'Invalid distribution source.' >&2; exit 1 ;; esac
 if [ -z "$revision" ]; then
-  # Code and updates come from this repository only; $source selects the
-  # dependency mirror (gitee: domestic, github: upstream/global).
+  # Code, dependencies and updates all come from this repository and the
+  # domestic mirrors pinned in scripts/.
   ref_url=https://gitee.com/api/v5/repos/zmh1979/ask-with-your-palm/branches/master
   revision=$(curl -fsS --retry 3 --connect-timeout 15 --max-time 60 -H 'User-Agent: zhangwen-installer' "$ref_url" | tr '{,' '\n' | sed -nE 's/^[[:space:]]*"sha"[[:space:]]*:[[:space:]]*"([0-9a-f]{40})".*/\1/p' | sed -n '1p')
 fi
@@ -50,8 +48,6 @@ else echo 'Platform files are current; skipping source download.'
 fi
 export ZHANGWEN_DATA_DIR="$install_root/data"
 export ZHANGWEN_RUNTIME_DIR="$install_root/runtime"
-export ZHANGWEN_DOWNLOAD_SOURCE=cn
-if [ "$source" = github ]; then export ZHANGWEN_DOWNLOAD_SOURCE=global; fi
 bash "$app/scripts/bootstrap-unix.sh" --prepare-only
 cat > "$install_root/启动掌问.command" <<'LAUNCH'
 #!/usr/bin/env bash
@@ -61,23 +57,12 @@ revision=$(cat "$root/current.txt")
 [[ "$revision" =~ ^[0-9a-f]{40}$ ]] || exit 1
 export ZHANGWEN_DATA_DIR="$root/data"
 export ZHANGWEN_RUNTIME_DIR="$root/runtime"
-source=github
-source_file="$root/versions/$revision/.runtime/distribution-source.txt"
-if [ -f "$source_file" ]; then source=$(cat "$source_file"); fi
-case "$source" in
-  gitee) export ZHANGWEN_DOWNLOAD_SOURCE=cn ;;
-  github) export ZHANGWEN_DOWNLOAD_SOURCE=global ;;
-  *) echo 'Invalid distribution source.' >&2; exit 1 ;;
-esac
 exec bash "$root/versions/$revision/start-web.sh"
 LAUNCH
 chmod +x "$install_root/启动掌问.command"
 app_args=(--install-root "$install_root")
 if [ -n "${ZHANGWEN_APPLICATIONS_DIR:-}" ]; then app_args+=(--applications-dir "$ZHANGWEN_APPLICATIONS_DIR"); fi
 "$app/.venv/bin/python" "$app/scripts/create-macos-app.py" "${app_args[@]}"
-mkdir -p "$app/.runtime"
-printf '%s\n' "$source" > "$app/.runtime/distribution-source.txt.tmp"
-mv "$app/.runtime/distribution-source.txt.tmp" "$app/.runtime/distribution-source.txt"
 printf '%s\n' "$revision" > "$install_root/current.txt.tmp"
 mv "$install_root/current.txt.tmp" "$install_root/current.txt"
 echo "Installed: $app"

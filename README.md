@@ -32,7 +32,7 @@ macOS 找不到入口时，无需卸载或重启电脑：先在 Finder 按 `⌘�
 
 Windows 安装、启动和后台更新会隔离当前进程的 PowerShell 模块路径，避免 PowerShell 7 / 自动化环境与系统 Windows PowerShell 5.1 混用。旧版更新出现 `Get-FileHash` 加载失败时，见[部署指南中的恢复步骤](docs/DEPLOYMENT.md#windows-powershell-模块冲突)。
 
-国内入口的源码、更新与首次安装依赖均使用国内下载源；用户数据与程序版本分开保存。旧版 Windows 桌面版保留于原 Git 历史与 `v0.1.1` / `v0.1.3` 标签，新版不自动迁移旧桌面数据。下载来源、切换渠道及验证边界见 [国内安装说明](docs/DOMESTIC_INSTALLATION.md)。
+源码、更新与首次安装依赖均取自固定下载源：代码来自本仓库的 Gitee 地址，运行时与依赖来自国内镜像，没有备用渠道或海外回退；用户数据与程序版本分开保存。旧版 Windows 桌面版保留于原 Git 历史与 `v0.1.1` / `v0.1.3` 标签，新版不自动迁移旧桌面数据。下载来源与验证边界见 [国内安装说明](docs/DOMESTIC_INSTALLATION.md)。
 
 ## 工作台
 

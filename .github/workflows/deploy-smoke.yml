@@ -23,10 +23,10 @@ jobs:
           # Reproduce a service started from PowerShell 7 / an automation host.
           # The standalone installer must isolate modules before auto-loading.
           $env:PSModulePath = "$env:ProgramFiles\PowerShell\7\Modules"
-          ./install.ps1 -InstallDir "$env:RUNNER_TEMP/ZhangWen Platform" -Revision "$env:GITHUB_SHA" -DesktopDir "$env:RUNNER_TEMP/ZhangWen Desktop" -Source github -NoStart
+          ./install.ps1 -InstallDir "$env:RUNNER_TEMP/ZhangWen Platform" -Revision "$env:GITHUB_SHA" -DesktopDir "$env:RUNNER_TEMP/ZhangWen Desktop" -NoStart
       - name: Prepare on macOS
         if: runner.os == 'macOS'
-        run: PATH=/usr/bin:/bin:/usr/sbin:/sbin ZHANGWEN_INSTALL_DIR="$RUNNER_TEMP/ZhangWen Platform" ZHANGWEN_APPLICATIONS_DIR="$RUNNER_TEMP/Applications" ZHANGWEN_SOURCE=github ZHANGWEN_REVISION="$GITHUB_SHA" ZHANGWEN_NO_START=1 bash install.sh
+        run: PATH=/usr/bin:/bin:/usr/sbin:/sbin ZHANGWEN_INSTALL_DIR="$RUNNER_TEMP/ZhangWen Platform" ZHANGWEN_APPLICATIONS_DIR="$RUNNER_TEMP/Applications" ZHANGWEN_REVISION="$GITHUB_SHA" ZHANGWEN_NO_START=1 bash install.sh
       - name: Verify macOS application launcher
         if: runner.os == 'macOS'
         run: |

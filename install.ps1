@@ -2,8 +2,7 @@ param(
     [string]$InstallDir = ([IO.Path]::Combine([Environment]::GetFolderPath('LocalApplicationData'), 'ZhangWen')),
     [switch]$NoStart,
     [string]$Revision = '',
-    [string]$DesktopDir = [Environment]::GetFolderPath('Desktop'),
-    [ValidateSet('gitee', 'github')][string]$Source = 'gitee'
+    [string]$DesktopDir = [Environment]::GetFolderPath('Desktop')
 )
 $ErrorActionPreference = 'Stop'
 $installerModulePath = $env:PSModulePath
@@ -21,8 +20,8 @@ try {
     try {
         $headers = @{ 'User-Agent' = 'zhangwen-installer'; 'Accept' = 'application/json' }
         if (!$Revision) {
-            # Code and updates come from this repository only; -Source selects
-            # the dependency mirror (gitee: domestic, github: upstream/global).
+            # Code, dependencies and updates all come from this repository and
+            # the domestic mirrors pinned in scripts/.
             $Revision = (Invoke-RestMethod -Uri 'https://gitee.com/api/v5/repos/zmh1979/ask-with-your-palm/branches/master' -Headers $headers -TimeoutSec 30).commit.sha
         }
         if ($Revision -cnotmatch '^[0-9a-f]{40}$') { throw 'Invalid repository revision.' }
@@ -94,8 +93,6 @@ try {
         } else { Write-Host 'Platform files are current; skipping source download.' }
         $env:ZHANGWEN_DATA_DIR = Join-Path $InstallDir 'data'
         $env:ZHANGWEN_RUNTIME_DIR = Join-Path $InstallDir 'runtime'
-        $env:ZHANGWEN_DOWNLOAD_SOURCE = 'cn'
-        if ($Source -eq 'github') { $env:ZHANGWEN_DOWNLOAD_SOURCE = 'global' }
         & $windowsPowerShell -NoLogo -NoProfile -ExecutionPolicy Bypass -File (Join-Path $appDir 'scripts/bootstrap-windows.ps1') -PrepareOnly
         if ($LASTEXITCODE -ne 0) { throw 'Environment setup failed. The previous version remains selected.' }
         $launcher = Join-Path $InstallDir 'launch.ps1'
@@ -106,19 +103,10 @@ $revision = [IO.File]::ReadAllText((Join-Path $PSScriptRoot 'current.txt')).Trim
 if ($revision -cnotmatch '^[0-9a-f]{40}$') { throw 'Invalid installed version.' }
 $env:ZHANGWEN_DATA_DIR = Join-Path $PSScriptRoot 'data'
 $env:ZHANGWEN_RUNTIME_DIR = Join-Path $PSScriptRoot 'runtime'
-$sourceFile = Join-Path $PSScriptRoot "versions/$revision/.runtime/distribution-source.txt"
-$source = 'github'
-if (Test-Path -LiteralPath $sourceFile) { $source = [IO.File]::ReadAllText($sourceFile).Trim() }
-if ($source -cnotmatch '^(gitee|github)$') { throw 'Invalid distribution source.' }
-$env:ZHANGWEN_DOWNLOAD_SOURCE = 'global'
-if ($source -eq 'gitee') { $env:ZHANGWEN_DOWNLOAD_SOURCE = 'cn' }
 & (Join-Path $PSScriptRoot "versions/$revision/scripts/bootstrap-windows.ps1")
 if ($LASTEXITCODE -ne 0) { Read-Host 'Startup failed. Press Enter to close' }
 '@
         [IO.File]::WriteAllText($launcher, $launcherText, (New-Object Text.UTF8Encoding($false)))
-        New-Item -ItemType Directory -Force -Path (Join-Path $appDir '.runtime') | Out-Null
-        [IO.File]::WriteAllText((Join-Path $appDir '.runtime/distribution-source.txt.tmp'), $Source)
-        Move-Item -LiteralPath (Join-Path $appDir '.runtime/distribution-source.txt.tmp') -Destination (Join-Path $appDir '.runtime/distribution-source.txt') -Force
         [IO.File]::WriteAllText((Join-Path $InstallDir 'current.txt.tmp'), $Revision)
         Move-Item -LiteralPath (Join-Path $InstallDir 'current.txt.tmp') -Destination (Join-Path $InstallDir 'current.txt') -Force
         & $windowsPowerShell -NoLogo -NoProfile -ExecutionPolicy Bypass -File (Join-Path $appDir 'scripts/create-shortcut.ps1') -Launcher $launcher -Icon (Join-Path $appDir 'apps/web/src/assets/palm-logo.ico') -Desktop $DesktopDir

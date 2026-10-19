@@ -1,6 +1,6 @@
 # 国内安装与更新
 
-国内发布仓库为 https://gitee.com/zmh1979/ask-with-your-palm ，新版是本地 Web 平台。仓库原 Windows 桌面版仍保留在 Git 历史与原标签中；新版不会读取或搬迁旧桌面用户库。
+发布仓库为 https://gitee.com/zmh1979/ask-with-your-palm ，新版是本地 Web 平台。仓库原 Windows 桌面版仍保留在 Git 历史与原标签中；新版不会读取或搬迁旧桌面用户库。
 
 ## 一条命令
 
@@ -20,7 +20,7 @@ curl -fsSL https://gitee.com/zmh1979/ask-with-your-palm/raw/master/install.sh | 
 
 ## 下载来源
 
-| 内容 | 国内渠道 |
+| 内容 | 下载源 |
 | --- | --- |
 | 安装脚本、master 提交 SHA、固定提交源码 ZIP | gitee.com（原文件可能跳转 raw.giteeusercontent.com） |
 | Node 24.14.0 | cdn.npmmirror.com，固定平台摘要 |
@@ -28,13 +28,13 @@ curl -fsSL https://gitee.com/zmh1979/ask-with-your-palm/raw/master/install.sh | 
 | 前端依赖 | registry.npmmirror.com，原锁文件版本及 integrity |
 | Python 依赖 | pypi.tuna.tsinghua.edu.cn，原精确平台版本锁 |
 
-三个运行时平台分别为 Windows x64、macOS arm64 与 macOS x64。国内渠道准备 Python 时直接使用官方独立运行时的镜像，不下载 uv，不请求 GitHub。运行时下载失败或摘要不符会停止，保留原程序入口及用户数据；不会自动转到 GitHub。镜像同步和网络仍可能失败，错误需按实际安装日志排查，不能保证每个地区始终可达。
+三个运行时平台分别为 Windows x64、macOS arm64 与 macOS x64。准备 Python 时直接使用官方独立运行时的镜像，不下载 uv，不请求 GitHub。运行时下载失败或摘要不符会停止，保留原程序入口及用户数据；不会自动切换到其他下载源。镜像同步和网络仍可能失败，错误需按实际安装日志排查，不能保证每个地区始终可达。
 
 先检查已有运行时及依赖，可用则复用；缺失才下载。本轮并未制作完整离线包。AI 模型服务仍需要用户配置的接口及网络，不由 Gitee 提供。
 
-## 渠道与数据
+## 下载源与数据
 
-安装器默认使用 Gitee。每个成功准备的版本在 `.runtime/distribution-source.txt` 保存 `gitee` 或 `github`；桌面启动器及平台更新沿用该版本渠道。旧安装目录没有标记时按 GitHub 渠道处理。两个渠道的代码与更新都取自本仓库的 Gitee 地址，渠道只决定依赖下载源。安装器只接受上述两个受信任渠道，不接受网页或模型传入任意下载 URL。
+安装器只有一个受信任来源：代码与更新取自本仓库的 Gitee 地址，Node、Python 独立运行时及前端、Python 依赖取自上表固定的国内镜像。没有备用渠道或海外回退，安装器也不接受网页或模型传入的任意下载 URL。早期文档里的 `-Source` / `ZHANGWEN_SOURCE` 开关已移除，照旧复制命令时请去掉这两个参数。
 
 Windows 自定义目录、仅安装：
 
@@ -48,11 +48,9 @@ macOS 自定义目录、仅安装：
 curl -fsSL https://gitee.com/zmh1979/ask-with-your-palm/raw/master/install.sh | ZHANGWEN_INSTALL_DIR="$HOME/Apps/掌问平台" ZHANGWEN_NO_START=1 bash
 ```
 
-从现有 Web 安装切换到国内渠道：先保存项目并关闭本地服务，使用原安装目录重新执行国内安装命令。安装器在新版本准备成功后切换，`data` 保持原位置；不要删除数据、复制旧桌面数据库或连接 V1 生产库。默认目录见 [部署指南](DEPLOYMENT.md)。
+从旧版本升级：先保存项目并关闭本地服务，使用原安装目录重新执行安装命令。安装器在新版本准备成功后切换，`data` 保持原位置；不要删除数据、复制旧桌面数据库或连接 V1 生产库。默认目录见 [部署指南](DEPLOYMENT.md)。
 
-确需使用海外依赖源时，已下载的 Windows 安装脚本可传 `-Source github`，macOS 可设 `ZHANGWEN_SOURCE=github`；该渠道的依赖改为从上游 GitHub 等海外地址下载，代码与更新仍取自本 Gitee 仓库，与国内网络验收分开。
-
-依赖源设置仅作用于安装及其子进程，不写全局 npm/pip 配置、不修改系统 PATH、代理、证书或凭据。国内 npm 安装会将锁文件中默认 registry 的下载目标替换为镜像，仍核验 integrity；安装记录仅对两个受信任 registry 的相同包路径视为等价。
+依赖源设置仅作用于安装及其子进程，不写全局 npm/pip 配置、不修改系统 PATH、代理、证书或凭据。npm 安装会将锁文件中默认 registry 的下载目标替换为镜像，仍核验 integrity；安装记录仅对两个受信任 registry 的相同包路径视为等价。
 
 ## 验证边界
 

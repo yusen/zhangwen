@@ -2,7 +2,7 @@
 
 程序源码、运行资源、用户数据及开发验证目录的用途见 [项目目录](PROJECT_LAYOUT.md)。源码根目录只保留日常启动与安装入口；验证工具集中到 `scripts/verification/`，部署导出工具位于 `scripts/release/`，两者均不进入部署仓库。
 
-平台支持「检查更新」：安装器部署后自动检测一次，也可从网页手动检测；确认安装后下载、校验和准备新版本，下次启动生效。开发工作区仅支持检查，禁止原地覆盖源码。更新流程及验证范围见 [三师模式与平台更新](MODES_UPDATES.md)。部署版包含自动端口切换和macOS应用启动器，具体版本以安装渠道的提交SHA为准。
+平台支持「检查更新」：安装器部署后自动检测一次，也可从网页手动检测；确认安装后下载、校验和准备新版本，下次启动生效。开发工作区仅支持检查，禁止原地覆盖源码。更新流程及验证范围见 [三师模式与平台更新](MODES_UPDATES.md)。部署版包含自动端口切换和macOS应用启动器，具体版本以 master 的提交 SHA 为准。
 
 ## 新电脑
 
@@ -24,12 +24,12 @@ macOS 13.5+（Intel / Apple Silicon）：
 curl -fsSL https://gitee.com/zmh1979/ask-with-your-palm/raw/master/install.sh | bash
 ```
 
-命令下载并运行本仓库安装脚本；无需 Git、Homebrew、Node 或 Python。国内入口使用 Gitee 下载源码、npm 镜像下载 Node 与 Python 独立运行时、npmmirror 下载前端包、清华 PyPI 镜像下载 Python 依赖；国内渠道不自动回退 GitHub。浏览器使用桌面 Chrome / Edge，设备需合适的 MicroPython 固件及串口驱动；安装器不自动刷设备或安装系统驱动。AI Key 在网页设置，不写进安装命令。
+命令下载并运行本仓库安装脚本；无需 Git、Homebrew、Node 或 Python。安装脚本从 Gitee 下载源码，Node 与 Python 独立运行时取自 npmmirror 镜像，前端包走 npmmirror registry，Python 依赖走清华 PyPI 镜像；没有海外回退源。浏览器使用桌面 Chrome / Edge，设备需合适的 MicroPython 固件及串口驱动；安装器不自动刷设备或安装系统驱动。AI Key 在网页设置，不写进安装命令。
 
 ## 环境准备顺序
 
-1. 读取选定仓库 main 的不可变提交 SHA，复用通过文件清单校验的已安装版本；缺失才下载该 SHA 的源码 ZIP。Windows 检查压缩包路径和链接，macOS 检查路径；逐文件校验 DEPLOYMENT.sha256 后才执行包内脚本。
-2. 离线检查项目运行时和本机 Node 22+/npm、Python 3.12+；可用则复用。缺失时直接下载 Node 24.14.0、Python 3.13.7 独立构建 20250918（固定 SHA-256），所有渠道均无需 uv。国内渠道使用 npm 国内镜像，GitHub 渠道使用 Node 官网与 python-build-standalone 上游发布文件。Windows x64、macOS arm64/x64 分别选择匹配运行时，不需要 sudo；安装器下载的运行时放在安装根的 runtime，各程序版本共享并先检测复用。
+1. 读取本仓库 master 的不可变提交 SHA，复用通过文件清单校验的已安装版本；缺失才下载该 SHA 的源码 ZIP。Windows 检查压缩包路径和链接，macOS 检查路径；逐文件校验 DEPLOYMENT.sha256 后才执行包内脚本。
+2. 离线检查项目运行时和本机 Node 22+/npm、Python 3.12+；可用则复用。缺失时直接下载 Node 24.14.0、Python 3.13.7 独立构建 20250918（固定 SHA-256），全程无需 uv，运行时与依赖都取自国内镜像。Windows x64、macOS arm64/x64 分别选择匹配运行时，不需要 sudo；安装器下载的运行时放在安装根的 runtime，各程序版本共享并先检测复用。
 3. 使用 Python 自带的 `venv` 创建每版 `.venv`，通过环境内的 `python -m pip` 安装锁定依赖；本机解释器需具备 `venv` 和 `ensurepip`，否则选择独立 Python。已有可用 `.venv` 直接复用，不因本次准备方式变更而重建。实际包版本和关键导入均检查；前端核对锁文件、平台及命令入口。完整依赖跳过下载，缺失才补齐，npm 优先使用缓存。源码摘要不变时跳过构建。
 4. 安装与 strict 构建成功才原子切换 current.txt。失败保留原入口及数据；安装锁防止并发。下载中断留下的 download-* 目录仅供诊断，可在关闭安装器后手动清理。
 5. Windows 建立桌面 ZhangWen.lnk，图标是随包掌问 Logo；macOS 生成启动掌问.command及掌问.app。应用放入可写的`/Applications`，否则放入个人`~/Applications`，无需sudo。应用启动终端中的本地服务并打开浏览器，同数据目录再次启动时核对标记并打开已有平台。

@@ -44,11 +44,8 @@ def now() -> str:
     return datetime.now(timezone.utc).isoformat()
 
 
-def latest_revision(source: str = "github") -> str:
-    if source not in {"gitee", "github"}:
-        raise ValueError("invalid distribution source")
-    # Code and updates come from this repository only; ``source`` records the
-    # dependency mirror chosen by the installer, not another code host.
+def latest_revision() -> str:
+    # One fixed repository and branch; no channel or mirror switching.
     # No model URL, browser-supplied URL, credentials, redirect or proxy routing.
     started = time.monotonic()
     with httpx.Client(timeout=httpx.Timeout(10, connect=5), trust_env=False, follow_redirects=False) as client:
@@ -89,7 +86,6 @@ class UpdateManager:
         self.root = root.resolve()
         self.install_root: Path | None = None
         self.current: str | None = None
-        self.source = "github"  # Existing installations keep their original channel.
         if SHA.fullmatch(self.root.name) and self.root.parent.name == "versions" and sys.platform in {"win32", "darwin"}:
             candidate = self.root.parent.parent
             try:
@@ -100,15 +96,6 @@ class UpdateManager:
                     self.install_root, self.current = candidate, self.root.name
             except OSError:
                 pass
-        self.source_error = False
-        if self.install_root:
-            try:
-                marker = self.root / ".runtime/distribution-source.txt"
-                if marker.exists():
-                    self.source = marker.read_text(encoding="utf-8").strip()
-                self.source_error = self.source not in {"gitee", "github"}
-            except (OSError, UnicodeError):
-                self.source_error = True
         self.lock = threading.RLock()
         self.checking = False
         self.checked_clock = 0.0
@@ -129,9 +116,7 @@ class UpdateManager:
                 return self.status()
             self.checking = True
         try:
-            if self.source_error:
-                raise ValueError("invalid installed distribution source")
-            revision = latest_revision(self.source)
+            revision = latest_revision()
             with self.lock:
                 if self.result["job"] and self.result["job"]["state"] == "failed":
                     self.result["job"] = None
@@ -183,7 +168,7 @@ class UpdateManager:
             log_dir = self.install_root / "updates"
             log_dir.mkdir(exist_ok=True)
             env = dict(os.environ)
-            env.update(ZHANGWEN_INSTALL_DIR=str(self.install_root), ZHANGWEN_REVISION=revision, ZHANGWEN_NO_START="1", ZHANGWEN_SOURCE=self.source)
+            env.update(ZHANGWEN_INSTALL_DIR=str(self.install_root), ZHANGWEN_REVISION=revision, ZHANGWEN_NO_START="1")
             if sys.platform == "win32":
                 # -NoProfile does not discard paths inherited from PowerShell 7.
                 # Let Windows PowerShell construct its own module search path.
@@ -191,7 +176,7 @@ class UpdateManager:
                     if key.casefold() == "psmodulepath":
                         del env[key]
                 powershell = Path(os.environ.get("SystemRoot", r"C:\Windows")) / "System32/WindowsPowerShell/v1.0/powershell.exe"
-                command = [str(powershell), "-NoLogo", "-NoProfile", "-ExecutionPolicy", "Bypass", "-File", str(self.root / "install.ps1"), "-InstallDir", str(self.install_root), "-Revision", revision, "-Source", self.source, "-NoStart"]
+                command = [str(powershell), "-NoLogo", "-NoProfile", "-ExecutionPolicy", "Bypass", "-File", str(self.root / "install.ps1"), "-InstallDir", str(self.install_root), "-Revision", revision, "-NoStart"]
                 options = {"creationflags": subprocess.CREATE_NO_WINDOW}
             else:
                 command = ["/bin/bash", str(self.root / "install.sh")]

@@ -10,7 +10,7 @@
 
 浏览器固件功能使用 Espressif [esptool-js](https://github.com/espressif/esptool-js) 0.5.6（Apache-2.0），由package-lock锁定。本地构建包含其芯片支持和RAM stub资源，不通过CDN加载；依赖安装目录保留上游LICENSE。默认官方固件现保存在resources/firmware，并被部署导出白名单包含；来源、版本、摘要与原版权声明见该目录README/manifest和许可证，不新增第三方授权。
 
-Windows/macOS 安装入口在缺少运行环境时直接下载 Node.js（上游 https://nodejs.org/，含自身第三方许可证）和 python-build-standalone 的 CPython 3.13.7 独立发行版（上游 https://github.com/astral-sh/python-build-standalone ，构建 20250918）。国内渠道使用 npm 国内镜像，GitHub 渠道使用上述上游发布文件；所有渠道均以 Python 自带的 venv/ensurepip/pip 准备环境，无需 uv。三个平台的独立运行时摘要与上游 SHA256SUMS 比对后固定；安装时再次校验。运行环境下载后保留其自带的 Python 许可证与第三方许可证文件，源码仓库不包含这些二进制。
+Windows/macOS 安装入口在缺少运行环境时直接下载 Node.js（上游 https://nodejs.org/，含自身第三方许可证）和 python-build-standalone 的 CPython 3.13.7 独立发行版（上游 https://github.com/astral-sh/python-build-standalone ，构建 20250918）。这两份运行时以及前端的 npm 包、Python 依赖都从上述国内镜像获取，镜像内容对应上游发布文件；环境准备以 Python 自带的 venv/ensurepip/pip 完成，无需 uv。三个平台的独立运行时摘要与上游 SHA256SUMS 比对后固定；安装时再次校验。运行环境下载后保留其自带的 Python 许可证与第三方许可证文件，源码仓库不包含这些二进制。
 
 旧桌面版的 Wokwi Elements、ESP32-S3 QEMU 和 ESP-Claw 声明保存在旧版恢复标签的 `docs/THIRD_PARTY_NOTICES.md` 中。本版 Web 启动不安装或调用这些仿真运行时，不包含 QEMU 或 ESP-Claw 二进制。
 
