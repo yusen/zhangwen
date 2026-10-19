@@ -1,0 +1,35 @@
+{
+  "schema": "zhangwen.hardware-skill-manifest/v1",
+  "schemaVersion": 1,
+  "skillName": "labplus-fffc88a41e8a",
+  "componentId": "hw_labplus_fffc88a41e8a",
+  "displayName": "盛思 细微颗粒物PM2.5(新版，模块+探头)",
+  "description": "盛思 细微颗粒物PM2.5(新版，模块+探头)的官方目录、产品图片与参考资料；MicroPython 驱动及跨主控接线待联调。",
+  "status": "ACTIVE",
+  "sourceKind": "BUNDLED",
+  "files": [
+    "SKILL.md",
+    "references/specifications.md",
+    "references/compatibility-rules.md",
+    "references/integration.md",
+    "references/safety.md",
+    "references/sources.md",
+    "examples/usage.md",
+    "tests/validation-cases.md"
+  ],
+  "media": [
+    {
+      "path": "assets/cover.webp",
+      "role": "cover",
+      "alt": "盛思 细微颗粒物PM2.5(新版，模块+探头) 官方产品图",
+      "contentType": "image/webp",
+      "sha256": "e394c08ca3e41437f732967f3505f0bc044cce62c80fbf634aa064cb9fd3ede6",
+      "sourceUrl": "https://labplus-ledong-module-documentation.readthedocs.io/zh-cn/latest/_images/PM2.5%E6%96%B0-1.png",
+      "attribution": "盛思 官方产品文档",
+      "license": "© labplus；官方声明保留所有版权。图片权利归原作者；未声明开放许可。"
+    }
+  ],
+  "revision": "491319b61d86a354bb2a06ff",
+  "createdAt": "2026-10-15T00:00:00+08:00",
+  "updatedAt": "2026-10-15T00:00:00+08:00"
+}

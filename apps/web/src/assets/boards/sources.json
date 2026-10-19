@@ -1,0 +1,47 @@
+{
+  "purpose": "Supplementary UI photos for existing Hardware Skill controllers; no controller facts or capabilities defined here.",
+  "images": [
+    {
+      "file": "mpython-v2.webp",
+      "pageUrl": "https://mpython.readthedocs.io/zh-cn/v2.0.1/board/hardware.html",
+      "imageUrl": "https://mpython.readthedocs.io/zh-cn/v2.0.1/_images/%E6%8E%8C%E6%8E%A7-%E7%AB%8B2.png",
+      "originalSha256": "43e7f9a31826f45b9c7926851c47f5d0ce3ae4b67d0c142e0d40f9713f06bf8c",
+      "sha256": "4d8a15ab0c1b89e522a70c4babc2cf7c4b5ae75319b721e70524f0ad6cf98a2d",
+      "width": 1000,
+      "height": 563,
+      "conversion": "WebP quality 90; fit within 1000x1000; aspect ratio preserved",
+      "componentId": "hw_labplus_mpython_v2",
+      "attribution": "深圳盛思科教文化有限公司 / mPython 官方文档",
+      "rights": "官方文档声明 All Rights Reserved；用于主控产品识别，保留权利人及来源。",
+      "retrievedAt": "2026-10-16"
+    },
+    {
+      "file": "esp32-c3-devkitm-1.webp",
+      "pageUrl": "https://docs.espressif.com/projects/esp-dev-kits/en/latest/esp32c3/esp32-c3-devkitm-1/user_guide.html",
+      "imageUrl": "https://docs.espressif.com/projects/esp-dev-kits/en/latest/esp32c3/_images/esp32-c3-devkitm-1-v1-isometric.png",
+      "originalSha256": "5306aad1551a7545b60370b208ddbf2fa49b5fd7fc6c28ed1950b2e015e81659",
+      "sha256": "6dc23015fe18aeca817d2c8217c05aedfaa578469909012235e2b3d3536560c0",
+      "width": 800,
+      "height": 480,
+      "conversion": "WebP quality 90; fit within 1000x1000; aspect ratio preserved",
+      "componentId": "hw_esp32_generic_c3",
+      "attribution": "Espressif Systems / ESP-Dev-Kits 官方文档",
+      "rights": "产品图片版权归 Espressif；用于开发板识别示例，不将文档代码许可证当作图片额外授权。",
+      "retrievedAt": "2026-10-16"
+    },
+    {
+      "file": "xiao-esp32s3-sense.webp",
+      "pageUrl": "https://wiki.seeedstudio.com/xiao_esp32s3_getting_started/",
+      "imageUrl": "https://files.seeedstudio.com/wiki/SeeedStudio-XIAO-ESP32S3/img/xiaoesp32s3sense.jpg",
+      "originalSha256": "107066759dd029d84707a5c2af13f57f854cab63391c41821e3a5037c8d34809",
+      "sha256": "59dff45085d7143e2d5b760f28ab4ebde2d7e85818f882b02a542fb80e9de607",
+      "width": 1000,
+      "height": 750,
+      "conversion": "WebP quality 90; fit within 1000x1000; aspect ratio preserved",
+      "componentId": "hw_seeed_xiao_esp32s3_sense",
+      "attribution": "Seeed Studio / XIAO ESP32S3 官方文档",
+      "rights": "产品图片版权归 Seeed Studio；保留原图来源，不授予额外许可。",
+      "retrievedAt": "2026-10-16"
+    }
+  ]
+}

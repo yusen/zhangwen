@@ -1,0 +1,35 @@
+{
+  "schema": "zhangwen.hardware-skill-manifest/v1",
+  "schemaVersion": 1,
+  "skillName": "seeed-f0d7db4959a4",
+  "componentId": "hw_seeed_f0d7db4959a4",
+  "displayName": "Grove - 气体氧气传感器(MIX8410)",
+  "description": "Grove - 气体氧气传感器(MIX8410)的官方目录、产品图片与参考资料；MicroPython 驱动及跨主控接线待联调。",
+  "status": "ACTIVE",
+  "sourceKind": "BUNDLED",
+  "files": [
+    "SKILL.md",
+    "references/specifications.md",
+    "references/compatibility-rules.md",
+    "references/integration.md",
+    "references/safety.md",
+    "references/sources.md",
+    "examples/usage.md",
+    "tests/validation-cases.md"
+  ],
+  "media": [
+    {
+      "path": "assets/cover.webp",
+      "role": "cover",
+      "alt": "Grove - 气体氧气传感器(MIX8410) 官方产品图",
+      "contentType": "image/webp",
+      "sha256": "44f30fce558a7616b200e56d93d3da933bd7acd1597dd40841aaaa2a3abbccf5",
+      "sourceUrl": "https://files.seeedstudio.com/products/101990680/101990680_preview-34.png",
+      "attribution": "Seeed Grove 官方产品文档",
+      "license": "© Seeed Studio；产品图片权利归原作者；未将文档代码许可视为图片许可。"
+    }
+  ],
+  "revision": "ad5ece903782772a1075757d",
+  "createdAt": "2026-10-15T00:00:00+08:00",
+  "updatedAt": "2026-10-15T00:00:00+08:00"
+}

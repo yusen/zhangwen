@@ -1,0 +1,35 @@
+{
+  "schema": "zhangwen.hardware-skill-manifest/v1",
+  "schemaVersion": 1,
+  "skillName": "seeed-767591cb0e1e",
+  "componentId": "hw_seeed_767591cb0e1e",
+  "displayName": "Grove - 温湿度传感器",
+  "description": "Grove - 温湿度传感器的官方目录、产品图片与参考资料；MicroPython 驱动及跨主控接线待联调。",
+  "status": "ACTIVE",
+  "sourceKind": "BUNDLED",
+  "files": [
+    "SKILL.md",
+    "references/specifications.md",
+    "references/compatibility-rules.md",
+    "references/integration.md",
+    "references/safety.md",
+    "references/sources.md",
+    "examples/usage.md",
+    "tests/validation-cases.md"
+  ],
+  "media": [
+    {
+      "path": "assets/cover.webp",
+      "role": "cover",
+      "alt": "Grove - 温湿度传感器 官方产品图",
+      "contentType": "image/webp",
+      "sha256": "b1139210d01e15ed704c4c6e5b659c62f2a4689fb5cfaf53d814a1a27949d917",
+      "sourceUrl": "https://files.seeedstudio.com/wiki/SHT4x/SHT4x.jpeg",
+      "attribution": "Seeed Grove 官方产品文档",
+      "license": "© Seeed Studio；产品图片权利归原作者；未将文档代码许可视为图片许可。"
+    }
+  ],
+  "revision": "bf52b627287ede2ad95d44b8",
+  "createdAt": "2026-10-15T00:00:00+08:00",
+  "updatedAt": "2026-10-15T00:00:00+08:00"
+}

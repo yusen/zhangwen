@@ -1,0 +1,35 @@
+{
+  "schema": "zhangwen.hardware-skill-manifest/v1",
+  "schemaVersion": 1,
+  "skillName": "seeed-e776f477db5d",
+  "componentId": "hw_seeed_e776f477db5d",
+  "displayName": "Grove - 光传感器",
+  "description": "Grove - 光传感器的官方目录、产品图片与参考资料；MicroPython 驱动及跨主控接线待联调。",
+  "status": "ACTIVE",
+  "sourceKind": "BUNDLED",
+  "files": [
+    "SKILL.md",
+    "references/specifications.md",
+    "references/compatibility-rules.md",
+    "references/integration.md",
+    "references/safety.md",
+    "references/sources.md",
+    "examples/usage.md",
+    "tests/validation-cases.md"
+  ],
+  "media": [
+    {
+      "path": "assets/cover.webp",
+      "role": "cover",
+      "alt": "Grove - 光传感器 官方产品图",
+      "contentType": "image/webp",
+      "sha256": "bf8306fb592c55d08ce6708d88286017b7123b7c5ff681b2fbef431499fbd626",
+      "sourceUrl": "https://files.seeedstudio.com/wiki/Grove_Light_Sensor/images/cover.jpg",
+      "attribution": "Seeed Grove 官方产品文档",
+      "license": "© Seeed Studio；产品图片权利归原作者；未将文档代码许可视为图片许可。"
+    }
+  ],
+  "revision": "1baeb002c943ff3e93d15653",
+  "createdAt": "2026-10-15T00:00:00+08:00",
+  "updatedAt": "2026-10-15T00:00:00+08:00"
+}

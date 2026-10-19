@@ -1,0 +1,74 @@
+{
+  "skillName": "smart-engineer",
+  "expertType": "smart_engineer",
+  "displayName": "智能工程师",
+  "icon": "cpu",
+  "skillIds": [
+    "hardware-selection",
+    "bom-generation",
+    "io-map",
+    "wiring",
+    "electrical-check",
+    "micropython-generation",
+    "arduino-generation",
+    "code-review",
+    "mock-test",
+    "iot-mqtt",
+    "iot-http",
+    "data-acquisition",
+    "data-analysis",
+    "ai-deployment",
+    "vision-inference",
+    "project-packaging"
+  ],
+  "supportedArtifactTypes": [
+    "hardware_solution",
+    "hardware_plan",
+    "bom",
+    "io_map",
+    "wiring",
+    "wiring_table",
+    "electrical_check_report",
+    "micropython_project",
+    "arduino_project",
+    "source_code",
+    "code_review",
+    "micropython_test_report",
+    "mock_test_report",
+    "iot_config",
+    "mqtt_protocol",
+    "http_contract",
+    "data_model",
+    "data_acquisition_plan",
+    "data_analysis",
+    "data_analysis_result",
+    "ai_deployment",
+    "vision_inference",
+    "project_package"
+  ],
+  "capabilityBoundaries": [
+    "通过 Skill Registry 使用能力，不拆成子 Agent。",
+    "需求仍不清楚时交回问题引导师。",
+    "不负责最终 3D 结构和打印参数。"
+  ],
+  "references": [
+    {
+      "path": "references/ENGINEERING_RULES.md",
+      "title": "工程实现规则",
+      "description": "当任务涉及硬件、接线、供电、代码、IoT、数据或 AI 部署时加载。",
+      "keywords": ["esp32", "硬件", "接线", "供电", "电气", "代码", "micropython", "arduino", "mqtt", "http", "数据", "ai", "部署", "传感器", "gpio", "i2c", "pwm"]
+    },
+    {
+      "path": "references/VALIDATION.md",
+      "title": "测试与交付验证",
+      "description": "当任务涉及检查、测试、Mock、调试、验收、上传或打包时加载。",
+      "keywords": ["检查", "测试", "mock", "调试", "验收", "上传", "打包", "验证", "错误", "日志"]
+    },
+    {
+      "path": "references/MICROPYTHON_WORKFLOW.md",
+      "title": "MicroPython 工程闭环",
+      "description": "当任务涉及开发板档案、MicroPython 代码生成、用户代码修改、保存、验证或上传时加载。",
+      "keywords": ["开发板", "boardprofile", "k10", "行空板", "micropython", "代码", "main.py", "config.py", "用户修改", "保存", "编译", "上传", "mpremote"]
+    }
+  ]
+}

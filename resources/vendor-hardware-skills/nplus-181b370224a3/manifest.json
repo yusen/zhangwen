@@ -1,0 +1,35 @@
+{
+  "schema": "zhangwen.hardware-skill-manifest/v1",
+  "schemaVersion": 1,
+  "skillName": "nplus-181b370224a3",
+  "componentId": "hw_nplus_181b370224a3",
+  "displayName": "N+ 气体传感器",
+  "description": "N+ 气体传感器的官方目录、产品图片与参考资料；MicroPython 驱动及跨主控接线待联调。",
+  "status": "ACTIVE",
+  "sourceKind": "BUNDLED",
+  "files": [
+    "SKILL.md",
+    "references/specifications.md",
+    "references/compatibility-rules.md",
+    "references/integration.md",
+    "references/safety.md",
+    "references/sources.md",
+    "examples/usage.md",
+    "tests/validation-cases.md"
+  ],
+  "media": [
+    {
+      "path": "assets/cover.webp",
+      "role": "cover",
+      "alt": "N+ 气体传感器 官方产品图",
+      "contentType": "image/webp",
+      "sha256": "e3d9af4c6e2c57c9a2bc34b67822161939eba8020d797d98c63dfb241a1ebda6",
+      "sourceUrl": "https://nplus-doc.readthedocs.io/zh-cn/latest/_images/19-1.png",
+      "attribution": "N+ 官方产品文档",
+      "license": "© 2020 nplus；图片权利归原作者；文档未声明图片开放许可。"
+    }
+  ],
+  "revision": "308f29e11ec811dacfb908ae",
+  "createdAt": "2026-10-15T00:00:00+08:00",
+  "updatedAt": "2026-10-15T00:00:00+08:00"
+}

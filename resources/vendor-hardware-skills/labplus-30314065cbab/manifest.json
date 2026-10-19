@@ -1,0 +1,35 @@
+{
+  "schema": "zhangwen.hardware-skill-manifest/v1",
+  "schemaVersion": 1,
+  "skillName": "labplus-30314065cbab",
+  "componentId": "hw_labplus_30314065cbab",
+  "displayName": "盛思 语音合成模块",
+  "description": "盛思 语音合成模块的官方目录、产品图片与参考资料；MicroPython 驱动及跨主控接线待联调。",
+  "status": "ACTIVE",
+  "sourceKind": "BUNDLED",
+  "files": [
+    "SKILL.md",
+    "references/specifications.md",
+    "references/compatibility-rules.md",
+    "references/integration.md",
+    "references/safety.md",
+    "references/sources.md",
+    "examples/usage.md",
+    "tests/validation-cases.md"
+  ],
+  "media": [
+    {
+      "path": "assets/cover.webp",
+      "role": "cover",
+      "alt": "盛思 语音合成模块 官方产品图",
+      "contentType": "image/webp",
+      "sha256": "942fc55a8cf298dd0bcedc6466643f571159502d4f38d291fa70804d7ce12b3d",
+      "sourceUrl": "https://labplus-ledong-module-documentation.readthedocs.io/zh-cn/latest/_images/%E8%AF%AD%E9%9F%B3%E5%90%88%E6%88%90%E4%BC%A0%E6%84%9F%E5%99%A8.png",
+      "attribution": "盛思 官方产品文档",
+      "license": "© labplus；官方声明保留所有版权。图片权利归原作者；未声明开放许可。"
+    }
+  ],
+  "revision": "92a425e13fef3bf5cc393759",
+  "createdAt": "2026-10-15T00:00:00+08:00",
+  "updatedAt": "2026-10-15T00:00:00+08:00"
+}

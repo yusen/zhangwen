@@ -1,0 +1,192 @@
+name: Deployment smoke (Windows and macOS)
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  clean-setup:
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [windows-latest, macos-15, macos-15-intel]
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: actions/checkout@v4
+      - name: Prepare on Windows
+        if: runner.os == 'Windows'
+        shell: powershell
+        run: |
+          # Hide preinstalled developer runtimes to exercise a fresh computer.
+          $env:PATH = "$env:SystemRoot\System32;$env:SystemRoot"
+          # Reproduce a service started from PowerShell 7 / an automation host.
+          # The standalone installer must isolate modules before auto-loading.
+          $env:PSModulePath = "$env:ProgramFiles\PowerShell\7\Modules"
+          ./install.ps1 -InstallDir "$env:RUNNER_TEMP/ZhangWen Platform" -Revision "$env:GITHUB_SHA" -DesktopDir "$env:RUNNER_TEMP/ZhangWen Desktop" -Source github -NoStart
+      - name: Prepare on macOS
+        if: runner.os == 'macOS'
+        run: PATH=/usr/bin:/bin:/usr/sbin:/sbin ZHANGWEN_INSTALL_DIR="$RUNNER_TEMP/ZhangWen Platform" ZHANGWEN_APPLICATIONS_DIR="$RUNNER_TEMP/Applications" ZHANGWEN_SOURCE=github ZHANGWEN_REVISION="$GITHUB_SHA" ZHANGWEN_NO_START=1 bash install.sh
+      - name: Verify macOS application launcher
+        if: runner.os == 'macOS'
+        run: |
+          app="$RUNNER_TEMP/Applications/掌问.app"
+          test -x "$app/Contents/MacOS/zhangwen"
+          plutil -lint "$app/Contents/Info.plist"
+          bash -n "$app/Contents/MacOS/zhangwen"
+          iconutil -c iconset "$app/Contents/Resources/palm-logo.icns" -o "$RUNNER_TEMP/palm.iconset"
+          cmp "$app/Contents/Resources/install-root.txt" <(printf '%s\n' "$RUNNER_TEMP/ZhangWen Platform")
+      - name: Verify startup, catalog and local data
+        shell: bash
+        run: |
+          cd "$RUNNER_TEMP/ZhangWen Platform/versions/$GITHUB_SHA"
+          if [ "$RUNNER_OS" = Windows ]; then py=.venv/Scripts/python.exe; else py=.venv/bin/python; fi
+          PYTHONPATH=services/local-api "$py" - <<'PY'
+          import tempfile, gc, hashlib, ast, io
+          import ezdxf
+          import cadquery as cq
+          import trimesh
+          from pathlib import Path
+          from fastapi.testclient import TestClient
+          from zhangwen.web.app import create_app
+          from zhangwen.web.__main__ import bind_available_port
+          from zhangwen.web.firmware import PROFILES, firmware_image, firmware_profile
+          from zhangwen.web.design_specs import template_spec, dxf
+          from zhangwen.web.programming import repair_k10_screen, programming_diagnostics
+          # Verify the deployed rounded-wall pattern and K10 repair without AI/devices.
+          rounded = template_spec('rounded-box', {})
+          assert rounded.roundedBox.pattern_version == 2
+          wall = [s for s in rounded.drawing.shapes if s.kind == 'polyline'][-1]
+          ymin, ymax = min(p[1] for p in wall.points), max(p[1] for p in wall.points)
+          slots = [s for s in rounded.drawing.shapes if s.kind == 'line']
+          assert sum(s.points[0][1] == ymin for s in slots) == 24
+          assert sum(s.points[1][1] == ymax for s in slots) == 24
+          cutting = ezdxf.read(io.StringIO(dxf(rounded.drawing)))
+          assert cutting.units == 4 and len(cutting.modelspace().query('LINE[layer=="CUT"]')) == len(slots)
+          k10 = 'hw_seed_unihiker_k10'
+          old = 'import unihiker_k10 as unihiker\nunihiker.draw.text("OK",20,40)\n'
+          assert any(d['severity'] == 'FAIL' for d in programming_diagnostics(old, k10))
+          repaired = repair_k10_screen(old, k10)
+          ast.parse(repaired)
+          assert not programming_diagnostics(repaired, k10)
+          import socket
+          with socket.socket() as occupied:
+              occupied.bind(('127.0.0.1', 0))
+              occupied.listen()
+              preferred = occupied.getsockname()[1]
+              with bind_available_port(preferred) as available:
+                  assert available.getsockname()[0] == '127.0.0.1'
+                  assert available.getsockname()[1] != preferred
+          with tempfile.TemporaryDirectory() as directory:
+              app = create_app(Path(directory), port=3080)
+              with TestClient(app, base_url='http://127.0.0.1:3080') as client:
+                  assert client.get('/api/health').json()['transport'] == 'web-serial'
+                  assert client.get('/').status_code == 200
+                  hardware = client.get('/api/hardware').json()['skills']
+                  assert len(hardware) >= 258, len(hardware)
+                  assert len(client.get('/api/structure/catalog').json()['profiles']) == 32
+                  assert abs(cq.Workplane('XY').box(5, 6, 7).val().Volume() - 210) < 0.01
+                  token = client.get('/api/session').json()['token']
+                  client.headers.update({'origin': 'http://127.0.0.1:3080', 'x-zhangwen-session': token})
+                  # Exercise the shipped user-supplied Labplus protocol against
+                  # a fake I2C bus; never access hardware or call a real model.
+                  labplus = client.get('/api/hardware/labplus-318357bd10f2').json()
+                  assert labplus['i2c']['defaultAddress'] == '0x0b'
+                  guide = next(g for g in labplus['moduleGuides'] if g['boardId'] == 'hw_labplus_mpython_v2')
+                  cls = next(n for n in ast.parse(guide['codeTemplate']).body if isinstance(n, ast.ClassDef) and n.name == 'Ultrasonic')
+                  events = []
+                  class FakeI2C:
+                      def writeto(self, address, value): events.append(('write', address, bytes(value)))
+                      def readfrom(self, address, count):
+                          events.append(('read', address, count))
+                          return b'\xd2\x04'
+                  scope = {'i2c': FakeI2C(), 'sleep_ms': lambda value: events.append(('wait', value))}
+                  exec(compile(ast.Module(body=[cls], type_ignores=[]), '<labplus-fake>', 'exec'), scope)
+                  assert scope['Ultrasonic']().distance() == 123.4
+                  assert events == [('write', 0x0b, b'\x01'), ('wait', 2), ('read', 0x0b, 2)]
+                  context = app.state.repo.skills.render_context(labplus['componentId'], board_id='hw_labplus_mpython_v2', max_chars=20000)
+                  assert guide['codeTemplate'] in context
+                  for board in PROFILES:
+                      image = firmware_profile(board)['image']
+                      assert hashlib.sha256(firmware_image(board).read_bytes()).hexdigest() == image['sha256']
+                      response = client.get(image['url'])
+                      assert response.status_code == 200 and hashlib.sha256(response.content).hexdigest() == image['sha256']
+                  deferred = client.post('/api/projects', json={'name':'Choose controller later', 'boardId':'', 'code':''})
+                  assert deferred.status_code == 201, deferred.text
+                  deferred_id = deferred.json()['id']
+                  snapshot = client.get(f'/api/projects/{deferred_id}/snapshot').json()
+                  assert snapshot['project']['boardId'] == ''
+                  assert client.post('/api/projects/import', json=snapshot).status_code == 200
+                  assert client.post(f'/api/projects/{deferred_id}/upload-manifest', json={'expectedRevision':1}).status_code == 422
+                  drawing = f'/api/projects/{deferred_id}/structure'
+                  for action, revision in [('selected',0), ('build',1)]:
+                      response = client.post(drawing, json={'action':action,'expectedRevision':revision,'template':'plate','designType':'laser'})
+                      assert response.status_code == 200, response.text
+                  result = response.json()['versions'][0]['result']
+                  assert result['build']['status'] == 'laser_exports'
+                  assert {x['format'] for x in result['exports']} >= {'svg','dxf'}
+                  for item in result['exports']:
+                      assert client.get(item['url']).status_code == 200
+                  for action, revision in [('selected',2), ('build',3)]:
+                      response = client.post(drawing, json={'action':action,'expectedRevision':revision,'template':'box','designType':'model'})
+                      assert response.status_code == 200, response.text
+                  result = response.json()['versions'][0]['result']
+                  assert result['status'] == 'artifact', result
+                  step = next(item for item in result['exports'] if item['format'] == 'step')
+                  assert b'ISO-10303-21' in client.get(step['url']).content
+                  project = client.post('/api/projects', json={'name':'Structure deployment smoke', 'boardId':'hw_seeed_xiao_esp32s3_sense', 'code':''})
+                  assert project.status_code == 201, project.text
+                  endpoint = '/api/projects/' + project.json()['id'] + '/structure'
+                  draft = client.post(endpoint, json={'action':'selected','expectedRevision':0,'selectedIds':['xiao_esp32s3']})
+                  assert draft.status_code == 200 and draft.json()['versions'][0]['result']['status'] == 'confirmation', draft.text
+                  built = client.post(endpoint, json={'action':'build','expectedRevision':1})
+                  assert built.status_code == 200, built.text
+                  result = built.json()['versions'][0]['result']
+                  assert result['build']['status'] == 'artifact_exports', result
+                  step = next(item for item in result['exports'] if item['id'] == 'cadquery_step')
+                  assert b'ISO-10303-21' in client.get(step['url']).content
+              # sqlite connections used by repositories can await cyclic GC;
+              # release those handles before removing a temporary Windows DB.
+              gc.collect()
+          PY
+      - name: Verify macOS startup repairs a missing application
+        if: runner.os == 'macOS'
+        run: |
+          cd "$RUNNER_TEMP/ZhangWen Platform/versions/$GITHUB_SHA"
+          .venv/bin/python - <<'PY'
+          import json, os, signal, subprocess, time, urllib.request
+          from pathlib import Path
+          temporary = Path(os.environ['RUNNER_TEMP'])
+          root = temporary / 'ZhangWen Platform'
+          application = temporary / 'Applications/掌问.app'
+          application.rename(temporary / 'original-app-before-repair.app')
+          sentinel = root / 'data/startup-repair-sentinel.txt'
+          sentinel.parent.mkdir(parents=True, exist_ok=True)
+          sentinel.write_bytes(b'preserve existing user data')
+          environment = {**os.environ, 'ZHANGWEN_DATA_DIR': str(root / 'data'),
+                         'ZHANGWEN_RUNTIME_DIR': str(root / 'runtime'),
+                         'ZHANGWEN_APPLICATIONS_DIR': str(temporary / 'Applications')}
+          opener = urllib.request.build_opener(urllib.request.ProxyHandler({}))
+          with (temporary / 'startup-repair.log').open('w') as log:
+              process = subprocess.Popen(['bash', 'start-web.sh', '--no-open'],
+                                         env=environment, stdout=log, stderr=log, start_new_session=True)
+              try:
+                  deadline = time.monotonic() + 180
+                  while True:
+                      assert process.poll() is None, (temporary / 'startup-repair.log').read_text()
+                      try:
+                          address = json.loads((root / 'data/.zhangwen-web-address.json').read_text())
+                          with opener.open(f'http://127.0.0.1:{address["port"]}/api/health', timeout=1) as response:
+                              assert json.load(response)['instanceId'] == address['instanceId']
+                          break
+                      except (OSError, ValueError, KeyError):
+                          assert time.monotonic() < deadline, (temporary / 'startup-repair.log').read_text()
+                          time.sleep(0.2)
+                  assert os.access(application / 'Contents/MacOS/zhangwen', os.X_OK)
+                  assert (root / 'current.txt').read_text().strip() == os.environ['GITHUB_SHA']
+                  assert sentinel.read_bytes() == b'preserve existing user data'
+                  subprocess.run(['plutil', '-lint', str(application / 'Contents/Info.plist')], check=True)
+              finally:
+                  os.killpg(process.pid, signal.SIGTERM)
+                  process.wait(timeout=15)
+          PY

@@ -1,0 +1,36 @@
+{
+  "schema": "zhangwen.hardware-skill-manifest/v1",
+  "schemaVersion": 1,
+  "skillName": "dfrobot-sen0206-k10",
+  "componentId": "hw_dfrobot_sen0206_k10",
+  "displayName": "DFRobot SEN0206 MLX90614 非接触红外测温传感器",
+  "description": "为行空板 K10 MicroPython 项目提供 SEN0206 的I2C接入、兼容和安全边界；API 与电气值仍需按当前固件和实物复核。",
+  "status": "ACTIVE",
+  "sourceKind": "MANUAL",
+  "files": [
+    "README.md",
+    "SKILL.md",
+    "references/specifications.md",
+    "references/compatibility-rules.md",
+    "references/integration.md",
+    "references/safety.md",
+    "references/sources.md",
+    "examples/usage.md",
+    "tests/validation-cases.md"
+  ],
+  "media": [
+    {
+      "path": "assets/cover.webp",
+      "role": "cover",
+      "alt": "DFRobot SEN0206 官方产品图",
+      "contentType": "image/webp",
+      "sha256": "16a1101616ce3914699f432ac458eaa5b55df5880e4063121c3eb59ee66a78da",
+      "sourceUrl": "https://wiki.dfrobot.com.cn/_SKU_SEN0206_SEN0263_IR_Thermometer_Sensor-MLX90614_%E7%BA%A2%E5%A4%96%E6%B8%A9%E5%BA%A6%E4%BC%A0%E6%84%9F%E5%99%A8",
+      "attribution": "DFRobot（取自对应官方资料页）",
+      "license": "DFRobot 官方产品图；仅随本 Skill 作来源引用，公开再分发授权未独立核验"
+    }
+  ],
+  "revision": "d31cc1a396ffda41c1f8adca",
+  "createdAt": "2026-07-17T06:57:53Z",
+  "updatedAt": "2026-07-17T10:42:11Z"
+}

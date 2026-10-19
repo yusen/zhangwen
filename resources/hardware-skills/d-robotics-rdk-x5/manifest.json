@@ -1,0 +1,48 @@
+{
+  "schema": "zhangwen.hardware-skill-manifest/v1",
+  "schemaVersion": 1,
+  "skillName": "d-robotics-rdk-x5",
+  "componentId": "hw_drobotics_rdk_x5",
+  "displayName": "D-Robotics RDK X5",
+  "description": "标准版 RDK X5 的 5V/5A 供电、3.3V 40PIN、Hobot.GPIO、丰富接口、RDK OS 和 85×56×20mm 包络安全边界。",
+  "status": "ACTIVE",
+  "sourceKind": "MANUAL",
+  "files": [
+    "README.md",
+    "SKILL.md",
+    "references/specifications.md",
+    "references/compatibility-rules.md",
+    "references/mechanical.md",
+    "references/integration.md",
+    "references/safety.md",
+    "references/sources.md",
+    "models/cadquery.py",
+    "examples/usage.md",
+    "tests/validation-cases.md"
+  ],
+  "media": [
+    {
+      "path": "assets/cover.webp",
+      "role": "cover",
+      "alt": "D-Robotics RDK X5 标准版开发板正反面及接口编号图",
+      "contentType": "image/webp",
+      "sha256": "73ae0404f218218d242d7631be1e873d71a09a386a920d411d6da25e48b60395",
+      "sourceUrl": "https://github.com/D-Robotics/rdk_doc/blob/main/docs/01_Quick_start/hardware_introduction/rdk_x5.md",
+      "attribution": "D-Robotics",
+      "license": "Apache-2.0 (D-Robotics/rdk_doc)"
+    },
+    {
+      "path": "assets/40pin-pinout.webp",
+      "role": "gallery",
+      "alt": "D-Robotics RDK X5 官方 40PIN 物理针脚、编号与复用功能对照图",
+      "contentType": "image/webp",
+      "sha256": "f431f1a240181a966107f6a8fbb2142081e94cb1c599b1ffbd8c7c15ceddf687",
+      "sourceUrl": "https://github.com/D-Robotics/rdk_doc/blob/main/docs/03_Basic_Application/01_40pin_user_sample/40pin_define.md",
+      "attribution": "D-Robotics",
+      "license": "Apache-2.0 (D-Robotics/rdk_doc)"
+    }
+  ],
+  "revision": "063112d162e40de0ff035bf6",
+  "createdAt": "2026-07-18T23:30:00Z",
+  "updatedAt": "2026-07-18T23:30:00Z"
+}

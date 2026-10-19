@@ -1,0 +1,35 @@
+{
+  "schema": "zhangwen.hardware-skill-manifest/v1",
+  "schemaVersion": 1,
+  "skillName": "seeed-a5beb1d4e27d",
+  "componentId": "hw_seeed_a5beb1d4e27d",
+  "displayName": "Grove - 氧气传感器专业版(GGC2330-O2)",
+  "description": "Grove - 氧气传感器专业版(GGC2330-O2)的官方目录、产品图片与参考资料；MicroPython 驱动及跨主控接线待联调。",
+  "status": "ACTIVE",
+  "sourceKind": "BUNDLED",
+  "files": [
+    "SKILL.md",
+    "references/specifications.md",
+    "references/compatibility-rules.md",
+    "references/integration.md",
+    "references/safety.md",
+    "references/sources.md",
+    "examples/usage.md",
+    "tests/validation-cases.md"
+  ],
+  "media": [
+    {
+      "path": "assets/cover.webp",
+      "role": "cover",
+      "alt": "Grove - 氧气传感器专业版(GGC2330-O2) 官方产品图",
+      "contentType": "image/webp",
+      "sha256": "73539cbd331fe69c73c67413730e18638920efe593fcc6c123ef60d7144ff43f",
+      "sourceUrl": "https://files.seeedstudio.com/wiki/Grove_Oxygen_Sensor_Pro/img/IMG_9621.png",
+      "attribution": "Seeed Grove 官方产品文档",
+      "license": "© Seeed Studio；产品图片权利归原作者；未将文档代码许可视为图片许可。"
+    }
+  ],
+  "revision": "0d91bc5058de1ef7fac76a4b",
+  "createdAt": "2026-10-15T00:00:00+08:00",
+  "updatedAt": "2026-10-15T00:00:00+08:00"
+}

@@ -1,0 +1,35 @@
+{
+  "schema": "zhangwen.hardware-skill-manifest/v1",
+  "schemaVersion": 1,
+  "skillName": "seeed-6b0ece4cbc2a",
+  "componentId": "hw_seeed_6b0ece4cbc2a",
+  "displayName": "Grove - 气体传感器(O₂)",
+  "description": "Grove - 气体传感器(O₂)的官方目录、产品图片与参考资料；MicroPython 驱动及跨主控接线待联调。",
+  "status": "ACTIVE",
+  "sourceKind": "BUNDLED",
+  "files": [
+    "SKILL.md",
+    "references/specifications.md",
+    "references/compatibility-rules.md",
+    "references/integration.md",
+    "references/safety.md",
+    "references/sources.md",
+    "examples/usage.md",
+    "tests/validation-cases.md"
+  ],
+  "media": [
+    {
+      "path": "assets/cover.webp",
+      "role": "cover",
+      "alt": "Grove - 气体传感器(O₂) 官方产品图",
+      "contentType": "image/webp",
+      "sha256": "5dc98462af304e9fd0247f24dcbd49d76a5da509c36722f72f6dd78cfa12d054",
+      "sourceUrl": "https://files.seeedstudio.com/wiki/Grove_Gas_Sensor_O2/images/cover.jpg",
+      "attribution": "Seeed Grove 官方产品文档",
+      "license": "© Seeed Studio；产品图片权利归原作者；未将文档代码许可视为图片许可。"
+    }
+  ],
+  "revision": "88d44441db817f1d64364d4e",
+  "createdAt": "2026-10-15T00:00:00+08:00",
+  "updatedAt": "2026-10-15T00:00:00+08:00"
+}

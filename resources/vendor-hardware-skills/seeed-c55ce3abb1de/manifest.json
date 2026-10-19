@@ -1,0 +1,35 @@
+{
+  "schema": "zhangwen.hardware-skill-manifest/v1",
+  "schemaVersion": 1,
+  "skillName": "seeed-c55ce3abb1de",
+  "componentId": "hw_seeed_c55ce3abb1de",
+  "displayName": "Grove - 光学旋转编码器(TCUT1600X01)",
+  "description": "Grove - 光学旋转编码器(TCUT1600X01)的官方目录、产品图片与参考资料；MicroPython 驱动及跨主控接线待联调。",
+  "status": "ACTIVE",
+  "sourceKind": "BUNDLED",
+  "files": [
+    "SKILL.md",
+    "references/specifications.md",
+    "references/compatibility-rules.md",
+    "references/integration.md",
+    "references/safety.md",
+    "references/sources.md",
+    "examples/usage.md",
+    "tests/validation-cases.md"
+  ],
+  "media": [
+    {
+      "path": "assets/cover.webp",
+      "role": "cover",
+      "alt": "Grove - 光学旋转编码器(TCUT1600X01) 官方产品图",
+      "contentType": "image/webp",
+      "sha256": "e7ec15af98daa9e0541b8a13902199fcbc81642eb64a1c1ccc2ea1396b51190a",
+      "sourceUrl": "https://files.seeedstudio.com/wiki/Grove-Optical_Rotary_Encoder-TCUT1600X01/img/main.jpg",
+      "attribution": "Seeed Grove 官方产品文档",
+      "license": "© Seeed Studio；产品图片权利归原作者；未将文档代码许可视为图片许可。"
+    }
+  ],
+  "revision": "2443640279af1f060c2fab46",
+  "createdAt": "2026-10-15T00:00:00+08:00",
+  "updatedAt": "2026-10-15T00:00:00+08:00"
+}

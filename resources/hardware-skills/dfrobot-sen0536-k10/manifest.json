@@ -1,0 +1,36 @@
+{
+  "schema": "zhangwen.hardware-skill-manifest/v1",
+  "schemaVersion": 1,
+  "skillName": "dfrobot-sen0536-k10",
+  "componentId": "hw_dfrobot_sen0536_k10",
+  "displayName": "DFRobot SEN0536 二氧化碳传感器",
+  "description": "为行空板 K10 MicroPython 项目提供 SEN0536 的I2C接入、兼容和安全边界；API 与电气值仍需按当前固件和实物复核。",
+  "status": "ACTIVE",
+  "sourceKind": "MANUAL",
+  "files": [
+    "README.md",
+    "SKILL.md",
+    "references/specifications.md",
+    "references/compatibility-rules.md",
+    "references/integration.md",
+    "references/safety.md",
+    "references/sources.md",
+    "examples/usage.md",
+    "tests/validation-cases.md"
+  ],
+  "media": [
+    {
+      "path": "assets/cover.webp",
+      "role": "cover",
+      "alt": "Front of SCD41 I2C CO2 sensor with labeled components and SMA connector.-DFRobot product sku:SEN0536 image.",
+      "contentType": "image/webp",
+      "sha256": "2a51557f6da8a19043ad6135932b1bc4562c916b9a334486d02e2e11d76b9b12",
+      "sourceUrl": "https://wiki.dfrobot.com/sen0536/",
+      "attribution": "DFRobot（取自对应官方资料页）",
+      "license": "DFRobot 官方产品图；仅随本 Skill 作来源引用，公开再分发授权未独立核验"
+    }
+  ],
+  "revision": "5de9ef1b1603e1d8f8dc2518",
+  "createdAt": "2026-07-17T06:57:53Z",
+  "updatedAt": "2026-07-17T10:42:11Z"
+}

@@ -1,0 +1,26 @@
+{
+  "schema": "zhangwen.hardware-skill-manifest/v1",
+  "schemaVersion": 1,
+  "skillName": "dfr0486",
+  "componentId": "hw_dfrobot_dfr0486",
+  "displayName": "DFR0486 Gravity SSD1306 OLED",
+  "description": "DFRobot DFR0486 Gravity SSD1306 I2C OLED 的受信规格、K10 接线与显示安全规则。",
+  "status": "ACTIVE",
+  "sourceKind": "BUNDLED",
+  "files": [
+    "README.md",
+    "CHANGELOG.md",
+    "SKILL.md",
+    "references/specifications.md",
+    "references/compatibility-rules.md",
+    "references/integration.md",
+    "references/safety.md",
+    "references/sources.md",
+    "examples/usage.md",
+    "tests/validation-cases.md"
+  ],
+  "media": [],
+  "revision": "2e099a3599332ae65bc6256a",
+  "createdAt": "2026-07-25T00:00:00+08:00",
+  "updatedAt": "2026-07-25T00:00:00+08:00"
+}

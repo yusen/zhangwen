@@ -1,0 +1,36 @@
+{
+  "schema": "zhangwen.hardware-skill-manifest/v1",
+  "schemaVersion": 1,
+  "skillName": "dfrobot-sen0315-k10",
+  "componentId": "hw_dfrobot_sen0315_k10",
+  "displayName": "DFRobot SEN0315 PAJ7620U2 手势识别传感器",
+  "description": "为行空板 K10 MicroPython 项目提供 SEN0315 的I2C接入、兼容和安全边界；API 与电气值仍需按当前固件和实物复核。",
+  "status": "ACTIVE",
+  "sourceKind": "MANUAL",
+  "files": [
+    "README.md",
+    "SKILL.md",
+    "references/specifications.md",
+    "references/compatibility-rules.md",
+    "references/integration.md",
+    "references/safety.md",
+    "references/sources.md",
+    "examples/usage.md",
+    "tests/validation-cases.md"
+  ],
+  "media": [
+    {
+      "path": "assets/cover.webp",
+      "role": "cover",
+      "alt": "DFRobot SEN0315 官方产品图",
+      "contentType": "image/webp",
+      "sha256": "90b8388408b57986a5b8d198285e5864c169ce050c0d1e68365b34fec72c4d73",
+      "sourceUrl": "https://wiki.dfrobot.com.cn/_SKU_SEN0315__Gravity%EF%BC%9APAJ7620U2_Gesture_Sensor_%E6%89%8B%E5%8A%BF%E8%AF%86%E5%88%AB%E4%BC%A0%E6%84%9F%E5%99%A8",
+      "attribution": "DFRobot（取自对应官方资料页）",
+      "license": "DFRobot 官方产品图；仅随本 Skill 作来源引用，公开再分发授权未独立核验"
+    }
+  ],
+  "revision": "633742c5db8f2eed94973598",
+  "createdAt": "2026-07-17T06:57:53Z",
+  "updatedAt": "2026-07-17T10:42:11Z"
+}

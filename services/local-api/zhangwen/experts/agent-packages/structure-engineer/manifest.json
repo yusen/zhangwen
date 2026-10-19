@@ -1,0 +1,70 @@
+{
+  "skillName": "structure-engineer",
+  "expertType": "structure_engineer",
+  "displayName": "结构工程师",
+  "icon": "box",
+  "skillIds": [
+    "appearance-concept",
+    "dimension-reading",
+    "parametric-modeling",
+    "enclosure-design",
+    "mount-design",
+    "assembly-check",
+    "tolerance-check",
+    "printability-check",
+    "stl-export",
+    "step-export",
+    "print-profile"
+  ],
+  "supportedArtifactTypes": [
+    "appearance_design",
+    "appearance_concept",
+    "structure_design",
+    "structure_spec",
+    "dimension_table",
+    "dimension_sheet",
+    "component_layout",
+    "assembly_plan",
+    "cad_model",
+    "stl",
+    "step",
+    "3mf",
+    "stl_model",
+    "step_model",
+    "three_mf_model",
+    "print_settings",
+    "print_profile",
+    "printability_report"
+  ],
+  "capabilityBoundaries": [
+    "引用电子器件的结构输出前需要确认器件尺寸；FREEFORM_STRUCTURE 不要求器件档案。",
+    "不负责代码、电路逻辑和通信协议。",
+    "项目方向不清楚时交回问题引导师。"
+  ],
+  "references": [
+    {
+      "path": "references/STRUCTURE_RULES.md",
+      "title": "结构设计规则",
+      "description": "当任务涉及外观、外壳、布局、安装、开孔、散热、走线或装配时加载。",
+      "keywords": ["外观", "外壳", "结构", "布局", "安装", "支架", "开孔", "散热", "走线", "装配", "螺丝", "卡扣"]
+    },
+    {
+      "path": "references/MANUFACTURING.md",
+      "title": "制造与打印规则",
+      "description": "当任务涉及尺寸、公差、打印、STL、STEP、3MF、材料或制造验证时加载。",
+      "keywords": ["尺寸", "公差", "打印", "stl", "step", "3mf", "材料", "制造", "层高", "支撑", "可打印"]
+    },
+    {
+      "path": "references/CAD_DRAFT.md",
+      "title": "CAD 声明式草稿",
+      "description": "当任务需要参数化建模、器件安装结构、外壳、三维模型或 CAD 导出时加载。",
+      "keywords": ["cad", "3d", "三维", "建模", "模型", "零件", "结构件", "安装板", "连接板", "自定义结构", "自然语言", "安装座", "固定座", "底座", "托架", "支架", "压框", "外壳", "盒体", "盒子", "储物盒", "收纳盒", "容器", "stl", "step", "打印"]
+    },
+    {
+      "path": "references/K10_PHOTO_ALBUM_TEMPLATE.md",
+      "title": "行空板 K10 电子相册固定结构模板",
+      "description": "当任务明确要求行空板 K10 电子相册或相册支架时加载固定阶段、坐标和尺寸。",
+      "keywords": ["行空板K10电子相册", "行空板 K10 电子相册", "K10电子相册", "K10相册支架", "电子相册结构"]
+    }
+  ]
+}

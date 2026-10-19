@@ -1,0 +1,39 @@
+{
+  "schema": "zhangwen.hardware-skill-manifest/v1",
+  "schemaVersion": 1,
+  "skillName": "k10",
+  "componentId": "hw_seed_unihiker_k10",
+  "displayName": "行空板 K10",
+  "description": "行空板 K10 的统一硬件事实包，包含电气参数、结构档案、CadQuery 参考模型、MicroPython 集成边界和验证规则。",
+  "status": "ACTIVE",
+  "sourceKind": "BUNDLED",
+  "files": [
+    "README.md",
+    "CHANGELOG.md",
+    "SKILL.md",
+    "references/specifications.md",
+    "references/compatibility-rules.md",
+    "references/mechanical.md",
+    "references/integration.md",
+    "references/safety.md",
+    "references/sources.md",
+    "models/cadquery.py",
+    "examples/usage.md",
+    "tests/validation-cases.md"
+  ],
+  "media": [
+    {
+      "path": "assets/cover.webp",
+      "role": "cover",
+      "alt": "行空板 K10 正面产品图",
+      "contentType": "image/webp",
+      "sha256": "fcae7395e90bcef49f7c727366b12e1d3073705c0f8b36643e04466624e310e1",
+      "sourceUrl": "https://www.dfrobot.com/product-2904.html",
+      "attribution": "DFRobot",
+      "license": "用于产品识别；公开再分发前请确认 DFRobot 图片授权。"
+    }
+  ],
+  "revision": "7b0fc4f2cfc036309c42b80c",
+  "createdAt": "2026-07-11T05:48:30.340896+00:00",
+  "updatedAt": "2026-07-17T18:28:23+08:00"
+}

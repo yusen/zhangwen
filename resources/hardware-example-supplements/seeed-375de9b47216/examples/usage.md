@@ -1,0 +1,442 @@
+<!-- zhangwen:module-guides:v1 -->
+```json
+{
+  "schema": "zhangwen.module-guides/v1",
+  "componentId": "hw_seeed_375de9b47216",
+  "guides": [
+    {
+      "boardId": "hw_labplus_mpython_v2",
+      "kind": "functional",
+      "title": "Grove - 超声波测距仪 · SINGLE_WIRE",
+      "summary": "单SIG触发/回波测距，厘米输出；超时明确显示无有效回波。",
+      "fields": [
+        {
+          "key": "firmware",
+          "label": "固件环境",
+          "default": "掌控板2.0官方MicroPython",
+          "options": [
+            {
+              "value": "掌控板2.0官方MicroPython",
+              "label": "掌控板2.0官方MicroPython"
+            }
+          ]
+        },
+        {
+          "key": "interface",
+          "label": "模块接口",
+          "default": "SINGLE_WIRE",
+          "options": [
+            {
+              "value": "SINGLE_WIRE",
+              "label": "单SIG触发/回波"
+            }
+          ]
+        },
+        {
+          "key": "supply",
+          "label": "模块供电",
+          "default": "3.3V",
+          "options": [
+            {
+              "value": "3.3V",
+              "label": "3.3V"
+            }
+          ]
+        },
+        {
+          "key": "sig",
+          "label": "信号引脚",
+          "default": "0",
+          "options": [
+            {
+              "value": "0",
+              "label": "P0"
+            },
+            {
+              "value": "1",
+              "label": "P1"
+            },
+            {
+              "value": "8",
+              "label": "P8"
+            },
+            {
+              "value": "9",
+              "label": "P9"
+            },
+            {
+              "value": "13",
+              "label": "P13"
+            },
+            {
+              "value": "14",
+              "label": "P14"
+            },
+            {
+              "value": "15",
+              "label": "P15"
+            },
+            {
+              "value": "16",
+              "label": "P16"
+            }
+          ]
+        }
+      ],
+      "connections": [
+        {
+          "signal": "GND / G",
+          "target": "主控GND（共地）"
+        },
+        {
+          "signal": "VCC / V",
+          "target": "{{supply}}"
+        },
+        {
+          "signal": "SIG / S",
+          "target": "{{sig}}"
+        }
+      ],
+      "notes": [
+        "默认接线只是建议；先断电接线，模块与主控共地。保存、语法检查及串口回读均不代表实际测量通过。",
+        "仅针对Grove V2.0；触发与回波共用SIG，NC悬空。用平整挡板在20～50cm处起测，采样间隔300ms。",
+        "只把已确认不超过3.3V的信号接入主控；模块5V供电不表示信号可直连。"
+      ],
+      "sources": [
+        "https://wiki.seeedstudio.com/cn/Grove-Ultrasonic_Ranger/",
+        "https://mpython.readthedocs.io/zh-cn/v2.0.1/library/mPython/mpython.html"
+      ],
+      "codeTemplate": "# Grove - 超声波测距仪\n# 掌控板2.0官方MicroPython\n# 功能示例，待实物测试。\nfrom mpython import MPythonPin, PinMode\nfrom machine import Pin\nfrom utime import sleep_ms, sleep_us\nfrom machine import time_pulse_us\nsig = MPythonPin({{sig}}, PinMode.OUT).Pin\ndef read_cm():\n    sig.init(Pin.OUT)\n    sig.value(0)\n    sleep_us(2)\n    sig.value(1)\n    sleep_us(12)\n    sig.value(0)\n    sig.init(Pin.IN)\n    try:\n        pulse = time_pulse_us(sig, 1, 30000)\n    except OSError:\n        return None\n    if pulse <= 0:\n        return None\n    cm = pulse * 0.017\n    return cm if 2 <= cm <= 350 else None\n\nsleep_ms(100)\nfor _ in range(30):\n    cm = read_cm()\n    print(\"No valid echo\" if cm is None else \"Distance cm: %.1f\" % cm)\n    sleep_ms(300)\n"
+    },
+    {
+      "boardId": "hw_labplus_mpython_esp32s3_v3",
+      "kind": "functional",
+      "title": "Grove - 超声波测距仪 · SINGLE_WIRE",
+      "summary": "单SIG触发/回波测距，厘米输出；超时明确显示无有效回波。",
+      "fields": [
+        {
+          "key": "firmware",
+          "label": "固件环境",
+          "default": "掌控板3.0官方MicroPython",
+          "options": [
+            {
+              "value": "掌控板3.0官方MicroPython",
+              "label": "掌控板3.0官方MicroPython"
+            }
+          ]
+        },
+        {
+          "key": "interface",
+          "label": "模块接口",
+          "default": "SINGLE_WIRE",
+          "options": [
+            {
+              "value": "SINGLE_WIRE",
+              "label": "单SIG触发/回波"
+            }
+          ]
+        },
+        {
+          "key": "supply",
+          "label": "模块供电",
+          "default": "3.3V",
+          "options": [
+            {
+              "value": "3.3V",
+              "label": "3.3V"
+            }
+          ]
+        },
+        {
+          "key": "sig",
+          "label": "信号引脚",
+          "default": "Pin.P0",
+          "options": [
+            {
+              "value": "Pin.P0",
+              "label": "P0"
+            },
+            {
+              "value": "Pin.P1",
+              "label": "P1"
+            }
+          ]
+        }
+      ],
+      "connections": [
+        {
+          "signal": "GND / G",
+          "target": "主控GND（共地）"
+        },
+        {
+          "signal": "VCC / V",
+          "target": "{{supply}}"
+        },
+        {
+          "signal": "SIG / S",
+          "target": "{{sig}}"
+        }
+      ],
+      "notes": [
+        "默认接线只是建议；先断电接线，模块与主控共地。保存、语法检查及串口回读均不代表实际测量通过。",
+        "仅针对Grove V2.0；触发与回波共用SIG，NC悬空。用平整挡板在20～50cm处起测，采样间隔300ms。",
+        "只把已确认不超过3.3V的信号接入主控；模块5V供电不表示信号可直连。"
+      ],
+      "sources": [
+        "https://wiki.seeedstudio.com/cn/Grove-Ultrasonic_Ranger/",
+        "https://mpython-esp32s3-doc.readthedocs.io/zh-cn/latest/5_api/library/micropython/machine/machine.Pin.html"
+      ],
+      "codeTemplate": "# Grove - 超声波测距仪\n# 掌控板3.0官方MicroPython\n# 功能示例，待实物测试。\nfrom machine import Pin\nfrom utime import sleep_ms, sleep_us\nfrom machine import time_pulse_us\nsig = Pin({{sig}}, Pin.OUT)\ndef read_cm():\n    sig.init(Pin.OUT)\n    sig.value(0)\n    sleep_us(2)\n    sig.value(1)\n    sleep_us(12)\n    sig.value(0)\n    sig.init(Pin.IN)\n    try:\n        pulse = time_pulse_us(sig, 1, 30000)\n    except OSError:\n        return None\n    if pulse <= 0:\n        return None\n    cm = pulse * 0.017\n    return cm if 2 <= cm <= 350 else None\n\nsleep_ms(100)\nfor _ in range(30):\n    cm = read_cm()\n    print(\"No valid echo\" if cm is None else \"Distance cm: %.1f\" % cm)\n    sleep_ms(300)\n"
+    },
+    {
+      "boardId": "hw_seed_unihiker_k10",
+      "kind": "functional",
+      "title": "Grove - 超声波测距仪 · SINGLE_WIRE",
+      "summary": "Grove V2.0单线兼容示例：使用machine.Pin和脉宽测量，不调用仅针对SEN0388的K10超声波封装；待实测。",
+      "fields": [
+        {
+          "key": "firmware",
+          "label": "固件环境",
+          "default": "K10官方MicroPython / unihiker_k10",
+          "options": [
+            {
+              "value": "K10官方MicroPython / unihiker_k10",
+              "label": "K10官方MicroPython / unihiker_k10"
+            }
+          ]
+        },
+        {
+          "key": "interface",
+          "label": "模块接口",
+          "default": "SINGLE_WIRE",
+          "options": [
+            {
+              "value": "SINGLE_WIRE",
+              "label": "单SIG触发/回波"
+            }
+          ]
+        },
+        {
+          "key": "supply",
+          "label": "模块供电",
+          "default": "3.3V",
+          "options": [
+            {
+              "value": "3.3V",
+              "label": "3.3V"
+            }
+          ]
+        },
+        {
+          "key": "sig",
+          "label": "信号引脚",
+          "default": "0",
+          "options": [
+            {
+              "value": "0",
+              "label": "P0（直连）"
+            },
+            {
+              "value": "1",
+              "label": "P1（直连）"
+            }
+          ]
+        }
+      ],
+      "connections": [
+        {
+          "signal": "GND / G",
+          "target": "主控GND（共地）"
+        },
+        {
+          "signal": "VCC / V",
+          "target": "{{supply}}"
+        },
+        {
+          "signal": "SIG / S",
+          "target": "{{sig}}"
+        }
+      ],
+      "notes": [
+        "默认接线只是建议；先断电接线，模块与主控共地。保存、语法检查及串口回读均不代表实际测量通过。",
+        "仅针对Grove V2.0；触发与回波共用SIG，NC悬空。用平整挡板在20～50cm处起测，采样间隔300ms。",
+        "只把已确认不超过3.3V的信号接入主控；模块5V供电不表示信号可直连。",
+        "按K10 DFR0992 V1.0官方原理图：P0=GPIO1，P1=GPIO2，仅支持这两个直连口；其他扩展口不能用此脉宽方案。"
+      ],
+      "sources": [
+        "https://wiki.seeedstudio.com/cn/Grove-Ultrasonic_Ranger/",
+        "https://www.unihiker.com.cn/wiki/k10/micropython_unihiker_k10",
+        "https://img.dfrobot.com.cn/wikicn/5cabf4771804207b131ae8cb/36b61e6635492b977df87d55fe5dca4e.pdf"
+      ],
+      "codeTemplate": "# Grove - 超声波测距仪\n# K10官方MicroPython / unihiker_k10\n# 功能示例，待实物测试。\nfrom machine import Pin\nfrom utime import sleep_ms, sleep_us\nfrom machine import time_pulse_us\nsig = Pin({0: 1, 1: 2}[{{sig}}], Pin.OUT)\ndef read_cm():\n    sig.init(Pin.OUT)\n    sig.value(0)\n    sleep_us(2)\n    sig.value(1)\n    sleep_us(12)\n    sig.value(0)\n    sig.init(Pin.IN)\n    try:\n        pulse = time_pulse_us(sig, 1, 30000)\n    except OSError:\n        return None\n    if pulse <= 0:\n        return None\n    cm = pulse * 0.017\n    return cm if 2 <= cm <= 350 else None\n\nsleep_ms(100)\nfor _ in range(30):\n    cm = read_cm()\n    print(\"No valid echo\" if cm is None else \"Distance cm: %.1f\" % cm)\n    sleep_ms(300)\n"
+    },
+    {
+      "boardId": "hw_seeed_xiao_esp32s3_sense",
+      "kind": "functional",
+      "title": "Grove - 超声波测距仪 · SINGLE_WIRE",
+      "summary": "单SIG触发/回波测距，厘米输出；超时明确显示无有效回波。",
+      "fields": [
+        {
+          "key": "firmware",
+          "label": "固件环境",
+          "default": "XIAO ESP32S3官方MicroPython",
+          "options": [
+            {
+              "value": "XIAO ESP32S3官方MicroPython",
+              "label": "XIAO ESP32S3官方MicroPython"
+            }
+          ]
+        },
+        {
+          "key": "interface",
+          "label": "模块接口",
+          "default": "SINGLE_WIRE",
+          "options": [
+            {
+              "value": "SINGLE_WIRE",
+              "label": "单SIG触发/回波"
+            }
+          ]
+        },
+        {
+          "key": "supply",
+          "label": "模块供电",
+          "default": "3.3V",
+          "options": [
+            {
+              "value": "3.3V",
+              "label": "3.3V"
+            }
+          ]
+        },
+        {
+          "key": "sig",
+          "label": "信号引脚",
+          "default": "1",
+          "options": [
+            {
+              "value": "1",
+              "label": "D0 / GPIO1"
+            },
+            {
+              "value": "2",
+              "label": "D1 / GPIO2"
+            },
+            {
+              "value": "3",
+              "label": "D2 / GPIO3"
+            }
+          ]
+        }
+      ],
+      "connections": [
+        {
+          "signal": "GND / G",
+          "target": "主控GND（共地）"
+        },
+        {
+          "signal": "VCC / V",
+          "target": "{{supply}}"
+        },
+        {
+          "signal": "SIG / S",
+          "target": "{{sig}}"
+        }
+      ],
+      "notes": [
+        "默认接线只是建议；先断电接线，模块与主控共地。保存、语法检查及串口回读均不代表实际测量通过。",
+        "仅针对Grove V2.0；触发与回波共用SIG，NC悬空。用平整挡板在20～50cm处起测，采样间隔300ms。",
+        "只把已确认不超过3.3V的信号接入主控；模块5V供电不表示信号可直连。",
+        "XIAO：D0=GPIO1，D1=GPIO2，D2=GPIO3，D4/SDA=GPIO5，D5/SCL=GPIO6；D号不等于GPIO号。"
+      ],
+      "sources": [
+        "https://wiki.seeedstudio.com/cn/Grove-Ultrasonic_Ranger/",
+        "https://wiki.seeedstudio.com/xiao_esp32s3_getting_started/"
+      ],
+      "codeTemplate": "# Grove - 超声波测距仪\n# XIAO ESP32S3官方MicroPython\n# 功能示例，待实物测试。\nfrom machine import Pin\nfrom utime import sleep_ms, sleep_us\nfrom machine import time_pulse_us\nsig = Pin({{sig}}, Pin.OUT)\ndef read_cm():\n    sig.init(Pin.OUT)\n    sig.value(0)\n    sleep_us(2)\n    sig.value(1)\n    sleep_us(12)\n    sig.value(0)\n    sig.init(Pin.IN)\n    try:\n        pulse = time_pulse_us(sig, 1, 30000)\n    except OSError:\n        return None\n    if pulse <= 0:\n        return None\n    cm = pulse * 0.017\n    return cm if 2 <= cm <= 350 else None\n\nsleep_ms(100)\nfor _ in range(30):\n    cm = read_cm()\n    print(\"No valid echo\" if cm is None else \"Distance cm: %.1f\" % cm)\n    sleep_ms(300)\n"
+    },
+    {
+      "boardId": "hw_esp32_generic_c3",
+      "kind": "functional",
+      "title": "Grove - 超声波测距仪 · SINGLE_WIRE",
+      "summary": "单SIG触发/回波测距，厘米输出；超时明确显示无有效回波。",
+      "fields": [
+        {
+          "key": "firmware",
+          "label": "固件环境",
+          "default": "ESP32_GENERIC_C3官方MicroPython",
+          "options": [
+            {
+              "value": "ESP32_GENERIC_C3官方MicroPython",
+              "label": "ESP32_GENERIC_C3官方MicroPython"
+            }
+          ]
+        },
+        {
+          "key": "interface",
+          "label": "模块接口",
+          "default": "SINGLE_WIRE",
+          "options": [
+            {
+              "value": "SINGLE_WIRE",
+              "label": "单SIG触发/回波"
+            }
+          ]
+        },
+        {
+          "key": "supply",
+          "label": "模块供电",
+          "default": "3.3V",
+          "options": [
+            {
+              "value": "3.3V",
+              "label": "3.3V"
+            }
+          ]
+        },
+        {
+          "key": "sig",
+          "label": "信号引脚",
+          "default": "3",
+          "options": [
+            {
+              "value": "3",
+              "label": "GPIO3"
+            },
+            {
+              "value": "4",
+              "label": "GPIO4"
+            }
+          ]
+        }
+      ],
+      "connections": [
+        {
+          "signal": "GND / G",
+          "target": "主控GND（共地）"
+        },
+        {
+          "signal": "VCC / V",
+          "target": "{{supply}}"
+        },
+        {
+          "signal": "SIG / S",
+          "target": "{{sig}}"
+        }
+      ],
+      "notes": [
+        "默认接线只是建议；先断电接线，模块与主控共地。保存、语法检查及串口回读均不代表实际测量通过。",
+        "仅针对Grove V2.0；触发与回波共用SIG，NC悬空。用平整挡板在20～50cm处起测，采样间隔300ms。",
+        "只把已确认不超过3.3V的信号接入主控；模块5V供电不表示信号可直连。",
+        "通用C3没有统一D/P别名；确认GPIO3/4实际引出且未被板载功能占用。"
+      ],
+      "sources": [
+        "https://wiki.seeedstudio.com/cn/Grove-Ultrasonic_Ranger/",
+        "https://docs.micropython.org/en/latest/esp32/quickref.html"
+      ],
+      "codeTemplate": "# Grove - 超声波测距仪\n# ESP32_GENERIC_C3官方MicroPython\n# 功能示例，待实物测试。\nfrom machine import Pin\nfrom utime import sleep_ms, sleep_us\nfrom machine import time_pulse_us\nsig = Pin({{sig}}, Pin.OUT)\ndef read_cm():\n    sig.init(Pin.OUT)\n    sig.value(0)\n    sleep_us(2)\n    sig.value(1)\n    sleep_us(12)\n    sig.value(0)\n    sig.init(Pin.IN)\n    try:\n        pulse = time_pulse_us(sig, 1, 30000)\n    except OSError:\n        return None\n    if pulse <= 0:\n        return None\n    cm = pulse * 0.017\n    return cm if 2 <= cm <= 350 else None\n\nsleep_ms(100)\nfor _ in range(30):\n    cm = read_cm()\n    print(\"No valid echo\" if cm is None else \"Distance cm: %.1f\" % cm)\n    sleep_ms(300)\n"
+    }
+  ]
+}
+```
+<!-- /zhangwen:module-guides:v1 -->
