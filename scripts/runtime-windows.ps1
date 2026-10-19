@@ -43,19 +43,12 @@ function Get-NodeRuntime([string]$Executable) {
     return $null
 }
 
-function Get-PythonRuntime([string]$Executable, [string]$Prefix = '') {
+function Get-PythonRuntime([string]$Executable, [string]$Prefix = '', [switch]$RequireVenvSupport) {
     $code = '"import sys; print(sys.version_info.major, sys.version_info.minor, sys.version_info.micro); print(sys.executable); print(int(sys.prefix != sys.base_prefix))"'
+    if ($RequireVenvSupport) { $code = $code.Replace('import sys;', 'import sys, venv, ensurepip;') }
     $output = Invoke-RuntimeProbe $Executable ($Prefix + ' -c ' + $code)
     if (!$output) { return $null }
     $lines = $output -split '\r?\n'
     if ($lines.Count -ne 3 -or $lines[0] -notmatch '^3 (\d+) (\d+)$' -or [int]$Matches[1] -lt 12) { return $null }
     return [pscustomobject]@{ Executable = $lines[1]; Version = ($lines[0] -replace ' ', '.'); IsVenv = ($lines[2] -eq '1') }
-}
-
-function Get-UvRuntime([string[]]$Candidates) {
-    foreach ($candidate in ($Candidates | Select-Object -Unique)) {
-        $output = Invoke-RuntimeProbe $candidate '--version'
-        if ($output -match '^uv (\d+\.\d+\.\d+)' -and [version]$Matches[1] -ge [version]'0.8.22') { return $candidate }
-    }
-    return $null
 }

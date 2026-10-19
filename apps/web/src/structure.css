@@ -3,6 +3,15 @@
 .structure-templates { display: grid; gap: 7px; margin-bottom: 16px; }
 .tool-group[aria-label="结构设计功能"] .zhangwen-tool { width: 92px; flex-basis: 92px; }
 .structure-templates button { display: flex; align-items: center; justify-content: space-between; gap: 6px; width: 100%; min-height: 44px; text-align: left; font-size: 12px; }
+.structure-template-heading { margin: 16px 0 10px; font-size: 13px; }
+.structure-builtin-templates button { padding: 8px; gap: 8px; }
+.structure-builtin-templates img { flex-shrink: 0; width: 44px; height: 44px; object-fit: contain; background: #fff; border-radius: 4px; }
+.structure-builtin-templates span { flex: 1; min-width: 0; overflow-wrap: anywhere; }
+.structure-builtin-templates strong { display: block; font-size: 12px; line-height: 1.5; }
+.structure-builtin-templates small { display: block; margin-top: 3px; font-size: 12px; color: var(--ink-2); line-height: 1.5; }
+.structure-builtin-templates button > svg { flex-shrink: 0; }
+.structure-template-info { font-size: 12px; line-height: 1.65; color: var(--ink-2); }
+.structure-template-info p { margin: 7px 0; }
 .laser-preview { min-height: 250px; }
 .laser-sheet { flex: 1; min-height: 0; display: flex; flex-direction: column; padding: 14px; }
 .laser-sheet svg { flex: 1; min-height: 160px; width: 100%; max-height: 100%; }

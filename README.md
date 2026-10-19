@@ -7,19 +7,19 @@
 Windows 10/11 x64，在 **PowerShell** 执行：
 
 ```powershell
-irm https://raw.githubusercontent.com/yusen/zhangwen/main/install.ps1 | iex
+irm https://gitee.com/ys_Ethan/zhangwen/raw/main/install.ps1 | iex
 ```
 
 在 Windows CMD 中执行：
 
 ```cmd
-powershell.exe -NoLogo -NoProfile -ExecutionPolicy Bypass -Command "irm https://raw.githubusercontent.com/yusen/zhangwen/main/install.ps1 | iex"
+powershell.exe -NoLogo -NoProfile -ExecutionPolicy Bypass -Command "irm https://gitee.com/ys_Ethan/zhangwen/raw/main/install.ps1 | iex"
 ```
 
 macOS 13.5+，Apple Silicon / Intel，在终端执行：
 
 ```bash
-curl -fsSL https://raw.githubusercontent.com/yusen/zhangwen/main/install.sh | bash
+curl -fsSL https://gitee.com/ys_Ethan/zhangwen/raw/main/install.sh | bash
 ```
 
 无需预装 Git、Node.js 或 Python，无需先下载仓库。先检测已有环境，缺失才准备项目内运行时；依赖按锁定版本检查、补齐，随后构建并打开浏览器。默认 http://127.0.0.1:3080 ，端口不可用时自动切换到空闲端口，实际地址显示在服务窗口。首次安装需要联网。
@@ -28,9 +28,11 @@ Windows 自动创建桌面 **ZhangWen** 启动图标（掌问手掌 Logo），�
 
 macOS 找不到入口时，无需卸载或重启电脑：先在 Finder 按 `⌘⇧G` 分别查看 `/Applications` 与 `~/Applications`。从旧版平台内更新可能使用旧安装器，遗漏新增入口；新版本正常启动时会尝试补齐。也可先保存项目、在原服务终端按 `Ctrl+C`，再重跑上方安装命令，依赖完整时会复用，用户数据保留。安装输出中的 `Application:` 是实际入口路径；安装失败时先查看错误，不要删除 `data`。
 
-再次执行安装命令检查并安装 GitHub 最新版本；同一版本校验通过后跳过源码下载。每日启动使用图标/本地启动文件。平台支持启动检查和手动「检查更新」，确认后才安装，下次启动生效；检查失败不影响现有工作台。新版本准备成功才切换入口，旧版本和用户数据保留。
+再次执行安装命令检查并安装 Gitee 最新版本；同一版本校验通过后跳过源码下载。每日启动使用图标/本地启动文件。平台支持启动检查和手动「检查更新」，确认后才安装，下次启动生效；检查失败不影响现有工作台。新版本准备成功才切换入口，旧版本和用户数据保留。
 
 Windows 安装、启动和后台更新会隔离当前进程的 PowerShell 模块路径，避免 PowerShell 7 / 自动化环境与系统 Windows PowerShell 5.1 混用。旧版更新出现 `Get-FileHash` 加载失败时，见[部署指南中的恢复步骤](docs/DEPLOYMENT.md#windows-powershell-模块冲突)。
+
+国内入口的源码、更新与首次安装依赖均使用国内下载源；用户数据与程序版本分开保存。旧版 Windows 桌面版保留于原 Git 历史与 `v0.1.1` / `v0.1.3` 标签，新版不自动迁移旧桌面数据。下载来源、切换渠道及验证边界见 [国内安装说明](docs/DOMESTIC_INSTALLATION.md)。
 
 ## 工作台
 
@@ -59,7 +61,7 @@ I²C模块资料显示默认/参考地址，可按主控保存实际地址与接
 
 Windows 双击 `start-web.bat`，macOS 执行 `bash start-web.sh`。已有 Node 22+、Python 3.12+ 时也可以 `npm run setup` 后 `npm start`。Intel Mac 使用 Python 3.12/3.13；启动入口会自动选择兼容环境，几何依赖按处理器分别锁定。
 
-自动准备的回退版本为 Node 24.14.0、Python 3.13.7，下载 Node/uv 均核验 SHA-256。不修改系统 PATH、执行策略或凭据，无管理员权限要求。服务只监听 `127.0.0.1`。
+安装入口先检查已有环境；缺失时直接下载 Node 24.14.0、Python 3.13.7（独立构建 20250918），核验固定 SHA-256，再用 Python 自带的 `venv + pip` 创建隔离环境和安装依赖，无需 uv。Windows 和 macOS 均适用。不修改系统 PATH、执行策略或凭据，无管理员权限要求。服务只监听 `127.0.0.1`。
 
 [第三方来源与声明](docs/THIRD_PARTY_NOTICES.md)
 

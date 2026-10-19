@@ -1,5 +1,6 @@
 import { existsSync, readFileSync } from 'node:fs';
 import { resolve } from 'node:path';
+import { equivalentRegistryUrl } from './download-sources.mjs';
 
 function matchesPlatform(allowed, current) {
   if (!allowed) return true;
@@ -27,7 +28,8 @@ export function inspectNodeDependencies(root, platform = process.platform, arch 
       continue;
     }
     const recorded = receipt?.packages?.[path];
-    if (recorded && ['integrity', 'resolved'].some(key => recorded[key] && expected[key] && recorded[key] !== expected[key])) {
+    if (recorded && ((recorded.integrity && expected.integrity && recorded.integrity !== expected.integrity)
+      || (recorded.resolved && expected.resolved && !equivalentRegistryUrl(recorded.resolved, expected.resolved)))) {
       problems.push({ package: path, reason: 'installed package differs from lock' });
     }
     if (typeof installed.bin === 'string' && !existsSync(resolve(root, path, installed.bin))) {

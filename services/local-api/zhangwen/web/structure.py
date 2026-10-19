@@ -26,7 +26,7 @@ from pydantic import BaseModel, ConfigDict, Field, field_validator, model_valida
 
 from zhangwen.artifacts.models import ArtifactStatus, ArtifactPreview, ArtifactPreviewKind
 from zhangwen.llm.contracts import ChatMessage, ChatMessageStatus, ChatRole
-from . import design_service
+from . import design_service, builtin_templates
 from .version_names import short_name
 
 ROOT = Path(__file__).resolve().parents[4]
@@ -37,6 +37,7 @@ FILES = {'cadquery.py', 'design-state.json', 'checks.json', 'artifact.json', 'pr
          'model.step', 'base.step', 'lid.step', 'hardware.step', 'model.stl', 'hardware.stl', 'mesh-checks.json'}
 FILES.update(f'workflow/{name}' for name in ['00_requirement_analysis.json', '01_intent.json', '02_bom.json',
     '03_profile_report.json', '04_feasibility_report.json', '05_layout_plan.json', '06_checks.json', '07_cadquery.py', '08_export_manifest.json'])
+FILES.update(builtin_templates.asset_names())
 
 
 class StructureInput(BaseModel):
@@ -52,7 +53,8 @@ class StructureInput(BaseModel):
     rotations: dict[str, float] = Field(default_factory=dict)
     resolutionOptionId: str = Field(default='', max_length=150)
     designType: Literal['model', 'laser'] = 'model'
-    template: Literal['box', 'cup', 'bracket', 'plate', 'round-tag', 'panel-box', 'finger-box', 'rounded-box'] | None = None
+    template: Literal['box', 'cup', 'bracket', 'plate', 'round-tag', 'panel-box', 'finger-box', 'rounded-box',
+                      'mpython-shell', 'photo-stand', 'servo-side', 'servo-horizontal', 'servo-vertical'] | None = None
 
     @field_validator('parameters')
     @classmethod
@@ -95,7 +97,38 @@ class StructureCheckpoint(BaseModel):
             if len(version['selectedIds']) > 32 or not all(isinstance(x, str) for x in version['selectedIds']) or not all(isinstance(x, dict) and isinstance(x.get('id'), str) for x in version['customProfiles']):
                 raise ValueError('结构硬件格式无效。')
             result = version['result']
-            if 'designKind' in result and result['designKind'] not in {'parametric', 'laser'}:
+            if result.get('designKind') == 'builtin':
+                template = result.get('builtinTemplate', {})
+                if not isinstance(template, dict) or not isinstance(template.get('id'), str) or template['id'] not in builtin_templates.TEMPLATES or type(template.get('revision')) is not int or template['revision'] < 1:
+                    raise ValueError('固定模板修订无效。')
+                expected = builtin_templates.TEMPLATES[template['id']]
+                if (not all(isinstance(template.get(k), str) for k in ['title', 'description', 'sourceSha256'])
+                        or not re.fullmatch('[a-f0-9]{64}', template['sourceSha256'])
+                        or not isinstance(template.get('notes'), list) or len(template['notes']) > 20
+                        or not all(isinstance(note, str) for note in template['notes'])
+                        or (template.get('image') and template['image'] != '/api/structure/templates/media/' + expected['image'])):
+                    raise ValueError('固定模板说明无效。')
+                parts = result.get('templateParts', [])
+                if not isinstance(parts, list) or len(parts) > len(expected['parts']):
+                    raise ValueError('固定模板部件清单无效。')
+                expected_parts = {part['id']: part for part in expected['parts']}
+                seen = set()
+                for part in parts:
+                    if not isinstance(part, dict) or not isinstance(part.get('id'), str) or part['id'] not in expected_parts or part['id'] in seen:
+                        raise ValueError('固定模板部件标识无效。')
+                    seen.add(part['id'])
+                    if (part.get('exportId') != f'template_{part["id"]}_stl' or not isinstance(part.get('label'), str)
+                            or type(part.get('printable')) is not bool or part['printable'] != expected_parts[part['id']]['printable']):
+                        raise ValueError('固定模板打印属性无效。')
+                    for key in ['placement', 'size']:
+                        values = part.get(key)
+                        if not isinstance(values, list) or len(values) != 3 or not all(type(n) in (int, float) and math.isfinite(n) and (-2000 <= n <= 2000 if key == 'placement' else 0 < n <= 2000) for n in values):
+                            raise ValueError('固定模板部件尺寸无效。')
+                if not isinstance(result.get('build', {}), dict):
+                    raise ValueError('固定模板构建状态无效。')
+                if result.get('build', {}).get('status') == 'artifact_exports' and seen != set(expected_parts):
+                    raise ValueError('固定模板部件不完整。')
+            if 'designKind' in result and result['designKind'] not in {'parametric', 'laser', 'builtin'}:
                 raise ValueError('未知的结构几何类型。')
             if 'designSpec' in result or 'laserDrawing' in result:
                 from .design_specs import DesignSpec, Drawing
@@ -461,7 +494,14 @@ def structure_router(service: StructureService, settings) -> APIRouter:
             if not image and profile.get('thumbnail_url', '').startswith('/assets/hardware/'):
                 image = '/api/structure/media/' + profile['thumbnail_url'].rsplit('/', 1)[1]
             profiles.append({**profile, 'thumbnail_url': image, 'componentId': existing['componentId'] if existing else None})
-        return {'profiles': profiles, 'cadqueryAvailable': all(importlib.util.find_spec(x) is not None for x in ['cadquery', 'OCP'])}
+        return {'profiles': profiles, 'cadqueryAvailable': all(importlib.util.find_spec(x) is not None for x in ['cadquery', 'OCP']),
+                'templates': [builtin_templates.public_template(item) for item in builtin_templates.TEMPLATES.values()]}
+
+    @router.get('/api/structure/templates/media/{name}')
+    def template_image(name: str):
+        if name not in {item['image'] for item in builtin_templates.TEMPLATES.values()}:
+            raise HTTPException(404, '模板图片不存在。')
+        return FileResponse(builtin_templates.DIRECTORY / name)
 
     @router.get('/api/structure/media/{name}')
     def profile_image(name: str):

@@ -7,6 +7,8 @@ runtime=${ZHANGWEN_RUNTIME_DIR:-"$project_root/.runtime"}
 mkdir -p "$runtime"
 os=$(uname -s)
 arch=$(uname -m)
+download_source=${ZHANGWEN_DOWNLOAD_SOURCE:-global}
+case "$download_source" in cn|global) ;; *) echo 'Invalid download source.' >&2; exit 1 ;; esac
 if [ "$os" = Darwin ]; then
   mac_version=$(sw_vers -productVersion)
   major=${mac_version%%.*}; remainder=${mac_version#*.}; minor=${remainder%%.*}
@@ -15,13 +17,15 @@ if [ "$os" = Darwin ]; then
   fi
 fi
 case "$os:$arch" in
-  Darwin:arm64) node_platform=darwin-arm64; uv_platform=aarch64-apple-darwin
-    node_sha=a1a54f46a750d2523d628d924aab61758a51c9dad3e0238beb14141be9615dd3
-    uv_sha=3f61099e261e449527141dbf125629fab33ad696468c8c90cebbac40185a306c ;;
-  Darwin:x86_64) node_platform=darwin-x64; uv_platform=x86_64-apple-darwin
-    node_sha=f2879eb810e25993a0578e5d878930266fd2eafcffe9f2839b3d8db354d4879e
-    uv_sha=76638fdcfa91357858771551a1c88de1f7c3b270b33ab1866f8a0618d9e442d8 ;;
+  Darwin:arm64) node_platform=darwin-arm64; python_platform=aarch64-apple-darwin
+    node_sha=a1a54f46a750d2523d628d924aab61758a51c9dad3e0238beb14141be9615dd3 ;;
+  Darwin:x86_64) node_platform=darwin-x64; python_platform=x86_64-apple-darwin
+    node_sha=f2879eb810e25993a0578e5d878930266fd2eafcffe9f2839b3d8db354d4879e ;;
   *) echo 'Automatic runtime setup requires macOS 13.5+ (Intel / Apple Silicon).' >&2; exit 1 ;;
+esac
+case "$arch" in
+  arm64) python_sha=10f26ea5fc7c4d9c012faf372898a801f34b8fd7730c677576263224d56835fe ;;
+  x86_64) python_sha=e640143d4dde2edff1865c3e88e44b046478b790af4f8b3ac4d228e53952dda0 ;;
 esac
 lock="$runtime/bootstrap-unix.lock"
 if ! mkdir "$lock" 2>/dev/null; then
@@ -55,7 +59,9 @@ for candidate in "$node_dir/bin/node" "$(command -v node || true)"; do
 done
 if [ -z "$node_exe" ]; then
   name="node-v24.14.0-$node_platform.tar.gz"
-  download_verified "https://nodejs.org/dist/v24.14.0/$name" "$name" "$node_sha"
+  node_url="https://nodejs.org/dist/v24.14.0/$name"
+  if [ "$download_source" = cn ]; then node_url="https://cdn.npmmirror.com/binaries/node/v24.14.0/$name"; fi
+  download_verified "$node_url" "$name" "$node_sha"
   tar -xzf "$runtime/$name" -C "$runtime"
   node_exe="$node_dir/bin/node"
   export ZHANGWEN_NPM_CLI="$node_dir/lib/node_modules/npm/bin/npm-cli.js"
@@ -68,35 +74,48 @@ python_ok() {
   case "$1" in /usr/bin/python|/usr/bin/python3) return 1 ;; esac
   [ -n "$1" ] && [ -x "$1" ] && "$1" -c 'import platform, sys; assert sys.version_info >= (3,12) and (sys.platform != "darwin" or platform.machine() != "x86_64" or sys.version_info < (3,14))' >/dev/null 2>&1
 }
+python_venv_ok() {
+  python_ok "$1" && "$1" -c 'import venv, ensurepip' >/dev/null 2>&1
+}
 python_exe="$project_root/.venv/bin/python"
 if ! python_ok "$python_exe" || ! "$python_exe" -c 'import sys; assert sys.prefix != sys.base_prefix' 2>/dev/null; then
   base_python=''
   for candidate in "${ZHANGWEN_PYTHON:-}" "$(command -v python3 || true)" "$(command -v python || true)"; do
-    if python_ok "$candidate" && "$candidate" -c 'import venv, ensurepip' >/dev/null 2>&1; then base_python=$candidate; break; fi
+    if python_venv_ok "$candidate"; then base_python=$candidate; break; fi
   done
-  if [ -e "$project_root/.venv" ]; then
+  # Reuse shared managed Python independently of the source version.
+  managed_python="$runtime/python/cpython-3.13.7-20250918-$python_platform/bin/python3"
+  if [ -z "$base_python" ]; then
+    for candidate in "$managed_python" "$runtime"/python/*/bin/python3; do
+      if python_venv_ok "$candidate"; then base_python=$candidate; break; fi
+    done
+  fi
+  if [ -z "$base_python" ]; then
+    echo 'No working Python with venv support was found. Preparing standalone Python ...'
+    name="cpython-3.13.7+20250918-$python_platform-install_only_stripped.tar.gz"
+    python_url="https://github.com/astral-sh/python-build-standalone/releases/download/20250918/${name//+/%2B}"
+    if [ "$download_source" = cn ]; then python_url="https://cdn.npmmirror.com/binaries/python-build-standalone/20250918/${name//+/%2B}"; fi
+    download_verified "$python_url" "$name" "$python_sha"
+    python_home="$runtime/python/cpython-3.13.7-20250918-$python_platform"
+    [ ! -e "$python_home" ] || { echo "Unusable managed Python preserved: $python_home" >&2; exit 1; }
+    stage=$(mktemp -d "$runtime/python-extract-XXXXXX")
+    tar -xzf "$runtime/$name" -C "$stage"
+    python_venv_ok "$stage/python/bin/python3" || { echo 'Downloaded Python did not pass its venv/ensurepip check.' >&2; exit 1; }
+    mkdir -p "$runtime/python"
+    mv "$stage/python" "$python_home"
+    rmdir "$stage"
+    python_venv_ok "$managed_python" || { echo 'Standalone Python did not pass its execution check.' >&2; exit 1; }
+    base_python=$managed_python
+  fi
+  if [ -e "$project_root/.venv" ] || [ -L "$project_root/.venv" ]; then
     [ ! -L "$project_root/.venv" ] || { echo 'Refusing to move a linked .venv.' >&2; exit 1; }
     mv "$project_root/.venv" "$runtime/venv-invalid-$(date +%s)"
   fi
-  if [ -n "$base_python" ]; then
-    echo "Using installed Python: $base_python"
-    "$base_python" -m venv "$project_root/.venv"
-  else
-    uv_exe="$runtime/uv-$uv_platform/uv"
-    if ! [ -x "$uv_exe" ] || ! "$uv_exe" --version >/dev/null 2>&1; then
-      candidate=$(command -v uv || true)
-      if [ -n "$candidate" ] && "$candidate" --version >/dev/null 2>&1; then uv_exe=$candidate
-      else
-        name="uv-$uv_platform.tar.gz"
-        download_verified "https://github.com/astral-sh/uv/releases/download/0.8.22/$name" "$name" "$uv_sha"
-        tar -xzf "$runtime/$name" -C "$runtime"
-      fi
-    fi
-    export UV_PYTHON_INSTALL_DIR="$runtime/python" UV_CACHE_DIR="$project_root/.cache/uv" UV_NO_MODIFY_PATH=1 UV_NATIVE_TLS=true
-    "$uv_exe" venv --python 3.13.7 --managed-python --seed "$project_root/.venv"
-  fi
+  echo "Using Python: $base_python"
+  "$base_python" -m venv "$project_root/.venv"
 fi
 python_ok "$python_exe"
+"$python_exe" -c 'import sys; assert sys.prefix != sys.base_prefix'
 rmdir "$lock"
 trap - EXIT
 exec "$node_exe" scripts/setup.mjs "$@"

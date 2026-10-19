@@ -6,6 +6,9 @@ export interface CadProfile {
   componentId?: string | null;
 }
 export interface CadExport { id: string; label: string; format: string; url?: string; status?: string; fidelity?: string }
+export type BuiltinTemplateId = 'mpython-shell' | 'photo-stand' | 'servo-side' | 'servo-horizontal' | 'servo-vertical';
+export interface BuiltinTemplate { id: BuiltinTemplateId; revision: number; title: string; description: string; size: number[]; notes: string[]; image?: string; sourceSha256: string }
+export interface TemplatePart { id: string; label: string; printable: boolean; exportId: string; placement: number[]; size: number[] }
 export interface CadCheck { id: string; status: string; message: string; details?: unknown }
 export interface CadState {
   id: string; parameters: Record<string, number>;
@@ -24,7 +27,9 @@ export interface CadResult {
   resolution_options?: { id: string; label?: string; title?: string; description?: string }[];
   requirement_analysis?: Record<string, unknown>;
   build?: { status: string; message?: string; blocking_reason?: string };
-  designKind?: 'parametric' | 'laser';
+  designKind?: 'parametric' | 'laser' | 'builtin';
+  builtinTemplate?: BuiltinTemplate;
+  templateParts?: TemplatePart[];
   designSpec?: DesignSpec;
   laserTextPaths?: Record<string, string>;
   [key: string]: unknown;
@@ -45,9 +50,9 @@ export interface StructureAction {
   message?: string; selectedIds?: string[]; customProfiles?: Record<string, unknown>[];
   parameters?: Record<string, number>; faces?: Record<string, 'base_floor' | 'lid_inner'>;
   rotations?: Record<string, number>; resolutionOptionId?: string;
-  designType?: 'model' | 'laser'; template?: 'box' | 'cup' | 'bracket' | 'plate' | 'round-tag' | 'panel-box' | 'finger-box' | 'rounded-box';
+  designType?: 'model' | 'laser'; template?: BuiltinTemplateId | 'box' | 'cup' | 'bracket' | 'plate' | 'round-tag' | 'panel-box' | 'finger-box' | 'rounded-box';
 }
-export interface StructureCatalog { profiles: CadProfile[]; cadqueryAvailable: boolean }
+export interface StructureCatalog { profiles: CadProfile[]; cadqueryAvailable: boolean; templates?: BuiltinTemplate[] }
 export interface SolidPart { kind: 'box' | 'cylinder' | 'sphere'; operation: 'add' | 'cut'; label: string; size: number[]; center: number[]; rotation: number[] }
 export interface LaserShape { kind: 'rect' | 'circle' | 'polyline' | 'line' | 'text'; operation: 'cut' | 'engrave'; x: number; y: number; width: number; height: number; radius: number; points: number[][]; closed: boolean; text?: string; fontSize?: number }
 export interface PanelText { panel: 'left' | 'right' | 'front' | 'back' | 'bottom' | 'top'; x: number; y: number; text: string; fontSize: number }

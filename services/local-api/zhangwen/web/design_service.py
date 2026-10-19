@@ -8,7 +8,7 @@ from datetime import datetime
 
 from fastapi import HTTPException
 from .design_specs import DesignSpec, template_spec, propose, solid_code, svg, dxf
-from . import laser_text, laser_rounded_box
+from . import laser_text, laser_rounded_box, builtin_templates
 
 
 def solid_bounds(spec, scale):
@@ -26,6 +26,8 @@ def solid_bounds(spec, scale):
 
 
 async def act(request, previous, settings, job_root, conversation=None):
+    if request.template in builtin_templates.TEMPLATES or (not request.template and previous.get('designKind') == 'builtin' and request.action not in {'analyze', 'selected'}):
+        return await builtin_templates.act(request, previous, job_root)
     kind = 'laser' if request.designType == 'laser' else 'parametric'
     # Text revisions must reach the model, even when the source was a template.
     editing = request.action in {'analyze', 'revise', 'selected'}

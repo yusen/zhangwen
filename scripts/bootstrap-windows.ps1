@@ -10,13 +10,16 @@ New-Item -ItemType Directory -Force -Path $runtimeRoot | Out-Null
 Set-Location -LiteralPath $projectRoot
 [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
 . (Join-Path $PSScriptRoot 'runtime-windows.ps1')
+$downloadSource = $env:ZHANGWEN_DOWNLOAD_SOURCE
+if (!$downloadSource) { $downloadSource = 'global' }
+if ($downloadSource -cnotmatch '^(cn|global)$') { throw 'Invalid download source.' }
 
 function Get-VerifiedArchive([string]$Url, [string]$Name, [string]$Sha256) {
     $archivePath = Join-Path $runtimeRoot $Name
     if ((Test-Path -LiteralPath $archivePath) -and ((Get-FileHash -LiteralPath $archivePath -Algorithm SHA256).Hash -eq $Sha256)) { return $archivePath }
     Write-Host "Downloading $Name ..."
     $partialPath = "$archivePath.download"
-    Invoke-WebRequest -UseBasicParsing -Uri $Url -OutFile $partialPath
+    Invoke-WebRequest -UseBasicParsing -Uri $Url -OutFile $partialPath -TimeoutSec 600
     if ((Get-FileHash -LiteralPath $partialPath -Algorithm SHA256).Hash -ne $Sha256) { throw "SHA-256 mismatch: $Name. Please retry." }
     Move-Item -LiteralPath $partialPath -Destination $archivePath -Force
     return $archivePath
@@ -37,7 +40,9 @@ try {
         }
         if (!$nodeRuntime) {
             Write-Host 'No working Node.js 22+ with npm was found. Preparing project-local Node.js ...'
-            $nodeZip = Get-VerifiedArchive 'https://nodejs.org/dist/v24.14.0/node-v24.14.0-win-x64.zip' 'node-v24.14.0-win-x64.zip' '313fa40c0d7b18575821de8cb17483031fe07d95de5994f6f435f3b345f85c66'
+            $nodeUrl = 'https://nodejs.org/dist/v24.14.0/node-v24.14.0-win-x64.zip'
+            if ($downloadSource -eq 'cn') { $nodeUrl = 'https://cdn.npmmirror.com/binaries/node/v24.14.0/node-v24.14.0-win-x64.zip' }
+            $nodeZip = Get-VerifiedArchive $nodeUrl 'node-v24.14.0-win-x64.zip' '313fa40c0d7b18575821de8cb17483031fe07d95de5994f6f435f3b345f85c66'
             Expand-Archive -LiteralPath $nodeZip -DestinationPath $runtimeRoot -Force
             $nodeRuntime = Get-NodeRuntime $nodeExe
             if (!$nodeRuntime) { throw 'The downloaded Node.js/npm runtime did not pass its execution check.' }
@@ -57,23 +62,39 @@ try {
                 $pythonCandidates += @(Get-ChildItem -LiteralPath $managedPythonRoot -Filter python.exe -Recurse -File | ForEach-Object { $_.FullName })
             }
             foreach ($candidate in ($pythonCandidates | Select-Object -Unique)) {
-                $basePython = Get-PythonRuntime $candidate
+                $basePython = Get-PythonRuntime $candidate -RequireVenvSupport
                 if ($basePython) { break }
             }
             if (!$basePython) {
                 foreach ($launcher in @(Get-ApplicationPaths @('py.exe', 'py'))) {
                     foreach ($selector in @('-3', '-3.13', '-3.14', '-3.12')) {
-                        $basePython = Get-PythonRuntime $launcher $selector
+                        $basePython = Get-PythonRuntime $launcher $selector -RequireVenvSupport
                         if ($basePython) { break }
                     }
                     if ($basePython) { break }
                 }
             }
-            $uvDir = Join-Path $runtimeRoot 'uv'
-            $uvExe = Get-UvRuntime (@((Join-Path $uvDir 'uv.exe')) + @(Get-ApplicationPaths @('uv.exe', 'uv')))
-            if (!$basePython -and $uvExe) {
-                $uvPython = Invoke-RuntimeProbe $uvExe 'python find --offline ">=3.12"'
-                if ($uvPython) { $basePython = Get-PythonRuntime $uvPython }
+            if (!$basePython) {
+                Write-Host 'No working Python with venv support was found. Preparing standalone Python ...'
+                # Use the same pinned standalone build and digest for both channels.
+                $pythonName = 'cpython-3.13.7+20250918-x86_64-pc-windows-msvc-install_only_stripped.tar.gz'
+                $pythonUrlName = [uri]::EscapeDataString($pythonName)
+                $pythonUrl = "https://github.com/astral-sh/python-build-standalone/releases/download/20250918/$pythonUrlName"
+                if ($downloadSource -eq 'cn') { $pythonUrl = "https://cdn.npmmirror.com/binaries/python-build-standalone/20250918/$pythonUrlName" }
+                $pythonArchive = Get-VerifiedArchive $pythonUrl $pythonName 'bc229e5364699a8456b6ceabde8348c75e62312ffd62631dd1e494a1755a45ed'
+                $pythonHome = Join-Path $managedPythonRoot 'cpython-3.13.7-20250918'
+                if (Test-Path -LiteralPath $pythonHome) { throw "Unusable managed Python preserved: $pythonHome. Rename it and retry." }
+                $stage = Join-Path $runtimeRoot ('python-extract-' + [guid]::NewGuid().ToString('N'))
+                New-Item -ItemType Directory -Path $stage | Out-Null
+                & (Join-Path $env:SystemRoot 'System32/tar.exe') -xzf $pythonArchive -C $stage
+                if ($LASTEXITCODE -ne 0) { throw 'Could not extract the verified Python archive.' }
+                $stagedPython = Get-PythonRuntime (Join-Path $stage 'python/python.exe') -RequireVenvSupport
+                if (!$stagedPython) { throw 'The downloaded Python runtime did not pass its venv/ensurepip check.' }
+                New-Item -ItemType Directory -Force -Path $managedPythonRoot | Out-Null
+                Move-Item -LiteralPath (Join-Path $stage 'python') -Destination $pythonHome
+                Remove-Item -LiteralPath $stage
+                $basePython = Get-PythonRuntime (Join-Path $pythonHome 'python.exe') -RequireVenvSupport
+                if (!$basePython) { throw 'The standalone Python runtime did not pass its execution check.' }
             }
             $venvDir = Join-Path $projectRoot '.venv'
             if (Test-Path -LiteralPath $venvDir) {
@@ -89,26 +110,10 @@ try {
                 Move-Item -LiteralPath $venvDir -Destination $backupVenv
                 Write-Host "Preserved unusable .venv at $backupVenv"
             }
-            if ($basePython) {
-                Write-Host "Using installed Python $($basePython.Version): $($basePython.Executable)"
-                Write-Host 'Creating isolated project dependencies in .venv ...'
-                & $basePython.Executable -m venv $venvDir
-                if ($LASTEXITCODE -ne 0) { throw 'Could not create .venv using the detected Python. Check its venv support and retry.' }
-            } else {
-              if (!$uvExe) {
-                Write-Host 'No working Python 3.12+ was found. Preparing project-local uv/Python ...'
-                $uvZip = Get-VerifiedArchive 'https://github.com/astral-sh/uv/releases/download/0.8.22/uv-x86_64-pc-windows-msvc.zip' 'uv-0.8.22-win-x64.zip' '5049375aa2a5162f132b2c1cb992e25d42d47d934cab8c174dbe6f60973dcc12'
-                Expand-Archive -LiteralPath $uvZip -DestinationPath $uvDir -Force
-                $uvExe = Get-UvRuntime @((Join-Path $uvDir 'uv.exe'))
-                if (!$uvExe) { throw 'The downloaded uv runtime did not pass its execution check.' }
-              }
-              $env:UV_PYTHON_INSTALL_DIR = $managedPythonRoot
-              $env:UV_CACHE_DIR = Join-Path $projectRoot '.cache/uv'
-              $env:UV_NO_MODIFY_PATH = '1'
-              $env:UV_NATIVE_TLS = 'true'
-              & $uvExe venv --python 3.13.7 --managed-python --seed $venvDir
-              if ($LASTEXITCODE -ne 0) { throw 'Python setup failed. Check your connection to GitHub and PyPI, then run again.' }
-            }
+            Write-Host "Using Python $($basePython.Version): $($basePython.Executable)"
+            Write-Host 'Creating isolated project dependencies in .venv ...'
+            & $basePython.Executable -m venv $venvDir
+            if ($LASTEXITCODE -ne 0) { throw 'Could not create .venv using the detected Python. Check its venv support and retry.' }
             $pythonRuntime = Get-PythonRuntime $pythonExe
             if (!$pythonRuntime -or !$pythonRuntime.IsVenv) { throw 'The project Python environment did not pass its execution check.' }
         }

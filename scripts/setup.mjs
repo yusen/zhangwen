@@ -5,6 +5,7 @@ import { existsSync, mkdirSync, openSync, writeFileSync, readFileSync, readdirSy
 import { resolve, join } from 'node:path';
 import { root } from './python.mjs';
 import { inspectNodeDependencies } from './dependencies.mjs';
+import { dependencyNetwork } from './download-sources.mjs';
 
 const runtime = resolve(root, '.runtime');
 mkdirSync(runtime, { recursive: true });
@@ -15,6 +16,8 @@ const npmCli = process.env.ZHANGWEN_NPM_CLI || resolve(process.execPath, '..', p
 const args = process.argv.slice(2);
 const prepareOnly = args.includes('--prepare-only');
 const serverArgs = args.filter(arg => arg !== '--prepare-only');
+const network = dependencyNetwork();
+if (network.env.npm_config_globalconfig) writeFileSync(network.env.npm_config_globalconfig, '');
 let state = {};
 try { state = JSON.parse(readFileSync(statePath, 'utf8')); } catch { /* first run */ }
 function digest(paths) {
@@ -34,7 +37,7 @@ function readdirSafe(path) {
 }
 function run(command, argv, extraEnv = {}) {
   return new Promise((accept, reject) => {
-    const child = spawn(command, argv, { cwd: root, env: { ...process.env, ...extraEnv }, stdio: 'inherit', windowsHide: true });
+    const child = spawn(command, argv, { cwd: root, env: { ...process.env, ...network.env, ...extraEnv }, stdio: 'inherit', windowsHide: true });
     const stop = signal => child.kill(signal);
     const interrupt = () => stop('SIGINT');
     const terminate = () => stop('SIGTERM');
@@ -96,7 +99,7 @@ try {
   const nodeDeps = inspectNodeDependencies(root);
   if (!nodeDeps.ready) {
     console.log(`前端依赖缺失或不匹配（${nodeDeps.problems.length} 项），恢复锁定依赖并优先复用下载缓存…`);
-    await npm(['ci', '--prefer-offline', '--no-audit', '--no-fund']);
+    await npm(['ci', '--prefer-offline', '--no-audit', '--no-fund', ...network.npmArgs]);
     if (!inspectNodeDependencies(root).ready) throw new Error('前端依赖安装后仍未通过检查，请查看上方错误。');
   } else console.log('前端依赖完整，复用现有安装。');
   const buildKey = digest(['apps/web/src', 'apps/web/index.html', 'packages', 'tsconfig.json', 'vite.config.ts', 'package.json', 'package-lock.json']);

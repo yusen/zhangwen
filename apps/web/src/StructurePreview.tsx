@@ -5,9 +5,9 @@ import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js';
 import { STLLoader } from 'three/examples/jsm/loaders/STLLoader.js';
 import type { CadResult, CadSize } from '../../../packages/contracts/src/structure';
 
-type View = 'assembly' | 'exploded' | 'base' | 'lid' | 'hardware';
+type View = string;
 const names: [View, string][] = [['assembly', '整体'], ['exploded', '爆炸'], ['base', '底壳'], ['lid', '上盖'], ['hardware', '硬件']];
-export const sizeText = (s?: CadSize) => s ? `${s.length_x} × ${s.width_y} × ${s.height_z} mm` : '待确定';
+export const sizeText = (s?: CadSize) => s ? `${[s.length_x, s.width_y, s.height_z].map(n => Number(n.toFixed(3))).join(' × ')} mm` : '待确定';
 
 export function StructurePreview({ result }: { result?: CadResult }) {
   const host = useRef<HTMLDivElement>(null);
@@ -18,6 +18,12 @@ export function StructurePreview({ result }: { result?: CadResult }) {
   const exports = result?.exports;
   const ready = result?.build?.status === 'artifact_exports';
   const standalone = result?.designKind === 'parametric';
+  const templateParts = result?.templateParts;
+  const views: [View, string][] = result?.designKind === 'builtin' ? [
+    ['assembly', '整体'], ...(templateParts?.length ? [['exploded', '分开展示'] as [View, string]] : []),
+    ...(templateParts ?? []).map(part => [part.id, part.label] as [View, string])
+  ] : standalone ? names.slice(0, 1) : names;
+  const activeView = views.some(([key]) => key === view) ? view : 'assembly';
   useEffect(() => {
     if (!host.current || !ready) return;
     const container = host.current;
@@ -41,22 +47,25 @@ export function StructurePreview({ result }: { result?: CadResult }) {
     const resize = () => { const w = Math.max(container.clientWidth, 1), h = Math.max(container.clientHeight, 1); renderer.setSize(w, h); camera.aspect = w / h; camera.updateProjectionMatrix(); };
     const observer = new ResizeObserver(resize); observer.observe(container); resize();
     const render = () => { if (disposed) return; controls.update(); renderer.render(scene, camera); frame = requestAnimationFrame(render); }; render();
-    const parts = standalone ? ['base'] : view === 'assembly' || view === 'exploded' ? ['base', 'lid', 'hardware'] : [view];
+    const parts = templateParts ? (activeView === 'assembly' || activeView === 'exploded' ? templateParts.map(p => p.id) : [activeView]) : standalone ? ['base'] : activeView === 'assembly' || activeView === 'exploded' ? ['base', 'lid', 'hardware'] : [activeView];
     setStatus('正在载入真实模型…');
     void (async () => {
       try {
-        await Promise.all(parts.map(async part => {
-          const item = exports?.find(e => e.id === `cadquery_${part}_stl`);
+        await Promise.all(parts.map(async (part, index) => {
+          const info = templateParts?.find(p => p.id === part);
+          const item = exports?.find(e => e.id === (info?.exportId ?? `cadquery_${part}_stl`));
           if (!item?.url) { if (part === 'hardware') return; throw new Error('此版本缺少对应模型文件。'); }
           const response = await fetch(item.url, { signal: controller.signal });
           if (!response.ok) throw new Error('模型文件读取失败，请重新生成或检查文件。');
           const geometry = new STLLoader().parse(await response.arrayBuffer());
           if (disposed) { geometry.dispose(); return; }
           geometries.push(geometry);
-          const material = new THREE.MeshStandardMaterial({color: part === 'hardware' ? 0x5d9e82 : part === 'lid' ? 0xd9e5ed : 0x829db7,
-            roughness: .68, metalness: .05, transparent: view === 'exploded' && part === 'lid', opacity: view === 'exploded' && part === 'lid' ? .55 : 1});
+          const material = new THREE.MeshStandardMaterial({color: part === 'hardware' || info?.printable === false ? 0x5d9e82 : part === 'lid' || part === 'cover' ? 0xd9e5ed : 0x829db7,
+            roughness: .68, metalness: .05, transparent: activeView === 'exploded' && part === 'lid', opacity: activeView === 'exploded' && part === 'lid' ? .55 : 1});
           materials.push(material); const mesh = new THREE.Mesh(geometry, material);
-          if (view === 'exploded' && part === 'lid') mesh.position.z += Math.max(20, (state?.enclosure_parameters.outer_box_size.height_z ?? 40) * .6);
+          if (info && (activeView === 'assembly' || activeView === 'exploded')) mesh.position.fromArray(info.placement);
+          if (info && activeView === 'exploded') mesh.position.x += index * Math.max(80, (state?.enclosure_parameters.outer_box_size.length_x ?? 60) + 20);
+          if (!info && activeView === 'exploded' && part === 'lid') mesh.position.z += Math.max(20, (state?.enclosure_parameters.outer_box_size.height_z ?? 40) * .6);
           group.add(mesh);
         }));
         if (disposed) return;
@@ -69,10 +78,10 @@ export function StructurePreview({ result }: { result?: CadResult }) {
       } catch (error) { if (!disposed) { group.visible = false; setStatus(error instanceof Error ? error.message : '模型载入失败'); } }
     })();
     return () => { disposed = true; controller.abort(); cancelAnimationFrame(frame); observer.disconnect(); controls.dispose(); geometries.forEach(g => g.dispose()); materials.forEach(m => m.dispose()); grid.geometry.dispose(); (grid.material as THREE.Material).dispose(); axes.geometry.dispose(); (Array.isArray(axes.material) ? axes.material : [axes.material]).forEach(m => m.dispose()); renderer.dispose(); renderer.domElement.remove(); reset.current = () => {}; };
-  }, [ready, exports, view, state, standalone]);
+  }, [ready, exports, activeView, state, standalone, templateParts]);
 
   return <div className="structure-preview">
-    <div className="structure-view-tabs" role="group" aria-label="模型视图">{(standalone ? names.slice(0, 1) : names).map(([key, name]) => <button key={key} disabled={!ready} aria-pressed={view === key} onClick={() => setView(key)}>{name}</button>)}<button disabled={!ready} aria-label="重置模型视角" onClick={() => reset.current()}><RotateCcw size={15} /></button></div>
+    <div className="structure-view-tabs" role="group" aria-label="模型视图">{views.map(([key, name]) => <button key={key} disabled={!ready} aria-pressed={activeView === key} onClick={() => setView(key)}>{name}</button>)}<button disabled={!ready} aria-label="重置模型视角" onClick={() => reset.current()}><RotateCcw size={15} /></button></div>
     {ready ? <><div ref={host} className="structure-canvas" role="img" aria-label="真实结构模型预览" /><p className="structure-view-status" role="status">{status}</p></> : state ? <>
       <div className="structure-draft"><svg role="img" aria-label="结构布局草案俯视图" viewBox="-100 -85 200 170">
         {(() => { const s = state.enclosure_parameters.outer_box_size; const k = 145 / Math.max(s.length_x, s.width_y); return <g transform={`scale(${k})`}><rect className="draft-shell" x={-s.length_x / 2} y={-s.width_y / 2} width={s.length_x} height={s.width_y} rx={3} />{state.layout_plan?.hardware_transforms.map((h, i) => <g key={`${h.hardware_id}-${i}`}><rect className={`draft-part ${h.mount_surface === 'lid_inner' ? 'on-lid' : ''}`} x={h.center.x - h.bounding_box.length_x / 2} y={-h.center.y - h.bounding_box.width_y / 2} width={h.bounding_box.length_x} height={h.bounding_box.width_y} rx={1} /><text x={h.center.x} y={-h.center.y} fontSize={4 / k} textAnchor="middle">{i + 1}</text></g>)}</g>; })()}
