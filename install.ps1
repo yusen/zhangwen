@@ -21,8 +21,9 @@ try {
     try {
         $headers = @{ 'User-Agent' = 'zhangwen-installer'; 'Accept' = 'application/json' }
         if (!$Revision) {
-            if ($Source -eq 'gitee') { $Revision = (Invoke-RestMethod -Uri 'https://gitee.com/api/v5/repos/ys_Ethan/zhangwen/branches/main' -Headers $headers -TimeoutSec 30).commit.sha }
-            else { $Revision = (Invoke-RestMethod -Uri 'https://api.github.com/repos/yusen/zhangwen/git/ref/heads/main' -Headers $headers -TimeoutSec 30).object.sha }
+            # Code and updates come from this repository only; -Source selects
+            # the dependency mirror (gitee: domestic, github: upstream/global).
+            $Revision = (Invoke-RestMethod -Uri 'https://gitee.com/api/v5/repos/zmh1979/ask-with-your-palm/branches/master' -Headers $headers -TimeoutSec 30).commit.sha
         }
         if ($Revision -cnotmatch '^[0-9a-f]{40}$') { throw 'Invalid repository revision.' }
         $versions = Join-Path $InstallDir 'versions'
@@ -51,8 +52,7 @@ try {
             New-Item -ItemType Directory -Path $work | Out-Null
             $zip = Join-Path $work 'source.zip'
             Write-Host "Downloading platform $Revision ..."
-            $sourceUrl = "https://gitee.com/ys_Ethan/zhangwen/repository/archive/$Revision.zip"
-            if ($Source -eq 'github') { $sourceUrl = "https://codeload.github.com/yusen/zhangwen/zip/$Revision" }
+            $sourceUrl = "https://gitee.com/zmh1979/ask-with-your-palm/repository/archive/$Revision.zip"
             Add-Type -AssemblyName System.IO.Compression.FileSystem
             $archive = $null
             for ($downloadAttempt = 1; $downloadAttempt -le 4; $downloadAttempt++) {
@@ -63,7 +63,6 @@ try {
                     $archive = [IO.Compression.ZipFile]::OpenRead($zip)
                     break
                 } catch {
-                    if ($Source -ne 'gitee') { throw }
                     if ($downloadAttempt -eq 4) { throw 'Gitee did not return a readable ZIP archive. It may still be preparing or access is restricted; please retry later. The current version was preserved.' }
                     Write-Host 'Gitee archive is not ready; retrying the same fixed revision ...'
                     Start-Sleep -Seconds ($downloadAttempt * 2)

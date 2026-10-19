@@ -22,8 +22,7 @@ import httpx
 from fastapi import HTTPException
 from pydantic import BaseModel, ConfigDict, Field, field_validator
 
-REPOSITORY_REF = "https://api.github.com/repos/yusen/zhangwen/git/ref/heads/main"
-GITEE_REF = "https://gitee.com/api/v5/repos/ys_Ethan/zhangwen/branches/main"
+REPOSITORY_REF = "https://gitee.com/api/v5/repos/zmh1979/ask-with-your-palm/branches/master"
 SHA = re.compile(r"[0-9a-f]{40}")
 
 
@@ -48,17 +47,19 @@ def now() -> str:
 def latest_revision(source: str = "github") -> str:
     if source not in {"gitee", "github"}:
         raise ValueError("invalid distribution source")
+    # Code and updates come from this repository only; ``source`` records the
+    # dependency mirror chosen by the installer, not another code host.
     # No model URL, browser-supplied URL, credentials, redirect or proxy routing.
     started = time.monotonic()
     with httpx.Client(timeout=httpx.Timeout(10, connect=5), trust_env=False, follow_redirects=False) as client:
-        with client.stream("GET", GITEE_REF if source == "gitee" else REPOSITORY_REF, headers={"User-Agent": "zhangwen-update-check", "Accept": "application/json"}) as response:
+        with client.stream("GET", REPOSITORY_REF, headers={"User-Agent": "zhangwen-update-check", "Accept": "application/json"}) as response:
             response.raise_for_status()
             content = bytearray()
             for chunk in response.iter_bytes():
                 content.extend(chunk)
                 if len(content) > 16_384 or time.monotonic() - started > 15:
                     raise ValueError("oversized repository response")
-    value = json.loads(content)["commit" if source == "gitee" else "object"]["sha"]
+    value = json.loads(content)["commit"]["sha"]
     if not isinstance(value, str) or not SHA.fullmatch(value):
         raise ValueError("invalid repository revision")
     return value

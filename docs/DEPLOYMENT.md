@@ -9,19 +9,19 @@
 仓库当前公开。Windows 10/11 x64 的 PowerShell：
 
 ```powershell
-irm https://gitee.com/ys_Ethan/zhangwen/raw/main/install.ps1 | iex
+irm https://gitee.com/zmh1979/ask-with-your-palm/raw/master/install.ps1 | iex
 ```
 
 Windows CMD 使用显式 PowerShell 入口：
 
 ```cmd
-powershell.exe -NoLogo -NoProfile -ExecutionPolicy Bypass -Command "irm https://gitee.com/ys_Ethan/zhangwen/raw/main/install.ps1 | iex"
+powershell.exe -NoLogo -NoProfile -ExecutionPolicy Bypass -Command "irm https://gitee.com/zmh1979/ask-with-your-palm/raw/master/install.ps1 | iex"
 ```
 
 macOS 13.5+（Intel / Apple Silicon）：
 
 ```bash
-curl -fsSL https://gitee.com/ys_Ethan/zhangwen/raw/main/install.sh | bash
+curl -fsSL https://gitee.com/zmh1979/ask-with-your-palm/raw/master/install.sh | bash
 ```
 
 命令下载并运行本仓库安装脚本；无需 Git、Homebrew、Node 或 Python。国内入口使用 Gitee 下载源码、npm 镜像下载 Node 与 Python 独立运行时、npmmirror 下载前端包、清华 PyPI 镜像下载 Python 依赖；国内渠道不自动回退 GitHub。浏览器使用桌面 Chrome / Edge，设备需合适的 MicroPython 固件及串口驱动；安装器不自动刷设备或安装系统驱动。AI Key 在网页设置，不写进安装命令。
@@ -59,13 +59,13 @@ API 设置在 `data/zhangwen-settings.json`，Key 为本机明文文件，不能
 Windows 自定义路径，安装后不启动：
 
 ```powershell
-& ([scriptblock]::Create((irm https://gitee.com/ys_Ethan/zhangwen/raw/main/install.ps1))) -InstallDir 'D:\Apps\掌问平台' -NoStart
+& ([scriptblock]::Create((irm https://gitee.com/zmh1979/ask-with-your-palm/raw/master/install.ps1))) -InstallDir 'D:\Apps\掌问平台' -NoStart
 ```
 
 macOS 自定义路径，安装后不启动：
 
 ```bash
-curl -fsSL https://gitee.com/ys_Ethan/zhangwen/raw/main/install.sh | ZHANGWEN_INSTALL_DIR="$HOME/Apps/掌问平台" ZHANGWEN_NO_START=1 bash
+curl -fsSL https://gitee.com/zmh1979/ask-with-your-palm/raw/master/install.sh | ZHANGWEN_INSTALL_DIR="$HOME/Apps/掌问平台" ZHANGWEN_NO_START=1 bash
 ```
 
 Windows 以后双击桌面图标；macOS 在应用程序中打开掌问.app，可固定到Dock。个人Applications中的应用可在Finder「前往 → 个人文件夹 → Applications」找到。应用只保存安装根目录，依照current.txt启动当前版本，更新后无需重建Dock入口；也可执行：
@@ -94,7 +94,7 @@ Windows 更新器固定使用系统 Windows PowerShell 5.1。服务若由 PowerS
 
 ```cmd
 set "PSModulePath="
-"%SystemRoot%\System32\WindowsPowerShell\v1.0\powershell.exe" -NoLogo -NoProfile -ExecutionPolicy Bypass -Command "irm https://gitee.com/ys_Ethan/zhangwen/raw/main/install.ps1 | iex"
+"%SystemRoot%\System32\WindowsPowerShell\v1.0\powershell.exe" -NoLogo -NoProfile -ExecutionPolicy Bypass -Command "irm https://gitee.com/zmh1979/ask-with-your-palm/raw/master/install.ps1 | iex"
 ```
 
 第一行仅清除当前 CMD 窗口及其子进程的模块路径，让新启动的 Windows PowerShell 建立自己的默认路径。不需要卸载 PowerShell 7、重装平台、删除数据或使用 `setx`。原版本有下载、清单或环境准备错误时仍会保留当前版本，详情查看安装目录 `updates` 中的日志。

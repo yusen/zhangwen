@@ -7,19 +7,19 @@
 Windows 10/11 x64，在 **PowerShell** 执行：
 
 ```powershell
-irm https://gitee.com/ys_Ethan/zhangwen/raw/main/install.ps1 | iex
+irm https://gitee.com/zmh1979/ask-with-your-palm/raw/master/install.ps1 | iex
 ```
 
 在 Windows CMD 中执行：
 
 ```cmd
-powershell.exe -NoLogo -NoProfile -ExecutionPolicy Bypass -Command "irm https://gitee.com/ys_Ethan/zhangwen/raw/main/install.ps1 | iex"
+powershell.exe -NoLogo -NoProfile -ExecutionPolicy Bypass -Command "irm https://gitee.com/zmh1979/ask-with-your-palm/raw/master/install.ps1 | iex"
 ```
 
 macOS 13.5+，Apple Silicon / Intel，在终端执行：
 
 ```bash
-curl -fsSL https://gitee.com/ys_Ethan/zhangwen/raw/main/install.sh | bash
+curl -fsSL https://gitee.com/zmh1979/ask-with-your-palm/raw/master/install.sh | bash
 ```
 
 无需预装 Git、Node.js 或 Python，无需先下载仓库。先检测已有环境，缺失才准备项目内运行时；依赖按锁定版本检查、补齐，随后构建并打开浏览器。默认 http://127.0.0.1:3080 ，端口不可用时自动切换到空闲端口，实际地址显示在服务窗口。首次安装需要联网。

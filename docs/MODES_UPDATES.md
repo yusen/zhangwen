@@ -1,6 +1,6 @@
 # 三师模式与平台更新
 
-2026-10-16。随当前部署版发布；安装与更新以 GitHub main 的具体提交 SHA 为版本。
+2026-10-16。随当前部署版发布；安装与更新以 Gitee master 的具体提交 SHA 为版本。
 
 ## 使用
 
@@ -21,7 +21,7 @@
 跨端契约先在 `packages/contracts/src/platform.ts` 定义；后端在 `web/updates.py` 实现。
 
 - `GET /api/updates`：本进程版本、部署类型、最近检查结果和任务状态；不访问网络。
-- `POST /api/updates/check`：只访问固定的 `yusen/zhangwen` GitHub main 引用；30 秒内共享检查缓存。响应大小和等待受限，拒绝重定向，未使用模型 Key。
+- `POST /api/updates/check`：只访问固定的 `zmh1979/ask-with-your-palm` Gitee master 引用；30 秒内共享检查缓存。响应大小和等待受限，拒绝重定向，未使用模型 Key。
 - `POST /api/updates/install`：严格接受 `{revision, checkToken, confirmed:true}`。只允许最近 15 分钟已检测的完整 SHA 和确认令牌；禁止额外 URL、命令与字段。
 
 检测受管安装需要匹配 `versions/SHA` 路径、有效 `current.txt`、部署清单和该安装根目录 `data`；支持 Windows/macOS。安装前逐项验证当前部署清单，再以固定参数数组调用清单内安装器，`shell=False`，Windows 隐藏后台窗口，macOS 使用 `/bin/bash`。安装器继续校验远程部署包、复用依赖与准备成功后激活；传入指定 SHA 和不启动参数。
