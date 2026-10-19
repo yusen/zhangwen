@@ -1,0 +1,26 @@
+{
+  "schema": "zhangwen.hardware-skill-manifest/v1",
+  "schemaVersion": 1,
+  "skillName": "sen0193",
+  "componentId": "hw_dfrobot_sen0193",
+  "displayName": "SEN0193 电容式土壤湿度传感器",
+  "description": "DFRobot SEN0193 的官方规格、电气边界、K10 ADC 接线、标定示例和确定性校验规则。",
+  "status": "ACTIVE",
+  "sourceKind": "BUNDLED",
+  "files": [
+    "README.md",
+    "CHANGELOG.md",
+    "SKILL.md",
+    "references/specifications.md",
+    "references/compatibility-rules.md",
+    "references/integration.md",
+    "references/safety.md",
+    "references/sources.md",
+    "examples/usage.md",
+    "tests/validation-cases.md"
+  ],
+  "media": [],
+  "revision": "65fe749ea56f3e0b3bdc2ca8",
+  "createdAt": "2026-07-25T00:00:00+08:00",
+  "updatedAt": "2026-07-25T00:00:00+08:00"
+}

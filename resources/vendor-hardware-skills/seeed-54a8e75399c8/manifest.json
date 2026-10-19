@@ -1,0 +1,35 @@
+{
+  "schema": "zhangwen.hardware-skill-manifest/v1",
+  "schemaVersion": 1,
+  "skillName": "seeed-54a8e75399c8",
+  "componentId": "hw_seeed_54a8e75399c8",
+  "displayName": "Grove - 圆形力传感器 FSR402",
+  "description": "Grove - 圆形力传感器 FSR402的官方目录、产品图片与参考资料；MicroPython 驱动及跨主控接线待联调。",
+  "status": "ACTIVE",
+  "sourceKind": "BUNDLED",
+  "files": [
+    "SKILL.md",
+    "references/specifications.md",
+    "references/compatibility-rules.md",
+    "references/integration.md",
+    "references/safety.md",
+    "references/sources.md",
+    "examples/usage.md",
+    "tests/validation-cases.md"
+  ],
+  "media": [
+    {
+      "path": "assets/cover.webp",
+      "role": "cover",
+      "alt": "Grove - 圆形力传感器 FSR402 官方产品图",
+      "contentType": "image/webp",
+      "sha256": "b20b5149aedb31fc753a5d2b61cd8a401908477d20b8c70d4fc519dda1d078d7",
+      "sourceUrl": "https://files.seeedstudio.com/wiki/Grove-Round_Force_Sensor_FSR402/img/main.jpg",
+      "attribution": "Seeed Grove 官方产品文档",
+      "license": "© Seeed Studio；产品图片权利归原作者；未将文档代码许可视为图片许可。"
+    }
+  ],
+  "revision": "c3d1246dca8032876ebeb14f",
+  "createdAt": "2026-10-15T00:00:00+08:00",
+  "updatedAt": "2026-10-15T00:00:00+08:00"
+}

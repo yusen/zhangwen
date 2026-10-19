@@ -1,0 +1,3516 @@
+{
+  "schemaVersion": 1,
+  "importedAt": "2026-10-15",
+  "totalSections": 184,
+  "totalPackages": 184,
+  "brands": {
+    "盛思": 57,
+    "N+": 21,
+    "Seeed Grove": 106
+  },
+  "categories": {
+    "SENSOR": 150,
+    "ACTUATOR": 33,
+    "DISPLAY": 1
+  },
+  "totalImageBytes": 2843528,
+  "errors": [],
+  "entries": [
+    {
+      "skillName": "labplus-1ca3b4f76905",
+      "componentId": "hw_labplus_1ca3b4f76905",
+      "displayName": "盛思 继电器",
+      "brand": "盛思",
+      "category": "ACTUATOR",
+      "moduleType": "继电器",
+      "sourceUrl": "https://labplus-ledong-module-documentation.readthedocs.io/zh-cn/latest/%E6%89%A7%E8%A1%8C%E5%99%A8%E7%B1%BB/%E7%BB%A7%E7%94%B5%E5%99%A8.html",
+      "documentationUrl": "https://labplus-ledong-module-documentation.readthedocs.io/zh-cn/latest/%E6%89%A7%E8%A1%8C%E5%99%A8%E7%B1%BB/%E7%BB%A7%E7%94%B5%E5%99%A8.html",
+      "imageSourceUrl": "https://labplus-ledong-module-documentation.readthedocs.io/zh-cn/latest/_images/%E7%BB%A7%E7%94%B5%E5%99%A8-H.png",
+      "originalImageSha256": "3a53c9152c84a9e9480d8eee7ed87b726f5f572ea3c03fb2898f80cbc214d853",
+      "imageSha256": "61da82300b05f3d23718e266eaee5b13eca0acfcef63fc12eaebf0b35db93401",
+      "imageBytes": 14442,
+      "imageDimensions": [
+        640,
+        360
+      ],
+      "revision": "effde54215ef0ceb1513246b"
+    },
+    {
+      "skillName": "labplus-1d0f8e82ebc8",
+      "componentId": "hw_labplus_1d0f8e82ebc8",
+      "displayName": "盛思 直滑电位器",
+      "brand": "盛思",
+      "category": "SENSOR",
+      "moduleType": "电",
+      "sourceUrl": "https://labplus-ledong-module-documentation.readthedocs.io/zh-cn/latest/%E4%BC%A0%E6%84%9F%E5%99%A8%E7%B1%BB/%E7%9B%B4%E6%BB%91%E7%94%B5%E4%BD%8D%E5%99%A8.html",
+      "documentationUrl": "https://labplus-ledong-module-documentation.readthedocs.io/zh-cn/latest/%E4%BC%A0%E6%84%9F%E5%99%A8%E7%B1%BB/%E7%9B%B4%E6%BB%91%E7%94%B5%E4%BD%8D%E5%99%A8.html",
+      "imageSourceUrl": "https://raw.githubusercontent.com/labplus-cn/labplus_ledong_module-documentation/main/documentation/static/%E5%9B%BE%E7%89%87/slide%20dimmer_1.png",
+      "originalImageSha256": "0b5e445fb4203b9bc49f3353e24f506917c8cfd93ef6a302b5ce269929259042",
+      "imageSha256": "442b8414e3589cb2a3a024fe0a716e948df62332f9f0f5c9c98def8401f4f5d0",
+      "imageBytes": 5234,
+      "imageDimensions": [
+        544,
+        285
+      ],
+      "revision": "cbe6387ab31e1cb4ec735b60"
+    },
+    {
+      "skillName": "labplus-2dedf3069103",
+      "componentId": "hw_labplus_2dedf3069103",
+      "displayName": "盛思 金属轴舵机",
+      "brand": "盛思",
+      "category": "ACTUATOR",
+      "moduleType": "舵机",
+      "sourceUrl": "https://labplus-ledong-module-documentation.readthedocs.io/zh-cn/latest/%E6%89%A7%E8%A1%8C%E5%99%A8%E7%B1%BB/%E9%87%91%E5%B1%9E%E8%BD%B4%E8%88%B5%E6%9C%BA.html",
+      "documentationUrl": "https://labplus-ledong-module-documentation.readthedocs.io/zh-cn/latest/%E6%89%A7%E8%A1%8C%E5%99%A8%E7%B1%BB/%E9%87%91%E5%B1%9E%E8%BD%B4%E8%88%B5%E6%9C%BA.html",
+      "imageSourceUrl": "https://labplus-ledong-module-documentation.readthedocs.io/zh-cn/latest/_images/%E9%87%91%E5%B1%9E%E8%BD%B4%E8%88%B5%E6%9C%BA.png",
+      "originalImageSha256": "c8407ecc06381f2eb897a5b0794b108592482efd84e9c486f3d6368dc57ff7f6",
+      "imageSha256": "42b0b2a917162a794262833ee630734634560c045fe8ab455f5155f5f60819c5",
+      "imageBytes": 3438,
+      "imageDimensions": [
+        422,
+        292
+      ],
+      "revision": "e5d4aed758587019e19eb21b"
+    },
+    {
+      "skillName": "labplus-30314065cbab",
+      "componentId": "hw_labplus_30314065cbab",
+      "displayName": "盛思 语音合成模块",
+      "brand": "盛思",
+      "category": "ACTUATOR",
+      "moduleType": "音频播放",
+      "sourceUrl": "https://labplus-ledong-module-documentation.readthedocs.io/zh-cn/latest/%E6%89%A7%E8%A1%8C%E5%99%A8%E7%B1%BB/%E8%AF%AD%E9%9F%B3%E5%90%88%E6%88%90%E6%A8%A1%E5%9D%97.html",
+      "documentationUrl": "https://labplus-ledong-module-documentation.readthedocs.io/zh-cn/latest/%E6%89%A7%E8%A1%8C%E5%99%A8%E7%B1%BB/%E8%AF%AD%E9%9F%B3%E5%90%88%E6%88%90%E6%A8%A1%E5%9D%97.html",
+      "imageSourceUrl": "https://labplus-ledong-module-documentation.readthedocs.io/zh-cn/latest/_images/%E8%AF%AD%E9%9F%B3%E5%90%88%E6%88%90%E4%BC%A0%E6%84%9F%E5%99%A8.png",
+      "originalImageSha256": "f96718f7d16c9a3faa87943c733f0524120fe082de2e136e34179a4d498a2e4e",
+      "imageSha256": "942fc55a8cf298dd0bcedc6466643f571159502d4f38d291fa70804d7ce12b3d",
+      "imageBytes": 4916,
+      "imageDimensions": [
+        640,
+        360
+      ],
+      "revision": "92a425e13fef3bf5cc393759"
+    },
+    {
+      "skillName": "labplus-318357bd10f2",
+      "componentId": "hw_labplus_318357bd10f2",
+      "displayName": "盛思 超声波传感器",
+      "brand": "盛思",
+      "category": "SENSOR",
+      "moduleType": "距离",
+      "sourceUrl": "https://labplus-ledong-module-documentation.readthedocs.io/zh-cn/latest/%E4%BC%A0%E6%84%9F%E5%99%A8%E7%B1%BB/%E8%B6%85%E5%A3%B0%E6%B3%A2.html",
+      "documentationUrl": "https://labplus-ledong-module-documentation.readthedocs.io/zh-cn/latest/%E4%BC%A0%E6%84%9F%E5%99%A8%E7%B1%BB/%E8%B6%85%E5%A3%B0%E6%B3%A2.html",
+      "imageSourceUrl": "https://labplus-ledong-module-documentation.readthedocs.io/zh-cn/latest/_images/%E8%B6%85%E5%A3%B0%E6%B3%A2-H.png",
+      "originalImageSha256": "14cff9dc13125804f565f3550b0f3d201425b2c3868ef7fd120e463ba531bb39",
+      "imageSha256": "83e23644222bb0c04cae11184499e9b59aab085731955defda6cbb28733cdb60",
+      "imageBytes": 15714,
+      "imageDimensions": [
+        640,
+        360
+      ],
+      "revision": "0b8c953010859d711d4a267f"
+    },
+    {
+      "skillName": "labplus-35c06a9f5db4",
+      "componentId": "hw_labplus_35c06a9f5db4",
+      "displayName": "盛思 风扇",
+      "brand": "盛思",
+      "category": "ACTUATOR",
+      "moduleType": "电机",
+      "sourceUrl": "https://labplus-ledong-module-documentation.readthedocs.io/zh-cn/latest/%E6%89%A7%E8%A1%8C%E5%99%A8%E7%B1%BB/%E9%A3%8E%E6%89%87.html",
+      "documentationUrl": "https://labplus-ledong-module-documentation.readthedocs.io/zh-cn/latest/%E6%89%A7%E8%A1%8C%E5%99%A8%E7%B1%BB/%E9%A3%8E%E6%89%87.html",
+      "imageSourceUrl": "https://labplus-ledong-module-documentation.readthedocs.io/zh-cn/latest/_images/%E7%94%B5%E6%9C%BA%E9%A3%8E%E6%89%87.png",
+      "originalImageSha256": "88d5d0b68b201859d2469d4216eecd84b14a451e131391c08a2330fcb0e82c79",
+      "imageSha256": "1ee40f27f73cffacd3802a86dbbb9b6fc186df5f9c00ed7f73d690c93c1d2a48",
+      "imageBytes": 14412,
+      "imageDimensions": [
+        640,
+        468
+      ],
+      "revision": "b96bd18185fc2118a661da1e"
+    },
+    {
+      "skillName": "labplus-3ef1d6ece471",
+      "componentId": "hw_labplus_3ef1d6ece471",
+      "displayName": "盛思 声音传感器",
+      "brand": "盛思",
+      "category": "SENSOR",
+      "moduleType": "声音",
+      "sourceUrl": "https://labplus-ledong-module-documentation.readthedocs.io/zh-cn/latest/%E4%BC%A0%E6%84%9F%E5%99%A8%E7%B1%BB/%E9%BA%A6%E5%85%8B%E9%A3%8E.html",
+      "documentationUrl": "https://labplus-ledong-module-documentation.readthedocs.io/zh-cn/latest/%E4%BC%A0%E6%84%9F%E5%99%A8%E7%B1%BB/%E9%BA%A6%E5%85%8B%E9%A3%8E.html",
+      "imageSourceUrl": "https://labplus-ledong-module-documentation.readthedocs.io/zh-cn/latest/_images/%E5%A3%B0%E9%9F%B3-H.png",
+      "originalImageSha256": "d52fd93f648b49856e42e029df051c82804c7b08902b8373b4b27d97420e6b49",
+      "imageSha256": "3ebf615fc68262ae84d40871818c2ccd21fc4181ea53a2e75e6a3ac45724366f",
+      "imageBytes": 10156,
+      "imageDimensions": [
+        640,
+        360
+      ],
+      "revision": "d33f6f48d9e3888aeadf2db3"
+    },
+    {
+      "skillName": "labplus-401e62aca057",
+      "componentId": "hw_labplus_401e62aca057",
+      "displayName": "盛思 语音识别模块",
+      "brand": "盛思",
+      "category": "SENSOR",
+      "moduleType": "声音",
+      "sourceUrl": "https://labplus-ledong-module-documentation.readthedocs.io/zh-cn/latest/%E4%BC%A0%E6%84%9F%E5%99%A8%E7%B1%BB/%E8%AF%AD%E9%9F%B3%E8%AF%86%E5%88%AB%E6%A8%A1%E5%9D%97.html",
+      "documentationUrl": "https://labplus-ledong-module-documentation.readthedocs.io/zh-cn/latest/%E4%BC%A0%E6%84%9F%E5%99%A8%E7%B1%BB/%E8%AF%AD%E9%9F%B3%E8%AF%86%E5%88%AB%E6%A8%A1%E5%9D%97.html",
+      "imageSourceUrl": "https://labplus-ledong-module-documentation.readthedocs.io/zh-cn/latest/_images/%E8%AF%AD%E9%9F%B3%E8%AF%86%E5%88%AB%E4%BC%A0%E6%84%9F%E5%99%A8.png",
+      "originalImageSha256": "d8c2008815edc13d401bbcd9d85cc19d698b750da904614c6e86725abc34085c",
+      "imageSha256": "692a667afd4ca072200899d69f1a88d03bf470c96ca9c27e86a966f3103b28dd",
+      "imageBytes": 5916,
+      "imageDimensions": [
+        640,
+        360
+      ],
+      "revision": "b21614fdd8e49bbd832052f4"
+    },
+    {
+      "skillName": "labplus-44cb76b88e83",
+      "componentId": "hw_labplus_44cb76b88e83",
+      "displayName": "盛思 RGB LED",
+      "brand": "盛思",
+      "category": "ACTUATOR",
+      "moduleType": "灯光",
+      "sourceUrl": "https://labplus-ledong-module-documentation.readthedocs.io/zh-cn/latest/%E6%89%A7%E8%A1%8C%E5%99%A8%E7%B1%BB/RGB_LED.html",
+      "documentationUrl": "https://labplus-ledong-module-documentation.readthedocs.io/zh-cn/latest/%E6%89%A7%E8%A1%8C%E5%99%A8%E7%B1%BB/RGB_LED.html",
+      "imageSourceUrl": "https://labplus-ledong-module-documentation.readthedocs.io/zh-cn/latest/_images/RGB_LED.png",
+      "originalImageSha256": "07f7b9af687cf81f6b277ea389379329fa71d7766f4fbcac26e49c74609640ff",
+      "imageSha256": "f96410d2930f1a26f1dc8d5c2cdef862c156ec8752994bd420200c6fa0ff2206",
+      "imageBytes": 10436,
+      "imageDimensions": [
+        640,
+        360
+      ],
+      "revision": "475a8d9ebb2a67ba798cdd6d"
+    },
+    {
+      "skillName": "labplus-47b93fa3ffee",
+      "componentId": "hw_labplus_47b93fa3ffee",
+      "displayName": "盛思 激光发射",
+      "brand": "盛思",
+      "category": "ACTUATOR",
+      "moduleType": "灯光",
+      "sourceUrl": "https://labplus-ledong-module-documentation.readthedocs.io/zh-cn/latest/%E6%89%A7%E8%A1%8C%E5%99%A8%E7%B1%BB/%E6%BF%80%E5%85%89%E5%8F%91%E5%B0%84.html",
+      "documentationUrl": "https://labplus-ledong-module-documentation.readthedocs.io/zh-cn/latest/%E6%89%A7%E8%A1%8C%E5%99%A8%E7%B1%BB/%E6%BF%80%E5%85%89%E5%8F%91%E5%B0%84.html",
+      "imageSourceUrl": "https://labplus-ledong-module-documentation.readthedocs.io/zh-cn/latest/_images/%E4%B9%90%E5%8A%A8%E6%A8%A1%E5%9D%97-%E6%BF%80%E5%85%89%E5%8F%91%E5%B0%84.png",
+      "originalImageSha256": "975edadde41b2d8f3b9086d12550eadc8463f2f6a011c0a7e4a9ea9d56979987",
+      "imageSha256": "fe6ad3b6b25e385f9cd00f4e7433aaf096b86e0cb361ffd769df5d46d53561cd",
+      "imageBytes": 8366,
+      "imageDimensions": [
+        600,
+        337
+      ],
+      "revision": "67f6f8fbd9f6ebae59858cda"
+    },
+    {
+      "skillName": "labplus-4a7d76f441ef",
+      "componentId": "hw_labplus_4a7d76f441ef",
+      "displayName": "盛思 烟雾传感器",
+      "brand": "盛思",
+      "category": "SENSOR",
+      "moduleType": "环境",
+      "sourceUrl": "https://labplus-ledong-module-documentation.readthedocs.io/zh-cn/latest/%E4%BC%A0%E6%84%9F%E5%99%A8%E7%B1%BB/%E7%83%9F%E9%9B%BE%E4%BC%A0%E6%84%9F%E5%99%A8.html",
+      "documentationUrl": "https://labplus-ledong-module-documentation.readthedocs.io/zh-cn/latest/%E4%BC%A0%E6%84%9F%E5%99%A8%E7%B1%BB/%E7%83%9F%E9%9B%BE%E4%BC%A0%E6%84%9F%E5%99%A8.html",
+      "imageSourceUrl": "https://labplus-ledong-module-documentation.readthedocs.io/zh-cn/latest/_images/%E7%83%9F%E9%9B%BE.png",
+      "originalImageSha256": "e8176614d51957c0dbe68cf61ce925f946ae25b14cc17a3c0a11a8e1fda19f68",
+      "imageSha256": "74fc66642acc820df860f5aabc50adb792372608f29c261cf97f5315c2e0f2d6",
+      "imageBytes": 13668,
+      "imageDimensions": [
+        640,
+        364
+      ],
+      "revision": "3b5fd7c57f646608dcd124e4"
+    },
+    {
+      "skillName": "labplus-505f5d1ce2a8",
+      "componentId": "hw_labplus_505f5d1ce2a8",
+      "displayName": "盛思 满天星灯带",
+      "brand": "盛思",
+      "category": "ACTUATOR",
+      "moduleType": "灯光",
+      "sourceUrl": "https://labplus-ledong-module-documentation.readthedocs.io/zh-cn/latest/%E6%89%A7%E8%A1%8C%E5%99%A8%E7%B1%BB/%E6%BB%A1%E5%A4%A9%E6%98%9F%E7%81%AF%E5%B8%A6.html",
+      "documentationUrl": "https://labplus-ledong-module-documentation.readthedocs.io/zh-cn/latest/%E6%89%A7%E8%A1%8C%E5%99%A8%E7%B1%BB/%E6%BB%A1%E5%A4%A9%E6%98%9F%E7%81%AF%E5%B8%A6.html",
+      "imageSourceUrl": "https://labplus-ledong-module-documentation.readthedocs.io/zh-cn/latest/_images/%E4%B9%90%E5%8A%A8%E6%A8%A1%E5%9D%97-%E6%BB%A1%E5%A4%A9%E6%98%9F%E7%81%AF%E5%B8%A6.png",
+      "originalImageSha256": "d59a7d08180af1682a2fc07fa280196a7d2deccb535348323f892ade26a9769a",
+      "imageSha256": "30b824e3a6640b98110d9430146b6154677768d5d38de43d06846369104f507f",
+      "imageBytes": 12416,
+      "imageDimensions": [
+        600,
+        338
+      ],
+      "revision": "48ca0e6f5288d51b0a87adc5"
+    },
+    {
+      "skillName": "labplus-55b9d62884a6",
+      "componentId": "hw_labplus_55b9d62884a6",
+      "displayName": "盛思 温湿度传感器(DHT11)",
+      "brand": "盛思",
+      "category": "SENSOR",
+      "moduleType": "环境",
+      "sourceUrl": "https://labplus-ledong-module-documentation.readthedocs.io/zh-cn/latest/%E4%BC%A0%E6%84%9F%E5%99%A8%E7%B1%BB/DHT%E6%B8%A9%E6%B9%BF%E5%BA%A6%E4%BC%A0%E6%84%9F%E5%99%A8.html",
+      "documentationUrl": "https://labplus-ledong-module-documentation.readthedocs.io/zh-cn/latest/%E4%BC%A0%E6%84%9F%E5%99%A8%E7%B1%BB/DHT%E6%B8%A9%E6%B9%BF%E5%BA%A6%E4%BC%A0%E6%84%9F%E5%99%A8.html",
+      "imageSourceUrl": "https://labplus-ledong-module-documentation.readthedocs.io/zh-cn/latest/_images/DHT11%E6%B8%A9%E6%B9%BF%E5%BA%A6.png",
+      "originalImageSha256": "77278681a1cb97a1972e74434dec284c729d54bdb176a79199801c625dccca87",
+      "imageSha256": "bb5066a8b78c3ec3eb56aab29e464e71fdcbb17c66e53192aef2205e7360b6b7",
+      "imageBytes": 12560,
+      "imageDimensions": [
+        640,
+        360
+      ],
+      "revision": "8cbd06b3abc74fdd7728b361"
+    },
+    {
+      "skillName": "labplus-5b24aea98225",
+      "componentId": "hw_labplus_5b24aea98225",
+      "displayName": "盛思 热敏电阻",
+      "brand": "盛思",
+      "category": "SENSOR",
+      "moduleType": "其他输入",
+      "sourceUrl": "https://labplus-ledong-module-documentation.readthedocs.io/zh-cn/latest/%E4%BC%A0%E6%84%9F%E5%99%A8%E7%B1%BB/%E7%83%AD%E6%95%8F%E7%94%B5%E9%98%BB.html",
+      "documentationUrl": "https://labplus-ledong-module-documentation.readthedocs.io/zh-cn/latest/%E4%BC%A0%E6%84%9F%E5%99%A8%E7%B1%BB/%E7%83%AD%E6%95%8F%E7%94%B5%E9%98%BB.html",
+      "imageSourceUrl": "https://labplus-ledong-module-documentation.readthedocs.io/zh-cn/latest/_images/%E7%83%AD%E6%95%8F%E4%BC%A0%E6%84%9F%E5%99%A8.png",
+      "originalImageSha256": "1d9aef8254fb6dabb6518e498cfe9d499e8f6d8a9e6ef03e8fd57600897071fa",
+      "imageSha256": "00da999757e6a11f570bc7b5a84edbd5b4c83ac5393b06a7743305236ca3f3d9",
+      "imageBytes": 10066,
+      "imageDimensions": [
+        640,
+        317
+      ],
+      "revision": "f490ac41ee278dd2b2b87dc1"
+    },
+    {
+      "skillName": "labplus-6306ec4829f9",
+      "componentId": "hw_labplus_6306ec4829f9",
+      "displayName": "盛思 心率血氧",
+      "brand": "盛思",
+      "category": "SENSOR",
+      "moduleType": "其他输入",
+      "sourceUrl": "https://labplus-ledong-module-documentation.readthedocs.io/zh-cn/latest/%E4%BC%A0%E6%84%9F%E5%99%A8%E7%B1%BB/%E5%BF%83%E7%8E%87%E8%A1%80%E6%B0%A7%E6%A8%A1%E5%9D%97.html",
+      "documentationUrl": "https://labplus-ledong-module-documentation.readthedocs.io/zh-cn/latest/%E4%BC%A0%E6%84%9F%E5%99%A8%E7%B1%BB/%E5%BF%83%E7%8E%87%E8%A1%80%E6%B0%A7%E6%A8%A1%E5%9D%97.html",
+      "imageSourceUrl": "https://labplus-ledong-module-documentation.readthedocs.io/zh-cn/latest/_images/%E5%BF%83%E7%8E%87%E8%A1%80%E6%B0%A7%E4%BC%A0%E6%84%9F%E5%99%A8.png",
+      "originalImageSha256": "11cfd3e77cbfad26511c95ebc6b406d9b4879918d01e523d5be1c9f59d483137",
+      "imageSha256": "824f498460ea468fbf5452d892eba214bb28cc88da047984317738b881795287",
+      "imageBytes": 4542,
+      "imageDimensions": [
+        640,
+        360
+      ],
+      "revision": "f058a63931199a60aa1d5b2a"
+    },
+    {
+      "skillName": "labplus-696705786a8b",
+      "componentId": "hw_labplus_696705786a8b",
+      "displayName": "盛思 水位传感器",
+      "brand": "盛思",
+      "category": "SENSOR",
+      "moduleType": "液体",
+      "sourceUrl": "https://labplus-ledong-module-documentation.readthedocs.io/zh-cn/latest/%E4%BC%A0%E6%84%9F%E5%99%A8%E7%B1%BB/%E6%B0%B4%E4%BD%8D%E4%BC%A0%E6%84%9F%E5%99%A8.html",
+      "documentationUrl": "https://labplus-ledong-module-documentation.readthedocs.io/zh-cn/latest/%E4%BC%A0%E6%84%9F%E5%99%A8%E7%B1%BB/%E6%B0%B4%E4%BD%8D%E4%BC%A0%E6%84%9F%E5%99%A8.html",
+      "imageSourceUrl": "https://labplus-ledong-module-documentation.readthedocs.io/zh-cn/latest/_images/%E6%B0%B4%E4%BD%8D.png",
+      "originalImageSha256": "b4b8905a9f48d72de7883d3c2f3c5157caf948039f461defc5c8df5f5c4b0530",
+      "imageSha256": "41716c8e6bb2466cc21d75842ca0de10b0e0642ff7b9b63104f97a012c501a8b",
+      "imageBytes": 12130,
+      "imageDimensions": [
+        640,
+        185
+      ],
+      "revision": "b3968b404abb5cb51c22cb16"
+    },
+    {
+      "skillName": "labplus-6dafa52a65af",
+      "componentId": "hw_labplus_6dafa52a65af",
+      "displayName": "盛思 舵机",
+      "brand": "盛思",
+      "category": "ACTUATOR",
+      "moduleType": "舵机",
+      "sourceUrl": "https://labplus-ledong-module-documentation.readthedocs.io/zh-cn/latest/%E6%89%A7%E8%A1%8C%E5%99%A8%E7%B1%BB/%E8%88%B5%E6%9C%BA.html",
+      "documentationUrl": "https://labplus-ledong-module-documentation.readthedocs.io/zh-cn/latest/%E6%89%A7%E8%A1%8C%E5%99%A8%E7%B1%BB/%E8%88%B5%E6%9C%BA.html",
+      "imageSourceUrl": "https://labplus-ledong-module-documentation.readthedocs.io/zh-cn/latest/_images/9G%E8%88%B5%E6%9C%BA.png",
+      "originalImageSha256": "15c0d6571209018bc29bad9f6f1f654b87f08d35b11823bc19fee9a8d9252c7b",
+      "imageSha256": "18f4bfcf4dd6321c505c3cde0dfca1b256c1ad3b97b1526bf89d10ab391fe16f",
+      "imageBytes": 28732,
+      "imageDimensions": [
+        640,
+        384
+      ],
+      "revision": "21ec5814e1941f960635eaaa"
+    },
+    {
+      "skillName": "labplus-716cdd52a32d",
+      "componentId": "hw_labplus_716cdd52a32d",
+      "displayName": "盛思 温湿度传感器（I2C）",
+      "brand": "盛思",
+      "category": "SENSOR",
+      "moduleType": "环境",
+      "sourceUrl": "https://labplus-ledong-module-documentation.readthedocs.io/zh-cn/latest/%E4%BC%A0%E6%84%9F%E5%99%A8%E7%B1%BB/%E6%B8%A9%E6%B9%BF%E5%BA%A6%E4%BC%A0%E6%84%9F%E5%99%A8.html",
+      "documentationUrl": "https://labplus-ledong-module-documentation.readthedocs.io/zh-cn/latest/%E4%BC%A0%E6%84%9F%E5%99%A8%E7%B1%BB/%E6%B8%A9%E6%B9%BF%E5%BA%A6%E4%BC%A0%E6%84%9F%E5%99%A8.html",
+      "imageSourceUrl": "https://labplus-ledong-module-documentation.readthedocs.io/zh-cn/latest/_images/%E6%B8%A9%E6%B9%BF%E5%BA%A6-H.png",
+      "originalImageSha256": "4e70556887a258342a597528a54efbd9bf49aed2e133796a39db8c079c259782",
+      "imageSha256": "955cd14e257db1d44bea5167612c30d581f6ebcc905acf03e415dc3f0d766565",
+      "imageBytes": 10490,
+      "imageDimensions": [
+        640,
+        360
+      ],
+      "revision": "d190398c647cafe1752b0406"
+    },
+    {
+      "skillName": "labplus-7af2cde0e65a",
+      "componentId": "hw_labplus_7af2cde0e65a",
+      "displayName": "盛思 手势传感器",
+      "brand": "盛思",
+      "category": "SENSOR",
+      "moduleType": "姿态",
+      "sourceUrl": "https://labplus-ledong-module-documentation.readthedocs.io/zh-cn/latest/%E4%BC%A0%E6%84%9F%E5%99%A8%E7%B1%BB/%E6%89%8B%E5%8A%BF%E4%BC%A0%E6%84%9F%E5%99%A8.html",
+      "documentationUrl": "https://labplus-ledong-module-documentation.readthedocs.io/zh-cn/latest/%E4%BC%A0%E6%84%9F%E5%99%A8%E7%B1%BB/%E6%89%8B%E5%8A%BF%E4%BC%A0%E6%84%9F%E5%99%A8.html",
+      "imageSourceUrl": "https://labplus-ledong-module-documentation.readthedocs.io/zh-cn/latest/_images/%E6%89%8B%E5%8A%BF%E6%84%9F%E5%BA%94-H.png",
+      "originalImageSha256": "c2dccbf322f186d069956eab43f2be43ed3e7886a262af929b7e5668f3008bc4",
+      "imageSha256": "449202a60ad467edd8df708b6211a76bfd755f45ebff0261c016dcd24e1cb544",
+      "imageBytes": 10056,
+      "imageDimensions": [
+        640,
+        360
+      ],
+      "revision": "6b6c683ac4c5d476586296d7"
+    },
+    {
+      "skillName": "labplus-7e1f47131e0b",
+      "componentId": "hw_labplus_7e1f47131e0b",
+      "displayName": "盛思 RGB灯带成品(24灯)",
+      "brand": "盛思",
+      "category": "ACTUATOR",
+      "moduleType": "灯光",
+      "sourceUrl": "https://labplus-ledong-module-documentation.readthedocs.io/zh-cn/latest/%E6%89%A7%E8%A1%8C%E5%99%A8%E7%B1%BB/RGB%E7%81%AF%E5%B8%A6%E6%88%90%E5%93%81(24%E7%81%AF).html",
+      "documentationUrl": "https://labplus-ledong-module-documentation.readthedocs.io/zh-cn/latest/%E6%89%A7%E8%A1%8C%E5%99%A8%E7%B1%BB/RGB%E7%81%AF%E5%B8%A6%E6%88%90%E5%93%81(24%E7%81%AF).html",
+      "imageSourceUrl": "https://labplus-ledong-module-documentation.readthedocs.io/zh-cn/latest/_images/%E7%81%AF%E5%B8%A6%E6%88%90%E5%93%8124.png",
+      "originalImageSha256": "35b5aadbd1ea87974a769a05c27ace5b6e117085d02616304c8a9244202971f9",
+      "imageSha256": "eb1524a49d90b8d3f30cd634f8b804d1a95d7d460b033cdeeee2955b27b231e1",
+      "imageBytes": 46940,
+      "imageDimensions": [
+        640,
+        544
+      ],
+      "revision": "4fa31864ed48b77f12adb8e0"
+    },
+    {
+      "skillName": "labplus-828910203606",
+      "componentId": "hw_labplus_828910203606",
+      "displayName": "盛思 旋钮电位器",
+      "brand": "盛思",
+      "category": "SENSOR",
+      "moduleType": "电",
+      "sourceUrl": "https://labplus-ledong-module-documentation.readthedocs.io/zh-cn/latest/%E4%BC%A0%E6%84%9F%E5%99%A8%E7%B1%BB/%E6%97%8B%E9%92%AE%E7%94%B5%E4%BD%8D%E5%99%A8.html",
+      "documentationUrl": "https://labplus-ledong-module-documentation.readthedocs.io/zh-cn/latest/%E4%BC%A0%E6%84%9F%E5%99%A8%E7%B1%BB/%E6%97%8B%E9%92%AE%E7%94%B5%E4%BD%8D%E5%99%A8.html",
+      "imageSourceUrl": "https://labplus-ledong-module-documentation.readthedocs.io/zh-cn/latest/_images/%E6%97%8B%E9%92%AE%E7%94%B5%E4%BD%8D%E5%99%A8.png",
+      "originalImageSha256": "f78c297af9357069378ad1ee1406b7ed2c6f0529ffff2b0abb4cca7211328b9f",
+      "imageSha256": "0fce84beb8c59bfa943a7cbdca6b469dbf5888387333cfb4fc3cc6330d313617",
+      "imageBytes": 11894,
+      "imageDimensions": [
+        407,
+        245
+      ],
+      "revision": "8a2b3c00d26de702b6617b78"
+    },
+    {
+      "skillName": "labplus-84dc86f7b28c",
+      "componentId": "hw_labplus_84dc86f7b28c",
+      "displayName": "盛思 LED（绿）",
+      "brand": "盛思",
+      "category": "ACTUATOR",
+      "moduleType": "灯光",
+      "sourceUrl": "https://labplus-ledong-module-documentation.readthedocs.io/zh-cn/latest/%E6%89%A7%E8%A1%8C%E5%99%A8%E7%B1%BB/LED%E7%81%AF-%E7%BB%BF.html",
+      "documentationUrl": "https://labplus-ledong-module-documentation.readthedocs.io/zh-cn/latest/%E6%89%A7%E8%A1%8C%E5%99%A8%E7%B1%BB/LED%E7%81%AF-%E7%BB%BF.html",
+      "imageSourceUrl": "https://labplus-ledong-module-documentation.readthedocs.io/zh-cn/latest/_images/LED%E7%81%AF-H.png",
+      "originalImageSha256": "8b119c45dca747a23453c7b72bdd1bb3cb4b9a61d5b709cfe4cfccb179a201d0",
+      "imageSha256": "252d2c07a89582f7a373eb3cc8b2dd476426f713d8e66c1e8dc35a1b9cb940af",
+      "imageBytes": 10132,
+      "imageDimensions": [
+        640,
+        360
+      ],
+      "revision": "2bd312b920421fbaba5b32c0"
+    },
+    {
+      "skillName": "labplus-85f71ea88a77",
+      "componentId": "hw_labplus_85f71ea88a77",
+      "displayName": "盛思 LED（红）",
+      "brand": "盛思",
+      "category": "ACTUATOR",
+      "moduleType": "灯光",
+      "sourceUrl": "https://labplus-ledong-module-documentation.readthedocs.io/zh-cn/latest/%E6%89%A7%E8%A1%8C%E5%99%A8%E7%B1%BB/LED%E7%81%AF.html",
+      "documentationUrl": "https://labplus-ledong-module-documentation.readthedocs.io/zh-cn/latest/%E6%89%A7%E8%A1%8C%E5%99%A8%E7%B1%BB/LED%E7%81%AF.html",
+      "imageSourceUrl": "https://labplus-ledong-module-documentation.readthedocs.io/zh-cn/latest/_images/LED%E7%81%AF-H.png",
+      "originalImageSha256": "8b119c45dca747a23453c7b72bdd1bb3cb4b9a61d5b709cfe4cfccb179a201d0",
+      "imageSha256": "252d2c07a89582f7a373eb3cc8b2dd476426f713d8e66c1e8dc35a1b9cb940af",
+      "imageBytes": 10132,
+      "imageDimensions": [
+        640,
+        360
+      ],
+      "revision": "f42fb97689ba6897414898ca"
+    },
+    {
+      "skillName": "labplus-8760b02b3fe7",
+      "componentId": "hw_labplus_8760b02b3fe7",
+      "displayName": "盛思 土壤湿度",
+      "brand": "盛思",
+      "category": "SENSOR",
+      "moduleType": "液体",
+      "sourceUrl": "https://labplus-ledong-module-documentation.readthedocs.io/zh-cn/latest/%E4%BC%A0%E6%84%9F%E5%99%A8%E7%B1%BB/%E5%9C%9F%E5%A3%A4%E6%B9%BF%E5%BA%A6.html",
+      "documentationUrl": "https://labplus-ledong-module-documentation.readthedocs.io/zh-cn/latest/%E4%BC%A0%E6%84%9F%E5%99%A8%E7%B1%BB/%E5%9C%9F%E5%A3%A4%E6%B9%BF%E5%BA%A6.html",
+      "imageSourceUrl": "https://labplus-ledong-module-documentation.readthedocs.io/zh-cn/latest/_images/%E5%9C%9F%E5%A3%A4%E6%B9%BF%E5%BA%A6%E4%BC%A0%E6%84%9F%E5%99%A8.png",
+      "originalImageSha256": "b9ca044ac7bc51071de53fc3e660e359a9b7c52a86a405391d0c12ea31b87a41",
+      "imageSha256": "aed6098cde8e824dce2195c26fce0bf5bd2bf40feda3a1e579576b173008507a",
+      "imageBytes": 8038,
+      "imageDimensions": [
+        640,
+        139
+      ],
+      "revision": "0d21badf0f9da2fb30e71bd8"
+    },
+    {
+      "skillName": "labplus-87d187e346f7",
+      "componentId": "hw_labplus_87d187e346f7",
+      "displayName": "盛思 PM2.5(旧版，仅探头，无模块)",
+      "brand": "盛思",
+      "category": "SENSOR",
+      "moduleType": "环境",
+      "sourceUrl": "https://labplus-ledong-module-documentation.readthedocs.io/zh-cn/latest/%E4%BC%A0%E6%84%9F%E5%99%A8%E7%B1%BB/PM2.5.html",
+      "documentationUrl": "https://labplus-ledong-module-documentation.readthedocs.io/zh-cn/latest/%E4%BC%A0%E6%84%9F%E5%99%A8%E7%B1%BB/PM2.5.html",
+      "imageSourceUrl": "https://labplus-ledong-module-documentation.readthedocs.io/zh-cn/latest/_images/PM25%E6%97%A7.png",
+      "originalImageSha256": "6604634f82564d00c104fd20bddc924d45a7a5fc4d35281fb4c71c150088547a",
+      "imageSha256": "e7494d5d19f4b8ab9c3f5c33502d2026fc10988be78c400a4a9db727705aa591",
+      "imageBytes": 1136,
+      "imageDimensions": [
+        286,
+        220
+      ],
+      "revision": "ba47c19e723c71e03930a2fd"
+    },
+    {
+      "skillName": "labplus-89634d2b755b",
+      "componentId": "hw_labplus_89634d2b755b",
+      "displayName": "盛思 积木马达",
+      "brand": "盛思",
+      "category": "ACTUATOR",
+      "moduleType": "电机",
+      "sourceUrl": "https://labplus-ledong-module-documentation.readthedocs.io/zh-cn/latest/%E6%89%A7%E8%A1%8C%E5%99%A8%E7%B1%BB/%E7%A7%AF%E6%9C%A8%E7%94%B5%E6%9C%BA.html",
+      "documentationUrl": "https://labplus-ledong-module-documentation.readthedocs.io/zh-cn/latest/%E6%89%A7%E8%A1%8C%E5%99%A8%E7%B1%BB/%E7%A7%AF%E6%9C%A8%E7%94%B5%E6%9C%BA.html",
+      "imageSourceUrl": "https://labplus-ledong-module-documentation.readthedocs.io/zh-cn/latest/_images/%E7%A7%AF%E6%9C%A8%E9%A9%AC%E8%BE%BE.png",
+      "originalImageSha256": "b0cd97d8d69f93bf1c692b5295a8c157a093abb38af99f4bd5bf4e5df874491d",
+      "imageSha256": "48c1391a7e1855bb9b5d80b7359adc28d43debed148671a17a94761739f1d82e",
+      "imageBytes": 4900,
+      "imageDimensions": [
+        640,
+        340
+      ],
+      "revision": "d1f2df070fecc2742fcf3f0f"
+    },
+    {
+      "skillName": "labplus-8ab9e3fea99d",
+      "componentId": "hw_labplus_8ab9e3fea99d",
+      "displayName": "盛思 循迹传感器（数字）",
+      "brand": "盛思",
+      "category": "SENSOR",
+      "moduleType": "光和图像",
+      "sourceUrl": "https://labplus-ledong-module-documentation.readthedocs.io/zh-cn/latest/%E4%BC%A0%E6%84%9F%E5%99%A8%E7%B1%BB/%E5%BE%AA%E8%BF%B9%E4%BC%A0%E6%84%9F%E5%99%A8.html",
+      "documentationUrl": "https://labplus-ledong-module-documentation.readthedocs.io/zh-cn/latest/%E4%BC%A0%E6%84%9F%E5%99%A8%E7%B1%BB/%E5%BE%AA%E8%BF%B9%E4%BC%A0%E6%84%9F%E5%99%A8.html",
+      "imageSourceUrl": "https://labplus-ledong-module-documentation.readthedocs.io/zh-cn/latest/_images/%E5%BE%AA%E8%BF%B9%E4%BC%A0%E6%84%9F%E5%99%A8.png",
+      "originalImageSha256": "babe763765710896dc44033204ef0b4d23876fd903d8f515f55152c2d8ae0c98",
+      "imageSha256": "6ec2bae4238ec31ace049648d882429874c2013390feae0ad46be3fb0f5bbc25",
+      "imageBytes": 10642,
+      "imageDimensions": [
+        640,
+        360
+      ],
+      "revision": "b75a689714b7aaf519868ff4"
+    },
+    {
+      "skillName": "labplus-8df95567ea4f",
+      "componentId": "hw_labplus_8df95567ea4f",
+      "displayName": "盛思 RGB灯带成品(7灯)",
+      "brand": "盛思",
+      "category": "ACTUATOR",
+      "moduleType": "灯光",
+      "sourceUrl": "https://labplus-ledong-module-documentation.readthedocs.io/zh-cn/latest/%E6%89%A7%E8%A1%8C%E5%99%A8%E7%B1%BB/RGB%E7%81%AF%E5%B8%A6%E6%88%90%E5%93%81(7%E7%81%AF).html",
+      "documentationUrl": "https://labplus-ledong-module-documentation.readthedocs.io/zh-cn/latest/%E6%89%A7%E8%A1%8C%E5%99%A8%E7%B1%BB/RGB%E7%81%AF%E5%B8%A6%E6%88%90%E5%93%81(7%E7%81%AF).html",
+      "imageSourceUrl": "https://labplus-ledong-module-documentation.readthedocs.io/zh-cn/latest/_images/%E7%81%AF%E5%B8%A6%E6%88%90%E5%93%817.png",
+      "originalImageSha256": "4a2090cc56e4a3eb250246315df3b6af7a9fb8f1ca93c1bb6b8a627cdc8dd1e1",
+      "imageSha256": "4247f038d30b83ef63548a69eb622b0d45a91d170bf1909a7e77d40b060dba76",
+      "imageBytes": 7186,
+      "imageDimensions": [
+        640,
+        245
+      ],
+      "revision": "51daca0d06e68cb2be2ff231"
+    },
+    {
+      "skillName": "labplus-8e9496414ad6",
+      "componentId": "hw_labplus_8e9496414ad6",
+      "displayName": "盛思 门磁开关",
+      "brand": "盛思",
+      "category": "SENSOR",
+      "moduleType": "开关量",
+      "sourceUrl": "https://labplus-ledong-module-documentation.readthedocs.io/zh-cn/latest/%E4%BC%A0%E6%84%9F%E5%99%A8%E7%B1%BB/%E9%97%A8%E7%A3%81%E5%BC%80%E5%85%B3.html",
+      "documentationUrl": "https://labplus-ledong-module-documentation.readthedocs.io/zh-cn/latest/%E4%BC%A0%E6%84%9F%E5%99%A8%E7%B1%BB/%E9%97%A8%E7%A3%81%E5%BC%80%E5%85%B3.html",
+      "imageSourceUrl": "https://labplus-ledong-module-documentation.readthedocs.io/zh-cn/latest/_images/%E7%A3%81%E6%8E%A7%E5%BC%80%E5%85%B3-H.png",
+      "originalImageSha256": "002342a9417e25003af4cbbe94ce724b0a2d67f00b929cddeef49c00323341f7",
+      "imageSha256": "75e5ad468b2c3048e2bd7852815a9d0dc44eb19e60a4d1465c2858bf029100bb",
+      "imageBytes": 10340,
+      "imageDimensions": [
+        640,
+        360
+      ],
+      "revision": "8bb7beb5aeaede6597308219"
+    },
+    {
+      "skillName": "labplus-9084b07bd892",
+      "componentId": "hw_labplus_9084b07bd892",
+      "displayName": "盛思 语音录放",
+      "brand": "盛思",
+      "category": "ACTUATOR",
+      "moduleType": "音频播放",
+      "sourceUrl": "https://labplus-ledong-module-documentation.readthedocs.io/zh-cn/latest/%E6%89%A7%E8%A1%8C%E5%99%A8%E7%B1%BB/%E8%AF%AD%E9%9F%B3%E5%BD%95%E6%94%BE.html",
+      "documentationUrl": "https://labplus-ledong-module-documentation.readthedocs.io/zh-cn/latest/%E6%89%A7%E8%A1%8C%E5%99%A8%E7%B1%BB/%E8%AF%AD%E9%9F%B3%E5%BD%95%E6%94%BE.html",
+      "imageSourceUrl": "https://labplus-ledong-module-documentation.readthedocs.io/zh-cn/latest/_images/%E5%A3%B0%E9%9F%B3%E5%BD%95%E6%94%BE-H.png",
+      "originalImageSha256": "4ca78f9f2f4e701198642fab9dd67248c0bf1321a81f1c36994d0f9bd80db25a",
+      "imageSha256": "c657a0fe86ae108d1e5a685a1ea7bbd1c38253bae1f5e3f2b8f0a79352989968",
+      "imageBytes": 13172,
+      "imageDimensions": [
+        640,
+        360
+      ],
+      "revision": "b45837e6efaa43958a8d96ed"
+    },
+    {
+      "skillName": "labplus-929ff6038a2a",
+      "componentId": "hw_labplus_929ff6038a2a",
+      "displayName": "盛思 光敏",
+      "brand": "盛思",
+      "category": "SENSOR",
+      "moduleType": "光和图像",
+      "sourceUrl": "https://labplus-ledong-module-documentation.readthedocs.io/zh-cn/latest/%E4%BC%A0%E6%84%9F%E5%99%A8%E7%B1%BB/%E6%A8%A1%E6%8B%9F%E5%85%89%E7%BA%BF.html",
+      "documentationUrl": "https://labplus-ledong-module-documentation.readthedocs.io/zh-cn/latest/%E4%BC%A0%E6%84%9F%E5%99%A8%E7%B1%BB/%E6%A8%A1%E6%8B%9F%E5%85%89%E7%BA%BF.html",
+      "imageSourceUrl": "https://labplus-ledong-module-documentation.readthedocs.io/zh-cn/latest/_images/%E6%A8%A1%E6%8B%9F%E5%85%89%E7%BA%BF%E4%BC%A0%E6%84%9F%E5%99%A8-H.png",
+      "originalImageSha256": "9c3129c73b736d781c26c47ae7c9fbe1d781d567eb4f3dddbeb829ed63de04e3",
+      "imageSha256": "4b98f25bfdf9988468f8b4687fae061768e519be5d13529771e28358b313bef0",
+      "imageBytes": 10626,
+      "imageDimensions": [
+        640,
+        360
+      ],
+      "revision": "1c97d9ff5e2ab809c45ee494"
+    },
+    {
+      "skillName": "labplus-9a155a9d4670",
+      "componentId": "hw_labplus_9a155a9d4670",
+      "displayName": "盛思 循迹传感器（模拟）",
+      "brand": "盛思",
+      "category": "SENSOR",
+      "moduleType": "光和图像",
+      "sourceUrl": "https://labplus-ledong-module-documentation.readthedocs.io/zh-cn/latest/%E4%BC%A0%E6%84%9F%E5%99%A8%E7%B1%BB/%E5%BE%AA%E8%BF%B9%E4%BC%A0%E6%84%9F%E5%99%A8%EF%BC%88%E6%A8%A1%E6%8B%9F%EF%BC%89.html",
+      "documentationUrl": "https://labplus-ledong-module-documentation.readthedocs.io/zh-cn/latest/%E4%BC%A0%E6%84%9F%E5%99%A8%E7%B1%BB/%E5%BE%AA%E8%BF%B9%E4%BC%A0%E6%84%9F%E5%99%A8%EF%BC%88%E6%A8%A1%E6%8B%9F%EF%BC%89.html",
+      "imageSourceUrl": "https://labplus-ledong-module-documentation.readthedocs.io/zh-cn/latest/_images/%E5%BE%AA%E8%BF%B9%E4%BC%A0%E6%84%9F%E5%99%A8-%E6%A8%A1%E6%8B%9F.png",
+      "originalImageSha256": "a9fe1107630d81ae1eb52cd1b2dc21274459a1ea11ca911e7302403b08650313",
+      "imageSha256": "e0642d9774223c9310c47ba2d37082132eb0e8b7eff3532797ef97fbf0f12f3b",
+      "imageBytes": 11482,
+      "imageDimensions": [
+        454,
+        231
+      ],
+      "revision": "eb5c63a6e188aa93178eb7c0"
+    },
+    {
+      "skillName": "labplus-9a60f813c280",
+      "componentId": "hw_labplus_9a60f813c280",
+      "displayName": "盛思 温度传感器(DS18B20)",
+      "brand": "盛思",
+      "category": "SENSOR",
+      "moduleType": "环境",
+      "sourceUrl": "https://labplus-ledong-module-documentation.readthedocs.io/zh-cn/latest/%E4%BC%A0%E6%84%9F%E5%99%A8%E7%B1%BB/ds18b20%E9%98%B2%E6%B0%B4%E6%B8%A9%E5%BA%A6%E4%BC%A0%E6%84%9F%E5%99%A8.html",
+      "documentationUrl": "https://labplus-ledong-module-documentation.readthedocs.io/zh-cn/latest/%E4%BC%A0%E6%84%9F%E5%99%A8%E7%B1%BB/ds18b20%E9%98%B2%E6%B0%B4%E6%B8%A9%E5%BA%A6%E4%BC%A0%E6%84%9F%E5%99%A8.html",
+      "imageSourceUrl": "https://labplus-ledong-module-documentation.readthedocs.io/zh-cn/latest/_images/ds18b20.png",
+      "originalImageSha256": "3139839a74e0e62bd51b5d275f26fa508a40f9e3d8665c280a9f53895b18b4aa",
+      "imageSha256": "191a8df2d36509ce715242b371404964d6cf582811384f76f186baca2b7a7028",
+      "imageBytes": 5840,
+      "imageDimensions": [
+        640,
+        317
+      ],
+      "revision": "8b8d80ca77d646a63264557a"
+    },
+    {
+      "skillName": "labplus-9da6c501625a",
+      "componentId": "hw_labplus_9da6c501625a",
+      "displayName": "盛思 数码管",
+      "brand": "盛思",
+      "category": "DISPLAY",
+      "moduleType": "屏幕",
+      "sourceUrl": "https://labplus-ledong-module-documentation.readthedocs.io/zh-cn/latest/%E6%89%A7%E8%A1%8C%E5%99%A8%E7%B1%BB/%E6%95%B0%E7%A0%81%E7%AE%A1.html",
+      "documentationUrl": "https://labplus-ledong-module-documentation.readthedocs.io/zh-cn/latest/%E6%89%A7%E8%A1%8C%E5%99%A8%E7%B1%BB/%E6%95%B0%E7%A0%81%E7%AE%A1.html",
+      "imageSourceUrl": "https://labplus-ledong-module-documentation.readthedocs.io/zh-cn/latest/_images/%E6%95%B0%E7%A0%81%E7%AE%A1-H.png",
+      "originalImageSha256": "1d30d28ce56970e96085783c9a0d15c20a8f4fb1729741c7e5d7f108c01b1d45",
+      "imageSha256": "81e0559bc997b8a2a9220a6e7b22c2e5f2a73f7ae39b6993b97cd9fa8046d3c8",
+      "imageBytes": 13770,
+      "imageDimensions": [
+        640,
+        360
+      ],
+      "revision": "7aea541d197ad5fc0f42fed0"
+    },
+    {
+      "skillName": "labplus-a13d2a73b51e",
+      "componentId": "hw_labplus_a13d2a73b51e",
+      "displayName": "盛思 摇杆",
+      "brand": "盛思",
+      "category": "SENSOR",
+      "moduleType": "姿态",
+      "sourceUrl": "https://labplus-ledong-module-documentation.readthedocs.io/zh-cn/latest/%E4%BC%A0%E6%84%9F%E5%99%A8%E7%B1%BB/%E6%91%87%E6%9D%86.html",
+      "documentationUrl": "https://labplus-ledong-module-documentation.readthedocs.io/zh-cn/latest/%E4%BC%A0%E6%84%9F%E5%99%A8%E7%B1%BB/%E6%91%87%E6%9D%86.html",
+      "imageSourceUrl": "https://labplus-ledong-module-documentation.readthedocs.io/zh-cn/latest/_images/%E6%91%87%E6%9D%86-H.png",
+      "originalImageSha256": "504a7729634f63bac94888b4e9f9f1814a0121d75273ad133d3b795b9c71fd59",
+      "imageSha256": "c69078e76a707c4e8325b5d9616cdeb239cac1772c71bb340365b2bc862f7f25",
+      "imageBytes": 14976,
+      "imageDimensions": [
+        640,
+        360
+      ],
+      "revision": "a47976704d04a23930ac39e4"
+    },
+    {
+      "skillName": "labplus-a24681c02b11",
+      "componentId": "hw_labplus_a24681c02b11",
+      "displayName": "盛思 电子标签RFID",
+      "brand": "盛思",
+      "category": "SENSOR",
+      "moduleType": "其他输入",
+      "sourceUrl": "https://labplus-ledong-module-documentation.readthedocs.io/zh-cn/latest/%E4%BC%A0%E6%84%9F%E5%99%A8%E7%B1%BB/RFID.html",
+      "documentationUrl": "https://labplus-ledong-module-documentation.readthedocs.io/zh-cn/latest/%E4%BC%A0%E6%84%9F%E5%99%A8%E7%B1%BB/RFID.html",
+      "imageSourceUrl": "https://labplus-ledong-module-documentation.readthedocs.io/zh-cn/latest/_images/RFID-H.png",
+      "originalImageSha256": "ea18a8db64e62bb11cc0b3469ffc1a7eeb2542e594c2dc39f9512c44a97462fc",
+      "imageSha256": "a92a5c1347457d3c27c5b92a5a3bc2a98c591e69b9204d6c7d91fef202e08366",
+      "imageBytes": 13226,
+      "imageDimensions": [
+        640,
+        360
+      ],
+      "revision": "e05d92d5dcd471954d60c67a"
+    },
+    {
+      "skillName": "labplus-a648f2a134c2",
+      "componentId": "hw_labplus_a648f2a134c2",
+      "displayName": "盛思 限位开关",
+      "brand": "盛思",
+      "category": "SENSOR",
+      "moduleType": "开关量",
+      "sourceUrl": "https://labplus-ledong-module-documentation.readthedocs.io/zh-cn/latest/%E4%BC%A0%E6%84%9F%E5%99%A8%E7%B1%BB/%E9%99%90%E4%BD%8D%E5%BC%80%E5%85%B3.html",
+      "documentationUrl": "https://labplus-ledong-module-documentation.readthedocs.io/zh-cn/latest/%E4%BC%A0%E6%84%9F%E5%99%A8%E7%B1%BB/%E9%99%90%E4%BD%8D%E5%BC%80%E5%85%B3.html",
+      "imageSourceUrl": "https://labplus-ledong-module-documentation.readthedocs.io/zh-cn/latest/_images/%E9%99%90%E4%BD%8D%E5%BC%80%E5%85%B3.png",
+      "originalImageSha256": "ed027ec1aef2a93fa54b5d7376abada9f4388ee00792b8a49280dc25c9fa0460",
+      "imageSha256": "6b98cc8bf8eef0478ed96bd0ea49c05b8ee4eacfb4d8f8f1a325ac2989116037",
+      "imageBytes": 11996,
+      "imageDimensions": [
+        640,
+        313
+      ],
+      "revision": "85493f14e6d9f28668e0aa75"
+    },
+    {
+      "skillName": "labplus-ac865b39ac86",
+      "componentId": "hw_labplus_ac865b39ac86",
+      "displayName": "盛思 编码直流电机",
+      "brand": "盛思",
+      "category": "ACTUATOR",
+      "moduleType": "电机",
+      "sourceUrl": "https://labplus-ledong-module-documentation.readthedocs.io/zh-cn/latest/%E6%89%A7%E8%A1%8C%E5%99%A8%E7%B1%BB/%E7%BC%96%E7%A0%81%E7%9B%B4%E6%B5%81%E7%94%B5%E6%9C%BA.html",
+      "documentationUrl": "https://labplus-ledong-module-documentation.readthedocs.io/zh-cn/latest/%E6%89%A7%E8%A1%8C%E5%99%A8%E7%B1%BB/%E7%BC%96%E7%A0%81%E7%9B%B4%E6%B5%81%E7%94%B5%E6%9C%BA.html",
+      "imageSourceUrl": "https://labplus-ledong-module-documentation.readthedocs.io/zh-cn/latest/_images/%E7%BC%96%E7%A0%81%E7%9B%B4%E6%B5%81%E7%94%B5%E6%9C%BA.png",
+      "originalImageSha256": "eac2d40d38d4e0b39e8c9f001f175f2c6b0a36ee7d9bdf012d9f4ff09ed4148b",
+      "imageSha256": "9650e0c98117c6af4f6f63592da7eb06857d7821f417e871f2c5738989eed627",
+      "imageBytes": 35546,
+      "imageDimensions": [
+        640,
+        437
+      ],
+      "revision": "17be0c9a81c7dc9340ba2d42"
+    },
+    {
+      "skillName": "labplus-b4cc39437859",
+      "componentId": "hw_labplus_b4cc39437859",
+      "displayName": "盛思 舵机(乐动)",
+      "brand": "盛思",
+      "category": "ACTUATOR",
+      "moduleType": "舵机",
+      "sourceUrl": "https://labplus-ledong-module-documentation.readthedocs.io/zh-cn/latest/%E6%89%A7%E8%A1%8C%E5%99%A8%E7%B1%BB/%E8%88%B5%E6%9C%BA(%E4%B9%90%E5%8A%A8).html",
+      "documentationUrl": "https://labplus-ledong-module-documentation.readthedocs.io/zh-cn/latest/%E6%89%A7%E8%A1%8C%E5%99%A8%E7%B1%BB/%E8%88%B5%E6%9C%BA(%E4%B9%90%E5%8A%A8).html",
+      "imageSourceUrl": "https://labplus-ledong-module-documentation.readthedocs.io/zh-cn/latest/_images/%E5%A1%91%E6%96%99%E8%BD%B4%E8%88%B5%E6%9C%BA.png",
+      "originalImageSha256": "3e1d51290933905cb7a0ee20546e30c761721505a40c08fa61391a1fb759abe3",
+      "imageSha256": "3eaee4c739bef46e29d78301b8504274fc39ec7ac22e27b7fb1ec54347217a08",
+      "imageBytes": 9588,
+      "imageDimensions": [
+        640,
+        448
+      ],
+      "revision": "3b347971042e22d43eabbee0"
+    },
+    {
+      "skillName": "labplus-b94b67e6f02c",
+      "componentId": "hw_labplus_b94b67e6f02c",
+      "displayName": "盛思 RGB LED(4灯)",
+      "brand": "盛思",
+      "category": "ACTUATOR",
+      "moduleType": "灯光",
+      "sourceUrl": "https://labplus-ledong-module-documentation.readthedocs.io/zh-cn/latest/%E6%89%A7%E8%A1%8C%E5%99%A8%E7%B1%BB/RGB_LED(4%E7%81%AF).html",
+      "documentationUrl": "https://labplus-ledong-module-documentation.readthedocs.io/zh-cn/latest/%E6%89%A7%E8%A1%8C%E5%99%A8%E7%B1%BB/RGB_LED(4%E7%81%AF).html",
+      "imageSourceUrl": "https://labplus-ledong-module-documentation.readthedocs.io/zh-cn/latest/_images/%E5%9B%9B%E8%89%B2LED-H.png",
+      "originalImageSha256": "6cda02a68abf01ac1f196f8cc67f17fc5177ef1b32d96316d3893d5ec81e9be5",
+      "imageSha256": "be747231d9790af78c582c0742e1af43d61e5922c6059c656c4fa2d41736bcbb",
+      "imageBytes": 11368,
+      "imageDimensions": [
+        640,
+        360
+      ],
+      "revision": "5b823583487f00c7ce552c22"
+    },
+    {
+      "skillName": "labplus-bc49b3acdae6",
+      "componentId": "hw_labplus_bc49b3acdae6",
+      "displayName": "盛思 人体感应",
+      "brand": "盛思",
+      "category": "SENSOR",
+      "moduleType": "开关量",
+      "sourceUrl": "https://labplus-ledong-module-documentation.readthedocs.io/zh-cn/latest/%E4%BC%A0%E6%84%9F%E5%99%A8%E7%B1%BB/%E4%BA%BA%E4%BD%93%E6%84%9F%E5%BA%94.html",
+      "documentationUrl": "https://labplus-ledong-module-documentation.readthedocs.io/zh-cn/latest/%E4%BC%A0%E6%84%9F%E5%99%A8%E7%B1%BB/%E4%BA%BA%E4%BD%93%E6%84%9F%E5%BA%94.html",
+      "imageSourceUrl": "https://labplus-ledong-module-documentation.readthedocs.io/zh-cn/latest/_images/%E4%BA%BA%E4%BD%93%E6%84%9F%E5%BA%94-H.png",
+      "originalImageSha256": "4f11ecab150553ebfa969c218fc6d578f03f444112b33cc9381cf895f1a40264",
+      "imageSha256": "2d298785634e9366a250a106e00df97dac1551ab8b529855b6ca2a5287e3b1fd",
+      "imageBytes": 10042,
+      "imageDimensions": [
+        640,
+        360
+      ],
+      "revision": "67d0b63ef1b9390c37e6ef95"
+    },
+    {
+      "skillName": "labplus-c448bb0d8dd4",
+      "componentId": "hw_labplus_c448bb0d8dd4",
+      "displayName": "盛思 编码电机驱动",
+      "brand": "盛思",
+      "category": "ACTUATOR",
+      "moduleType": "电机",
+      "sourceUrl": "https://labplus-ledong-module-documentation.readthedocs.io/zh-cn/latest/%E6%89%A7%E8%A1%8C%E5%99%A8%E7%B1%BB/%E7%BC%96%E7%A0%81%E7%94%B5%E6%9C%BA.html",
+      "documentationUrl": "https://labplus-ledong-module-documentation.readthedocs.io/zh-cn/latest/%E6%89%A7%E8%A1%8C%E5%99%A8%E7%B1%BB/%E7%BC%96%E7%A0%81%E7%94%B5%E6%9C%BA.html",
+      "imageSourceUrl": "https://labplus-ledong-module-documentation.readthedocs.io/zh-cn/latest/_images/%E7%BC%96%E7%A0%81%E7%94%B5%E6%9C%BA.png",
+      "originalImageSha256": "b243eee755e697c1d7c32da7446f7056dabfa151f79baddb7c39c5f92fd4d8a8",
+      "imageSha256": "e29c47e855aee887219bffa52d54e22903a5797b52590a66d1158668df54a462",
+      "imageBytes": 36772,
+      "imageDimensions": [
+        640,
+        408
+      ],
+      "revision": "6c1738d0d088dece8d44483d"
+    },
+    {
+      "skillName": "labplus-c48d19378c28",
+      "componentId": "hw_labplus_c48d19378c28",
+      "displayName": "盛思 光环板(24灯)",
+      "brand": "盛思",
+      "category": "ACTUATOR",
+      "moduleType": "灯光",
+      "sourceUrl": "https://labplus-ledong-module-documentation.readthedocs.io/zh-cn/latest/%E6%89%A7%E8%A1%8C%E5%99%A8%E7%B1%BB/NeopixelRGB%E7%81%AF.html",
+      "documentationUrl": "https://labplus-ledong-module-documentation.readthedocs.io/zh-cn/latest/%E6%89%A7%E8%A1%8C%E5%99%A8%E7%B1%BB/NeopixelRGB%E7%81%AF.html",
+      "imageSourceUrl": "https://labplus-ledong-module-documentation.readthedocs.io/zh-cn/latest/_images/%E5%85%89%E7%8E%AF%E6%9D%BF.png",
+      "originalImageSha256": "f3f58e6178a5a06c26ab93410ea86505274a92f7b3c5b21fe938ce6b4cd439f5",
+      "imageSha256": "73c781c1513d6c35884aed628ef37ab85d1c903a6539ab47aa7fd3658af8601b",
+      "imageBytes": 29354,
+      "imageDimensions": [
+        585,
+        454
+      ],
+      "revision": "9da5256fbcf432f6d58627a4"
+    },
+    {
+      "skillName": "labplus-cf69c01bfa27",
+      "componentId": "hw_labplus_cf69c01bfa27",
+      "displayName": "盛思 震动",
+      "brand": "盛思",
+      "category": "SENSOR",
+      "moduleType": "姿态",
+      "sourceUrl": "https://labplus-ledong-module-documentation.readthedocs.io/zh-cn/latest/%E4%BC%A0%E6%84%9F%E5%99%A8%E7%B1%BB/%E9%9C%87%E5%8A%A8.html",
+      "documentationUrl": "https://labplus-ledong-module-documentation.readthedocs.io/zh-cn/latest/%E4%BC%A0%E6%84%9F%E5%99%A8%E7%B1%BB/%E9%9C%87%E5%8A%A8.html",
+      "imageSourceUrl": "https://labplus-ledong-module-documentation.readthedocs.io/zh-cn/latest/_images/%E9%9C%87%E5%8A%A8%E4%BC%A0%E6%84%9F%E5%99%A8-H.png",
+      "originalImageSha256": "80b780f65b57f22b0b1241254dc368d7951fcb09a25f487ede53775e9c908315",
+      "imageSha256": "4bad10ae2497e44d3e975bfd7e421b4dd1e4d91f9e0c6670379c82f29c3cfd29",
+      "imageBytes": 10452,
+      "imageDimensions": [
+        640,
+        360
+      ],
+      "revision": "6a80548ce249ecbd7d11f74d"
+    },
+    {
+      "skillName": "labplus-d31ced3adb68",
+      "componentId": "hw_labplus_d31ced3adb68",
+      "displayName": "盛思 音乐播放MP3",
+      "brand": "盛思",
+      "category": "ACTUATOR",
+      "moduleType": "音频播放",
+      "sourceUrl": "https://labplus-ledong-module-documentation.readthedocs.io/zh-cn/latest/%E6%89%A7%E8%A1%8C%E5%99%A8%E7%B1%BB/MP3%E9%9F%B3%E4%B9%90%E6%92%AD%E6%94%BE.html",
+      "documentationUrl": "https://labplus-ledong-module-documentation.readthedocs.io/zh-cn/latest/%E6%89%A7%E8%A1%8C%E5%99%A8%E7%B1%BB/MP3%E9%9F%B3%E4%B9%90%E6%92%AD%E6%94%BE.html",
+      "imageSourceUrl": "https://labplus-ledong-module-documentation.readthedocs.io/zh-cn/latest/_images/MP3.png",
+      "originalImageSha256": "4ad1df292470524c27e69453d2ee345d03a3ae47ccede50aa228e53781ec82b8",
+      "imageSha256": "d6942115831d9dd6a21dc76ecbc1d2102f388cc93b2f32877091f9f7be64d6b9",
+      "imageBytes": 11656,
+      "imageDimensions": [
+        640,
+        339
+      ],
+      "revision": "90e3316e94a88410e482ceb4"
+    },
+    {
+      "skillName": "labplus-d4d3817b95cf",
+      "componentId": "hw_labplus_d4d3817b95cf",
+      "displayName": "盛思 水泵（单管）",
+      "brand": "盛思",
+      "category": "ACTUATOR",
+      "moduleType": "泵",
+      "sourceUrl": "https://labplus-ledong-module-documentation.readthedocs.io/zh-cn/latest/%E6%89%A7%E8%A1%8C%E5%99%A8%E7%B1%BB/%E6%B0%B4%E6%B3%B5.html",
+      "documentationUrl": "https://labplus-ledong-module-documentation.readthedocs.io/zh-cn/latest/%E6%89%A7%E8%A1%8C%E5%99%A8%E7%B1%BB/%E6%B0%B4%E6%B3%B5.html",
+      "imageSourceUrl": "https://labplus-ledong-module-documentation.readthedocs.io/zh-cn/latest/_images/%E6%B0%B4%E6%B3%B52.png",
+      "originalImageSha256": "4481624390877c39ada29b882932ca9e1409203b86517a70ba30bff0be5fbacb",
+      "imageSha256": "3b867fda07c8e4e94760f8206ac30bae77e6142ff61f5423844d074a3ed121b5",
+      "imageBytes": 1544,
+      "imageDimensions": [
+        258,
+        168
+      ],
+      "revision": "e084907f529b2d60ef657e0f"
+    },
+    {
+      "skillName": "labplus-dc9beba4542c",
+      "componentId": "hw_labplus_dc9beba4542c",
+      "displayName": "盛思 TT马达",
+      "brand": "盛思",
+      "category": "ACTUATOR",
+      "moduleType": "电机",
+      "sourceUrl": "https://labplus-ledong-module-documentation.readthedocs.io/zh-cn/latest/%E6%89%A7%E8%A1%8C%E5%99%A8%E7%B1%BB/TT%E9%A9%AC%E8%BE%BE.html",
+      "documentationUrl": "https://labplus-ledong-module-documentation.readthedocs.io/zh-cn/latest/%E6%89%A7%E8%A1%8C%E5%99%A8%E7%B1%BB/TT%E9%A9%AC%E8%BE%BE.html",
+      "imageSourceUrl": "https://labplus-ledong-module-documentation.readthedocs.io/zh-cn/latest/_images/TT%E9%A9%AC%E8%BE%BE.png",
+      "originalImageSha256": "97ee995344e76a7179cfe85cbaf0de4fba30a906d7438a583ad218acce8a110a",
+      "imageSha256": "4c05b13b6366858a66ba0087276dd22d42dc8922935a0edbf7e26a392cf42b57",
+      "imageBytes": 6830,
+      "imageDimensions": [
+        640,
+        295
+      ],
+      "revision": "6c883af7421f61829ce8de4d"
+    },
+    {
+      "skillName": "labplus-e7d83530f1ae",
+      "componentId": "hw_labplus_e7d83530f1ae",
+      "displayName": "盛思 按键",
+      "brand": "盛思",
+      "category": "SENSOR",
+      "moduleType": "开关量",
+      "sourceUrl": "https://labplus-ledong-module-documentation.readthedocs.io/zh-cn/latest/%E4%BC%A0%E6%84%9F%E5%99%A8%E7%B1%BB/%E6%8C%89%E9%94%AE.html",
+      "documentationUrl": "https://labplus-ledong-module-documentation.readthedocs.io/zh-cn/latest/%E4%BC%A0%E6%84%9F%E5%99%A8%E7%B1%BB/%E6%8C%89%E9%94%AE.html",
+      "imageSourceUrl": "https://labplus-ledong-module-documentation.readthedocs.io/zh-cn/latest/_images/%E6%8C%89%E9%94%AE-B.png",
+      "originalImageSha256": "d80728086e8c6cf54293cf546dbfdd59f619bf82418ad1b4d4014f271119874b",
+      "imageSha256": "35d319ed6349a1e7dc57ca640e07e336ef5c3137d5737361cb319376e5bf3326",
+      "imageBytes": 11926,
+      "imageDimensions": [
+        640,
+        360
+      ],
+      "revision": "7f0f52a44e46dfff25f81b4a"
+    },
+    {
+      "skillName": "labplus-eabda30c851e",
+      "componentId": "hw_labplus_eabda30c851e",
+      "displayName": "盛思 红外接收",
+      "brand": "盛思",
+      "category": "SENSOR",
+      "moduleType": "开关量",
+      "sourceUrl": "https://labplus-ledong-module-documentation.readthedocs.io/zh-cn/latest/%E4%BC%A0%E6%84%9F%E5%99%A8%E7%B1%BB/%E7%BA%A2%E5%A4%96%E6%8E%A5%E6%94%B6%E6%A8%A1%E5%9D%97.html",
+      "documentationUrl": "https://labplus-ledong-module-documentation.readthedocs.io/zh-cn/latest/%E4%BC%A0%E6%84%9F%E5%99%A8%E7%B1%BB/%E7%BA%A2%E5%A4%96%E6%8E%A5%E6%94%B6%E6%A8%A1%E5%9D%97.html",
+      "imageSourceUrl": "https://labplus-ledong-module-documentation.readthedocs.io/zh-cn/latest/_images/%E7%BA%A2%E5%A4%96%E6%8E%A5%E6%94%B6-H.png",
+      "originalImageSha256": "55d218a09b4766a17e13bacdfb28d26141d71be249831cd4293d5e389945e353",
+      "imageSha256": "e276850758cd1e7d8e1ded4cb28f837db275dad0eb3333c20118bd6acc9c811c",
+      "imageBytes": 10470,
+      "imageDimensions": [
+        640,
+        360
+      ],
+      "revision": "d82a10481eeb52af1ceb7ee1"
+    },
+    {
+      "skillName": "labplus-efd635954f2a",
+      "componentId": "hw_labplus_efd635954f2a",
+      "displayName": "盛思 水泵（双管）",
+      "brand": "盛思",
+      "category": "ACTUATOR",
+      "moduleType": "泵",
+      "sourceUrl": "https://labplus-ledong-module-documentation.readthedocs.io/zh-cn/latest/%E6%89%A7%E8%A1%8C%E5%99%A8%E7%B1%BB/%E6%B0%B4%E6%B3%B5%E5%8F%8C%E7%AE%A1.html",
+      "documentationUrl": "https://labplus-ledong-module-documentation.readthedocs.io/zh-cn/latest/%E6%89%A7%E8%A1%8C%E5%99%A8%E7%B1%BB/%E6%B0%B4%E6%B3%B5%E5%8F%8C%E7%AE%A1.html",
+      "imageSourceUrl": "https://labplus-ledong-module-documentation.readthedocs.io/zh-cn/latest/_images/%E6%B0%B4%E6%B3%B5.png",
+      "originalImageSha256": "6939b827ffd031de084704614e6034e1e8d0efa103145c3b153e49881de9d12d",
+      "imageSha256": "479319482b47d889c0f8853dc066268408a0faf1a74cd1d0c778900bbdf5d6f9",
+      "imageBytes": 15048,
+      "imageDimensions": [
+        640,
+        482
+      ],
+      "revision": "87c2ef501cbf7ee8d14d0fb8"
+    },
+    {
+      "skillName": "labplus-f13c852fb7f1",
+      "componentId": "hw_labplus_f13c852fb7f1",
+      "displayName": "盛思 全球定位系统",
+      "brand": "盛思",
+      "category": "SENSOR",
+      "moduleType": "姿态",
+      "sourceUrl": "https://labplus-ledong-module-documentation.readthedocs.io/zh-cn/latest/%E4%BC%A0%E6%84%9F%E5%99%A8%E7%B1%BB/%E5%8C%97%E6%96%97%E6%A8%A1%E5%9D%97.html",
+      "documentationUrl": "https://labplus-ledong-module-documentation.readthedocs.io/zh-cn/latest/%E4%BC%A0%E6%84%9F%E5%99%A8%E7%B1%BB/%E5%8C%97%E6%96%97%E6%A8%A1%E5%9D%97.html",
+      "imageSourceUrl": "https://labplus-ledong-module-documentation.readthedocs.io/zh-cn/latest/_images/%E5%85%A8%E7%90%83%E5%AE%9A%E4%BD%8D%E7%B3%BB%E7%BB%9F.png",
+      "originalImageSha256": "086ee76f30ea5326fb23c67b98eb6a5635a6b7a466fa187fd30d3ae6219cfe64",
+      "imageSha256": "4a0051ebeb384724849a6a5739318168c333517130e013c1d115efcc7417592e",
+      "imageBytes": 4630,
+      "imageDimensions": [
+        640,
+        360
+      ],
+      "revision": "4f94d6dc4046057f043b9cea"
+    },
+    {
+      "skillName": "labplus-f2d23891735d",
+      "componentId": "hw_labplus_f2d23891735d",
+      "displayName": "盛思 颜色传感器",
+      "brand": "盛思",
+      "category": "SENSOR",
+      "moduleType": "光和图像",
+      "sourceUrl": "https://labplus-ledong-module-documentation.readthedocs.io/zh-cn/latest/%E4%BC%A0%E6%84%9F%E5%99%A8%E7%B1%BB/%E9%A2%9C%E8%89%B2%E4%BC%A0%E6%84%9F%E5%99%A8.html",
+      "documentationUrl": "https://labplus-ledong-module-documentation.readthedocs.io/zh-cn/latest/%E4%BC%A0%E6%84%9F%E5%99%A8%E7%B1%BB/%E9%A2%9C%E8%89%B2%E4%BC%A0%E6%84%9F%E5%99%A8.html",
+      "imageSourceUrl": "https://labplus-ledong-module-documentation.readthedocs.io/zh-cn/latest/_images/%E9%A2%9C%E8%89%B2-H.png",
+      "originalImageSha256": "dde45e764830377df94258c94b423894c08798d8637d30f81c3fd9325111f255",
+      "imageSha256": "7e32bea9b21e37e089c9e873843d3ba56f756c10e55de15dcb2ccb9b2ce67904",
+      "imageBytes": 10516,
+      "imageDimensions": [
+        640,
+        360
+      ],
+      "revision": "de7e1b4dd34e5b529e72e2b1"
+    },
+    {
+      "skillName": "labplus-f91d6811dc71",
+      "componentId": "hw_labplus_f91d6811dc71",
+      "displayName": "盛思 驱动器",
+      "brand": "盛思",
+      "category": "ACTUATOR",
+      "moduleType": "电机",
+      "sourceUrl": "https://labplus-ledong-module-documentation.readthedocs.io/zh-cn/latest/%E6%89%A7%E8%A1%8C%E5%99%A8%E7%B1%BB/%E9%A9%B1%E5%8A%A8%E5%99%A8.html",
+      "documentationUrl": "https://labplus-ledong-module-documentation.readthedocs.io/zh-cn/latest/%E6%89%A7%E8%A1%8C%E5%99%A8%E7%B1%BB/%E9%A9%B1%E5%8A%A8%E5%99%A8.html",
+      "imageSourceUrl": "https://labplus-ledong-module-documentation.readthedocs.io/zh-cn/latest/_images/%E9%A9%B1%E5%8A%A8%E5%99%A8.png",
+      "originalImageSha256": "53127ddc76b06a0c9379b378ff238126b19f2f445dbb564033bba7ecc9f7dbec",
+      "imageSha256": "3feb66b4efa47d56fa23dcbd53fa05d82f9f25a2869c11f8f1891e00a40e0dab",
+      "imageBytes": 10024,
+      "imageDimensions": [
+        640,
+        294
+      ],
+      "revision": "dbf6e7d93b643421bfef45bc"
+    },
+    {
+      "skillName": "labplus-fd25ec66ad0b",
+      "componentId": "hw_labplus_fd25ec66ad0b",
+      "displayName": "盛思 双轴积木马达",
+      "brand": "盛思",
+      "category": "ACTUATOR",
+      "moduleType": "电机",
+      "sourceUrl": "https://labplus-ledong-module-documentation.readthedocs.io/zh-cn/latest/%E6%89%A7%E8%A1%8C%E5%99%A8%E7%B1%BB/%E5%8F%8C%E8%BD%B4%E7%A7%AF%E6%9C%A8%E9%A9%AC%E8%BE%BE.html",
+      "documentationUrl": "https://labplus-ledong-module-documentation.readthedocs.io/zh-cn/latest/%E6%89%A7%E8%A1%8C%E5%99%A8%E7%B1%BB/%E5%8F%8C%E8%BD%B4%E7%A7%AF%E6%9C%A8%E9%A9%AC%E8%BE%BE.html",
+      "imageSourceUrl": "https://labplus-ledong-module-documentation.readthedocs.io/zh-cn/latest/_images/%E5%8F%8C%E8%BD%B4%E7%A7%AF%E6%9C%A8%E9%A9%AC%E8%BE%BE.png",
+      "originalImageSha256": "2417b5ddd1db5367eefdc4d38db7769877fd251093505aa39895352536c2a4e8",
+      "imageSha256": "9d359613c2794a012e380ddad95efd4e140e278b59c14b5e5da1661d9bb09fef",
+      "imageBytes": 7460,
+      "imageDimensions": [
+        337,
+        335
+      ],
+      "revision": "cf53021183d46f4cd9a97582"
+    },
+    {
+      "skillName": "labplus-fe5868bcf647",
+      "componentId": "hw_labplus_fe5868bcf647",
+      "displayName": "盛思 红外探测",
+      "brand": "盛思",
+      "category": "SENSOR",
+      "moduleType": "光和图像",
+      "sourceUrl": "https://labplus-ledong-module-documentation.readthedocs.io/zh-cn/latest/%E4%BC%A0%E6%84%9F%E5%99%A8%E7%B1%BB/%E7%BA%A2%E5%A4%96%E6%8E%A2%E6%B5%8B.html",
+      "documentationUrl": "https://labplus-ledong-module-documentation.readthedocs.io/zh-cn/latest/%E4%BC%A0%E6%84%9F%E5%99%A8%E7%B1%BB/%E7%BA%A2%E5%A4%96%E6%8E%A2%E6%B5%8B.html",
+      "imageSourceUrl": "https://labplus-ledong-module-documentation.readthedocs.io/zh-cn/latest/_images/%E7%BA%A2%E5%A4%96%E6%8E%A2%E6%B5%8B.png",
+      "originalImageSha256": "3c0eb8b21d320820026559925d849f84a384cdcc6197f1f4ef0d559a8f15fb6b",
+      "imageSha256": "db95d5394049de40ec090a81290e89bf5178db7860bf9eb7e887ba1b1ac93a02",
+      "imageBytes": 9890,
+      "imageDimensions": [
+        640,
+        296
+      ],
+      "revision": "3fe3ebee1f4f6b2b2332ff25"
+    },
+    {
+      "skillName": "labplus-ffca49372bbb",
+      "componentId": "hw_labplus_ffca49372bbb",
+      "displayName": "盛思 蜂鸣器",
+      "brand": "盛思",
+      "category": "ACTUATOR",
+      "moduleType": "音频播放",
+      "sourceUrl": "https://labplus-ledong-module-documentation.readthedocs.io/zh-cn/latest/%E6%89%A7%E8%A1%8C%E5%99%A8%E7%B1%BB/%E6%9C%89%E6%BA%90%E8%9C%82%E9%B8%A3%E5%99%A8.html",
+      "documentationUrl": "https://labplus-ledong-module-documentation.readthedocs.io/zh-cn/latest/%E6%89%A7%E8%A1%8C%E5%99%A8%E7%B1%BB/%E6%9C%89%E6%BA%90%E8%9C%82%E9%B8%A3%E5%99%A8.html",
+      "imageSourceUrl": "https://labplus-ledong-module-documentation.readthedocs.io/zh-cn/latest/_images/%E8%9C%82%E9%B8%A3%E5%99%A8-H.png",
+      "originalImageSha256": "a31c35cfa888d3906c0d6bcb6ce2ae10cf1be89b639bd9c34b8281eddeed71e7",
+      "imageSha256": "44b5d95364e96e88324440accb8954131a8738a27bbca3f4332fb3c503761ae2",
+      "imageBytes": 10952,
+      "imageDimensions": [
+        640,
+        360
+      ],
+      "revision": "5958dab0058b11c78a181eb2"
+    },
+    {
+      "skillName": "labplus-fffc88a41e8a",
+      "componentId": "hw_labplus_fffc88a41e8a",
+      "displayName": "盛思 细微颗粒物PM2.5(新版，模块+探头)",
+      "brand": "盛思",
+      "category": "SENSOR",
+      "moduleType": "环境",
+      "sourceUrl": "https://labplus-ledong-module-documentation.readthedocs.io/zh-cn/latest/%E4%BC%A0%E6%84%9F%E5%99%A8%E7%B1%BB/PM2.5%EF%BC%88%E5%90%AB%E6%A8%A1%E5%9D%97%EF%BC%89.html",
+      "documentationUrl": "https://labplus-ledong-module-documentation.readthedocs.io/zh-cn/latest/%E4%BC%A0%E6%84%9F%E5%99%A8%E7%B1%BB/PM2.5%EF%BC%88%E5%90%AB%E6%A8%A1%E5%9D%97%EF%BC%89.html",
+      "imageSourceUrl": "https://labplus-ledong-module-documentation.readthedocs.io/zh-cn/latest/_images/PM2.5%E6%96%B0-1.png",
+      "originalImageSha256": "6417097598cd8bb89346a57b703efd087c1b9ab6705239b2c4b9bbbca674a564",
+      "imageSha256": "e394c08ca3e41437f732967f3505f0bc044cce62c80fbf634aa064cb9fd3ede6",
+      "imageBytes": 6316,
+      "imageDimensions": [
+        640,
+        389
+      ],
+      "revision": "491319b61d86a354bb2a06ff"
+    },
+    {
+      "skillName": "nplus-06196a60bde7",
+      "componentId": "hw_nplus_06196a60bde7",
+      "displayName": "N+ 霍尔传感器",
+      "brand": "N+",
+      "category": "SENSOR",
+      "moduleType": "开关量",
+      "sourceUrl": "https://nplus-doc.readthedocs.io/zh-cn/latest/electroics/sensor/hall.html",
+      "documentationUrl": "https://nplus-doc.readthedocs.io/zh-cn/latest/electroics/sensor/hall.html",
+      "imageSourceUrl": "https://nplus-doc.readthedocs.io/zh-cn/latest/_images/21-1.png",
+      "originalImageSha256": "38308f75907c364325cd26268a02b1ff7c96418a335be55e0a15e60554046629",
+      "imageSha256": "c18af6b92831adfe531394346e62936c190684e01057281b0bf25e7afa87b041",
+      "imageBytes": 17630,
+      "imageDimensions": [
+        640,
+        568
+      ],
+      "revision": "377d3f0784208a6c34099c7c"
+    },
+    {
+      "skillName": "nplus-181b370224a3",
+      "componentId": "hw_nplus_181b370224a3",
+      "displayName": "N+ 气体传感器",
+      "brand": "N+",
+      "category": "SENSOR",
+      "moduleType": "环境",
+      "sourceUrl": "https://nplus-doc.readthedocs.io/zh-cn/latest/electroics/sensor/gas.html",
+      "documentationUrl": "https://nplus-doc.readthedocs.io/zh-cn/latest/electroics/sensor/gas.html",
+      "imageSourceUrl": "https://nplus-doc.readthedocs.io/zh-cn/latest/_images/19-1.png",
+      "originalImageSha256": "8bf7ad40efdacf8219d7aba0a8678ce494742d806a31f2ce7c1f98e90b7f9a24",
+      "imageSha256": "e3d9af4c6e2c57c9a2bc34b67822161939eba8020d797d98c63dfb241a1ebda6",
+      "imageBytes": 23494,
+      "imageDimensions": [
+        640,
+        480
+      ],
+      "revision": "308f29e11ec811dacfb908ae"
+    },
+    {
+      "skillName": "nplus-2ad6a9f375bf",
+      "componentId": "hw_nplus_2ad6a9f375bf",
+      "displayName": "N+ 180°舵机",
+      "brand": "N+",
+      "category": "ACTUATOR",
+      "moduleType": "舵机",
+      "sourceUrl": "https://nplus-doc.readthedocs.io/zh-cn/latest/electroics/sensor/servo180.html",
+      "documentationUrl": "https://nplus-doc.readthedocs.io/zh-cn/latest/electroics/sensor/servo180.html",
+      "imageSourceUrl": "https://nplus-doc.readthedocs.io/zh-cn/latest/_images/6-1.jpg",
+      "originalImageSha256": "82c755e8c60bca84b8379ef6a72fde5ab4b79ee663a8fb6ef3894dbcfb2d832c",
+      "imageSha256": "173581f9094bb5ade1e90e202f62be44f8144973b8002c283984b9e86e5fe29e",
+      "imageBytes": 8716,
+      "imageDimensions": [
+        300,
+        300
+      ],
+      "revision": "1e6e584f55893c7234bed43f"
+    },
+    {
+      "skillName": "nplus-2e2a935b49b1",
+      "componentId": "hw_nplus_2e2a935b49b1",
+      "displayName": "N+ 电机驱动",
+      "brand": "N+",
+      "category": "ACTUATOR",
+      "moduleType": "电机",
+      "sourceUrl": "https://nplus-doc.readthedocs.io/zh-cn/latest/electroics/sensor/motor.html",
+      "documentationUrl": "https://nplus-doc.readthedocs.io/zh-cn/latest/electroics/sensor/motor.html",
+      "imageSourceUrl": "https://nplus-doc.readthedocs.io/zh-cn/latest/_images/13-1.jpg",
+      "originalImageSha256": "69aae9edb78b5409dcb17529da3cb2df33008d909890b44b60a47eb6c4a680a4",
+      "imageSha256": "fad4ae576af59c2935b1eedf7a7daade1469f46647ac424f001d34bf78e65517",
+      "imageBytes": 10090,
+      "imageDimensions": [
+        448,
+        180
+      ],
+      "revision": "dee82d183e3b58248182dc7b"
+    },
+    {
+      "skillName": "nplus-2ece1cbc4594",
+      "componentId": "hw_nplus_2ece1cbc4594",
+      "displayName": "N+ 倾斜传感器",
+      "brand": "N+",
+      "category": "SENSOR",
+      "moduleType": "姿态",
+      "sourceUrl": "https://nplus-doc.readthedocs.io/zh-cn/latest/electroics/sensor/slope.html",
+      "documentationUrl": "https://nplus-doc.readthedocs.io/zh-cn/latest/electroics/sensor/slope.html",
+      "imageSourceUrl": "https://nplus-doc.readthedocs.io/zh-cn/latest/_images/10-1.jpg",
+      "originalImageSha256": "7d3bfc275f0fa945c0725e1198022d2feb4d185f30cb4d85dcd6402d071847fe",
+      "imageSha256": "fdc9cd764554e575919bb7fc08fc5140716b33325ac92915aeff8993848253fe",
+      "imageBytes": 4806,
+      "imageDimensions": [
+        161,
+        158
+      ],
+      "revision": "12225fba08c6ec9d211ca17d"
+    },
+    {
+      "skillName": "nplus-32294829cb77",
+      "componentId": "hw_nplus_32294829cb77",
+      "displayName": "N+ 灰度传感器",
+      "brand": "N+",
+      "category": "SENSOR",
+      "moduleType": "光和图像",
+      "sourceUrl": "https://nplus-doc.readthedocs.io/zh-cn/latest/electroics/sensor/grayscale.html",
+      "documentationUrl": "https://nplus-doc.readthedocs.io/zh-cn/latest/electroics/sensor/grayscale.html",
+      "imageSourceUrl": "https://nplus-doc.readthedocs.io/zh-cn/latest/_images/8-1.jpg",
+      "originalImageSha256": "a87402bf531414eb4013a586476194cbead609cb0a56a9598e7010c2a7f3e788",
+      "imageSha256": "ed23fffcc6efb4b4a311c3c69d6b7b92795a56cd5d763f55197375cc4c448f94",
+      "imageBytes": 6418,
+      "imageDimensions": [
+        222,
+        200
+      ],
+      "revision": "facd26f2b51da300b3f94ff8"
+    },
+    {
+      "skillName": "nplus-34d13fd4035d",
+      "componentId": "hw_nplus_34d13fd4035d",
+      "displayName": "N+ 颜色传感器",
+      "brand": "N+",
+      "category": "SENSOR",
+      "moduleType": "光和图像",
+      "sourceUrl": "https://nplus-doc.readthedocs.io/zh-cn/latest/electroics/sensor/color.html",
+      "documentationUrl": "https://nplus-doc.readthedocs.io/zh-cn/latest/electroics/sensor/color.html",
+      "imageSourceUrl": "https://nplus-doc.readthedocs.io/zh-cn/latest/_images/11-1.jpg",
+      "originalImageSha256": "f70c8623722aa750abde69a2c8d579a573ecdc6cea9c211815130d94db93e163",
+      "imageSha256": "4b2223ceaaa3fee5a15488f7176bea6391a7af2a72aa6ed34744a5000a9fc203",
+      "imageBytes": 10618,
+      "imageDimensions": [
+        406,
+        172
+      ],
+      "revision": "ddfb005a43afcf75c7bfa26c"
+    },
+    {
+      "skillName": "nplus-4cedf680cdc2",
+      "componentId": "hw_nplus_4cedf680cdc2",
+      "displayName": "N+ 继电器",
+      "brand": "N+",
+      "category": "ACTUATOR",
+      "moduleType": "继电器",
+      "sourceUrl": "https://nplus-doc.readthedocs.io/zh-cn/latest/electroics/sensor/relay.html",
+      "documentationUrl": "https://nplus-doc.readthedocs.io/zh-cn/latest/electroics/sensor/relay.html",
+      "imageSourceUrl": "https://nplus-doc.readthedocs.io/zh-cn/latest/_images/17-1.png",
+      "originalImageSha256": "19c44c0ebdd7ea9bfc03e4c17026f4a3c8f50d66ff013af8b8ccb4118f1221a4",
+      "imageSha256": "10436dc13d6a6c4d3fad6a41e29881504c82a65c60ac32fd7fc9820f0a961b80",
+      "imageBytes": 19010,
+      "imageDimensions": [
+        637,
+        375
+      ],
+      "revision": "c6379df9829e89d3c7ec3b83"
+    },
+    {
+      "skillName": "nplus-5da3f3ba7d1d",
+      "componentId": "hw_nplus_5da3f3ba7d1d",
+      "displayName": "N+ 红外热释电传感器（人体红外）",
+      "brand": "N+",
+      "category": "SENSOR",
+      "moduleType": "开关量",
+      "sourceUrl": "https://nplus-doc.readthedocs.io/zh-cn/latest/electroics/sensor/pyroelectric.html",
+      "documentationUrl": "https://nplus-doc.readthedocs.io/zh-cn/latest/electroics/sensor/pyroelectric.html",
+      "imageSourceUrl": "https://nplus-doc.readthedocs.io/zh-cn/latest/_images/14-1.png",
+      "originalImageSha256": "3a2be2f095b4c005ef87b74d5bdb8053fc82a5591428d98b2f9001361a960ce9",
+      "imageSha256": "969675d15a839b84272fb25d9d228c2cf44ec4f016ee61bce8f5cea1afe9e555",
+      "imageBytes": 8530,
+      "imageDimensions": [
+        207,
+        200
+      ],
+      "revision": "6f69323c0216d4c24abf48d3"
+    },
+    {
+      "skillName": "nplus-71df1fef655e",
+      "componentId": "hw_nplus_71df1fef655e",
+      "displayName": "N+ 旋转电位器",
+      "brand": "N+",
+      "category": "SENSOR",
+      "moduleType": "姿态",
+      "sourceUrl": "https://nplus-doc.readthedocs.io/zh-cn/latest/electroics/sensor/potentiometer.html",
+      "documentationUrl": "https://nplus-doc.readthedocs.io/zh-cn/latest/electroics/sensor/potentiometer.html",
+      "imageSourceUrl": "https://nplus-doc.readthedocs.io/zh-cn/latest/_images/9-1.jpg",
+      "originalImageSha256": "66374ac381a40f4c007c2838f53e300a8c56f6ba7dca7fb3309cba3e5acd9824",
+      "imageSha256": "8eab2796d01db952c3e20e481b5f9a92586a08878d4ab114f48148c1c766993f",
+      "imageBytes": 6132,
+      "imageDimensions": [
+        171,
+        160
+      ],
+      "revision": "7d5b148f30ad75c4822a9a81"
+    },
+    {
+      "skillName": "nplus-81c91725522e",
+      "componentId": "hw_nplus_81c91725522e",
+      "displayName": "N+ 超声波传感器",
+      "brand": "N+",
+      "category": "SENSOR",
+      "moduleType": "距离",
+      "sourceUrl": "https://nplus-doc.readthedocs.io/zh-cn/latest/electroics/sensor/ultrasonic.html",
+      "documentationUrl": "https://nplus-doc.readthedocs.io/zh-cn/latest/electroics/sensor/ultrasonic.html",
+      "imageSourceUrl": "https://nplus-doc.readthedocs.io/zh-cn/latest/_images/1-1.png",
+      "originalImageSha256": "55aeb4ba53b486dd46e0ebe35b4efd31c58577f44944abe5f45a858d25a2a77a",
+      "imageSha256": "974b72bc50a9d4519204e5398e248cd70942a07a09a49456fbd84feb46207840",
+      "imageBytes": 15188,
+      "imageDimensions": [
+        429,
+        195
+      ],
+      "revision": "ad004cc04ffd883df32f21e2"
+    },
+    {
+      "skillName": "nplus-84ece2b19dae",
+      "componentId": "hw_nplus_84ece2b19dae",
+      "displayName": "N+ 水位传感器",
+      "brand": "N+",
+      "category": "SENSOR",
+      "moduleType": "液体",
+      "sourceUrl": "https://nplus-doc.readthedocs.io/zh-cn/latest/electroics/sensor/water.html",
+      "documentationUrl": "https://nplus-doc.readthedocs.io/zh-cn/latest/electroics/sensor/water.html",
+      "imageSourceUrl": "https://nplus-doc.readthedocs.io/zh-cn/latest/_images/18-2.jpg",
+      "originalImageSha256": "0b8a89eef8b3a27aae99312a7439c2e228b9c291ba573e6c8e4372c51901a4c9",
+      "imageSha256": "495911839351fb71fcdbf094d6d1a90b0fef870b9553d085a719c01a502d62a2",
+      "imageBytes": 5982,
+      "imageDimensions": [
+        297,
+        120
+      ],
+      "revision": "42842d5c72debaaea882081a"
+    },
+    {
+      "skillName": "nplus-8cbe6d8de049",
+      "componentId": "hw_nplus_8cbe6d8de049",
+      "displayName": "N+ 火焰传感器",
+      "brand": "N+",
+      "category": "SENSOR",
+      "moduleType": "光和图像",
+      "sourceUrl": "https://nplus-doc.readthedocs.io/zh-cn/latest/electroics/sensor/fire.html",
+      "documentationUrl": "https://nplus-doc.readthedocs.io/zh-cn/latest/electroics/sensor/fire.html",
+      "imageSourceUrl": "https://nplus-doc.readthedocs.io/zh-cn/latest/_images/20-1.png",
+      "originalImageSha256": "01c0016dd74e42a23c6116c6125982f13c5ae279dc9d2a65e9f20c41bda82d7e",
+      "imageSha256": "1d065ff9152108af16989073085924c61c207b61c3c7925c7b216c2bd017d1c9",
+      "imageBytes": 5918,
+      "imageDimensions": [
+        163,
+        162
+      ],
+      "revision": "f07350ce75d0492e52fc9579"
+    },
+    {
+      "skillName": "nplus-ae9a4dbea9c2",
+      "componentId": "hw_nplus_ae9a4dbea9c2",
+      "displayName": "N+ RGB彩灯",
+      "brand": "N+",
+      "category": "ACTUATOR",
+      "moduleType": "灯光",
+      "sourceUrl": "https://nplus-doc.readthedocs.io/zh-cn/latest/electroics/sensor/RGB.html",
+      "documentationUrl": "https://nplus-doc.readthedocs.io/zh-cn/latest/electroics/sensor/RGB.html",
+      "imageSourceUrl": "https://nplus-doc.readthedocs.io/zh-cn/latest/_images/4-1.jpg",
+      "originalImageSha256": "5a3e061c649d38547b44b0b44cacffd0b3938a363aaac7d32212489d3d890b14",
+      "imageSha256": "b5693afa966af4f522b03f35488c4b4ddd3e5655311ef703d16cd82489770b17",
+      "imageBytes": 5826,
+      "imageDimensions": [
+        210,
+        202
+      ],
+      "revision": "8f3e180743927fa84c25455d"
+    },
+    {
+      "skillName": "nplus-ceb3ab3cb2e7",
+      "componentId": "hw_nplus_ceb3ab3cb2e7",
+      "displayName": "N+ 循迹传感器",
+      "brand": "N+",
+      "category": "SENSOR",
+      "moduleType": "光和图像",
+      "sourceUrl": "https://nplus-doc.readthedocs.io/zh-cn/latest/electroics/sensor/line.html",
+      "documentationUrl": "https://nplus-doc.readthedocs.io/zh-cn/latest/electroics/sensor/line.html",
+      "imageSourceUrl": "https://nplus-doc.readthedocs.io/zh-cn/latest/_images/11-1.jpg",
+      "originalImageSha256": "f70c8623722aa750abde69a2c8d579a573ecdc6cea9c211815130d94db93e163",
+      "imageSha256": "4b2223ceaaa3fee5a15488f7176bea6391a7af2a72aa6ed34744a5000a9fc203",
+      "imageBytes": 10618,
+      "imageDimensions": [
+        406,
+        172
+      ],
+      "revision": "5d22f52f7dc0772634efe77c"
+    },
+    {
+      "skillName": "nplus-d2b4b38a4c73",
+      "componentId": "hw_nplus_d2b4b38a4c73",
+      "displayName": "N+ 土壤湿度传感器",
+      "brand": "N+",
+      "category": "SENSOR",
+      "moduleType": "液体",
+      "sourceUrl": "https://nplus-doc.readthedocs.io/zh-cn/latest/electroics/sensor/soild.html",
+      "documentationUrl": "https://nplus-doc.readthedocs.io/zh-cn/latest/electroics/sensor/soild.html",
+      "imageSourceUrl": "https://nplus-doc.readthedocs.io/zh-cn/latest/_images/16-1.png",
+      "originalImageSha256": "26f36292071f9fe8f44593a5ce921350cd475f169dfc7d7ea650816ec1a6147c",
+      "imageSha256": "df1923fa5efd75019184bebc6e58948e7e663485576ea3cd998ddb6e071750d3",
+      "imageBytes": 9192,
+      "imageDimensions": [
+        330,
+        329
+      ],
+      "revision": "2fba67d8e5a2fe81c30793ed"
+    },
+    {
+      "skillName": "nplus-d6083f07c228",
+      "componentId": "hw_nplus_d6083f07c228",
+      "displayName": "N+ LED灯",
+      "brand": "N+",
+      "category": "ACTUATOR",
+      "moduleType": "灯光",
+      "sourceUrl": "https://nplus-doc.readthedocs.io/zh-cn/latest/electroics/sensor/LED.html",
+      "documentationUrl": "https://nplus-doc.readthedocs.io/zh-cn/latest/electroics/sensor/LED.html",
+      "imageSourceUrl": "https://nplus-doc.readthedocs.io/zh-cn/latest/_images/2-1.png",
+      "originalImageSha256": "11ed12dc1071159d0c87bdc7d575b6dc69aae2a011c0b6a2c28faf78be15252c",
+      "imageSha256": "71710a2228f969c73582c57efb839ac41689ff6915f9b4ed9f3fce6ef71bade2",
+      "imageBytes": 5864,
+      "imageDimensions": [
+        279,
+        236
+      ],
+      "revision": "faa9513114ecdd5646d5c32c"
+    },
+    {
+      "skillName": "nplus-dbe8c4f7e0ad",
+      "componentId": "hw_nplus_dbe8c4f7e0ad",
+      "displayName": "N+ 触碰传感器",
+      "brand": "N+",
+      "category": "SENSOR",
+      "moduleType": "其他输入",
+      "sourceUrl": "https://nplus-doc.readthedocs.io/zh-cn/latest/electroics/sensor/touch.html",
+      "documentationUrl": "https://nplus-doc.readthedocs.io/zh-cn/latest/electroics/sensor/touch.html",
+      "imageSourceUrl": "https://nplus-doc.readthedocs.io/zh-cn/latest/_images/15-1.jpg",
+      "originalImageSha256": "d2afb7d592e3efa28e70b45058a0efc6bbfd753733de5984c330e9f7f7bc4056",
+      "imageSha256": "edffdf8b3b70714f1b05c938dcc5346fdaa90c8c8342891734c7654c181afe43",
+      "imageBytes": 8150,
+      "imageDimensions": [
+        181,
+        197
+      ],
+      "revision": "b38faa156920c736775cb2b3"
+    },
+    {
+      "skillName": "nplus-dd530eaae1ba",
+      "componentId": "hw_nplus_dd530eaae1ba",
+      "displayName": "N+ 360°舵机",
+      "brand": "N+",
+      "category": "ACTUATOR",
+      "moduleType": "舵机",
+      "sourceUrl": "https://nplus-doc.readthedocs.io/zh-cn/latest/electroics/sensor/servo360.html",
+      "documentationUrl": "https://nplus-doc.readthedocs.io/zh-cn/latest/electroics/sensor/servo360.html",
+      "imageSourceUrl": "https://nplus-doc.readthedocs.io/zh-cn/latest/_images/7-1.jpg",
+      "originalImageSha256": "c88a6f0a8dab8f4b1ea0a2efeb265105a5ecdeb88bba2a108ab79491ad995db4",
+      "imageSha256": "d169a267ffa924ec1ebd61951ecc8033e187a594a1de603c07bededa64ecd999",
+      "imageBytes": 3530,
+      "imageDimensions": [
+        159,
+        159
+      ],
+      "revision": "a88b955032f7765122c879db"
+    },
+    {
+      "skillName": "nplus-f22fdbbb328c",
+      "componentId": "hw_nplus_f22fdbbb328c",
+      "displayName": "N+ 按键",
+      "brand": "N+",
+      "category": "SENSOR",
+      "moduleType": "开关量",
+      "sourceUrl": "https://nplus-doc.readthedocs.io/zh-cn/latest/electroics/sensor/button.html",
+      "documentationUrl": "https://nplus-doc.readthedocs.io/zh-cn/latest/electroics/sensor/button.html",
+      "imageSourceUrl": "https://nplus-doc.readthedocs.io/zh-cn/latest/_images/5-1.jpg",
+      "originalImageSha256": "e27dccc6fb4aa6cae9fe7bb5e64bfdec343941aea47a7270b50cd022b27da477",
+      "imageSha256": "92a96eb1a8414e45ea748c9fba9c6b9355dbe13910ff463c377d7408fe6532c9",
+      "imageBytes": 7712,
+      "imageDimensions": [
+        217,
+        216
+      ],
+      "revision": "06fde7103f4ef14435ac3b0f"
+    },
+    {
+      "skillName": "nplus-fe83f6e5c369",
+      "componentId": "hw_nplus_fe83f6e5c369",
+      "displayName": "N+ 灯带",
+      "brand": "N+",
+      "category": "ACTUATOR",
+      "moduleType": "灯光",
+      "sourceUrl": "https://nplus-doc.readthedocs.io/zh-cn/latest/electroics/sensor/light.html",
+      "documentationUrl": "https://nplus-doc.readthedocs.io/zh-cn/latest/electroics/sensor/light.html",
+      "imageSourceUrl": "https://nplus-doc.readthedocs.io/zh-cn/latest/_images/3-1.jpg",
+      "originalImageSha256": "16a85b8708c634e1a65f9df53c6d66aa956dd6f6f75dfff134a3d23d4e1023b1",
+      "imageSha256": "d274f08489cf5521380482bff6e1f47aa9e1bb6e648366805798474ebfe51da4",
+      "imageBytes": 5372,
+      "imageDimensions": [
+        223,
+        140
+      ],
+      "revision": "2a3b8dda41e16e19b7d9073b"
+    },
+    {
+      "skillName": "seeed-0137185ddf8d",
+      "componentId": "hw_seeed_0137185ddf8d",
+      "displayName": "Grove - 电容式湿度传感器（耐腐蚀）",
+      "brand": "Seeed Grove",
+      "category": "SENSOR",
+      "moduleType": "液体",
+      "sourceUrl": "https://wiki.seeedstudio.com/cn/Grove_Sensor_Intro/#grove---电容式湿度传感器耐腐蚀",
+      "documentationUrl": "https://wiki.seeedstudio.com/cn/Grove-Capacitive_Moisture_Sensor-Corrosion-Resistant/",
+      "imageSourceUrl": "https://files.seeedstudio.com/wiki/Grove-Capacitive_Moisture_Sensor_Corrosion_Resistant/img/main.jpg",
+      "originalImageSha256": "9f37b085e0694513f82967f88532b80fe4a29262938d72d5bd92a49fe0bccf85",
+      "imageSha256": "ef2ce8ed9cd9f38a2e0c4ea67d6130f76d5d169b4da0e3d832ef875fa876a42f",
+      "imageBytes": 16712,
+      "imageDimensions": [
+        640,
+        480
+      ],
+      "revision": "fdb1de882516248e3e97d40d"
+    },
+    {
+      "skillName": "seeed-0410c2c50453",
+      "componentId": "hw_seeed_0410c2c50453",
+      "displayName": "Grove - 数字PIR传感器",
+      "brand": "Seeed Grove",
+      "category": "SENSOR",
+      "moduleType": "开关量",
+      "sourceUrl": "https://wiki.seeedstudio.com/cn/Grove_Sensor_Intro/#grove---数字pir传感器",
+      "documentationUrl": "https://wiki.seeedstudio.com/cn/Grove-Digital-PIR-Sensor/",
+      "imageSourceUrl": "https://files.seeedstudio.com/products/101020793/img/101020793wiki.png",
+      "originalImageSha256": "7f7bc8148f45044df58b5e45277f23c76635f32617c2f2ee250f0a95fe9fca0e",
+      "imageSha256": "8d388b32c1eb7ba7f9e2643bf6d10cb6f0041ccf9e1031ba5f6c868aa4a249e5",
+      "imageBytes": 9590,
+      "imageDimensions": [
+        640,
+        480
+      ],
+      "revision": "0983acfeb333401e8b4c8f6a"
+    },
+    {
+      "skillName": "seeed-07c5d32e3278",
+      "componentId": "hw_seeed_07c5d32e3278",
+      "displayName": "Grove - 水位传感器",
+      "brand": "Seeed Grove",
+      "category": "SENSOR",
+      "moduleType": "液体",
+      "sourceUrl": "https://wiki.seeedstudio.com/cn/Grove_Sensor_Intro/#grove---水位传感器",
+      "documentationUrl": "https://wiki.seeedstudio.com/cn/Grove-Water-Level-Sensor/",
+      "imageSourceUrl": "https://files.seeedstudio.com/wiki/Grove-Water-Level-Sensor/img/Grove-Water-Level-Sensor-10CM-wiki.jpg",
+      "originalImageSha256": "9cd464102bce99cf33f7fbd6211a7820463bc24c03baea3bdee357bb70321392",
+      "imageSha256": "da6fb55fcbf4a3ae9b6b392b97b1eb41212cb86030e72cd74b7bfcf40013fe97",
+      "imageBytes": 16764,
+      "imageDimensions": [
+        640,
+        480
+      ],
+      "revision": "3b1462476eaa6e4dcd8c4ab0"
+    },
+    {
+      "skillName": "seeed-0950be1c2c87",
+      "componentId": "hw_seeed_0950be1c2c87",
+      "displayName": "Grove - 录音模块 v2.0",
+      "brand": "Seeed Grove",
+      "category": "SENSOR",
+      "moduleType": "声音",
+      "sourceUrl": "https://wiki.seeedstudio.com/cn/Grove_Sensor_Intro/#grove---录音模块-v20",
+      "documentationUrl": "https://wiki.seeedstudio.com/cn/Grove-Recorder_v2.0/",
+      "imageSourceUrl": "https://media-cdn.seeedstudio.com/media/catalog/product/cache/bb49d3ec4ee05b6f018e93f896b8a25d/0/5/05_5_1.png",
+      "originalImageSha256": "ceade6a6e42202b363c163ac8dcd358138a975fb9919fcbbca0d00a7a1043e78",
+      "imageSha256": "9921c531a06ddb66255a70015a49d9871d4c273b566692d3d3ec89097fe4be8f",
+      "imageBytes": 13632,
+      "imageDimensions": [
+        640,
+        480
+      ],
+      "revision": "4010faa31f4dea4f0d6b910d"
+    },
+    {
+      "skillName": "seeed-0d9e8c0d3156",
+      "componentId": "hw_seeed_0d9e8c0d3156",
+      "displayName": "Grove SEN5X 一体化传感器",
+      "brand": "Seeed Grove",
+      "category": "SENSOR",
+      "moduleType": "环境",
+      "sourceUrl": "https://wiki.seeedstudio.com/cn/Grove_Sensor_Intro/#grove-sen5x-一体化传感器",
+      "documentationUrl": "https://wiki.seeedstudio.com/cn/Grove_SEN5X_All_in_One/",
+      "imageSourceUrl": "https://files.seeedstudio.com/wiki/GroveAllin1/GroveAllin1overview.jpg",
+      "originalImageSha256": "2ed66ca00dd2c727805154b498fa1ecf7de2473db6512fc6bb341015c4703a12",
+      "imageSha256": "55a2c171b547c3e87099669a1fd469f426d401024323c243a9d75d0e186f862b",
+      "imageBytes": 10138,
+      "imageDimensions": [
+        640,
+        480
+      ],
+      "revision": "c4590e9152df2b7e4a5ea3d3"
+    },
+    {
+      "skillName": "seeed-103213e13283",
+      "componentId": "hw_seeed_103213e13283",
+      "displayName": "Grove - 光线手势颜色接近传感器 (TMG39931)",
+      "brand": "Seeed Grove",
+      "category": "SENSOR",
+      "moduleType": "环境",
+      "sourceUrl": "https://wiki.seeedstudio.com/cn/Grove_Sensor_Intro/#grove---光线手势颜色接近传感器-tmg39931",
+      "documentationUrl": "https://wiki.seeedstudio.com/cn/Grove-Light-Gesture-Color-Proximity_Sensor-TMG39931/",
+      "imageSourceUrl": "https://files.seeedstudio.com/wiki/Grove-Light-Gesture-Color-Proximity_Sensor-TMG39931/img/main.jpg",
+      "originalImageSha256": "fa023e7bf6234b43099cf80b799866d0cd041112071d9bd874eabd9d08735667",
+      "imageSha256": "45841c89053556562c001509036afa720a0a90c2c064e2d6c6b286d765f16b1b",
+      "imageBytes": 22302,
+      "imageDimensions": [
+        640,
+        480
+      ],
+      "revision": "8a07f41e7e7e42c711633aee"
+    },
+    {
+      "skillName": "seeed-109825053ca0",
+      "componentId": "hw_seeed_109825053ca0",
+      "displayName": "Grove - 12 键电容式 I2C 触摸传感器 V3 (MPR121)",
+      "brand": "Seeed Grove",
+      "category": "SENSOR",
+      "moduleType": "开关量",
+      "sourceUrl": "https://wiki.seeedstudio.com/cn/Grove_Sensor_Intro/#grove---12-键电容式-i2c-触摸传感器-v3-mpr121",
+      "documentationUrl": "https://wiki.seeedstudio.com/cn/Grove-12-Key-Capacitive-I2C-Touch-Sensor-V3-MPR121/",
+      "imageSourceUrl": "https://media-cdn.seeedstudio.com/media/catalog/product/cache/bb49d3ec4ee05b6f018e93f896b8a25d/1/0/101020872_touch-sensor-v3.png",
+      "originalImageSha256": "2ef7fc6ddfd7c8e26d9afae1f736417ff58a5f7fe5637da745582d2e6b036704",
+      "imageSha256": "211430f8cedd32e2a38f55dae19139ade9353698f9b03713a14a15ca8f4b11f0",
+      "imageBytes": 23802,
+      "imageDimensions": [
+        640,
+        480
+      ],
+      "revision": "3c4a877a8a7e12259cf1c0e9"
+    },
+    {
+      "skillName": "seeed-1167ab92f33b",
+      "componentId": "hw_seeed_1167ab92f33b",
+      "displayName": "Grove - 可调式 PIR 动作传感器",
+      "brand": "Seeed Grove",
+      "category": "SENSOR",
+      "moduleType": "距离",
+      "sourceUrl": "https://wiki.seeedstudio.com/cn/Grove_Sensor_Intro/#grove---可调式-pir-动作传感器",
+      "documentationUrl": "https://wiki.seeedstudio.com/cn/Grove-Adjustable_PIR_Motion_Sensor/",
+      "imageSourceUrl": "https://files.seeedstudio.com/wiki/Grove-Adjustable_PIR_Motion_Sensor/img/main.jpg",
+      "originalImageSha256": "3306f23265abdb09d8c3c1cb3fb1a963920348504c60f7bada332e1f349c3a34",
+      "imageSha256": "a8ae87bd0c53850406846787ba75624da83d06c8ca0780899f5b4f111f19448f",
+      "imageBytes": 11394,
+      "imageDimensions": [
+        640,
+        480
+      ],
+      "revision": "9cc4baa97ad1762e106808e7"
+    },
+    {
+      "skillName": "seeed-12a992e413cd",
+      "componentId": "hw_seeed_12a992e413cd",
+      "displayName": "Grove - 2 通道感应传感器 (LDC1612)",
+      "brand": "Seeed Grove",
+      "category": "SENSOR",
+      "moduleType": "开关量",
+      "sourceUrl": "https://wiki.seeedstudio.com/cn/Grove_Sensor_Intro/#grove---2-通道感应传感器-ldc1612",
+      "documentationUrl": "https://wiki.seeedstudio.com/cn/Grove-2_Channel_Inductive_Sensor-LDC1612/",
+      "imageSourceUrl": "https://files.seeedstudio.com/wiki/Grove-2-Channel_Inductive_Sensor-LDC1612/img/main.jpg",
+      "originalImageSha256": "1f9ab55270bbec3e5b3195da606ec7866c648484656974f053da34d5c3b692f9",
+      "imageSha256": "b7f4226cff654bb47f852ec5d4e3fec8d5ff9e19b8014525888856c0093bd349",
+      "imageBytes": 18644,
+      "imageDimensions": [
+        640,
+        480
+      ],
+      "revision": "b275f937db20732cc6ba97e1"
+    },
+    {
+      "skillName": "seeed-18757192f955",
+      "componentId": "hw_seeed_18757192f955",
+      "displayName": "Grove - 旋转角度传感器",
+      "brand": "Seeed Grove",
+      "category": "SENSOR",
+      "moduleType": "姿态",
+      "sourceUrl": "https://wiki.seeedstudio.com/cn/Grove_Sensor_Intro/#grove---旋转角度传感器",
+      "documentationUrl": "https://wiki.seeedstudio.com/cn/Grove-Rotary_Angle_Sensor/",
+      "imageSourceUrl": "https://media-cdn.seeedstudio.com/media/catalog/product/cache/bb49d3ec4ee05b6f018e93f896b8a25d/h/t/httpsstatics3.seeedstudio.comseeedfile2018-07bazaar881159_2.jpg",
+      "originalImageSha256": "bf198fe1bd24dfa22d350d83cfe8fdaf2a6bca2f3402ac49998d7fcf5b79184e",
+      "imageSha256": "99d950d16546655e05bc4fe393cf10b5f26ebb0ab4310c4f0e764b94b286ced5",
+      "imageBytes": 9546,
+      "imageDimensions": [
+        640,
+        480
+      ],
+      "revision": "a18d4a7ab695e896e4a92f57"
+    },
+    {
+      "skillName": "seeed-1c5a28775936",
+      "componentId": "hw_seeed_1c5a28775936",
+      "displayName": "Grove-温度传感器",
+      "brand": "Seeed Grove",
+      "category": "SENSOR",
+      "moduleType": "环境",
+      "sourceUrl": "https://wiki.seeedstudio.com/cn/Grove_Sensor_Intro/#grove-温度传感器",
+      "documentationUrl": "https://wiki.seeedstudio.com/cn/Grove-Temperature_Sensor/",
+      "imageSourceUrl": "https://media-cdn.seeedstudio.com/media/catalog/product/cache/bb49d3ec4ee05b6f018e93f896b8a25d/h/t/httpsstatics3.seeedstudio.comseeedfile2017-11bazaar619115_1010200153.jpg",
+      "originalImageSha256": "37ba65d8fe7a5da984976ba947059e65f7688b6192e6bcd3cb759a4cddbbfea6",
+      "imageSha256": "dd520f3f9ab4369dbfc530fa550a07686f69822ea62e896053ec8f50e8bbd982",
+      "imageBytes": 18048,
+      "imageDimensions": [
+        640,
+        480
+      ],
+      "revision": "6e7fad931f7b23234ca836a1"
+    },
+    {
+      "skillName": "seeed-1ca60d89258e",
+      "componentId": "hw_seeed_1ca60d89258e",
+      "displayName": "Grove 智能红外手势传感器 (PAJ7660)",
+      "brand": "Seeed Grove",
+      "category": "SENSOR",
+      "moduleType": "姿态",
+      "sourceUrl": "https://wiki.seeedstudio.com/cn/Grove_Sensor_Intro/#grove-智能红外手势传感器-paj7660",
+      "documentationUrl": "https://wiki.seeedstudio.com/cn/grove_gesture_paj7660/",
+      "imageSourceUrl": "https://files.seeedstudio.com/wiki/grove-gesture-paj7620/main.jpg",
+      "originalImageSha256": "a69395829fa459715e007954b2e7fc3137084e542e7f5a80be5175612534f045",
+      "imageSha256": "a7ed8f1724b76515d1b12764a82785c606725382b69a1b47ba9061c24dce1eb4",
+      "imageBytes": 21738,
+      "imageDimensions": [
+        640,
+        480
+      ],
+      "revision": "d37788d7c75d4b65b6a9b6ca"
+    },
+    {
+      "skillName": "seeed-1d6b01150edf",
+      "componentId": "hw_seeed_1d6b01150edf",
+      "displayName": "Grove - 六轴加速度计和陀螺仪 (BMI088)",
+      "brand": "Seeed Grove",
+      "category": "SENSOR",
+      "moduleType": "姿态",
+      "sourceUrl": "https://wiki.seeedstudio.com/cn/Grove_Sensor_Intro/#grove---六轴加速度计和陀螺仪-bmi088",
+      "documentationUrl": "https://wiki.seeedstudio.com/cn/Grove-6-Axis_Accelerometer&Gyroscope_BMI088/",
+      "imageSourceUrl": "https://files.seeedstudio.com/wiki/Grove-6-Axis_Accelerometer-Gyroscope-BMI088/img/main.jpg",
+      "originalImageSha256": "e26ee115323a421fddf7cbd0c992336a8c2556cb2c22de384a391eee861725f6",
+      "imageSha256": "3fdf9faed8b058bc683d6f2acfefac8468f5fe85f01c76759d38416078ec12d0",
+      "imageBytes": 15560,
+      "imageDimensions": [
+        640,
+        480
+      ],
+      "revision": "ae69a0879ac2d82eb002771b"
+    },
+    {
+      "skillName": "seeed-22adc1470586",
+      "componentId": "hw_seeed_22adc1470586",
+      "displayName": "Grove - 二氧化碳传感器",
+      "brand": "Seeed Grove",
+      "category": "SENSOR",
+      "moduleType": "环境",
+      "sourceUrl": "https://wiki.seeedstudio.com/cn/Grove_Sensor_Intro/#grove---二氧化碳传感器",
+      "documentationUrl": "https://wiki.seeedstudio.com/cn/Grove-CO2_Sensor/",
+      "imageSourceUrl": "https://files.seeedstudio.com/wiki/Grove-CO2_Sensor/img/Grove_CO2_Sensor.jpg",
+      "originalImageSha256": "1995e46b0497f50e4f27e030dfa7bc1a47ab20d6803a7437f683b11989c39b7f",
+      "imageSha256": "adca3e8e9a58899308a3f63f0f53c042428559972615925482c79af5e01562f7",
+      "imageBytes": 12884,
+      "imageDimensions": [
+        640,
+        480
+      ],
+      "revision": "d551990937416fd050e34eb8"
+    },
+    {
+      "skillName": "seeed-26600bc16499",
+      "componentId": "hw_seeed_26600bc16499",
+      "displayName": "Grove - 气体传感器模块",
+      "brand": "Seeed Grove",
+      "category": "SENSOR",
+      "moduleType": "环境",
+      "sourceUrl": "https://wiki.seeedstudio.com/cn/Grove_Sensor_Intro/#grove---气体传感器模块",
+      "documentationUrl": "https://wiki.seeedstudio.com/cn/Grove-Gas_Sensor-MQ2/",
+      "imageSourceUrl": "https://files.seeedstudio.com/wiki/Grove-Gas_Sensor-MQ2/img/Twig-Gas_Sensor.bmp",
+      "originalImageSha256": "fff400995f8a553cdc091bee2529ddb6a83f2c0fa454b0d42684c342bf9a0ab0",
+      "imageSha256": "dd7212f57a350e009bb321bab2aa8d32e5a6eced9306c76c56104998fa4ac1e9",
+      "imageBytes": 27304,
+      "imageDimensions": [
+        640,
+        480
+      ],
+      "revision": "941fbb367e4d26ea8b5d868d"
+    },
+    {
+      "skillName": "seeed-2ba7ae88d840",
+      "componentId": "hw_seeed_2ba7ae88d840",
+      "displayName": "Grove - 高精度气压传感器 DPS310",
+      "brand": "Seeed Grove",
+      "category": "SENSOR",
+      "moduleType": "环境",
+      "sourceUrl": "https://wiki.seeedstudio.com/cn/Grove_Sensor_Intro/#grove---高精度气压传感器-dps310",
+      "documentationUrl": "https://wiki.seeedstudio.com/cn/Grove-High-Precision-Barometric-Pressure-Sensor-DPS310/",
+      "imageSourceUrl": "https://files.seeedstudio.com/wiki/Grove-High-Precision-Barometer-Sensor-DPS310/img/Grove-High-Precision-Barometer-Sensor-DPS310-wiki.jpg",
+      "originalImageSha256": "02d003aacbaa0c1254c8392ef59ee63a18e4acc21967c63c6d2240c9472b5044",
+      "imageSha256": "76e4252ea4886c2bf78daabaaea56d50e8c75af1c42171bc6433050c01a7cfe1",
+      "imageBytes": 24098,
+      "imageDimensions": [
+        640,
+        480
+      ],
+      "revision": "7ea6b3096d97d36d14fb5b2f"
+    },
+    {
+      "skillName": "seeed-2c56388e9e3a",
+      "componentId": "hw_seeed_2c56388e9e3a",
+      "displayName": "Grove - 气压计（高精度）",
+      "brand": "Seeed Grove",
+      "category": "SENSOR",
+      "moduleType": "环境",
+      "sourceUrl": "https://wiki.seeedstudio.com/cn/Grove_Sensor_Intro/#grove---气压计高精度",
+      "documentationUrl": "https://wiki.seeedstudio.com/cn/Grove-Barometer-High-Accuracy/",
+      "imageSourceUrl": "https://files.seeedstudio.com/wiki/Grove-Barometer-High-Accuracy/img/main.jpg",
+      "originalImageSha256": "e76d5043bbaac33723e75c7fd748035b818fd00b80fb77221bbe8e537e4b81fa",
+      "imageSha256": "16feb3e85c2959b249b554f2f1494aa714ab44b97b02b730b3f3afa887d70c77",
+      "imageBytes": 14962,
+      "imageDimensions": [
+        640,
+        480
+      ],
+      "revision": "aba79ee9a93afe8dd0757252"
+    },
+    {
+      "skillName": "seeed-3270077a17d0",
+      "componentId": "hw_seeed_3270077a17d0",
+      "displayName": "Grove - 湿度传感器",
+      "brand": "Seeed Grove",
+      "category": "SENSOR",
+      "moduleType": "液体",
+      "sourceUrl": "https://wiki.seeedstudio.com/cn/Grove_Sensor_Intro/#grove---湿度传感器",
+      "documentationUrl": "https://wiki.seeedstudio.com/cn/Grove-Moisture_Sensor/",
+      "imageSourceUrl": "https://media-cdn.seeedstudio.com/media/catalog/product/cache/bb49d3ec4ee05b6f018e93f896b8a25d/h/t/httpsstatics3.seeedstudio.comseeedfile2018-07bazaar881132_3.jpg",
+      "originalImageSha256": "10820d8bf9f493e811907c5e5105329d1ae097a9651496c41062454d93196953",
+      "imageSha256": "efcbbda99f3e5b2503cbcab9e948508bc47e2cdbae60ffb880929eebcf359d99",
+      "imageBytes": 15608,
+      "imageDimensions": [
+        640,
+        480
+      ],
+      "revision": "c12a933ecb7c6722401ab6c8"
+    },
+    {
+      "skillName": "seeed-32c137047f2a",
+      "componentId": "hw_seeed_32c137047f2a",
+      "displayName": "Grove - 1-Wire 热电偶放大器(MAX31850K)",
+      "brand": "Seeed Grove",
+      "category": "SENSOR",
+      "moduleType": "环境",
+      "sourceUrl": "https://wiki.seeedstudio.com/cn/Grove_Sensor_Intro/#grove---1-wire-热电偶放大器max31850k",
+      "documentationUrl": "https://wiki.seeedstudio.com/cn/Grove-1-Wire_Thermocouple_Amplifier-MAX31850K/",
+      "imageSourceUrl": "https://media-cdn.seeedstudio.com/media/catalog/product/cache/bb49d3ec4ee05b6f018e93f896b8a25d/h/t/httpsstatics3.seeedstudio.comseeedfile2018-09bazaar937434_img_0086a.jpg",
+      "originalImageSha256": "ad152f1411e2eb4dae1fd0d798b5c04d68b390330337e943db3f3be17fbe2ed7",
+      "imageSha256": "43cd10a2d390648e0756b8c4579277d86deff776d2854040d570cb3809680202",
+      "imageBytes": 26142,
+      "imageDimensions": [
+        640,
+        480
+      ],
+      "revision": "1f26693b766cc0742fd8d496"
+    },
+    {
+      "skillName": "seeed-371cf6142b6c",
+      "componentId": "hw_seeed_371cf6142b6c",
+      "displayName": "Grove - 激光 PM2.5 传感器 (HM3301)",
+      "brand": "Seeed Grove",
+      "category": "SENSOR",
+      "moduleType": "环境",
+      "sourceUrl": "https://wiki.seeedstudio.com/cn/Grove_Sensor_Intro/#grove---激光-pm25-传感器-hm3301",
+      "documentationUrl": "https://wiki.seeedstudio.com/cn/Grove-Laser_PM2.5_Sensor-HM3301/",
+      "imageSourceUrl": "https://files.seeedstudio.com/wiki/Grove-Laser_PM2.5_Sensor-HM3301/img/main.jpg",
+      "originalImageSha256": "f58b78ec9e19e82cd280acf57455bf00ffcc042d561e3a021e0288ff14a37b0e",
+      "imageSha256": "c713ea3ddf662ef12f9f05f3f1039394509dfb8241559731ef5acb3f0484b6d1",
+      "imageBytes": 15494,
+      "imageDimensions": [
+        640,
+        480
+      ],
+      "revision": "7f30af37bf1c1bd3ad86aab7"
+    },
+    {
+      "skillName": "seeed-375de9b47216",
+      "componentId": "hw_seeed_375de9b47216",
+      "displayName": "Grove - 超声波测距仪",
+      "brand": "Seeed Grove",
+      "category": "SENSOR",
+      "moduleType": "距离",
+      "sourceUrl": "https://wiki.seeedstudio.com/cn/Grove_Sensor_Intro/#grove---超声波测距仪",
+      "documentationUrl": "https://wiki.seeedstudio.com/cn/Grove-Ultrasonic_Ranger/",
+      "imageSourceUrl": "https://files.seeedstudio.com/wiki/Grove_Ultrasonic_Ranger/V2.jpg",
+      "originalImageSha256": "e856486d694dcf56faccfbb91997fec6cd8b381b6772cfacc1e10e7ae287ed66",
+      "imageSha256": "20e9dd95ddece34e6f147176b97277618260487f066d5124b0f05eab2c96fc00",
+      "imageBytes": 21410,
+      "imageDimensions": [
+        640,
+        480
+      ],
+      "revision": "579d58dc63db9a7659463b49"
+    },
+    {
+      "skillName": "seeed-3956393bcdc4",
+      "componentId": "hw_seeed_3956393bcdc4",
+      "displayName": "Grove - 红外温度传感器",
+      "brand": "Seeed Grove",
+      "category": "SENSOR",
+      "moduleType": "环境",
+      "sourceUrl": "https://wiki.seeedstudio.com/cn/Grove_Sensor_Intro/#grove---红外温度传感器",
+      "documentationUrl": "https://wiki.seeedstudio.com/cn/Grove-Infrared_Temperature_Sensor/",
+      "imageSourceUrl": "https://files.seeedstudio.com/wiki/Grove-Infrared_Temperature_Sensor/img/main.jpg",
+      "originalImageSha256": "73176ba4a87c932df3ac9aa51a07b219f6294a6edad5e6e7d14a1396d32d3ef5",
+      "imageSha256": "791efc90c65508f78bd74f2ff347119291a149364efb5d49baa9c90ef636956e",
+      "imageBytes": 16766,
+      "imageDimensions": [
+        640,
+        480
+      ],
+      "revision": "f3a63de4154ba092092df701"
+    },
+    {
+      "skillName": "seeed-3a429b7ce7b4",
+      "componentId": "hw_seeed_3a429b7ce7b4",
+      "displayName": "Grove - 温度传感器 V1.2",
+      "brand": "Seeed Grove",
+      "category": "SENSOR",
+      "moduleType": "环境",
+      "sourceUrl": "https://wiki.seeedstudio.com/cn/Grove_Sensor_Intro/#grove---温度传感器-v12",
+      "documentationUrl": "https://wiki.seeedstudio.com/cn/Grove-Temperature_Sensor_V1.2/",
+      "imageSourceUrl": "https://media-cdn.seeedstudio.com/media/catalog/product/cache/bb49d3ec4ee05b6f018e93f896b8a25d/h/t/httpsstatics3.seeedstudio.comseeedfile2017-11bazaar619115_1010200153.jpg",
+      "originalImageSha256": "37ba65d8fe7a5da984976ba947059e65f7688b6192e6bcd3cb759a4cddbbfea6",
+      "imageSha256": "dd520f3f9ab4369dbfc530fa550a07686f69822ea62e896053ec8f50e8bbd982",
+      "imageBytes": 18048,
+      "imageDimensions": [
+        640,
+        480
+      ],
+      "revision": "c738489807ff93a5c54677fa"
+    },
+    {
+      "skillName": "seeed-3bc17a38eb0d",
+      "componentId": "hw_seeed_3bc17a38eb0d",
+      "displayName": "Grove - 飞行时间距离传感器 VL53L0X",
+      "brand": "Seeed Grove",
+      "category": "SENSOR",
+      "moduleType": "距离",
+      "sourceUrl": "https://wiki.seeedstudio.com/cn/Grove_Sensor_Intro/#grove---飞行时间距离传感器-vl53l0x",
+      "documentationUrl": "https://wiki.seeedstudio.com/cn/Grove-Time_of_Flight_Distance_Sensor-VL53L0X/",
+      "imageSourceUrl": "https://files.seeedstudio.com/wiki/Grove-Doppler-Radar/IMG/01.png",
+      "originalImageSha256": "26fc21c8aa0c68cc76bda2cbdd4a57ff054ab431e5c92b09e7908b1733466de6",
+      "imageSha256": "e55def841aad8d858d30f84b6f469ade26fc95d0c2d5359dd07d8b1b6f2504c6",
+      "imageBytes": 32690,
+      "imageDimensions": [
+        640,
+        480
+      ],
+      "revision": "c443b7d38e425f50a7233492"
+    },
+    {
+      "skillName": "seeed-46151ae00fc3",
+      "componentId": "hw_seeed_46151ae00fc3",
+      "displayName": "Grove - 数字光传感器",
+      "brand": "Seeed Grove",
+      "category": "SENSOR",
+      "moduleType": "光和图像",
+      "sourceUrl": "https://wiki.seeedstudio.com/cn/Grove_Sensor_Intro/#grove---数字光传感器",
+      "documentationUrl": "https://wiki.seeedstudio.com/cn/Grove-Digital_Light_Sensor/",
+      "imageSourceUrl": "https://media-cdn.seeedstudio.com/media/catalog/product/cache/bb49d3ec4ee05b6f018e93f896b8a25d/h/t/httpsstatics3.seeedstudio.comseeedfile2018-07bazaar881092_3.jpg",
+      "originalImageSha256": "c681ff8f3e34b3f365bc70fd7e111b4b099d17451d014812ec038b6ba596aa11",
+      "imageSha256": "c2239e2d3e42474ce6f502949823de3a280182e8c1a03230b9728782c84b945d",
+      "imageBytes": 16934,
+      "imageDimensions": [
+        640,
+        480
+      ],
+      "revision": "0346ff0af780e0bdf11e9b4e"
+    },
+    {
+      "skillName": "seeed-461d2210b1e2",
+      "componentId": "hw_seeed_461d2210b1e2",
+      "displayName": "Grove - 温湿度传感器 (DHT20)",
+      "brand": "Seeed Grove",
+      "category": "SENSOR",
+      "moduleType": "环境",
+      "sourceUrl": "https://wiki.seeedstudio.com/cn/Grove_Sensor_Intro/#grove---温湿度传感器-dht20",
+      "documentationUrl": "https://wiki.seeedstudio.com/cn/Grove-Temperature-Humidity-Sensor-DH20/",
+      "imageSourceUrl": "https://media-cdn.seeedstudio.com/media/catalog/product/cache/bb49d3ec4ee05b6f018e93f896b8a25d/1/0/101020932_preview-07-min_1.jpg",
+      "originalImageSha256": "b8ae2bdeea26ca83dfd1688e651f506e76fc181bb82a7c9783d1f6b50fb26b6e",
+      "imageSha256": "0ca82bf184006f873fc0f9871ee62a5017863821bdd7073878c8f11c35621fa3",
+      "imageBytes": 13642,
+      "imageDimensions": [
+        640,
+        480
+      ],
+      "revision": "8b9e34b4aa05cadd44f43c0c"
+    },
+    {
+      "skillName": "seeed-4eaa2dda46e1",
+      "componentId": "hw_seeed_4eaa2dda46e1",
+      "displayName": "Grove - IMU 9DOF (lcm20600+AK09918)",
+      "brand": "Seeed Grove",
+      "category": "SENSOR",
+      "moduleType": "姿态",
+      "sourceUrl": "https://wiki.seeedstudio.com/cn/Grove_Sensor_Intro/#grove---imu-9dof-lcm20600ak09918",
+      "documentationUrl": "https://wiki.seeedstudio.com/cn/Grove-IMU_9DOF-lcm20600+AK09918/",
+      "imageSourceUrl": "https://files.seeedstudio.com/wiki/Grove-IMU_9DOF-lcm20600_AK09918/img/Main.jpg",
+      "originalImageSha256": "7242a0462f6ba9041c33fe734cf660ec6e51c2d20f680b5f435cfc4e5126e77f",
+      "imageSha256": "ed7ff93defe40b1299d32a927aa53fa6536ef45b2fd10f22a440e2007c4f40a9",
+      "imageBytes": 24684,
+      "imageDimensions": [
+        640,
+        480
+      ],
+      "revision": "3a7b0094adf3d92cabbc022f"
+    },
+    {
+      "skillName": "seeed-4eaed70891cc",
+      "componentId": "hw_seeed_4eaed70891cc",
+      "displayName": "Grove - 空气质量传感器 v1.3",
+      "brand": "Seeed Grove",
+      "category": "SENSOR",
+      "moduleType": "环境",
+      "sourceUrl": "https://wiki.seeedstudio.com/cn/Grove_Sensor_Intro/#grove---空气质量传感器-v13",
+      "documentationUrl": "https://wiki.seeedstudio.com/cn/Grove-Air_Quality_Sensor_v1.3/",
+      "imageSourceUrl": "https://media-cdn.seeedstudio.com/media/catalog/product/cache/bb49d3ec4ee05b6f018e93f896b8a25d/h/t/httpsstatics3.seeedstudio.comproduct101020078201_02.jpg",
+      "originalImageSha256": "679a5db8ff3f0ada29644e850f17bd5b5369f0e3377a813403eb574ce58d0b37",
+      "imageSha256": "f33962ac4e9ad6dea60fbc91e30192bff7be31ae340c0e8c10740f89c267de5b",
+      "imageBytes": 21866,
+      "imageDimensions": [
+        640,
+        480
+      ],
+      "revision": "89b30d77171d2cc369953135"
+    },
+    {
+      "skillName": "seeed-5066d8d97ab2",
+      "componentId": "hw_seeed_5066d8d97ab2",
+      "displayName": "Grove - 线路探测器 V1.1",
+      "brand": "Seeed Grove",
+      "category": "SENSOR",
+      "moduleType": "光和图像",
+      "sourceUrl": "https://wiki.seeedstudio.com/cn/Grove_Sensor_Intro/#grove---线路探测器-v11",
+      "documentationUrl": "https://wiki.seeedstudio.com/cn/Grove-Line_Finder/",
+      "imageSourceUrl": "https://media-cdn.seeedstudio.com/media/catalog/product/cache/bb49d3ec4ee05b6f018e93f896b8a25d/f/7/f7977d25c91ae8cb643e6e27412c097e.image_1024_1.jpg",
+      "originalImageSha256": "c27077ff5ebe94a93f9258f0a5ba12bfd86bf2f712a9e98664a88131e75653bb",
+      "imageSha256": "8d9c525fbf4788cc26b4731e652a3b1d5342bd6d5c9fa593163a14a9de4bceb8",
+      "imageBytes": 22292,
+      "imageDimensions": [
+        640,
+        480
+      ],
+      "revision": "64d1fd3a48b8a7fefeac37bd"
+    },
+    {
+      "skillName": "seeed-54a8e75399c8",
+      "componentId": "hw_seeed_54a8e75399c8",
+      "displayName": "Grove - 圆形力传感器 FSR402",
+      "brand": "Seeed Grove",
+      "category": "SENSOR",
+      "moduleType": "开关量",
+      "sourceUrl": "https://wiki.seeedstudio.com/cn/Grove_Sensor_Intro/#grove---圆形力传感器-fsr402",
+      "documentationUrl": "https://wiki.seeedstudio.com/cn/Grove-Round_Force_Sensor_FSR402/",
+      "imageSourceUrl": "https://files.seeedstudio.com/wiki/Grove-Round_Force_Sensor_FSR402/img/main.jpg",
+      "originalImageSha256": "d1ae6454f3d9f31702f061c544ffcd4d6c520fdf0f09a977ccbbf26a929f3cf8",
+      "imageSha256": "b20b5149aedb31fc753a5d2b61cd8a401908477d20b8c70d4fc519dda1d078d7",
+      "imageBytes": 14536,
+      "imageDimensions": [
+        640,
+        480
+      ],
+      "revision": "c3d1246dca8032876ebeb14f"
+    },
+    {
+      "skillName": "seeed-57cea188b3c8",
+      "componentId": "hw_seeed_57cea188b3c8",
+      "displayName": "Grove - TDS 传感器",
+      "brand": "Seeed Grove",
+      "category": "SENSOR",
+      "moduleType": "液体",
+      "sourceUrl": "https://wiki.seeedstudio.com/cn/Grove_Sensor_Intro/#grove---tds-传感器",
+      "documentationUrl": "https://wiki.seeedstudio.com/cn/Grove-TDS-Sensor/",
+      "imageSourceUrl": "https://media-cdn.seeedstudio.com/media/catalog/product/cache/bb49d3ec4ee05b6f018e93f896b8a25d/g/r/grove-tds-sensor-preview.jpg",
+      "originalImageSha256": "f5b70e69e2b3307d562c444fcb56ff7a39b0f483daafeb1aef2d4d769aacaa45",
+      "imageSha256": "570cc640ad4be81209434a87c6babc1982794934f82875699ccd3682679c6686",
+      "imageBytes": 23114,
+      "imageDimensions": [
+        640,
+        480
+      ],
+      "revision": "ad86940e47fd55dbe905cf5b"
+    },
+    {
+      "skillName": "seeed-5cc7c9821886",
+      "componentId": "hw_seeed_5cc7c9821886",
+      "displayName": "Grove - 红外温度传感器阵列 (AMG8833)",
+      "brand": "Seeed Grove",
+      "category": "SENSOR",
+      "moduleType": "环境",
+      "sourceUrl": "https://wiki.seeedstudio.com/cn/Grove_Sensor_Intro/#grove---红外温度传感器阵列-amg8833",
+      "documentationUrl": "https://wiki.seeedstudio.com/cn/Grove-Infrared_Temperature_Sensor_Array-AMG8833/",
+      "imageSourceUrl": "https://files.seeedstudio.com/wiki/Grove-Infrared_Temperature_Sensor_Array-AMG8833/img/main.jpg",
+      "originalImageSha256": "dedd8b950b696b03de3e8520b85955f6868eebbd71dddeef36824db69f8ab856",
+      "imageSha256": "7a29806e5b6949d53cf908668a983e8d3b82552ab5a4483d947a5b28a32ebc19",
+      "imageBytes": 20094,
+      "imageDimensions": [
+        640,
+        480
+      ],
+      "revision": "e7fd4cff752ff10749fbc0fc"
+    },
+    {
+      "skillName": "seeed-5dd78b197ea5",
+      "componentId": "hw_seeed_5dd78b197ea5",
+      "displayName": "Grove - 触摸传感器",
+      "brand": "Seeed Grove",
+      "category": "SENSOR",
+      "moduleType": "开关量",
+      "sourceUrl": "https://wiki.seeedstudio.com/cn/Grove_Sensor_Intro/#grove---触摸传感器",
+      "documentationUrl": "https://wiki.seeedstudio.com/cn/Grove-Touch_Sensor/",
+      "imageSourceUrl": "https://media-cdn.seeedstudio.com/media/catalog/product/cache/bb49d3ec4ee05b6f018e93f896b8a25d/h/t/httpsstatics3.seeedstudio.comseeedfile2018-07bazaar881144_3.jpg",
+      "originalImageSha256": "01ffd2fc5782ffabdc4192e002dd95473b7d88643ba6cb0253e87ce7897f634c",
+      "imageSha256": "7d213204f3c5353c17b802d3184920487f315ce3bc8510a4f48a2375485bba8d",
+      "imageBytes": 13640,
+      "imageDimensions": [
+        640,
+        480
+      ],
+      "revision": "2aa3f9b8b31e817b70994c4e"
+    },
+    {
+      "skillName": "seeed-5ec686341098",
+      "componentId": "hw_seeed_5ec686341098",
+      "displayName": "Grove-多普勒雷达",
+      "brand": "Seeed Grove",
+      "category": "SENSOR",
+      "moduleType": "距离",
+      "sourceUrl": "https://wiki.seeedstudio.com/cn/Grove_Sensor_Intro/#grove-多普勒雷达",
+      "documentationUrl": "https://wiki.seeedstudio.com/cn/Grove-Doppler-Radar/",
+      "imageSourceUrl": "https://files.seeedstudio.com/wiki/Grove-Doppler-Radar/IMG/01.png",
+      "originalImageSha256": "26fc21c8aa0c68cc76bda2cbdd4a57ff054ab431e5c92b09e7908b1733466de6",
+      "imageSha256": "e55def841aad8d858d30f84b6f469ade26fc95d0c2d5359dd07d8b1b6f2504c6",
+      "imageBytes": 32690,
+      "imageDimensions": [
+        640,
+        480
+      ],
+      "revision": "ffee739e8ea39f3457aad693"
+    },
+    {
+      "skillName": "seeed-5f7d4f105a2e",
+      "componentId": "hw_seeed_5f7d4f105a2e",
+      "displayName": "Grove - 数字红外温度传感器",
+      "brand": "Seeed Grove",
+      "category": "SENSOR",
+      "moduleType": "环境",
+      "sourceUrl": "https://wiki.seeedstudio.com/cn/Grove_Sensor_Intro/#grove---数字红外温度传感器",
+      "documentationUrl": "https://wiki.seeedstudio.com/cn/Grove-Digital_Infrared_Temperature_Sensor/",
+      "imageSourceUrl": "https://media-cdn.seeedstudio.com/media/catalog/product/cache/bb49d3ec4ee05b6f018e93f896b8a25d/h/t/httpsstatics3.seeedstudio.comproduct101020077201_02.jpg",
+      "originalImageSha256": "b548cf477db1a5d70c6f33f197de4d67c2b742811e67d3068ee7220410c60c6c",
+      "imageSha256": "840608771b60667e0d8a778b19e1c2fe924abd46a37ccd6f4928fa7504bc261e",
+      "imageBytes": 18784,
+      "imageDimensions": [
+        640,
+        480
+      ],
+      "revision": "50d22f071224d45e9fc71b20"
+    },
+    {
+      "skillName": "seeed-61865e007a2b",
+      "componentId": "hw_seeed_61865e007a2b",
+      "displayName": "Grove-编码器",
+      "brand": "Seeed Grove",
+      "category": "SENSOR",
+      "moduleType": "姿态",
+      "sourceUrl": "https://wiki.seeedstudio.com/cn/Grove_Sensor_Intro/#grove-编码器",
+      "documentationUrl": "https://wiki.seeedstudio.com/cn/Grove-Encoder/",
+      "imageSourceUrl": "https://media-cdn.seeedstudio.com/media/catalog/product/cache/bb49d3ec4ee05b6f018e93f896b8a25d/h/t/httpsstatics3.seeedstudio.comseeedfile2018-08bazaar896375_1.jpg",
+      "originalImageSha256": "dfa28d273b7dbacac33431ddb6c19f98a97d0ddd1dd3c4ce98bc877250a801bb",
+      "imageSha256": "9691d875912f648f5a1a55768a387fd4be9f1af910866e503491d42de2e0d634",
+      "imageBytes": 13316,
+      "imageDimensions": [
+        640,
+        480
+      ],
+      "revision": "099ac34111dcbfc8dc786e56"
+    },
+    {
+      "skillName": "seeed-6239cd1b67a4",
+      "componentId": "hw_seeed_6239cd1b67a4",
+      "displayName": "Grove - 12位磁性旋转位置传感器 / 编码器 (AS5600)",
+      "brand": "Seeed Grove",
+      "category": "SENSOR",
+      "moduleType": "姿态",
+      "sourceUrl": "https://wiki.seeedstudio.com/cn/Grove_Sensor_Intro/#grove---12位磁性旋转位置传感器--编码器-as5600",
+      "documentationUrl": "https://wiki.seeedstudio.com/cn/Grove-12-bit-Magnetic-Rotary-Position-Sensor-AS5600/",
+      "imageSourceUrl": "https://files.seeedstudio.com/wiki/Grove-12-bit-Magnetic-Rotary-Position-Sensor-AS5600/img/Grove-12-bit-Magnetic-Rotary-Sensor-AS5600-preview.jpg",
+      "originalImageSha256": "b9eb59b774c5bc4e67ffeb80d7c36f221c075660697aa19f765b98a5aa6dd085",
+      "imageSha256": "e3aceeba3333aa60f2241f5bf6a999897c92faf98640a7f57d498c3a1a216721",
+      "imageBytes": 24158,
+      "imageDimensions": [
+        640,
+        480
+      ],
+      "revision": "10b7c052673fe0d2524a9ad0"
+    },
+    {
+      "skillName": "seeed-64f0edd63c61",
+      "componentId": "hw_seeed_64f0edd63c61",
+      "displayName": "Grove - 压电振动传感器",
+      "brand": "Seeed Grove",
+      "category": "SENSOR",
+      "moduleType": "姿态",
+      "sourceUrl": "https://wiki.seeedstudio.com/cn/Grove_Sensor_Intro/#grove---压电振动传感器",
+      "documentationUrl": "https://wiki.seeedstudio.com/cn/Grove-Piezo_Vibration_Sensor/",
+      "imageSourceUrl": "https://files.seeedstudio.com/wiki/Grove-Piezo_Vibration_Sensor/img/Grove-Piezo_Vibration_Sensor-1.jpg",
+      "originalImageSha256": "494cf49ebe8a0bb0536014061b551ed3d91527c022000cdaa1e4b64393520743",
+      "imageSha256": "15f6f593d16f9327d351ff15e5d31f550c4bade230abcfba25cf94bd00f3fc9d",
+      "imageBytes": 18592,
+      "imageDimensions": [
+        640,
+        480
+      ],
+      "revision": "1f1f6022091c69720da8c846"
+    },
+    {
+      "skillName": "seeed-66caab2289e5",
+      "componentId": "hw_seeed_66caab2289e5",
+      "displayName": "Grove - I2C 热电偶放大器 (MCP9600)",
+      "brand": "Seeed Grove",
+      "category": "SENSOR",
+      "moduleType": "环境",
+      "sourceUrl": "https://wiki.seeedstudio.com/cn/Grove_Sensor_Intro/#grove---i2c-热电偶放大器-mcp9600",
+      "documentationUrl": "https://wiki.seeedstudio.com/cn/Grove-I2C_Thermocouple_Amplifier-MCP9600/",
+      "imageSourceUrl": "https://files.seeedstudio.com/wiki/Grove-I2C_Thermocouple_Amplifier-MCP9600/img/Main.jpg",
+      "originalImageSha256": "4119a379a52d99e0c02b81c8406eb105a4403466fbfc3c7ec050a79b197b63ef",
+      "imageSha256": "87c45e0016ab51d5504a7c9fb9cbf0d1b352ed3b34d37306617612996d7d38f5",
+      "imageBytes": 19112,
+      "imageDimensions": [
+        640,
+        480
+      ],
+      "revision": "dc7ce1091a3d36a030d41349"
+    },
+    {
+      "skillName": "seeed-67f6def98cc0",
+      "componentId": "hw_seeed_67f6def98cc0",
+      "displayName": "Grove - 热成像摄像头 IR-Array MLX90641",
+      "brand": "Seeed Grove",
+      "category": "SENSOR",
+      "moduleType": "环境",
+      "sourceUrl": "https://wiki.seeedstudio.com/cn/Grove_Sensor_Intro/#grove---热成像摄像头-ir-array-mlx90641",
+      "documentationUrl": "https://wiki.seeedstudio.com/cn/Grove-Thermal-Imaging-Camera-IR-Array/",
+      "imageSourceUrl": "https://media-cdn.seeedstudio.com/media/catalog/product/cache/bb49d3ec4ee05b6f018e93f896b8a25d/1/-/1-101020892-grove-thermal-imaging-camera-ir-array-mlx90641-110-degree-45font.jpg",
+      "originalImageSha256": "f2d38dac2752b4a459bd8cb5d4f6d07cbc7e937a40e58b6738f870606e63f062",
+      "imageSha256": "33b33e57f270faf8f660fe16d898484599e2dee99c9aa7291f77f7b3033ace55",
+      "imageBytes": 21074,
+      "imageDimensions": [
+        640,
+        480
+      ],
+      "revision": "5f1f35e45d97455c80a58635"
+    },
+    {
+      "skillName": "seeed-6b0ece4cbc2a",
+      "componentId": "hw_seeed_6b0ece4cbc2a",
+      "displayName": "Grove - 气体传感器(O₂)",
+      "brand": "Seeed Grove",
+      "category": "SENSOR",
+      "moduleType": "环境",
+      "sourceUrl": "https://wiki.seeedstudio.com/cn/Grove_Sensor_Intro/#grove---气体传感器o",
+      "documentationUrl": "https://wiki.seeedstudio.com/cn/Grove-Gas_Sensor-O2/",
+      "imageSourceUrl": "https://files.seeedstudio.com/wiki/Grove_Gas_Sensor_O2/images/cover.jpg",
+      "originalImageSha256": "566015026716533cf6a72a74f23f3419bd113b0aff30362cc04c8f7076edb8b7",
+      "imageSha256": "5dc98462af304e9fd0247f24dcbd49d76a5da509c36722f72f6dd78cfa12d054",
+      "imageBytes": 10690,
+      "imageDimensions": [
+        500,
+        375
+      ],
+      "revision": "88d44441db817f1d64364d4e"
+    },
+    {
+      "skillName": "seeed-6bfbf54535b7",
+      "componentId": "hw_seeed_6bfbf54535b7",
+      "displayName": "Grove - 温湿度气压气体传感器 (BME680)",
+      "brand": "Seeed Grove",
+      "category": "SENSOR",
+      "moduleType": "环境",
+      "sourceUrl": "https://wiki.seeedstudio.com/cn/Grove_Sensor_Intro/#grove---温湿度气压气体传感器-bme680",
+      "documentationUrl": "https://wiki.seeedstudio.com/cn/Grove-Temperature_Humidity_Pressure_Gas_Sensor_BME680/",
+      "imageSourceUrl": "https://files.seeedstudio.com/wiki/Grove-Temperature-Humidity-Pressure-Gas-Sensor_BME680/img/main.jpg",
+      "originalImageSha256": "166b03fb11a1d72f02c6ddf44c3f0c65c100ea7fb7e8ea62f5239a6ed7a3887c",
+      "imageSha256": "6178b5c823b33d7916ebcd1daf16417eec882a04696af46b79175ab2412d4c34",
+      "imageBytes": 30532,
+      "imageDimensions": [
+        640,
+        480
+      ],
+      "revision": "8ec4058927e505f58f0cee96"
+    },
+    {
+      "skillName": "seeed-6fecc6d91cd0",
+      "componentId": "hw_seeed_6fecc6d91cd0",
+      "displayName": "Grove - 甲醛传感器",
+      "brand": "Seeed Grove",
+      "category": "SENSOR",
+      "moduleType": "环境",
+      "sourceUrl": "https://wiki.seeedstudio.com/cn/Grove_Sensor_Intro/#grove---甲醛传感��器",
+      "documentationUrl": "https://wiki.seeedstudio.com/cn/Grove-Formaldehyde-Sensor/",
+      "imageSourceUrl": "https://media-cdn.seeedstudio.com/media/catalog/product/cache/bb49d3ec4ee05b6f018e93f896b8a25d/1/0/101020972_preview-07_1_1.jpg",
+      "originalImageSha256": "947a24f87fb2eb217440440955fc1282a42db08c280e064e5c83164d9651a804",
+      "imageSha256": "52d2691cf71008c377cdb4bc78be04d752b8822598b8abebe42b43fe90c62584",
+      "imageBytes": 9998,
+      "imageDimensions": [
+        640,
+        480
+      ],
+      "revision": "0339b317185f5e664d979853"
+    },
+    {
+      "skillName": "seeed-767591cb0e1e",
+      "componentId": "hw_seeed_767591cb0e1e",
+      "displayName": "Grove - 温湿度传感器",
+      "brand": "Seeed Grove",
+      "category": "SENSOR",
+      "moduleType": "环境",
+      "sourceUrl": "https://wiki.seeedstudio.com/cn/Grove_Sensor_Intro/#grove---温湿度传感器",
+      "documentationUrl": "https://wiki.seeedstudio.com/cn/Grove-SHT4x/",
+      "imageSourceUrl": "https://files.seeedstudio.com/wiki/SHT4x/SHT4x.jpeg",
+      "originalImageSha256": "9a024945ec64171b11ddaeddf8796deb2c0dbcbd0d81e6286389cf2426cb4fb4",
+      "imageSha256": "b1139210d01e15ed704c4c6e5b659c62f2a4689fb5cfaf53d814a1a27949d917",
+      "imageBytes": 15514,
+      "imageDimensions": [
+        640,
+        480
+      ],
+      "revision": "bf52b627287ede2ad95d44b8"
+    },
+    {
+      "skillName": "seeed-792adc1fd0fb",
+      "componentId": "hw_seeed_792adc1fd0fb",
+      "displayName": "Grove - 80cm 红外接近传感器",
+      "brand": "Seeed Grove",
+      "category": "SENSOR",
+      "moduleType": "距离",
+      "sourceUrl": "https://wiki.seeedstudio.com/cn/Grove_Sensor_Intro/#grove---80cm-红外接近传感器",
+      "documentationUrl": "https://wiki.seeedstudio.com/cn/Grove-80cm_Infrared_Proximity_Sensor/",
+      "imageSourceUrl": "https://files.seeedstudio.com/wiki/Grove-80cm_Infrared_Proximity_Sensor/img/Image_of_PSD.jpg",
+      "originalImageSha256": "7067223a83e6d91a7ed316af41e74d00343636c08dce2d1b02d5b4220c2b01c1",
+      "imageSha256": "b7d52d58b868a7f79cc3345d05fdebed163e9dd5d413152a7f858071f20c8528",
+      "imageBytes": 13120,
+      "imageDimensions": [
+        640,
+        467
+      ],
+      "revision": "d1b9c80628e9fdd9f96964b9"
+    },
+    {
+      "skillName": "seeed-7c76cc7ebdd8",
+      "componentId": "hw_seeed_7c76cc7ebdd8",
+      "displayName": "Grove - 火焰传感器",
+      "brand": "Seeed Grove",
+      "category": "SENSOR",
+      "moduleType": "光和图像",
+      "sourceUrl": "https://wiki.seeedstudio.com/cn/Grove_Sensor_Intro/#grove---火焰传感器",
+      "documentationUrl": "https://wiki.seeedstudio.com/cn/Grove-Flame_Sensor/",
+      "imageSourceUrl": "https://media-cdn.seeedstudio.com/media/catalog/product/cache/bb49d3ec4ee05b6f018e93f896b8a25d/h/t/httpsstatics3.seeedstudio.comimagesproductflame20sensor.jpg",
+      "originalImageSha256": "6265740b7d6bee720fd3e0cb62ccddd29fb50e032f1e6f64bbe4b82426b7f653",
+      "imageSha256": "1dd14a0036bf1e585575863ae57c7d74d9981e1cf8437e82f14206efab4455fa",
+      "imageBytes": 23852,
+      "imageDimensions": [
+        640,
+        480
+      ],
+      "revision": "dd7bb01d85d5621f7c9011a1"
+    },
+    {
+      "skillName": "seeed-7dc6b8b8d567",
+      "componentId": "hw_seeed_7dc6b8b8d567",
+      "displayName": "Grove - 倾斜开关",
+      "brand": "Seeed Grove",
+      "category": "SENSOR",
+      "moduleType": "姿态",
+      "sourceUrl": "https://wiki.seeedstudio.com/cn/Grove_Sensor_Intro/#grove---倾斜开关",
+      "documentationUrl": "https://wiki.seeedstudio.com/cn/Grove-Tilt_Switch/",
+      "imageSourceUrl": "https://media-cdn.seeedstudio.com/media/catalog/product/cache/bb49d3ec4ee05b6f018e93f896b8a25d/h/t/httpsstatics3.seeedstudio.comseeedfile2018-07bazaar881140_3.jpg",
+      "originalImageSha256": "3051ee79c4ec4a662e6b48e0d289f22eb2edf37e9262d894bc882a6733c4a19b",
+      "imageSha256": "3467844713e139e75e0e6715a1c393a5f60430236ff457f8d46faa24bcd55ead",
+      "imageBytes": 12402,
+      "imageDimensions": [
+        640,
+        480
+      ],
+      "revision": "57a5cf884565d708f3ecdc32"
+    },
+    {
+      "skillName": "seeed-8618c0e89426",
+      "componentId": "hw_seeed_8618c0e89426",
+      "displayName": "Grove - 阳光传感器",
+      "brand": "Seeed Grove",
+      "category": "SENSOR",
+      "moduleType": "光和图像",
+      "sourceUrl": "https://wiki.seeedstudio.com/cn/Grove_Sensor_Intro/#grove---阳光传感器",
+      "documentationUrl": "https://wiki.seeedstudio.com/cn/Grove-Sunlight_Sensor/",
+      "imageSourceUrl": "https://files.seeedstudio.com/wiki/Grove-Sunlight_Sensor/img/Grove_sunlight_sensor_view.jpg",
+      "originalImageSha256": "539a7699b2660159d2e8f5d39534889b17aad61cd08c866a0f2483c53475dbb9",
+      "imageSha256": "7be5334bb87309621ae6e81f4fd864cdb90911d8d5943ebb9f8fc1ba37c600d2",
+      "imageBytes": 18144,
+      "imageDimensions": [
+        500,
+        375
+      ],
+      "revision": "e8656fc8a0ec7c24f1c33052"
+    },
+    {
+      "skillName": "seeed-8758bc404b06",
+      "componentId": "hw_seeed_8758bc404b06",
+      "displayName": "Grove - Arduino V1.0 浊度传感器计量器",
+      "brand": "Seeed Grove",
+      "category": "SENSOR",
+      "moduleType": "液体",
+      "sourceUrl": "https://wiki.seeedstudio.com/cn/Grove_Sensor_Intro/#grove---arduino-v10-浊度传感器计量器",
+      "documentationUrl": "https://wiki.seeedstudio.com/cn/Grove-Turbidity-Sensor-Meter-for-Arduino-V1.0/",
+      "imageSourceUrl": "https://files.seeedstudio.com/wiki/Grove-Turbidity-Sensor/img/Grove-Turbidity-Sensor-wiki.jpg",
+      "originalImageSha256": "245f7db233378ce391be42a8485915400d0df0d2f2b434a2401058ff18195eed",
+      "imageSha256": "1fd1133500a91bf44934d0c9702f894d18f2fafb47f36fa0ea7264bba0cfeeca",
+      "imageBytes": 21694,
+      "imageDimensions": [
+        640,
+        480
+      ],
+      "revision": "fcd259f3583ca56ed3c63913"
+    },
+    {
+      "skillName": "seeed-8a57f2e6cfc2",
+      "componentId": "hw_seeed_8a57f2e6cfc2",
+      "displayName": "Grove - 模拟麦克风",
+      "brand": "Seeed Grove",
+      "category": "SENSOR",
+      "moduleType": "声音",
+      "sourceUrl": "https://wiki.seeedstudio.com/cn/Grove_Sensor_Intro/#grove---模拟麦克风",
+      "documentationUrl": "https://wiki.seeedstudio.com/cn/Grove-Analog-Microphone/",
+      "imageSourceUrl": "https://files.seeedstudio.com/wiki/Grove-Analog-Microphone/img/04.png",
+      "originalImageSha256": "c630048ad45adbacd5f1a3ecf233b01a3610da28d7cfebebe1835ec3f0519cfc",
+      "imageSha256": "7f41e9e7165c959e161c42d649d576c6633714bc1256e4f1faf58e785a5c8414",
+      "imageBytes": 12100,
+      "imageDimensions": [
+        640,
+        480
+      ],
+      "revision": "b4132af66c9be45689011cdb"
+    },
+    {
+      "skillName": "seeed-8c3008e1bd3b",
+      "componentId": "hw_seeed_8c3008e1bd3b",
+      "displayName": "Grove - VOC 气体传感器 (SGP40)",
+      "brand": "Seeed Grove",
+      "category": "SENSOR",
+      "moduleType": "环境",
+      "sourceUrl": "https://wiki.seeedstudio.com/cn/Grove_Sensor_Intro/#grove---voc-气体传感器-sgp40",
+      "documentationUrl": "https://wiki.seeedstudio.com/cn/grove_voc_gas_sensor_sgp40/",
+      "imageSourceUrl": "https://media-cdn.seeedstudio.com/media/catalog/product/cache/bb49d3ec4ee05b6f018e93f896b8a25d/1/-/1-101021095-voc-gas-sensor-_sgp40_-45font_1.jpg",
+      "originalImageSha256": "d6c9bbcb7cc3a5e85bf2a21f329e28ddc5684abc2cc6693e81aec474a2b95c47",
+      "imageSha256": "f0a1a6867a0f8789258c50e7c2d407340a90b363f43cb98a3c09ccebcabfbc16",
+      "imageBytes": 15546,
+      "imageDimensions": [
+        640,
+        480
+      ],
+      "revision": "f8c7ae475380c5d2f5cc9e1c"
+    },
+    {
+      "skillName": "seeed-8d753967b667",
+      "componentId": "hw_seeed_8d753967b667",
+      "displayName": "Grove - 红外距离中断器 v1.2",
+      "brand": "Seeed Grove",
+      "category": "SENSOR",
+      "moduleType": "距离",
+      "sourceUrl": "https://wiki.seeedstudio.com/cn/Grove_Sensor_Intro/#grove---红外距离中断器-v12",
+      "documentationUrl": "https://wiki.seeedstudio.com/cn/Grove-IR_Distance_Interrupter_v1.2/",
+      "imageSourceUrl": "https://media-cdn.seeedstudio.com/media/catalog/product/cache/bb49d3ec4ee05b6f018e93f896b8a25d/h/t/httpsstatics3.seeedstudio.comseeedfile2018-07bazaar884522_3.jpg",
+      "originalImageSha256": "3e57b2b3902343224dc10b47152617019d2eadf7b839b8b9750331c311353364",
+      "imageSha256": "94550075ff60b1a56479b1dd00c4aa46c24d9aba697f42523602c6903bf508d6",
+      "imageBytes": 18438,
+      "imageDimensions": [
+        640,
+        480
+      ],
+      "revision": "e8f4481c81ffbc6188e10714"
+    },
+    {
+      "skillName": "seeed-8e6320218d33",
+      "componentId": "hw_seeed_8e6320218d33",
+      "displayName": "Grove - 六轴加速度计和陀螺仪",
+      "brand": "Seeed Grove",
+      "category": "SENSOR",
+      "moduleType": "姿态",
+      "sourceUrl": "https://wiki.seeedstudio.com/cn/Grove_Sensor_Intro/#grove---六轴加速度计和陀螺仪",
+      "documentationUrl": "https://wiki.seeedstudio.com/cn/Grove-6-Axis_AccelerometerAndGyroscope/",
+      "imageSourceUrl": "https://files.seeedstudio.com/wiki/Grove-6-Axis_AccelerometerAndGyroscope/img/Grove-6-Axis_AccelerometerAndGyroscope_product_view_1200_s.jpg",
+      "originalImageSha256": "f79e902b06cd29d4ed97e36033144fe87dc7d45168379e29b8cdc3aaa02d06e2",
+      "imageSha256": "7477768c7d9eaa6adddbee8219a6e16a10e2c07eefbdc1790e90616cac535f8f",
+      "imageBytes": 29152,
+      "imageDimensions": [
+        640,
+        482
+      ],
+      "revision": "1aa6391770847466f9548e1b"
+    },
+    {
+      "skillName": "seeed-96e749688c3c",
+      "componentId": "hw_seeed_96e749688c3c",
+      "displayName": "Grove - 耳夹式心率传感器",
+      "brand": "Seeed Grove",
+      "category": "SENSOR",
+      "moduleType": "生物识别",
+      "sourceUrl": "https://wiki.seeedstudio.com/cn/Grove_Sensor_Intro/#grove---耳夹式心率传感器",
+      "documentationUrl": "https://wiki.seeedstudio.com/cn/Grove-Ear-clip_Heart_Rate_Sensor/",
+      "imageSourceUrl": "https://files.seeedstudio.com/wiki/Grove-Ear-clip_Heart_Rate_Sensor/img/Heart_rate_ear_clip_kit.jpg",
+      "originalImageSha256": "4d20cd4b4357db5a12e3ad358dcad050135a6f357c5b73030812204b40f4e080",
+      "imageSha256": "049525867782296b2921a36fb38865e2d996cbd94e58380f318c2917e53eb1ee",
+      "imageBytes": 18478,
+      "imageDimensions": [
+        640,
+        480
+      ],
+      "revision": "ca696ec05598f487c78423d1"
+    },
+    {
+      "skillName": "seeed-9a6bd6552e09",
+      "componentId": "hw_seeed_9a6bd6552e09",
+      "displayName": "Grove - 三轴模拟加速度计",
+      "brand": "Seeed Grove",
+      "category": "SENSOR",
+      "moduleType": "姿态",
+      "sourceUrl": "https://wiki.seeedstudio.com/cn/Grove_Sensor_Intro/#grove---三轴模拟加速度计",
+      "documentationUrl": "https://wiki.seeedstudio.com/cn/Grove-3-Axis_Analog_Accelerometer/",
+      "imageSourceUrl": "https://media-cdn.seeedstudio.com/media/catalog/product/cache/bb49d3ec4ee05b6f018e93f896b8a25d/h/t/httpsstatics3.seeedstudio.comseeedfile2018-07bazaar881167_3.jpg",
+      "originalImageSha256": "ac6ed8310505b6e36f894039106dd8c5f9b9b22f32e625755b99293682f43a0f",
+      "imageSha256": "a9e4f2002ca55bc05f72719af0162b960bcb3c73d0f38bf807de0ca902e55bb3",
+      "imageBytes": 19518,
+      "imageDimensions": [
+        640,
+        480
+      ],
+      "revision": "ad5c056696a645dfbefefc7f"
+    },
+    {
+      "skillName": "seeed-9adcc004448e",
+      "componentId": "hw_seeed_9adcc004448e",
+      "displayName": "Grove - I2C 高精度温度传感器 (MCP9808)",
+      "brand": "Seeed Grove",
+      "category": "SENSOR",
+      "moduleType": "环境",
+      "sourceUrl": "https://wiki.seeedstudio.com/cn/Grove_Sensor_Intro/#grove---i2c-高精度温度传感器-mcp9808",
+      "documentationUrl": "https://wiki.seeedstudio.com/cn/Grove-I2C_High_Accuracy_Temperature_Sensor-MCP9808/",
+      "imageSourceUrl": "https://files.seeedstudio.com/wiki/Grove-I2C_High_Accuracy_Temperature_Sensor-MCP9808/img/main.JPG",
+      "originalImageSha256": "e167196afff9911be3e6bd03358c9e03f7f11bb597e25a108c93bf2a3fc8ace9",
+      "imageSha256": "af171cc022f59a6c2b8c93ac1f05751c604b341978b4abb3d5929f1e8a3e2e43",
+      "imageBytes": 25948,
+      "imageDimensions": [
+        640,
+        480
+      ],
+      "revision": "e7d32f51359c0a7aecaa8ff6"
+    },
+    {
+      "skillName": "seeed-9ba25d1ecb9d",
+      "componentId": "hw_seeed_9ba25d1ecb9d",
+      "displayName": "Grove - 手势传感器 V1.0",
+      "brand": "Seeed Grove",
+      "category": "SENSOR",
+      "moduleType": "距离",
+      "sourceUrl": "https://wiki.seeedstudio.com/cn/Grove_Sensor_Intro/#grove---手势传感器-v10",
+      "documentationUrl": "https://wiki.seeedstudio.com/cn/Grove-Gesture_v1.0/",
+      "imageSourceUrl": "https://media-cdn.seeedstudio.com/media/catalog/product/cache/bb49d3ec4ee05b6f018e93f896b8a25d/h/t/httpsstatics3.seeedstudio.comseeedimg2016-083emtca2usbpnqzszqnngy8ss.jpg",
+      "originalImageSha256": "bd0c6bd19f7edca87337417579ec09997e641f435067e55cfcfab38cd5dd7401",
+      "imageSha256": "7f58db49bdaf23b4363e11c90731c6e77f745510c31a5d5af569551c29689296",
+      "imageBytes": 15092,
+      "imageDimensions": [
+        640,
+        480
+      ],
+      "revision": "4c2e3c361bab6aeaaa028ec4"
+    },
+    {
+      "skillName": "seeed-a159cc12f3b5",
+      "componentId": "hw_seeed_a159cc12f3b5",
+      "displayName": "Grove - AHT20 I2C 工业级温湿度传感器",
+      "brand": "Seeed Grove",
+      "category": "SENSOR",
+      "moduleType": "环境",
+      "sourceUrl": "https://wiki.seeedstudio.com/cn/Grove_Sensor_Intro/#grove---aht20-i2c-工业级温湿度传感器",
+      "documentationUrl": "https://wiki.seeedstudio.com/cn/Grove-AHT20-I2C-Industrial-Grade-Temperature&Humidity-Sensor/",
+      "imageSourceUrl": "https://files.seeedstudio.com/wiki/Grove-AHT20_I2C_Industrial_Grade_Temperature_and_Humidity_Sensor/101990644_4_.png",
+      "originalImageSha256": "042c5e634362e282976f473d70931e51589a810f0d10ba98c3444b19783bc729",
+      "imageSha256": "967d3a5adf0f675d50cc05a440c4af161cd6481b49f3afa4dffe62fc6f99d9db",
+      "imageBytes": 16480,
+      "imageDimensions": [
+        640,
+        480
+      ],
+      "revision": "b724e9f4d42dff8ae3ac575b"
+    },
+    {
+      "skillName": "seeed-a213fd1d2d56",
+      "componentId": "hw_seeed_a213fd1d2d56",
+      "displayName": "Grove 视觉 AI 模块",
+      "brand": "Seeed Grove",
+      "category": "SENSOR",
+      "moduleType": "光和图像",
+      "sourceUrl": "https://wiki.seeedstudio.com/cn/Grove_Sensor_Intro/#grove-视觉-ai-模块",
+      "documentationUrl": "https://wiki.seeedstudio.com/cn/Grove-Vision-AI-Module/",
+      "imageSourceUrl": "https://files.seeedstudio.com/wiki/Wio-Terminal-Developer-for-helium/camera.jpg",
+      "originalImageSha256": "901f031497553bc31503e5281bb50554c6b2134cb9e1032fef8ca6ecea085269",
+      "imageSha256": "3a48451f7d36734297853de125d399bc28373790b723e5b03c8d7c3b96ac4404",
+      "imageBytes": 20190,
+      "imageDimensions": [
+        640,
+        477
+      ],
+      "revision": "3ab284a0d7fb11f8acc34c0b"
+    },
+    {
+      "skillName": "seeed-a404ef452c36",
+      "componentId": "hw_seeed_a404ef452c36",
+      "displayName": "Grove - 温湿度传感器 (DHT11)",
+      "brand": "Seeed Grove",
+      "category": "SENSOR",
+      "moduleType": "环境",
+      "sourceUrl": "https://wiki.seeedstudio.com/cn/Grove_Sensor_Intro/#grove---温湿度传感器-dht11",
+      "documentationUrl": "https://wiki.seeedstudio.com/cn/Grove-TemperatureAndHumidity_Sensor/",
+      "imageSourceUrl": "https://media-cdn.seeedstudio.com/media/catalog/product/cache/bb49d3ec4ee05b6f018e93f896b8a25d/g/r/grove-temperature-humidity-sensor-dht11-preview.png",
+      "originalImageSha256": "5d89cba4c3ff5190707d1fe4fe106d989229a762c7dcfb78336f07a13cc3fcfb",
+      "imageSha256": "02b4b36349291420c109545886d6194fd7e7f9a6442bfb109e15fd0b0588c4f1",
+      "imageBytes": 15222,
+      "imageDimensions": [
+        640,
+        480
+      ],
+      "revision": "46aed5ff2e78af7d760b2dc4"
+    },
+    {
+      "skillName": "seeed-a54bf6bfc2f7",
+      "componentId": "hw_seeed_a54bf6bfc2f7",
+      "displayName": "Grove - 三轴数字加速度计 (LIS3DHTR)",
+      "brand": "Seeed Grove",
+      "category": "SENSOR",
+      "moduleType": "姿态",
+      "sourceUrl": "https://wiki.seeedstudio.com/cn/Grove_Sensor_Intro/#grove---三轴数字加速度计-lis3dhtr",
+      "documentationUrl": "https://wiki.seeedstudio.com/cn/Grove-3-Axis-Digital-Accelerometer-LIS3DHTR/",
+      "imageSourceUrl": "https://files.seeedstudio.com/products/114020121/img/114020121wiki.png",
+      "originalImageSha256": "653b55db0b1157537e3c06c458f15c04a265597f3d5787e3db769e5ea298cf00",
+      "imageSha256": "75fcca2d1812c73d1e3ff8c23eb4693cd50cde80b2ca7901f212dffd7e8992f5",
+      "imageBytes": 13184,
+      "imageDimensions": [
+        640,
+        480
+      ],
+      "revision": "a0179dfb3bec27c2a65e3a42"
+    },
+    {
+      "skillName": "seeed-a5beb1d4e27d",
+      "componentId": "hw_seeed_a5beb1d4e27d",
+      "displayName": "Grove - 氧气传感器专业版(GGC2330-O2)",
+      "brand": "Seeed Grove",
+      "category": "SENSOR",
+      "moduleType": "环境",
+      "sourceUrl": "https://wiki.seeedstudio.com/cn/Grove_Sensor_Intro/#grove---氧气传感器专业版ggc2330-o2",
+      "documentationUrl": "https://wiki.seeedstudio.com/cn/Grove-Oxygen-Sensor-Pro/",
+      "imageSourceUrl": "https://files.seeedstudio.com/wiki/Grove_Oxygen_Sensor_Pro/img/IMG_9621.png",
+      "originalImageSha256": "18b2437a056947be51d6eaa107aa10bdf0b9a3f4fdae95b55f99a17f7ba0c4b1",
+      "imageSha256": "73539cbd331fe69c73c67413730e18638920efe593fcc6c123ef60d7144ff43f",
+      "imageBytes": 10702,
+      "imageDimensions": [
+        640,
+        480
+      ],
+      "revision": "0d91bc5058de1ef7fac76a4b"
+    },
+    {
+      "skillName": "seeed-a68c3f15cd64",
+      "componentId": "hw_seeed_a68c3f15cd64",
+      "displayName": "Grove - 声音传感器",
+      "brand": "Seeed Grove",
+      "category": "SENSOR",
+      "moduleType": "声音",
+      "sourceUrl": "https://wiki.seeedstudio.com/cn/Grove_Sensor_Intro/#grove---声音传感器",
+      "documentationUrl": "https://wiki.seeedstudio.com/cn/Grove-Sound_Sensor/",
+      "imageSourceUrl": "https://media-cdn.seeedstudio.com/media/catalog/product/cache/bb49d3ec4ee05b6f018e93f896b8a25d/h/t/httpsstatics3.seeedstudio.comseeedimg2017-02fhpnt4qmmyzrtwvb40liimrw.jpg",
+      "originalImageSha256": "13915f2a8b34e0caccc3defb2d9cc0ae5d067741f35da066f0677ac8850b0dc1",
+      "imageSha256": "179c6a3a2790782405b01b317f1c2700940ff364ad4d291a37eed2f3ff0c7213",
+      "imageBytes": 16708,
+      "imageDimensions": [
+        640,
+        480
+      ],
+      "revision": "de7e56d2106807b4504cb4e6"
+    },
+    {
+      "skillName": "seeed-a76022d75858",
+      "componentId": "hw_seeed_a76022d75858",
+      "displayName": "Grove - 水传感器",
+      "brand": "Seeed Grove",
+      "category": "SENSOR",
+      "moduleType": "液体",
+      "sourceUrl": "https://wiki.seeedstudio.com/cn/Grove_Sensor_Intro/#grove---水传感器",
+      "documentationUrl": "https://wiki.seeedstudio.com/cn/Grove-Water_Sensor/",
+      "imageSourceUrl": "https://media-cdn.seeedstudio.com/media/catalog/product/cache/bb49d3ec4ee05b6f018e93f896b8a25d/h/t/httpsstatics3.seeedstudio.comseeedfile2017-11bazaar620080_1010200183.jpg",
+      "originalImageSha256": "53ff0f840a48566cb9cf8aa674b9108258f6c23e9652d933d9bf2eb99f0b8b91",
+      "imageSha256": "2516d50f9a966baf333bbdb85d655e62b9c9a8c9cfc383069a3d1ecc4615c1d2",
+      "imageBytes": 17280,
+      "imageDimensions": [
+        640,
+        480
+      ],
+      "revision": "144b5f2599d3a347cb2223ff"
+    },
+    {
+      "skillName": "seeed-ad55a9b99ab3",
+      "componentId": "hw_seeed_ad55a9b99ab3",
+      "displayName": "Grove - 滑动电位器",
+      "brand": "Seeed Grove",
+      "category": "SENSOR",
+      "moduleType": "电",
+      "sourceUrl": "https://wiki.seeedstudio.com/cn/Grove_Sensor_Intro/#grove---滑动电位器",
+      "documentationUrl": "https://wiki.seeedstudio.com/cn/Grove-Slide_Potentiometer/",
+      "imageSourceUrl": "https://files.seeedstudio.com/wiki/Grove-Slide_Potentiometer/img/Sliding1.JPG",
+      "originalImageSha256": "42e200a0070b595b1ccde83524e9c6356def0b245c5163753821f02af670cdf8",
+      "imageSha256": "a967a16faba48eee827c2e7df8421b101b952ecf0b4b4d46ff00265e1a4d1147",
+      "imageBytes": 15468,
+      "imageDimensions": [
+        640,
+        480
+      ],
+      "revision": "6839baf68818508e559a4fec"
+    },
+    {
+      "skillName": "seeed-ae644fbada35",
+      "componentId": "hw_seeed_ae644fbada35",
+      "displayName": "Grove 离线语音识别",
+      "brand": "Seeed Grove",
+      "category": "SENSOR",
+      "moduleType": "声音",
+      "sourceUrl": "https://wiki.seeedstudio.com/cn/Grove_Sensor_Intro/#grove-离线语音识别",
+      "documentationUrl": "https://wiki.seeedstudio.com/cn/Grove-Offline-Voice-Recognition/",
+      "imageSourceUrl": "https://media-cdn.seeedstudio.com/media/catalog/product/cache/bb49d3ec4ee05b6f018e93f896b8a25d/1/-/1-107020149-grove---offline-voice-recognition-module-45font.jpg",
+      "originalImageSha256": "517977f091e3abeba0fb0f313edb2a2d6d32e687ff893e908c29936531243a2e",
+      "imageSha256": "c5dfdaae1c59d53a0fce4df689155c4502719a9b1a933444309adecde295d924",
+      "imageBytes": 14094,
+      "imageDimensions": [
+        640,
+        480
+      ],
+      "revision": "333fdbcdde92208f0d672cff"
+    },
+    {
+      "skillName": "seeed-aff5028c9998",
+      "componentId": "hw_seeed_aff5028c9998",
+      "displayName": "Grove - 肌电检测器",
+      "brand": "Seeed Grove",
+      "category": "SENSOR",
+      "moduleType": "生物识别",
+      "sourceUrl": "https://wiki.seeedstudio.com/cn/Grove_Sensor_Intro/#grove---肌电检测器",
+      "documentationUrl": "https://wiki.seeedstudio.com/cn/Grove-EMG_Detector/",
+      "imageSourceUrl": "https://files.seeedstudio.com/wiki/Grove-EMG_Detector/img/Emg_product.jpg",
+      "originalImageSha256": "c6a4edfd102ed8569a05a09ed71c3bbcf00c19b9bac56b7ebec0c463bee97197",
+      "imageSha256": "32e09014e089e934b8e0f2823bac2279d66a58d64063a7a749f5b5934ee5fcdd",
+      "imageBytes": 34522,
+      "imageDimensions": [
+        640,
+        480
+      ],
+      "revision": "de700f15a0a15e037b72a2cd"
+    },
+    {
+      "skillName": "seeed-b2a68addbbde",
+      "componentId": "hw_seeed_b2a68addbbde",
+      "displayName": "Grove Vision AI 模块 V2",
+      "brand": "Seeed Grove",
+      "category": "SENSOR",
+      "moduleType": "光和图像",
+      "sourceUrl": "https://wiki.seeedstudio.com/cn/Grove_Sensor_Intro/#grove-vision-ai-模块-v2",
+      "documentationUrl": "https://wiki.seeedstudio.com/cn/grove_vision_ai_v2/",
+      "imageSourceUrl": "https://media-cdn.seeedstudio.com/media/catalog/product/cache/bb49d3ec4ee05b6f018e93f896b8a25d/1/-/1-101021112-grove-vision-ai-module-v2-45font.jpg",
+      "originalImageSha256": "db5b79ba7ef07f4b80f39b1f6e87be437c670a784c48462f149f8e7e18103ac6",
+      "imageSha256": "717e0c00f5f998d207eba06513711446d5d440b83254ea5890648fbb07b15647",
+      "imageBytes": 17172,
+      "imageDimensions": [
+        640,
+        480
+      ],
+      "revision": "0904de76034408c8697f1c94"
+    },
+    {
+      "skillName": "seeed-b3b05c6e9bf7",
+      "componentId": "hw_seeed_b3b05c6e9bf7",
+      "displayName": "Grove - 二氧化碳 & 温湿度传感器 (SCD41)",
+      "brand": "Seeed Grove",
+      "category": "SENSOR",
+      "moduleType": "环境",
+      "sourceUrl": "https://wiki.seeedstudio.com/cn/Grove_Sensor_Intro/#grove---二氧化碳--温湿度传感器-scd41",
+      "documentationUrl": "https://wiki.seeedstudio.com/cn/Grove-CO2_&_Temperature_&_Humidity_Sensor-SCD41/",
+      "imageSourceUrl": "https://files.seeedstudio.com/wiki/Grove-CO2&Temperature&HumiditySensor-SCD4/img/101020952_Preview-07.png",
+      "originalImageSha256": "2eabc044624a16c661619c11b8de5ada9d6dc4256150b592f8f7db0371649829",
+      "imageSha256": "fdbd1789df3cc894690bb5d00a6e91f07e991007dea14f1eba059fba521248dd",
+      "imageBytes": 16704,
+      "imageDimensions": [
+        640,
+        480
+      ],
+      "revision": "c8bbe7e2197bf996935e0899"
+    },
+    {
+      "skillName": "seeed-b69e4322172c",
+      "componentId": "hw_seeed_b69e4322172c",
+      "displayName": "Grove - 气体传感器 V2（多通道）",
+      "brand": "Seeed Grove",
+      "category": "SENSOR",
+      "moduleType": "环境",
+      "sourceUrl": "https://wiki.seeedstudio.com/cn/Grove_Sensor_Intro/#grove---气体传感器-v2多通道",
+      "documentationUrl": "https://wiki.seeedstudio.com/cn/Grove-Multichannel-Gas-Sensor-V2/",
+      "imageSourceUrl": "https://files.seeedstudio.com/wiki/Grove-Multichannel_Gas_Sensor/img/Grove-Multichannel_Gas_Sensor_V2_101020820/IMG/04.png",
+      "originalImageSha256": "5b472f10371c8f7097d31cdb472536a080c27b0a80ad54afac619c9bcac77b54",
+      "imageSha256": "6f5a953abbb1ec9f5306f8ff99af033da673cb500dd214f9cafa5ebb4cfdedbc",
+      "imageBytes": 19446,
+      "imageDimensions": [
+        640,
+        480
+      ],
+      "revision": "93c7db2dce2d06fa7e3074df"
+    },
+    {
+      "skillName": "seeed-b69e55506017",
+      "componentId": "hw_seeed_b69e55506017",
+      "displayName": "Grove - 紫外线传感器",
+      "brand": "Seeed Grove",
+      "category": "SENSOR",
+      "moduleType": "光和图像",
+      "sourceUrl": "https://wiki.seeedstudio.com/cn/Grove_Sensor_Intro/#grove---紫外线传感器",
+      "documentationUrl": "https://wiki.seeedstudio.com/cn/Grove-UV_Sensor/",
+      "imageSourceUrl": "https://media-cdn.seeedstudio.com/media/catalog/product/cache/bb49d3ec4ee05b6f018e93f896b8a25d/h/t/httpsstatics3.seeedstudio.comseeedfile2017-11bazaar619113_1010200433.jpg",
+      "originalImageSha256": "9489093138253a1dc5805754fd95d2e97d39695771f3f36440ccad13ff530102",
+      "imageSha256": "7c9f5bca187f200ba51ae088a557888aff84d1d038411019d0878dffbb99919f",
+      "imageBytes": 20030,
+      "imageDimensions": [
+        640,
+        480
+      ],
+      "revision": "be332e24dd08d9fb1fa6fc9b"
+    },
+    {
+      "skillName": "seeed-b75201dcf141",
+      "componentId": "hw_seeed_b75201dcf141",
+      "displayName": "Grove - ORP 传感器套件 Pro",
+      "brand": "Seeed Grove",
+      "category": "SENSOR",
+      "moduleType": "液体",
+      "sourceUrl": "https://wiki.seeedstudio.com/cn/Grove_Sensor_Intro/#grove---orp-传感器套件-pro",
+      "documentationUrl": "https://wiki.seeedstudio.com/cn/Grove-ORP-Sensor-Pro/",
+      "imageSourceUrl": "https://media-cdn.seeedstudio.com/media/catalog/product/cache/bb49d3ec4ee05b6f018e93f896b8a25d/1/-/1-110020370-grove--orp-sensor-kit-pro-45font.jpg",
+      "originalImageSha256": "fd094e2907146c889f06d31437aaed72c115971763bbe170ebe8ec1a0ba2713c",
+      "imageSha256": "b381e4ed5b5a7f5d0f437b5ed1e9dda8e6f1d36e8d0cee2e98360ae5bb2c01f6",
+      "imageBytes": 14608,
+      "imageDimensions": [
+        640,
+        480
+      ],
+      "revision": "db8b76d1f96a1262d320d3ca"
+    },
+    {
+      "skillName": "seeed-b7990c2c3f06",
+      "componentId": "hw_seeed_b7990c2c3f06",
+      "displayName": "Grove - D7S 振动传感器",
+      "brand": "Seeed Grove",
+      "category": "SENSOR",
+      "moduleType": "姿态",
+      "sourceUrl": "https://wiki.seeedstudio.com/cn/Grove_Sensor_Intro/#grove---d7s-振动传感器",
+      "documentationUrl": "https://wiki.seeedstudio.com/cn/grove-d7s-vibration-sensor/",
+      "imageSourceUrl": "https://media-cdn.seeedstudio.com/media/catalog/product/cache/bb49d3ec4ee05b6f018e93f896b8a25d/1/-/1-101021096_d7s-vibration-sensor-45font.jpg",
+      "originalImageSha256": "fe9c8791e65bb50542701d0c9fa17ccba218116dfdc3dccd008c329e2af9acab",
+      "imageSha256": "211f45004b1b01e43c3ef534e794505f6352d69c747fcab50c25060d4ab0421d",
+      "imageBytes": 21672,
+      "imageDimensions": [
+        640,
+        480
+      ],
+      "revision": "6e490c6fadadb4eaa4e67525"
+    },
+    {
+      "skillName": "seeed-b7a6fe2288ff",
+      "componentId": "hw_seeed_b7a6fe2288ff",
+      "displayName": "Grove - VOC 和 eCO2 气体传感器 (SGP30)",
+      "brand": "Seeed Grove",
+      "category": "SENSOR",
+      "moduleType": "环境",
+      "sourceUrl": "https://wiki.seeedstudio.com/cn/Grove_Sensor_Intro/#grove---voc-和-eco2-气体传感器-sgp30",
+      "documentationUrl": "https://wiki.seeedstudio.com/cn/Grove-VOC_and_eCO2_Gas_Sensor-SGP30/",
+      "imageSourceUrl": "https://files.seeedstudio.com/wiki/Grove-VOC_and_eCO2_Gas_Sensor-SGP30/img/IMG_0012a.jpg",
+      "originalImageSha256": "b3ffc3f6cc6ecd3c1ef5e901ab00e0043894d84b656b78d3caca23ffbb2692da",
+      "imageSha256": "446c18c3cbd17606727b37dbb9fc1dad7402ea9949981efcc92c42bdcf732a59",
+      "imageBytes": 18544,
+      "imageDimensions": [
+        640,
+        480
+      ],
+      "revision": "54fcd75de61a61f11953bd1f"
+    },
+    {
+      "skillName": "seeed-b87269034150",
+      "componentId": "hw_seeed_b87269034150",
+      "displayName": "Grove - 酒精传感器",
+      "brand": "Seeed Grove",
+      "category": "SENSOR",
+      "moduleType": "环境",
+      "sourceUrl": "https://wiki.seeedstudio.com/cn/Grove_Sensor_Intro/#grove---酒精传感器",
+      "documentationUrl": "https://wiki.seeedstudio.com/cn/Grove-Alcohol_Sensor/",
+      "imageSourceUrl": "https://media-cdn.seeedstudio.com/media/catalog/product/cache/bb49d3ec4ee05b6f018e93f896b8a25d/h/t/httpsstatics3.seeedstudio.comseeedfile2018-07bazaar885599_a3.jpg",
+      "originalImageSha256": "415b6819bc472a9b474cc8f4e512761dd27f5beebb1a92abdaebf5236c81720e",
+      "imageSha256": "0a75b04eacaa5594457c29292b8293fc649b11a94371eb3b82ac73ec826894f0",
+      "imageBytes": 21102,
+      "imageDimensions": [
+        640,
+        480
+      ],
+      "revision": "8ece71fed49781d5fca63d7b"
+    },
+    {
+      "skillName": "seeed-bbcf60e2e897",
+      "componentId": "hw_seeed_bbcf60e2e897",
+      "displayName": "Grove - 智能空气质量传感器 (SGP41)",
+      "brand": "Seeed Grove",
+      "category": "SENSOR",
+      "moduleType": "环境",
+      "sourceUrl": "https://wiki.seeedstudio.com/cn/Grove_Sensor_Intro/#grove---智能空气质量传感器-sgp41",
+      "documentationUrl": "https://wiki.seeedstudio.com/cn/grove-smart-air-quality-sensor-sgp41/",
+      "imageSourceUrl": "https://media-cdn.seeedstudio.com/media/catalog/product/cache/bb49d3ec4ee05b6f018e93f896b8a25d/1/-/1-voc-and-eco2-gas-sensor_sgp41_-v1.0-45font.jpg",
+      "originalImageSha256": "2bd90c12cae429303b214a91817b9524400e410c929cafc796fe8ee09f93f86a",
+      "imageSha256": "f0195c2678daa6d4b07637bccbd52408e8a74a970294294099ee04587eeb7408",
+      "imageBytes": 16482,
+      "imageDimensions": [
+        640,
+        480
+      ],
+      "revision": "a9d3c9a83116661cba78e18f"
+    },
+    {
+      "skillName": "seeed-bc967bed5067",
+      "componentId": "hw_seeed_bc967bed5067",
+      "displayName": "Grove - 多通道气体传感器",
+      "brand": "Seeed Grove",
+      "category": "SENSOR",
+      "moduleType": "环境",
+      "sourceUrl": "https://wiki.seeedstudio.com/cn/Grove_Sensor_Intro/#grove---多通道气体传感器",
+      "documentationUrl": "https://wiki.seeedstudio.com/cn/Grove-Multichannel_Gas_Sensor/",
+      "imageSourceUrl": "https://media-cdn.seeedstudio.com/media/catalog/product/cache/bb49d3ec4ee05b6f018e93f896b8a25d/h/t/httpsstatics3.seeedstudio.comimagesproduct101020088201.jpg",
+      "originalImageSha256": "b8e16da14fb75d9f3f5d5694b8ea4490da709247a15aa7298dc18d04d4923214",
+      "imageSha256": "5fe39d2629f50e320ecf7db7eb59c3a46aef73bf46b512ce198c4f96cb850889",
+      "imageBytes": 23846,
+      "imageDimensions": [
+        640,
+        480
+      ],
+      "revision": "8877e928f1bb7a76cf8d43a5"
+    },
+    {
+      "skillName": "seeed-be82233357d8",
+      "componentId": "hw_seeed_be82233357d8",
+      "displayName": "Grove - 三轴数字指南针 v2.0",
+      "brand": "Seeed Grove",
+      "category": "SENSOR",
+      "moduleType": "姿态",
+      "sourceUrl": "https://wiki.seeedstudio.com/cn/Grove_Sensor_Intro/#grove---三轴数字指南针-v20",
+      "documentationUrl": "https://wiki.seeedstudio.com/cn/Grove-3-Axis_Digitial_Compass_v2.0/",
+      "imageSourceUrl": "https://files.seeedstudio.com/wiki/Bazaar_doc/101020492/main_page.jpg",
+      "originalImageSha256": "bf808d7641e325faf19b40e6b9362fe6bff44d956a75d400b8b57ef29f144826",
+      "imageSha256": "d560e12c2f28cbfa03d798c8bfab0c843103c575fb638cb1d3be23ed26bc217b",
+      "imageBytes": 27552,
+      "imageDimensions": [
+        640,
+        480
+      ],
+      "revision": "1a1a5a854137b0213122085a"
+    },
+    {
+      "skillName": "seeed-bee2eebec97f",
+      "componentId": "hw_seeed_bee2eebec97f",
+      "displayName": "Grove - PIR运动传感器",
+      "brand": "Seeed Grove",
+      "category": "SENSOR",
+      "moduleType": "姿态",
+      "sourceUrl": "https://wiki.seeedstudio.com/cn/Grove_Sensor_Intro/#grove---pir运动传感器",
+      "documentationUrl": "https://wiki.seeedstudio.com/cn/Grove-PIR_Motion_Sensor/",
+      "imageSourceUrl": "https://media-cdn.seeedstudio.com/media/catalog/product/cache/bb49d3ec4ee05b6f018e93f896b8a25d/h/t/httpsstatics3.seeedstudio.comseeedfile2018-07bazaar881121_3.jpg",
+      "originalImageSha256": "7c6d6d730e50c5d8eb20ea10168196b9d76379d70ff957b2b9a98aca1b0844ae",
+      "imageSha256": "aae5d4e673ddee5d97b0ec92171412ff89d684be9e2297357d132f24c88bc2ce",
+      "imageBytes": 16720,
+      "imageDimensions": [
+        640,
+        480
+      ],
+      "revision": "5f2f7c593a5f1812ac533ae9"
+    },
+    {
+      "skillName": "seeed-c55ce3abb1de",
+      "componentId": "hw_seeed_c55ce3abb1de",
+      "displayName": "Grove - 光学旋转编码器(TCUT1600X01)",
+      "brand": "Seeed Grove",
+      "category": "SENSOR",
+      "moduleType": "姿态",
+      "sourceUrl": "https://wiki.seeedstudio.com/cn/Grove_Sensor_Intro/#grove---光学旋转编码器tcut1600x01",
+      "documentationUrl": "https://wiki.seeedstudio.com/cn/Grove-Optical_Rotary_Encoder-TCUT1600X01/",
+      "imageSourceUrl": "https://files.seeedstudio.com/wiki/Grove-Optical_Rotary_Encoder-TCUT1600X01/img/main.jpg",
+      "originalImageSha256": "500c730f00b7025add76092999e7fe783be70e430d22cdcc3a34841ab8f541d5",
+      "imageSha256": "e7ec15af98daa9e0541b8a13902199fcbc81642eb64a1c1ccc2ea1396b51190a",
+      "imageBytes": 23232,
+      "imageDimensions": [
+        640,
+        480
+      ],
+      "revision": "2443640279af1f060c2fab46"
+    },
+    {
+      "skillName": "seeed-c562f4f68dc1",
+      "componentId": "hw_seeed_c562f4f68dc1",
+      "displayName": "Grove - 音量传感器",
+      "brand": "Seeed Grove",
+      "category": "SENSOR",
+      "moduleType": "声音",
+      "sourceUrl": "https://wiki.seeedstudio.com/cn/Grove_Sensor_Intro/#grove---音量传感器",
+      "documentationUrl": "https://wiki.seeedstudio.com/cn/Grove-Loudness_Sensor/",
+      "imageSourceUrl": "https://files.seeedstudio.com/wiki/Grove-Loudness_Sensor/img/Loudness%20Sensor_new.jpg",
+      "originalImageSha256": "f96679cbda55460142b5f5e16f83aa64c67860c64e29cbbb075c8f12e1d5336a",
+      "imageSha256": "e322444d0a8b099f40537d11a9a6197c382dd6d6c551b930da54b2b6d0a541cc",
+      "imageBytes": 36258,
+      "imageDimensions": [
+        640,
+        569
+      ],
+      "revision": "d383fbb1d22732de5642c00c"
+    },
+    {
+      "skillName": "seeed-c785de026b91",
+      "componentId": "hw_seeed_c785de026b91",
+      "displayName": "Grove 12 通道电容触摸键盘 (ATtiny1616)",
+      "brand": "Seeed Grove",
+      "category": "SENSOR",
+      "moduleType": "开关量",
+      "sourceUrl": "https://wiki.seeedstudio.com/cn/Grove_Sensor_Intro/#grove-12-通道电容触摸键盘-attiny1616",
+      "documentationUrl": "https://wiki.seeedstudio.com/cn/Grove-12-Channel-Capacitive-Touch-Keypad-ATtiny1616-/",
+      "imageSourceUrl": "https://files.seeedstudio.com/wiki/Grove-12-Channel-Capacitive-Touch-Keypad-ATtiny1616/img/wiki.jpg",
+      "originalImageSha256": "d8d3dd949558fd060c873009818c75cf33009a5566e4cf95b1df6cc79eef3a63",
+      "imageSha256": "4b76a28e772e67e404413dbc9ab64a1ca361b34a779bd55c1732dc205e493bbc",
+      "imageBytes": 12346,
+      "imageDimensions": [
+        640,
+        480
+      ],
+      "revision": "82c66cf4419fc58a44c0457f"
+    },
+    {
+      "skillName": "seeed-c7d403f7875c",
+      "componentId": "hw_seeed_c7d403f7875c",
+      "displayName": "Grove - 甲醛传感器",
+      "brand": "Seeed Grove",
+      "category": "SENSOR",
+      "moduleType": "环境",
+      "sourceUrl": "https://wiki.seeedstudio.com/cn/Grove_Sensor_Intro/#grove---甲醛传感器-1",
+      "documentationUrl": "https://wiki.seeedstudio.com/cn/Grove-HCHO_Sensor/",
+      "imageSourceUrl": "https://media-cdn.seeedstudio.com/media/catalog/product/cache/bb49d3ec4ee05b6f018e93f896b8a25d/h/t/httpsstatics3.seeedstudio.comimagesproductgrove20hcho.jpg",
+      "originalImageSha256": "92797595b07690784f3445c4a2050b3cc3842257a29fe599a71c06f23f299dc4",
+      "imageSha256": "975cc171f4187563b2716cf15b81e5084586d76367023a2bd3a2f61f4e5bf97b",
+      "imageBytes": 22304,
+      "imageDimensions": [
+        640,
+        480
+      ],
+      "revision": "5c4366c3a56501d1b9e450dc"
+    },
+    {
+      "skillName": "seeed-cc08f2cc43d5",
+      "componentId": "hw_seeed_cc08f2cc43d5",
+      "displayName": "Grove - TF Mini LiDAR",
+      "brand": "Seeed Grove",
+      "category": "SENSOR",
+      "moduleType": "距离",
+      "sourceUrl": "https://wiki.seeedstudio.com/cn/Grove_Sensor_Intro/#grove---tf-mini-lidar",
+      "documentationUrl": "https://wiki.seeedstudio.com/cn/Grove-TF_Mini_LiDAR/",
+      "imageSourceUrl": "https://files.seeedstudio.com/wiki/Grove-TF_Mini_LiDAR/img/Grove-TF-Mini-LiDAR.JPG",
+      "originalImageSha256": "034d1324adac4055d93a6372870ecb2ce7c54dfd5af14465136ce25ed5164ec7",
+      "imageSha256": "179195d5b4a9b884d1467cfb91931351142dcfab9a57cb3a3d562a3386f42d6a",
+      "imageBytes": 13138,
+      "imageDimensions": [
+        640,
+        480
+      ],
+      "revision": "72df5ee387cd75ad6d6a3523"
+    },
+    {
+      "skillName": "seeed-cca7fe9f1082",
+      "componentId": "hw_seeed_cca7fe9f1082",
+      "displayName": "Grove - 粉尘传感器",
+      "brand": "Seeed Grove",
+      "category": "SENSOR",
+      "moduleType": "环境",
+      "sourceUrl": "https://wiki.seeedstudio.com/cn/Grove_Sensor_Intro/#grove---粉尘传感器",
+      "documentationUrl": "https://wiki.seeedstudio.com/cn/Grove-Dust_Sensor/",
+      "imageSourceUrl": "https://media-cdn.seeedstudio.com/media/catalog/product/cache/bb49d3ec4ee05b6f018e93f896b8a25d/h/t/httpsstatics3.seeedstudio.comseeedimg2016-111zrttno24twjufuc0bkxxo1h.jpg",
+      "originalImageSha256": "0e634c27c7dd6547d5b4d14879a7f162773ef65fd5f275adb9aa2b5e02a3bef2",
+      "imageSha256": "592af54427004d0319ad8648a1d079b5a52f125df4222622eb76757de78f9e85",
+      "imageBytes": 14780,
+      "imageDimensions": [
+        640,
+        480
+      ],
+      "revision": "497f44e1d1e14bfc9c02b2f0"
+    },
+    {
+      "skillName": "seeed-cefc77fb6aac",
+      "componentId": "hw_seeed_cefc77fb6aac",
+      "displayName": "Grove - 指夹式心率传感器",
+      "brand": "Seeed Grove",
+      "category": "SENSOR",
+      "moduleType": "生物识别",
+      "sourceUrl": "https://wiki.seeedstudio.com/cn/Grove_Sensor_Intro/#grove---指夹式心率传感器",
+      "documentationUrl": "https://wiki.seeedstudio.com/cn/Grove-Finger-clip_Heart_Rate_Sensor/",
+      "imageSourceUrl": "https://files.seeedstudio.com/wiki/Grove-Finger-clip_Heart_Rate_Sensor/img/Grove-Finger-clip_Heart_Rate_Sensor.jpg",
+      "originalImageSha256": "c07ffa85dcc2c556e15938aeedefbc238f73d8f5ee514b455895f4fdc8962d7a",
+      "imageSha256": "f19d0595957787ead3a8fbe5e8a0ae954b343ad60b83f302bc8143f0cd2b3329",
+      "imageBytes": 26346,
+      "imageDimensions": [
+        640,
+        480
+      ],
+      "revision": "bb25d88da0308a74145a36d6"
+    },
+    {
+      "skillName": "seeed-d25a8a8a81eb",
+      "componentId": "hw_seeed_d25a8a8a81eb",
+      "displayName": "Grove - I2C 高精度温湿度传感器 (SHT35)",
+      "brand": "Seeed Grove",
+      "category": "SENSOR",
+      "moduleType": "环境",
+      "sourceUrl": "https://wiki.seeedstudio.com/cn/Grove_Sensor_Intro/#grove---i2c-高精度温湿度传感器-sht35",
+      "documentationUrl": "https://wiki.seeedstudio.com/cn/Grove-I2C_High_Accuracy_Temp-Humi_Sensor-SHT35/",
+      "imageSourceUrl": "https://files.seeedstudio.com/wiki/Grove-I2C_High_Accuracy_Temp-Humi_Sensor-SHT35/img/main.jpg",
+      "originalImageSha256": "adb368537499a2c5b3c7745ccd1840cf5e8d28e5e4b0064a331fd4a61cbdf1d3",
+      "imageSha256": "d4febb42be36a374477568a0a8877f4f5c65ace598e48d261ad3292d4d3c085e",
+      "imageBytes": 17034,
+      "imageDimensions": [
+        640,
+        480
+      ],
+      "revision": "f7c215c84767860fcb62d7b2"
+    },
+    {
+      "skillName": "seeed-d49cad7bbd15",
+      "componentId": "hw_seeed_d49cad7bbd15",
+      "displayName": "Grove - 红外接收器",
+      "brand": "Seeed Grove",
+      "category": "SENSOR",
+      "moduleType": "光和图像",
+      "sourceUrl": "https://wiki.seeedstudio.com/cn/Grove_Sensor_Intro/#grove---红外接收器",
+      "documentationUrl": "https://wiki.seeedstudio.com/cn/Grove-Infrared_Receiver/",
+      "imageSourceUrl": "https://files.seeedstudio.com/wiki/Grove-Infrared_Receiver/img/Grove-Infrared_Receiver.jpg",
+      "originalImageSha256": "9cbe9ed66c629c1af102e244c5350426bb49690bbe5cd80c6daf1eb66a99ada0",
+      "imageSha256": "f9935b2c9128f9d96a50cdc34e97290510bb978458c3d9222884df1ec7070552",
+      "imageBytes": 21692,
+      "imageDimensions": [
+        640,
+        507
+      ],
+      "revision": "833396f5edde33d5f593366d"
+    },
+    {
+      "skillName": "seeed-d49d5ffefb36",
+      "componentId": "hw_seeed_d49d5ffefb36",
+      "displayName": "Grove - 温湿度传感器 Pro (DHT22)",
+      "brand": "Seeed Grove",
+      "category": "SENSOR",
+      "moduleType": "环境",
+      "sourceUrl": "https://wiki.seeedstudio.com/cn/Grove_Sensor_Intro/#grove---温湿度传感器-pro-dht22",
+      "documentationUrl": "https://wiki.seeedstudio.com/cn/Grove-Temperature_and_Humidity_Sensor_Pro/",
+      "imageSourceUrl": "https://media-cdn.seeedstudio.com/media/catalog/product/cache/bb49d3ec4ee05b6f018e93f896b8a25d/g/r/grove-temperature-humidity-sensor-pro-am2302-preview.png",
+      "originalImageSha256": "02841a3a9a9e978f178dbd0d3cfe43b944aada394b8a47766f4b98f7ed3b3270",
+      "imageSha256": "d930618653306cefd7e51930d4b42da4c08023317c991c16cb4b67f54d31c408",
+      "imageBytes": 14684,
+      "imageDimensions": [
+        640,
+        480
+      ],
+      "revision": "45b498eaa5ef1c73646fa168"
+    },
+    {
+      "skillName": "seeed-d4c300ea87bc",
+      "componentId": "hw_seeed_d4c300ea87bc",
+      "displayName": "Grove - 温湿度传感器 (SHT31)",
+      "brand": "Seeed Grove",
+      "category": "SENSOR",
+      "moduleType": "环境",
+      "sourceUrl": "https://wiki.seeedstudio.com/cn/Grove_Sensor_Intro/#grove---温湿度传感器-sht31",
+      "documentationUrl": "https://wiki.seeedstudio.com/cn/Grove-TempAndHumi_Sensor-SHT31/",
+      "imageSourceUrl": "https://files.seeedstudio.com/wiki/Grove-TempAndHumi_Sensor-SHT31/img/main_new.jpg",
+      "originalImageSha256": "63c3b8687dd722efc2bcf1a36f4ba20ae95d2ea7512f96c309e3b3ffaa8d2341",
+      "imageSha256": "1009bcf66fe21b1947d229615d7733fbefcf5270cd51af9faafd1349e876c15c",
+      "imageBytes": 10474,
+      "imageDimensions": [
+        640,
+        479
+      ],
+      "revision": "cf2d60c6b133d0d0e6378040"
+    },
+    {
+      "skillName": "seeed-db50405f8594",
+      "componentId": "hw_seeed_db50405f8594",
+      "displayName": "Grove - 气压传感器（BME280）",
+      "brand": "Seeed Grove",
+      "category": "SENSOR",
+      "moduleType": "环境",
+      "sourceUrl": "https://wiki.seeedstudio.com/cn/Grove_Sensor_Intro/#grove---气压传感器bme280",
+      "documentationUrl": "https://wiki.seeedstudio.com/cn/Grove-Barometer_Sensor-BME280/",
+      "imageSourceUrl": "https://media-cdn.seeedstudio.com/media/catalog/product/cache/bb49d3ec4ee05b6f018e93f896b8a25d/h/t/httpsstatics3.seeedstudio.comseeedimg2016-06r425ianm2rr93qmjqfuewgx7.jpg",
+      "originalImageSha256": "6a9dcfdbd1ed1f27242d2fbf20fbffc3526620118202f465cc77ce6901d693bb",
+      "imageSha256": "1031c13e4aeddae3a5737dcdc8302b9ae7c6f441e7e4c458df5ee005ee630e61",
+      "imageBytes": 15236,
+      "imageDimensions": [
+        530,
+        397
+      ],
+      "revision": "16b9bf846107346389a646bf"
+    },
+    {
+      "skillName": "seeed-dcd4bb798707",
+      "componentId": "hw_seeed_dcd4bb798707",
+      "displayName": "Grove - 高温传感器",
+      "brand": "Seeed Grove",
+      "category": "SENSOR",
+      "moduleType": "环境",
+      "sourceUrl": "https://wiki.seeedstudio.com/cn/Grove_Sensor_Intro/#grove---高温传感器",
+      "documentationUrl": "https://wiki.seeedstudio.com/cn/Grove-High_Temperature_Sensor/",
+      "imageSourceUrl": "https://files.seeedstudio.com/wiki/Grove-High_Temperature_Sensor/img/High_Temperature_Sensor_01.jpg",
+      "originalImageSha256": "eb5eceee1e65b7e0d8f86f5eff13ca44c41a10b3ff6128fb007b0c6076ca78b7",
+      "imageSha256": "2ee8535244365269864757beb2b156c85fdf9e8f0aecee4f13b0a6b751572935",
+      "imageBytes": 30030,
+      "imageDimensions": [
+        640,
+        480
+      ],
+      "revision": "ebb28bbc16e878c83fc75dd4"
+    },
+    {
+      "skillName": "seeed-dd22ac2e907f",
+      "componentId": "hw_seeed_dd22ac2e907f",
+      "displayName": "Grove 闪电传感器 AS3935",
+      "brand": "Seeed Grove",
+      "category": "SENSOR",
+      "moduleType": "光和图像",
+      "sourceUrl": "https://wiki.seeedstudio.com/cn/Grove_Sensor_Intro/#grove-闪电传感器-as3935",
+      "documentationUrl": "https://wiki.seeedstudio.com/cn/grove-lightning-sensor-as3935/",
+      "imageSourceUrl": "https://media-cdn.seeedstudio.com/media/catalog/product/cache/bb49d3ec4ee05b6f018e93f896b8a25d/1/-/1-101021072-lightning-sensor-45font.jpg",
+      "originalImageSha256": "c1d206dbf69f54cb650ff3f125ae2cf9d7d2779d55d5a2b6a79a908117d866a6",
+      "imageSha256": "edeb26d87d901d78bcc57b06ac8e073715b439e6a6830f2b65d7d4be00976e95",
+      "imageBytes": 19114,
+      "imageDimensions": [
+        640,
+        480
+      ],
+      "revision": "1dd1c5f4dec0ea7c9f2adfee"
+    },
+    {
+      "skillName": "seeed-dd6223a49b86",
+      "componentId": "hw_seeed_dd6223a49b86",
+      "displayName": "Grove - 红外反射传感器",
+      "brand": "Seeed Grove",
+      "category": "SENSOR",
+      "moduleType": "光和图像",
+      "sourceUrl": "https://wiki.seeedstudio.com/cn/Grove_Sensor_Intro/#grove---红外反射传感器",
+      "documentationUrl": "https://wiki.seeedstudio.com/cn/Grove-Infrared_Reflective_Sensor/",
+      "imageSourceUrl": "https://media-cdn.seeedstudio.com/media/catalog/product/cache/bb49d3ec4ee05b6f018e93f896b8a25d/h/t/httpsstatics3.seeedstudio.comseeedfile2018-08bazaar894643_101020174.jpg",
+      "originalImageSha256": "5b6d741e6f1619f35e416c4ee2913b77c2da8a3ccadde9373f8ebac25fa7fa7c",
+      "imageSha256": "4b77fb039dfaac7b3ea7ec8ea4e60f2d6d27a0c7d401225555e6295ad4398339",
+      "imageBytes": 18046,
+      "imageDimensions": [
+        640,
+        480
+      ],
+      "revision": "8afa1c1a885dee7db3883858"
+    },
+    {
+      "skillName": "seeed-decba7adfcd3",
+      "componentId": "hw_seeed_decba7adfcd3",
+      "displayName": "Grove - 气压传感器（BMP280）",
+      "brand": "Seeed Grove",
+      "category": "SENSOR",
+      "moduleType": "环境",
+      "sourceUrl": "https://wiki.seeedstudio.com/cn/Grove_Sensor_Intro/#grove---气压传感器bmp280",
+      "documentationUrl": "https://wiki.seeedstudio.com/cn/Grove-Barometer_Sensor-BMP280/",
+      "imageSourceUrl": "https://media-cdn.seeedstudio.com/media/catalog/product/cache/bb49d3ec4ee05b6f018e93f896b8a25d/h/t/httpsstatics3.seeedstudio.comseeedimg2016-06b0u1ofgckz2dmivxo6znx8ox.jpg",
+      "originalImageSha256": "975f9c55ac4f64f8f1fed8eb52efa870471ad258c0bd41c13d4452cda590f7b6",
+      "imageSha256": "947858737fbb47f1dd1a47de7158602f06530fafe0c620081543f852b20cf6ac",
+      "imageBytes": 15858,
+      "imageDimensions": [
+        530,
+        397
+      ],
+      "revision": "eacc0de14ef79086a50c439e"
+    },
+    {
+      "skillName": "seeed-e5476c152750",
+      "componentId": "hw_seeed_e5476c152750",
+      "displayName": "Grove - 三轴数字加速度计 ±16g 超低功耗 (BMA400)",
+      "brand": "Seeed Grove",
+      "category": "SENSOR",
+      "moduleType": "姿态",
+      "sourceUrl": "https://wiki.seeedstudio.com/cn/Grove_Sensor_Intro/#grove---三轴数字加速度计-16g-超低功耗-bma400",
+      "documentationUrl": "https://wiki.seeedstudio.com/cn/Grove-3-Axis_Digital_Accelerometer±16g_Ultra-low_Power-BMA400/",
+      "imageSourceUrl": "https://files.seeedstudio.com/wiki/Grove-3-Axis_Digital_Accelerometer-16g_Ultra-low_Power-BMA400/img/main.jpg",
+      "originalImageSha256": "608aafdc0e89b5b735c11eb9c54f8710725a2687251fec4b93db54af6af90ff7",
+      "imageSha256": "f4526b3119241581afc1f7f30767a2b02913f8db3ae29cff044b995ee7423741",
+      "imageBytes": 16692,
+      "imageDimensions": [
+        640,
+        480
+      ],
+      "revision": "658d66dba1c621a85df20bb5"
+    },
+    {
+      "skillName": "seeed-e7190e62f8e7",
+      "componentId": "hw_seeed_e7190e62f8e7",
+      "displayName": "Grove - GSR 传感器",
+      "brand": "Seeed Grove",
+      "category": "SENSOR",
+      "moduleType": "生物识别",
+      "sourceUrl": "https://wiki.seeedstudio.com/cn/Grove_Sensor_Intro/#grove---gsr-传感器",
+      "documentationUrl": "https://wiki.seeedstudio.com/cn/Grove-GSR_Sensor/",
+      "imageSourceUrl": "https://media-cdn.seeedstudio.com/media/catalog/product/cache/bb49d3ec4ee05b6f018e93f896b8a25d/h/t/httpsstatics3.seeedstudio.comseeedfile2018-08bazaar888312_2.jpg",
+      "originalImageSha256": "103be452a5f52849a576b758879800a513ed139530a528e5ca15813c27749914",
+      "imageSha256": "21ed60d161caeb4ab4651d5244258e34ee621c1208064191321c1f8cc66b66cd",
+      "imageBytes": 20638,
+      "imageDimensions": [
+        640,
+        480
+      ],
+      "revision": "22f2ac3131e5b2b56fbabaa1"
+    },
+    {
+      "skillName": "seeed-e776f477db5d",
+      "componentId": "hw_seeed_e776f477db5d",
+      "displayName": "Grove - 光传感器",
+      "brand": "Seeed Grove",
+      "category": "SENSOR",
+      "moduleType": "光和图像",
+      "sourceUrl": "https://wiki.seeedstudio.com/cn/Grove_Sensor_Intro/#grove---光传感器",
+      "documentationUrl": "https://wiki.seeedstudio.com/cn/Grove-Light_Sensor/",
+      "imageSourceUrl": "https://files.seeedstudio.com/wiki/Grove_Light_Sensor/images/cover.jpg",
+      "originalImageSha256": "1590f18ee946241aeb1bc47afffe1ca0aa1c66c98726ad64f36a00079da7f0a3",
+      "imageSha256": "bf8306fb592c55d08ce6708d88286017b7123b7c5ff681b2fbef431499fbd626",
+      "imageBytes": 15126,
+      "imageDimensions": [
+        501,
+        395
+      ],
+      "revision": "1baeb002c943ff3e93d15653"
+    },
+    {
+      "skillName": "seeed-e9dfe387c88b",
+      "componentId": "hw_seeed_e9dfe387c88b",
+      "displayName": "Grove - 三轴数字加速度计",
+      "brand": "Seeed Grove",
+      "category": "SENSOR",
+      "moduleType": "姿态",
+      "sourceUrl": "https://wiki.seeedstudio.com/cn/Grove_Sensor_Intro/#grove---三轴数字加速度计",
+      "documentationUrl": "https://wiki.seeedstudio.com/cn/Grove-Gas_Sensor-MQ2/",
+      "imageSourceUrl": "https://media-cdn.seeedstudio.com/media/catalog/product/cache/bb49d3ec4ee05b6f018e93f896b8a25d/h/t/httpsstatics3.seeedstudio.comseeedfile2018-07bazaar881163_3.jpg",
+      "originalImageSha256": "22ab4f747f7663cc3578899073c12059a4d04c1e99f34215851e14a8f6f144e7",
+      "imageSha256": "3983a264f4339255a75cf3fdf5905867bf3f23d0fe8266f189c5befe980733c9",
+      "imageBytes": 21824,
+      "imageDimensions": [
+        640,
+        480
+      ],
+      "revision": "915b5be5cc5b6736ae833106"
+    },
+    {
+      "skillName": "seeed-ebfbb71ba78d",
+      "componentId": "hw_seeed_ebfbb71ba78d",
+      "displayName": "Grove - 步数计(BMA456)",
+      "brand": "Seeed Grove",
+      "category": "SENSOR",
+      "moduleType": "姿态",
+      "sourceUrl": "https://wiki.seeedstudio.com/cn/Grove_Sensor_Intro/#grove---步数计bma456",
+      "documentationUrl": "https://wiki.seeedstudio.com/cn/Grove-Step_Counter-BMA456/",
+      "imageSourceUrl": "https://files.seeedstudio.com/wiki/Grove-Step_Counter-BMA456/img/main.jpg",
+      "originalImageSha256": "fb6399a2a998777d9192403a262933baf4e75a6e47530ec8256a636a8bb86919",
+      "imageSha256": "d84150b7b9d9bdf84bba2feb0b869fdd31d8dd0d727020d1ba44650dbf7349ae",
+      "imageBytes": 16466,
+      "imageDimensions": [
+        640,
+        480
+      ],
+      "revision": "61e84ed6bae5ca700fd984a9"
+    },
+    {
+      "skillName": "seeed-f0d7db4959a4",
+      "componentId": "hw_seeed_f0d7db4959a4",
+      "displayName": "Grove - 气体氧气传感器(MIX8410)",
+      "brand": "Seeed Grove",
+      "category": "SENSOR",
+      "moduleType": "环境",
+      "sourceUrl": "https://wiki.seeedstudio.com/cn/Grove_Sensor_Intro/#grove---气体氧气传感器mix8410",
+      "documentationUrl": "https://wiki.seeedstudio.com/cn/Grove-Gas_Sensor-O2-MIX8410/",
+      "imageSourceUrl": "https://files.seeedstudio.com/products/101990680/101990680_preview-34.png",
+      "originalImageSha256": "9b1c1138f2eae5ffdf1c46574ad8f5d21bd4751382f0c4e8f6098457ab81cf83",
+      "imageSha256": "44f30fce558a7616b200e56d93d3da933bd7acd1597dd40841aaaa2a3abbccf5",
+      "imageBytes": 14132,
+      "imageDimensions": [
+        640,
+        480
+      ],
+      "revision": "ad5ece903782772a1075757d"
+    },
+    {
+      "skillName": "seeed-f19d4107e2a1",
+      "componentId": "hw_seeed_f19d4107e2a1",
+      "displayName": "单线温度传感器 DS18B20",
+      "brand": "Seeed Grove",
+      "category": "SENSOR",
+      "moduleType": "环境",
+      "sourceUrl": "https://wiki.seeedstudio.com/cn/Grove_Sensor_Intro/#单线温度传感器-ds18b20",
+      "documentationUrl": "https://wiki.seeedstudio.com/cn/One-Wire-Temperature-Sensor-DS18B20/",
+      "imageSourceUrl": "https://files.seeedstudio.com/wiki/One-Wire-Temperature/one-wire.png",
+      "originalImageSha256": "cdc727eb0a2cc39ea0e17924bc96190ec216e36b7681d161ce325026d3e971b4",
+      "imageSha256": "0dfe34b29f731339c91612adb9fbdb906f42e5b68a324a8b69b223182772aab4",
+      "imageBytes": 10194,
+      "imageDimensions": [
+        640,
+        479
+      ],
+      "revision": "2e0ee540c3730528c820d564"
+    },
+    {
+      "skillName": "seeed-f226fa37b837",
+      "componentId": "hw_seeed_f226fa37b837",
+      "displayName": "Grove - ADC用于称重传感器 (HX711)",
+      "brand": "Seeed Grove",
+      "category": "SENSOR",
+      "moduleType": "重量",
+      "sourceUrl": "https://wiki.seeedstudio.com/cn/Grove_Sensor_Intro/#grove---adc用于称重传感器-hx711",
+      "documentationUrl": "https://wiki.seeedstudio.com/cn/grove_adc_for_load_cell_hx711/",
+      "imageSourceUrl": "https://files.seeedstudio.com/wiki/Grove-ADC-for-Load-Cell-HX711-/img/Grove-ADC-for-Load-Cell-HX711-wiki.jpg",
+      "originalImageSha256": "6a32d8d06c07dfc5536051f41f0606d36e1b687c7f7bf94375c56f4f7f16a61f",
+      "imageSha256": "6d11bcb2f2e3dad7536696d3d752fd5010a3694f7d8a5c4739f40a191ccae218",
+      "imageBytes": 21298,
+      "imageDimensions": [
+        640,
+        480
+      ],
+      "revision": "1c6fb7194f522a657faf0bb9"
+    },
+    {
+      "skillName": "seeed-f22c17defd6c",
+      "componentId": "hw_seeed_f22c17defd6c",
+      "displayName": "Grove - 二氧化碳 & 温湿度传感器 (SCD30)",
+      "brand": "Seeed Grove",
+      "category": "SENSOR",
+      "moduleType": "环境",
+      "sourceUrl": "https://wiki.seeedstudio.com/cn/Grove_Sensor_Intro/#grove---二氧化碳--温湿度传感器-scd30",
+      "documentationUrl": "https://wiki.seeedstudio.com/cn/Grove-CO2_Temperature_Humidity_Sensor-SCD30/",
+      "imageSourceUrl": "https://files.seeedstudio.com/wiki/Grove-CO2-Temperature-Humidity-Sensor-SCD30/img/main.jpg",
+      "originalImageSha256": "d2b1d44c6644a6d1126ad76c60d2b020a69f535d197ac6b0a7d5bca22320a1e1",
+      "imageSha256": "3d6115312e7879e5c9ea33b6c15a76a163f6aeaddfb2d8310260ccd4b3cc0e42",
+      "imageBytes": 12986,
+      "imageDimensions": [
+        640,
+        480
+      ],
+      "revision": "3187a309d028b01a7d7a2b1d"
+    },
+    {
+      "skillName": "seeed-f6293e923185",
+      "componentId": "hw_seeed_f6293e923185",
+      "displayName": "Grove - 集成压力传感器套件",
+      "brand": "Seeed Grove",
+      "category": "SENSOR",
+      "moduleType": "环境",
+      "sourceUrl": "https://wiki.seeedstudio.com/cn/Grove_Sensor_Intro/#grove---集成压力传感器套件",
+      "documentationUrl": "https://wiki.seeedstudio.com/cn/Grove-Integrated-Pressure-Sensor-Kit/",
+      "imageSourceUrl": "https://files.seeedstudio.com/wiki/Grove-Integrated-Pressure-Sensor-Kit-MPX5700AP/img/Grove-Integrated-Pressure-Sensor-Kit-MPX5700AP-wiki.jpg",
+      "originalImageSha256": "f9b5d4dd990ab31c88591ed4cded72f4c2c05ad61789cf78dee69e8095103b75",
+      "imageSha256": "83e9382bf6dfe2e413560239b71d2ab02473c4b48a707583d827caa7de85271a",
+      "imageBytes": 9792,
+      "imageDimensions": [
+        640,
+        480
+      ],
+      "revision": "cab1adbd2c8e17ee5ba163c3"
+    },
+    {
+      "skillName": "seeed-fb5be16db18d",
+      "componentId": "hw_seeed_fb5be16db18d",
+      "displayName": "Grove - 温湿度传感器 (高精度&迷你) v1.0",
+      "brand": "Seeed Grove",
+      "category": "SENSOR",
+      "moduleType": "环境",
+      "sourceUrl": "https://wiki.seeedstudio.com/cn/Grove_Sensor_Intro/#grove---温湿度传感器-高精度迷你-v10",
+      "documentationUrl": "https://wiki.seeedstudio.com/cn/Grove-TemptureAndHumidity_Sensor-High-Accuracy_AndMini-v1.0/",
+      "imageSourceUrl": "https://media-cdn.seeedstudio.com/media/catalog/product/cache/bb49d3ec4ee05b6f018e93f896b8a25d/h/t/httpsstatics3.seeedstudio.comimagesproductgrove20tem20hum20accuracy20mini.jpg",
+      "originalImageSha256": "c894924f275eeb28a591993e2cd80c0ac607585fb1e74f4365d7bc0ec1d416e8",
+      "imageSha256": "caf2e7731d868d509f2de3507afe04a8e4ab1222358eef743f132d9a003cb92c",
+      "imageBytes": 20760,
+      "imageDimensions": [
+        640,
+        480
+      ],
+      "revision": "3caa60d16b0d76abaebd8a86"
+    }
+  ]
+}

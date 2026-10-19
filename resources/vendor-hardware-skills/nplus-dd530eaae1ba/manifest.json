@@ -1,0 +1,35 @@
+{
+  "schema": "zhangwen.hardware-skill-manifest/v1",
+  "schemaVersion": 1,
+  "skillName": "nplus-dd530eaae1ba",
+  "componentId": "hw_nplus_dd530eaae1ba",
+  "displayName": "N+ 360°舵机",
+  "description": "N+ 360°舵机的官方目录、产品图片与参考资料；MicroPython 驱动及跨主控接线待联调。",
+  "status": "ACTIVE",
+  "sourceKind": "BUNDLED",
+  "files": [
+    "SKILL.md",
+    "references/specifications.md",
+    "references/compatibility-rules.md",
+    "references/integration.md",
+    "references/safety.md",
+    "references/sources.md",
+    "examples/usage.md",
+    "tests/validation-cases.md"
+  ],
+  "media": [
+    {
+      "path": "assets/cover.webp",
+      "role": "cover",
+      "alt": "N+ 360°舵机 官方产品图",
+      "contentType": "image/webp",
+      "sha256": "d169a267ffa924ec1ebd61951ecc8033e187a594a1de603c07bededa64ecd999",
+      "sourceUrl": "https://nplus-doc.readthedocs.io/zh-cn/latest/_images/7-1.jpg",
+      "attribution": "N+ 官方产品文档",
+      "license": "© 2020 nplus；图片权利归原作者；文档未声明图片开放许可。"
+    }
+  ],
+  "revision": "a88b955032f7765122c879db",
+  "createdAt": "2026-10-15T00:00:00+08:00",
+  "updatedAt": "2026-10-15T00:00:00+08:00"
+}

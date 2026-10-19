@@ -1,0 +1,26 @@
+{
+  "schema": "zhangwen.hardware-skill-manifest/v1",
+  "schemaVersion": 1,
+  "skillName": "regulated-5v-3a-power",
+  "componentId": "hw_power_5v_3a_regulated",
+  "displayName": "外接稳压 5V/3A 电源",
+  "description": "自动浇花水泵负载的通用供电规格占位，要求稳压 5V、持续能力不低于 3A、具备短路和过流保护。",
+  "status": "ACTIVE",
+  "sourceKind": "BUNDLED",
+  "files": [
+    "README.md",
+    "CHANGELOG.md",
+    "SKILL.md",
+    "references/specifications.md",
+    "references/compatibility-rules.md",
+    "references/integration.md",
+    "references/safety.md",
+    "references/sources.md",
+    "examples/usage.md",
+    "tests/validation-cases.md"
+  ],
+  "media": [],
+  "revision": "2d7077c7e2be441f86d92fb3",
+  "createdAt": "2026-07-25T00:00:00+08:00",
+  "updatedAt": "2026-07-25T00:00:00+08:00"
+}

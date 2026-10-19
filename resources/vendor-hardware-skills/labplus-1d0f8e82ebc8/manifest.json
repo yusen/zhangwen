@@ -1,0 +1,35 @@
+{
+  "schema": "zhangwen.hardware-skill-manifest/v1",
+  "schemaVersion": 1,
+  "skillName": "labplus-1d0f8e82ebc8",
+  "componentId": "hw_labplus_1d0f8e82ebc8",
+  "displayName": "盛思 直滑电位器",
+  "description": "盛思 直滑电位器的官方目录、产品图片与参考资料；MicroPython 驱动及跨主控接线待联调。",
+  "status": "ACTIVE",
+  "sourceKind": "BUNDLED",
+  "files": [
+    "SKILL.md",
+    "references/specifications.md",
+    "references/compatibility-rules.md",
+    "references/integration.md",
+    "references/safety.md",
+    "references/sources.md",
+    "examples/usage.md",
+    "tests/validation-cases.md"
+  ],
+  "media": [
+    {
+      "path": "assets/cover.webp",
+      "role": "cover",
+      "alt": "盛思 直滑电位器 官方产品图",
+      "contentType": "image/webp",
+      "sha256": "442b8414e3589cb2a3a024fe0a716e948df62332f9f0f5c9c98def8401f4f5d0",
+      "sourceUrl": "https://raw.githubusercontent.com/labplus-cn/labplus_ledong_module-documentation/main/documentation/static/%E5%9B%BE%E7%89%87/slide%20dimmer_1.png",
+      "attribution": "盛思 官方产品文档",
+      "license": "© labplus；官方声明保留所有版权。图片权利归原作者；未声明开放许可。"
+    }
+  ],
+  "revision": "cbe6387ab31e1cb4ec735b60",
+  "createdAt": "2026-10-15T00:00:00+08:00",
+  "updatedAt": "2026-10-15T00:00:00+08:00"
+}

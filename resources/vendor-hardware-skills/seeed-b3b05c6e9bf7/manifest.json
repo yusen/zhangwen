@@ -1,0 +1,35 @@
+{
+  "schema": "zhangwen.hardware-skill-manifest/v1",
+  "schemaVersion": 1,
+  "skillName": "seeed-b3b05c6e9bf7",
+  "componentId": "hw_seeed_b3b05c6e9bf7",
+  "displayName": "Grove - 二氧化碳 & 温湿度传感器 (SCD41)",
+  "description": "Grove - 二氧化碳 & 温湿度传感器 (SCD41)的官方目录、产品图片与参考资料；MicroPython 驱动及跨主控接线待联调。",
+  "status": "ACTIVE",
+  "sourceKind": "BUNDLED",
+  "files": [
+    "SKILL.md",
+    "references/specifications.md",
+    "references/compatibility-rules.md",
+    "references/integration.md",
+    "references/safety.md",
+    "references/sources.md",
+    "examples/usage.md",
+    "tests/validation-cases.md"
+  ],
+  "media": [
+    {
+      "path": "assets/cover.webp",
+      "role": "cover",
+      "alt": "Grove - 二氧化碳 & 温湿度传感器 (SCD41) 官方产品图",
+      "contentType": "image/webp",
+      "sha256": "fdbd1789df3cc894690bb5d00a6e91f07e991007dea14f1eba059fba521248dd",
+      "sourceUrl": "https://files.seeedstudio.com/wiki/Grove-CO2&Temperature&HumiditySensor-SCD4/img/101020952_Preview-07.png",
+      "attribution": "Seeed Grove 官方产品文档",
+      "license": "© Seeed Studio；产品图片权利归原作者；未将文档代码许可视为图片许可。"
+    }
+  ],
+  "revision": "c8bbe7e2197bf996935e0899",
+  "createdAt": "2026-10-15T00:00:00+08:00",
+  "updatedAt": "2026-10-15T00:00:00+08:00"
+}

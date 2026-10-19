@@ -1,0 +1,35 @@
+{
+  "schema": "zhangwen.hardware-skill-manifest/v1",
+  "schemaVersion": 1,
+  "skillName": "seeed-371cf6142b6c",
+  "componentId": "hw_seeed_371cf6142b6c",
+  "displayName": "Grove - 激光 PM2.5 传感器 (HM3301)",
+  "description": "Grove - 激光 PM2.5 传感器 (HM3301)的官方目录、产品图片与参考资料；MicroPython 驱动及跨主控接线待联调。",
+  "status": "ACTIVE",
+  "sourceKind": "BUNDLED",
+  "files": [
+    "SKILL.md",
+    "references/specifications.md",
+    "references/compatibility-rules.md",
+    "references/integration.md",
+    "references/safety.md",
+    "references/sources.md",
+    "examples/usage.md",
+    "tests/validation-cases.md"
+  ],
+  "media": [
+    {
+      "path": "assets/cover.webp",
+      "role": "cover",
+      "alt": "Grove - 激光 PM2.5 传感器 (HM3301) 官方产品图",
+      "contentType": "image/webp",
+      "sha256": "c713ea3ddf662ef12f9f05f3f1039394509dfb8241559731ef5acb3f0484b6d1",
+      "sourceUrl": "https://files.seeedstudio.com/wiki/Grove-Laser_PM2.5_Sensor-HM3301/img/main.jpg",
+      "attribution": "Seeed Grove 官方产品文档",
+      "license": "© Seeed Studio；产品图片权利归原作者；未将文档代码许可视为图片许可。"
+    }
+  ],
+  "revision": "7f30af37bf1c1bd3ad86aab7",
+  "createdAt": "2026-10-15T00:00:00+08:00",
+  "updatedAt": "2026-10-15T00:00:00+08:00"
+}

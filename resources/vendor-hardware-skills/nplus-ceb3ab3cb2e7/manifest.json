@@ -1,0 +1,35 @@
+{
+  "schema": "zhangwen.hardware-skill-manifest/v1",
+  "schemaVersion": 1,
+  "skillName": "nplus-ceb3ab3cb2e7",
+  "componentId": "hw_nplus_ceb3ab3cb2e7",
+  "displayName": "N+ 循迹传感器",
+  "description": "N+ 循迹传感器的官方目录、产品图片与参考资料；MicroPython 驱动及跨主控接线待联调。",
+  "status": "ACTIVE",
+  "sourceKind": "BUNDLED",
+  "files": [
+    "SKILL.md",
+    "references/specifications.md",
+    "references/compatibility-rules.md",
+    "references/integration.md",
+    "references/safety.md",
+    "references/sources.md",
+    "examples/usage.md",
+    "tests/validation-cases.md"
+  ],
+  "media": [
+    {
+      "path": "assets/cover.webp",
+      "role": "cover",
+      "alt": "N+ 循迹传感器 官方产品图",
+      "contentType": "image/webp",
+      "sha256": "4b2223ceaaa3fee5a15488f7176bea6391a7af2a72aa6ed34744a5000a9fc203",
+      "sourceUrl": "https://nplus-doc.readthedocs.io/zh-cn/latest/_images/11-1.jpg",
+      "attribution": "N+ 官方产品文档",
+      "license": "© 2020 nplus；图片权利归原作者；文档未声明图片开放许可。"
+    }
+  ],
+  "revision": "5d22f52f7dc0772634efe77c",
+  "createdAt": "2026-10-15T00:00:00+08:00",
+  "updatedAt": "2026-10-15T00:00:00+08:00"
+}

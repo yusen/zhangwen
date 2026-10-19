@@ -1,0 +1,36 @@
+{
+  "schema": "zhangwen.hardware-skill-manifest/v1",
+  "schemaVersion": 1,
+  "skillName": "dfrobot-dfr0553-k10",
+  "componentId": "hw_dfrobot_dfr0553_k10",
+  "displayName": "DFRobot DFR0553 16 位 ADC 转换模块",
+  "description": "为行空板 K10 MicroPython 项目提供 DFR0553 的I2C接入、兼容和安全边界；API 与电气值仍需按当前固件和实物复核。",
+  "status": "ACTIVE",
+  "sourceKind": "MANUAL",
+  "files": [
+    "README.md",
+    "SKILL.md",
+    "references/specifications.md",
+    "references/compatibility-rules.md",
+    "references/integration.md",
+    "references/safety.md",
+    "references/sources.md",
+    "examples/usage.md",
+    "tests/validation-cases.md"
+  ],
+  "media": [
+    {
+      "path": "assets/cover.webp",
+      "role": "cover",
+      "alt": "Front of I2C ADS1115 ADC Module for Arduino & Raspberry Pi-DFRobot product sku:DFR0553 image.",
+      "contentType": "image/webp",
+      "sha256": "f6125e786287f66df62b66527efa1651114fd4d7915fbbcc614562495dc01edb",
+      "sourceUrl": "https://wiki.dfrobot.com/dfr0553/",
+      "attribution": "DFRobot（取自对应官方资料页）",
+      "license": "DFRobot 官方产品图；仅随本 Skill 作来源引用，公开再分发授权未独立核验"
+    }
+  ],
+  "revision": "45fc98d720017e8929a26adf",
+  "createdAt": "2026-07-17T06:57:53Z",
+  "updatedAt": "2026-07-17T10:42:11Z"
+}

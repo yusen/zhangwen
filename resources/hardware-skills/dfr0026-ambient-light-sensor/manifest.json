@@ -1,0 +1,39 @@
+{
+  "schema": "zhangwen.hardware-skill-manifest/v1",
+  "schemaVersion": 1,
+  "skillName": "dfr0026-ambient-light-sensor",
+  "componentId": "hw_dfrobot_dfr0026",
+  "displayName": "DFRobot DFR0026 模拟环境光线传感器",
+  "description": "DFRobot DFR0026 模拟环境光线传感器硬件档案；包含3–5V模拟电气规格、MicroPython ADC案例、机械档案、CadQuery参考模型、兼容规则与安全边界。",
+  "status": "ACTIVE",
+  "sourceKind": "MANUAL",
+  "files": [
+    "README.md",
+    "CHANGELOG.md",
+    "SKILL.md",
+    "references/specifications.md",
+    "references/compatibility-rules.md",
+    "references/mechanical.md",
+    "references/integration.md",
+    "references/safety.md",
+    "references/sources.md",
+    "models/cadquery.py",
+    "examples/usage.md",
+    "tests/validation-cases.md"
+  ],
+  "media": [
+    {
+      "path": "assets/cover.webp",
+      "role": "cover",
+      "alt": "DFRobot DFR0026 模拟环境光线传感器 V2 正面产品图",
+      "contentType": "image/webp",
+      "sha256": "a30722212f9ba84a3f7f5fe3b8d90ceb89c13d77c44cafdbeb63af1b65746e43",
+      "sourceUrl": "https://wiki.dfrobot.com.cn/_SKU_DFR0026_%E6%A8%A1%E6%8B%9F%E7%8E%AF%E5%A2%83%E5%85%89%E7%BA%BF%E4%BC%A0%E6%84%9F%E5%99%A8",
+      "attribution": "DFRobot",
+      "license": "用于产品识别和本地硬件库展示；公开再分发前需确认 DFRobot 图片授权。"
+    }
+  ],
+  "revision": "4ef8c3dfd6588774f95091a5",
+  "createdAt": "2026-07-16T09:20:00Z",
+  "updatedAt": "2026-07-17T13:38:37+08:00"
+}

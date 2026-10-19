@@ -1,0 +1,35 @@
+{
+  "schema": "zhangwen.hardware-skill-manifest/v1",
+  "schemaVersion": 1,
+  "skillName": "seeed-109825053ca0",
+  "componentId": "hw_seeed_109825053ca0",
+  "displayName": "Grove - 12 键电容式 I2C 触摸传感器 V3 (MPR121)",
+  "description": "Grove - 12 键电容式 I2C 触摸传感器 V3 (MPR121)的官方目录、产品图片与参考资料；MicroPython 驱动及跨主控接线待联调。",
+  "status": "ACTIVE",
+  "sourceKind": "BUNDLED",
+  "files": [
+    "SKILL.md",
+    "references/specifications.md",
+    "references/compatibility-rules.md",
+    "references/integration.md",
+    "references/safety.md",
+    "references/sources.md",
+    "examples/usage.md",
+    "tests/validation-cases.md"
+  ],
+  "media": [
+    {
+      "path": "assets/cover.webp",
+      "role": "cover",
+      "alt": "Grove - 12 键电容式 I2C 触摸传感器 V3 (MPR121) 官方产品图",
+      "contentType": "image/webp",
+      "sha256": "211430f8cedd32e2a38f55dae19139ade9353698f9b03713a14a15ca8f4b11f0",
+      "sourceUrl": "https://media-cdn.seeedstudio.com/media/catalog/product/cache/bb49d3ec4ee05b6f018e93f896b8a25d/1/0/101020872_touch-sensor-v3.png",
+      "attribution": "Seeed Grove 官方产品文档",
+      "license": "© Seeed Studio；产品图片权利归原作者；未将文档代码许可视为图片许可。"
+    }
+  ],
+  "revision": "3c4a877a8a7e12259cf1c0e9",
+  "createdAt": "2026-10-15T00:00:00+08:00",
+  "updatedAt": "2026-10-15T00:00:00+08:00"
+}

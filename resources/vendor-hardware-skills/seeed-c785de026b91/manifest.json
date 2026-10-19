@@ -1,0 +1,35 @@
+{
+  "schema": "zhangwen.hardware-skill-manifest/v1",
+  "schemaVersion": 1,
+  "skillName": "seeed-c785de026b91",
+  "componentId": "hw_seeed_c785de026b91",
+  "displayName": "Grove 12 通道电容触摸键盘 (ATtiny1616)",
+  "description": "Grove 12 通道电容触摸键盘 (ATtiny1616)的官方目录、产品图片与参考资料；MicroPython 驱动及跨主控接线待联调。",
+  "status": "ACTIVE",
+  "sourceKind": "BUNDLED",
+  "files": [
+    "SKILL.md",
+    "references/specifications.md",
+    "references/compatibility-rules.md",
+    "references/integration.md",
+    "references/safety.md",
+    "references/sources.md",
+    "examples/usage.md",
+    "tests/validation-cases.md"
+  ],
+  "media": [
+    {
+      "path": "assets/cover.webp",
+      "role": "cover",
+      "alt": "Grove 12 通道电容触摸键盘 (ATtiny1616) 官方产品图",
+      "contentType": "image/webp",
+      "sha256": "4b76a28e772e67e404413dbc9ab64a1ca361b34a779bd55c1732dc205e493bbc",
+      "sourceUrl": "https://files.seeedstudio.com/wiki/Grove-12-Channel-Capacitive-Touch-Keypad-ATtiny1616/img/wiki.jpg",
+      "attribution": "Seeed Grove 官方产品文档",
+      "license": "© Seeed Studio；产品图片权利归原作者；未将文档代码许可视为图片许可。"
+    }
+  ],
+  "revision": "82c66cf4419fc58a44c0457f",
+  "createdAt": "2026-10-15T00:00:00+08:00",
+  "updatedAt": "2026-10-15T00:00:00+08:00"
+}

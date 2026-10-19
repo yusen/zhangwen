@@ -1,0 +1,35 @@
+{
+  "schema": "zhangwen.hardware-skill-manifest/v1",
+  "schemaVersion": 1,
+  "skillName": "nplus-f22fdbbb328c",
+  "componentId": "hw_nplus_f22fdbbb328c",
+  "displayName": "N+ 按键",
+  "description": "N+ 按键的官方目录、产品图片与参考资料；MicroPython 驱动及跨主控接线待联调。",
+  "status": "ACTIVE",
+  "sourceKind": "BUNDLED",
+  "files": [
+    "SKILL.md",
+    "references/specifications.md",
+    "references/compatibility-rules.md",
+    "references/integration.md",
+    "references/safety.md",
+    "references/sources.md",
+    "examples/usage.md",
+    "tests/validation-cases.md"
+  ],
+  "media": [
+    {
+      "path": "assets/cover.webp",
+      "role": "cover",
+      "alt": "N+ 按键 官方产品图",
+      "contentType": "image/webp",
+      "sha256": "92a96eb1a8414e45ea748c9fba9c6b9355dbe13910ff463c377d7408fe6532c9",
+      "sourceUrl": "https://nplus-doc.readthedocs.io/zh-cn/latest/_images/5-1.jpg",
+      "attribution": "N+ 官方产品文档",
+      "license": "© 2020 nplus；图片权利归原作者；文档未声明图片开放许可。"
+    }
+  ],
+  "revision": "06fde7103f4ef14435ac3b0f",
+  "createdAt": "2026-10-15T00:00:00+08:00",
+  "updatedAt": "2026-10-15T00:00:00+08:00"
+}

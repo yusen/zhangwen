@@ -1,0 +1,35 @@
+{
+  "schema": "zhangwen.hardware-skill-manifest/v1",
+  "schemaVersion": 1,
+  "skillName": "seeed-2c56388e9e3a",
+  "componentId": "hw_seeed_2c56388e9e3a",
+  "displayName": "Grove - 气压计（高精度）",
+  "description": "Grove - 气压计（高精度）的官方目录、产品图片与参考资料；MicroPython 驱动及跨主控接线待联调。",
+  "status": "ACTIVE",
+  "sourceKind": "BUNDLED",
+  "files": [
+    "SKILL.md",
+    "references/specifications.md",
+    "references/compatibility-rules.md",
+    "references/integration.md",
+    "references/safety.md",
+    "references/sources.md",
+    "examples/usage.md",
+    "tests/validation-cases.md"
+  ],
+  "media": [
+    {
+      "path": "assets/cover.webp",
+      "role": "cover",
+      "alt": "Grove - 气压计（高精度） 官方产品图",
+      "contentType": "image/webp",
+      "sha256": "16feb3e85c2959b249b554f2f1494aa714ab44b97b02b730b3f3afa887d70c77",
+      "sourceUrl": "https://files.seeedstudio.com/wiki/Grove-Barometer-High-Accuracy/img/main.jpg",
+      "attribution": "Seeed Grove 官方产品文档",
+      "license": "© Seeed Studio；产品图片权利归原作者；未将文档代码许可视为图片许可。"
+    }
+  ],
+  "revision": "aba79ee9a93afe8dd0757252",
+  "createdAt": "2026-10-15T00:00:00+08:00",
+  "updatedAt": "2026-10-15T00:00:00+08:00"
+}

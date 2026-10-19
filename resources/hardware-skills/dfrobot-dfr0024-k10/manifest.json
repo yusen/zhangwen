@@ -1,0 +1,36 @@
+{
+  "schema": "zhangwen.hardware-skill-manifest/v1",
+  "schemaVersion": 1,
+  "skillName": "dfrobot-dfr0024-k10",
+  "componentId": "hw_dfrobot_dfr0024_k10",
+  "displayName": "DFRobot DFR0024 DS18B20 温度传感器",
+  "description": "为行空板 K10 MicroPython 项目提供 DFR0024 的GPIO接入、兼容和安全边界；API 与电气值仍需按当前固件和实物复核。",
+  "status": "ACTIVE",
+  "sourceKind": "MANUAL",
+  "files": [
+    "README.md",
+    "SKILL.md",
+    "references/specifications.md",
+    "references/compatibility-rules.md",
+    "references/integration.md",
+    "references/safety.md",
+    "references/sources.md",
+    "examples/usage.md",
+    "tests/validation-cases.md"
+  ],
+  "media": [
+    {
+      "path": "assets/cover.webp",
+      "role": "cover",
+      "alt": "DFRobot DFR0024 官方产品图",
+      "contentType": "image/webp",
+      "sha256": "425eb986fa657aeedc3a9c75344cd5b02ff50944faa6a4f63ced3cfc0a299c93",
+      "sourceUrl": "https://wiki.dfrobot.com.cn/_SKU_DFR0024_DS18B20%E6%95%B0%E5%AD%97%E6%B8%A9%E5%BA%A6%E4%BC%A0%E6%84%9F%E5%99%A8",
+      "attribution": "DFRobot（取自对应官方资料页）",
+      "license": "DFRobot 官方产品图；仅随本 Skill 作来源引用，公开再分发授权未独立核验"
+    }
+  ],
+  "revision": "ca22606be3419d91c4ba8d95",
+  "createdAt": "2026-07-17T06:57:53Z",
+  "updatedAt": "2026-07-17T10:42:11Z"
+}

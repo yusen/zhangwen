@@ -1,0 +1,35 @@
+{
+  "schema": "zhangwen.hardware-skill-manifest/v1",
+  "schemaVersion": 1,
+  "skillName": "labplus-87d187e346f7",
+  "componentId": "hw_labplus_87d187e346f7",
+  "displayName": "盛思 PM2.5(旧版，仅探头，无模块)",
+  "description": "盛思 PM2.5(旧版，仅探头，无模块)的官方目录、产品图片与参考资料；MicroPython 驱动及跨主控接线待联调。",
+  "status": "ACTIVE",
+  "sourceKind": "BUNDLED",
+  "files": [
+    "SKILL.md",
+    "references/specifications.md",
+    "references/compatibility-rules.md",
+    "references/integration.md",
+    "references/safety.md",
+    "references/sources.md",
+    "examples/usage.md",
+    "tests/validation-cases.md"
+  ],
+  "media": [
+    {
+      "path": "assets/cover.webp",
+      "role": "cover",
+      "alt": "盛思 PM2.5(旧版，仅探头，无模块) 官方产品图",
+      "contentType": "image/webp",
+      "sha256": "e7494d5d19f4b8ab9c3f5c33502d2026fc10988be78c400a4a9db727705aa591",
+      "sourceUrl": "https://labplus-ledong-module-documentation.readthedocs.io/zh-cn/latest/_images/PM25%E6%97%A7.png",
+      "attribution": "盛思 官方产品文档",
+      "license": "© labplus；官方声明保留所有版权。图片权利归原作者；未声明开放许可。"
+    }
+  ],
+  "revision": "ba47c19e723c71e03930a2fd",
+  "createdAt": "2026-10-15T00:00:00+08:00",
+  "updatedAt": "2026-10-15T00:00:00+08:00"
+}

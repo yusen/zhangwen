@@ -1,0 +1,36 @@
+{
+  "schema": "zhangwen.hardware-skill-manifest/v1",
+  "schemaVersion": 1,
+  "skillName": "dfrobot-sen0250-k10",
+  "componentId": "hw_dfrobot_sen0250_k10",
+  "displayName": "DFRobot SEN0250 BMI160 六轴惯性运动传感器",
+  "description": "为行空板 K10 MicroPython 项目提供 SEN0250 的I2C接入、兼容和安全边界；API 与电气值仍需按当前固件和实物复核。",
+  "status": "ACTIVE",
+  "sourceKind": "MANUAL",
+  "files": [
+    "README.md",
+    "SKILL.md",
+    "references/specifications.md",
+    "references/compatibility-rules.md",
+    "references/integration.md",
+    "references/safety.md",
+    "references/sources.md",
+    "examples/usage.md",
+    "tests/validation-cases.md"
+  ],
+  "media": [
+    {
+      "path": "assets/cover.webp",
+      "role": "cover",
+      "alt": "DFRobot SEN0250 官方产品图",
+      "contentType": "image/webp",
+      "sha256": "e59f48db6e189e1bfa7212604c36d7c58b1f2c0eac2e0153d0957436aff81040",
+      "sourceUrl": "https://wiki.dfrobot.com/sen0250/docs/19939",
+      "attribution": "DFRobot（取自对应官方资料页）",
+      "license": "DFRobot 官方产品图；仅随本 Skill 作来源引用，公开再分发授权未独立核验"
+    }
+  ],
+  "revision": "64d07e4b5f2a4ea1b14c2cff",
+  "createdAt": "2026-07-17T06:57:53Z",
+  "updatedAt": "2026-07-17T10:42:11Z"
+}

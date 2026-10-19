@@ -1,0 +1,36 @@
+{
+  "schema": "zhangwen.hardware-skill-manifest/v1",
+  "schemaVersion": 1,
+  "skillName": "dfrobot-dfr0026-k10",
+  "componentId": "hw_dfrobot_dfr0026_k10",
+  "displayName": "DFRobot DFR0026 模拟环境光传感器",
+  "description": "为行空板 K10 MicroPython 项目提供 DFR0026 的ANALOG接入、兼容和安全边界；API 与电气值仍需按当前固件和实物复核。",
+  "status": "ACTIVE",
+  "sourceKind": "MANUAL",
+  "files": [
+    "README.md",
+    "SKILL.md",
+    "references/specifications.md",
+    "references/compatibility-rules.md",
+    "references/integration.md",
+    "references/safety.md",
+    "references/sources.md",
+    "examples/usage.md",
+    "tests/validation-cases.md"
+  ],
+  "media": [
+    {
+      "path": "assets/cover.webp",
+      "role": "cover",
+      "alt": "DFRobot DFR0026 模拟环境光传感器 V2 正面产品图",
+      "contentType": "image/webp",
+      "sha256": "a30722212f9ba84a3f7f5fe3b8d90ceb89c13d77c44cafdbeb63af1b65746e43",
+      "sourceUrl": "https://wiki.dfrobot.com.cn/_SKU_DFR0026_%E6%A8%A1%E6%8B%9F%E7%8E%AF%E5%A2%83%E5%85%89%E7%BA%BF%E4%BC%A0%E6%84%9F%E5%99%A8",
+      "attribution": "DFRobot（图片由用户提供，并与 DFR0026 官方产品页对应）",
+      "license": "DFRobot 官方产品图；仅随本 Skill 作来源引用，公开再分发授权未独立核验"
+    }
+  ],
+  "revision": "3a422d773c51406e3dff7be2",
+  "createdAt": "2026-07-17T06:57:53Z",
+  "updatedAt": "2026-07-17T10:42:11Z"
+}

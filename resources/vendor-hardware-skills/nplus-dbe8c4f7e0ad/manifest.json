@@ -1,0 +1,35 @@
+{
+  "schema": "zhangwen.hardware-skill-manifest/v1",
+  "schemaVersion": 1,
+  "skillName": "nplus-dbe8c4f7e0ad",
+  "componentId": "hw_nplus_dbe8c4f7e0ad",
+  "displayName": "N+ 触碰传感器",
+  "description": "N+ 触碰传感器的官方目录、产品图片与参考资料；MicroPython 驱动及跨主控接线待联调。",
+  "status": "ACTIVE",
+  "sourceKind": "BUNDLED",
+  "files": [
+    "SKILL.md",
+    "references/specifications.md",
+    "references/compatibility-rules.md",
+    "references/integration.md",
+    "references/safety.md",
+    "references/sources.md",
+    "examples/usage.md",
+    "tests/validation-cases.md"
+  ],
+  "media": [
+    {
+      "path": "assets/cover.webp",
+      "role": "cover",
+      "alt": "N+ 触碰传感器 官方产品图",
+      "contentType": "image/webp",
+      "sha256": "edffdf8b3b70714f1b05c938dcc5346fdaa90c8c8342891734c7654c181afe43",
+      "sourceUrl": "https://nplus-doc.readthedocs.io/zh-cn/latest/_images/15-1.jpg",
+      "attribution": "N+ 官方产品文档",
+      "license": "© 2020 nplus；图片权利归原作者；文档未声明图片开放许可。"
+    }
+  ],
+  "revision": "b38faa156920c736775cb2b3",
+  "createdAt": "2026-10-15T00:00:00+08:00",
+  "updatedAt": "2026-10-15T00:00:00+08:00"
+}

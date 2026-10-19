@@ -1,0 +1,36 @@
+{
+  "schema": "zhangwen.hardware-skill-manifest/v1",
+  "schemaVersion": 1,
+  "skillName": "dfrobot-sen0321-k10",
+  "componentId": "hw_dfrobot_sen0321_k10",
+  "displayName": "DFRobot SEN0321 I2C 臭氧传感器",
+  "description": "为行空板 K10 MicroPython 项目提供 SEN0321 的I2C接入、兼容和安全边界；API 与电气值仍需按当前固件和实物复核。",
+  "status": "ACTIVE",
+  "sourceKind": "MANUAL",
+  "files": [
+    "README.md",
+    "SKILL.md",
+    "references/specifications.md",
+    "references/compatibility-rules.md",
+    "references/integration.md",
+    "references/safety.md",
+    "references/sources.md",
+    "examples/usage.md",
+    "tests/validation-cases.md"
+  ],
+  "media": [
+    {
+      "path": "assets/cover.webp",
+      "role": "cover",
+      "alt": "DFRobot SEN0321 官方产品图",
+      "contentType": "image/webp",
+      "sha256": "a0df28eeeef3cf9a6928c84e5723a93520914525ff2b25e37f43a46b5fb47f98",
+      "sourceUrl": "https://wiki.dfrobot.com.cn/_SKU_SEN0321_Gravity__IIC_Ozone_Sensor_0-10PPM__%E8%87%AD%E6%B0%A7%E4%BC%A0%E6%84%9F%E5%99%A8",
+      "attribution": "DFRobot（取自对应官方资料页）",
+      "license": "DFRobot 官方产品图；仅随本 Skill 作来源引用，公开再分发授权未独立核验"
+    }
+  ],
+  "revision": "9ed02c5fc2c949cf2f18e41f",
+  "createdAt": "2026-07-17T06:57:53Z",
+  "updatedAt": "2026-07-17T10:42:11Z"
+}

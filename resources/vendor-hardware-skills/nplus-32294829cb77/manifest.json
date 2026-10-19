@@ -1,0 +1,35 @@
+{
+  "schema": "zhangwen.hardware-skill-manifest/v1",
+  "schemaVersion": 1,
+  "skillName": "nplus-32294829cb77",
+  "componentId": "hw_nplus_32294829cb77",
+  "displayName": "N+ 灰度传感器",
+  "description": "N+ 灰度传感器的官方目录、产品图片与参考资料；MicroPython 驱动及跨主控接线待联调。",
+  "status": "ACTIVE",
+  "sourceKind": "BUNDLED",
+  "files": [
+    "SKILL.md",
+    "references/specifications.md",
+    "references/compatibility-rules.md",
+    "references/integration.md",
+    "references/safety.md",
+    "references/sources.md",
+    "examples/usage.md",
+    "tests/validation-cases.md"
+  ],
+  "media": [
+    {
+      "path": "assets/cover.webp",
+      "role": "cover",
+      "alt": "N+ 灰度传感器 官方产品图",
+      "contentType": "image/webp",
+      "sha256": "ed23fffcc6efb4b4a311c3c69d6b7b92795a56cd5d763f55197375cc4c448f94",
+      "sourceUrl": "https://nplus-doc.readthedocs.io/zh-cn/latest/_images/8-1.jpg",
+      "attribution": "N+ 官方产品文档",
+      "license": "© 2020 nplus；图片权利归原作者；文档未声明图片开放许可。"
+    }
+  ],
+  "revision": "facd26f2b51da300b3f94ff8",
+  "createdAt": "2026-10-15T00:00:00+08:00",
+  "updatedAt": "2026-10-15T00:00:00+08:00"
+}

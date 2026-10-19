@@ -1,0 +1,35 @@
+{
+  "schema": "zhangwen.hardware-skill-manifest/v1",
+  "schemaVersion": 1,
+  "skillName": "seeed-67f6def98cc0",
+  "componentId": "hw_seeed_67f6def98cc0",
+  "displayName": "Grove - 热成像摄像头 IR-Array MLX90641",
+  "description": "Grove - 热成像摄像头 IR-Array MLX90641的官方目录、产品图片与参考资料；MicroPython 驱动及跨主控接线待联调。",
+  "status": "ACTIVE",
+  "sourceKind": "BUNDLED",
+  "files": [
+    "SKILL.md",
+    "references/specifications.md",
+    "references/compatibility-rules.md",
+    "references/integration.md",
+    "references/safety.md",
+    "references/sources.md",
+    "examples/usage.md",
+    "tests/validation-cases.md"
+  ],
+  "media": [
+    {
+      "path": "assets/cover.webp",
+      "role": "cover",
+      "alt": "Grove - 热成像摄像头 IR-Array MLX90641 官方产品图",
+      "contentType": "image/webp",
+      "sha256": "33b33e57f270faf8f660fe16d898484599e2dee99c9aa7291f77f7b3033ace55",
+      "sourceUrl": "https://media-cdn.seeedstudio.com/media/catalog/product/cache/bb49d3ec4ee05b6f018e93f896b8a25d/1/-/1-101020892-grove-thermal-imaging-camera-ir-array-mlx90641-110-degree-45font.jpg",
+      "attribution": "Seeed Grove 官方产品文档",
+      "license": "© Seeed Studio；产品图片权利归原作者；未将文档代码许可视为图片许可。"
+    }
+  ],
+  "revision": "5f1f35e45d97455c80a58635",
+  "createdAt": "2026-10-15T00:00:00+08:00",
+  "updatedAt": "2026-10-15T00:00:00+08:00"
+}

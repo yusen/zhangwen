@@ -1,0 +1,28 @@
+{
+  "schema": "zhangwen.hardware-skill-manifest/v1",
+  "schemaVersion": 1,
+  "skillName": "k10",
+  "componentId": "hw_seed_unihiker_k10",
+  "displayName": "行空板 K10",
+  "description": "行空板 K10 的统一硬件事实包，包含电气参数、结构档案、CadQuery 参考模型、MicroPython 集成边界和验证规则。",
+  "status": "ACTIVE",
+  "sourceKind": "BUNDLED",
+  "files": [
+    "README.md",
+    "CHANGELOG.md",
+    "SKILL.md",
+    "references/specifications.md",
+    "references/compatibility-rules.md",
+    "references/mechanical.md",
+    "references/integration.md",
+    "references/safety.md",
+    "references/sources.md",
+    "models/cadquery.py",
+    "examples/usage.md",
+    "tests/validation-cases.md"
+  ],
+  "media": [],
+  "revision": "fa5fbba72e7e019bfa037dad",
+  "createdAt": "2026-07-16T00:00:00+08:00",
+  "updatedAt": "2026-07-17T18:28:23+08:00"
+}

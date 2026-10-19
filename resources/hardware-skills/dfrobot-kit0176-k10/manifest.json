@@ -1,0 +1,36 @@
+{
+  "schema": "zhangwen.hardware-skill-manifest/v1",
+  "schemaVersion": 1,
+  "skillName": "dfrobot-kit0176-k10",
+  "componentId": "hw_dfrobot_kit0176_k10",
+  "displayName": "DFRobot KIT0176 I2C 重量传感器",
+  "description": "为行空板 K10 MicroPython 项目提供 KIT0176 的I2C接入、兼容和安全边界；API 与电气值仍需按当前固件和实物复核。",
+  "status": "ACTIVE",
+  "sourceKind": "MANUAL",
+  "files": [
+    "README.md",
+    "SKILL.md",
+    "references/specifications.md",
+    "references/compatibility-rules.md",
+    "references/integration.md",
+    "references/safety.md",
+    "references/sources.md",
+    "examples/usage.md",
+    "tests/validation-cases.md"
+  ],
+  "media": [
+    {
+      "path": "assets/cover.webp",
+      "role": "cover",
+      "alt": "DFRobot KIT0176 官方产品图",
+      "contentType": "image/webp",
+      "sha256": "6559b2601a0c039a89a48b4478769883d4ede4778113a24f78271cb18743a71e",
+      "sourceUrl": "https://wiki.dfrobot.com.cn/SKU_KIT0176_HX711%E9%87%8D%E9%87%8F%E4%BC%A0%E6%84%9F%E5%99%A8%E5%A5%97%E4%BB%B6",
+      "attribution": "DFRobot（取自对应官方资料页）",
+      "license": "DFRobot 官方产品图；仅随本 Skill 作来源引用，公开再分发授权未独立核验"
+    }
+  ],
+  "revision": "3836b88c2dbecb6f63b4cf92",
+  "createdAt": "2026-07-17T06:57:53Z",
+  "updatedAt": "2026-07-17T10:42:11Z"
+}

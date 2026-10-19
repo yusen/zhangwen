@@ -1,0 +1,22 @@
+{
+  "name": "xiao-esp32s3-sense-micropython-engineer",
+  "version": "1.0.0",
+  "target": "Seeed Studio XIAO ESP32S3 Sense",
+  "runtime": "MicroPython",
+  "profile": "xiao_esp32s3_sense",
+  "hardware_validation": false,
+  "syntax_validation": true,
+  "files": [
+    {"path": "references/00-sources-and-scope.md", "size": 282, "sha256": "841b14b472b2eb656508d76f5d18083cc96f17f16121423478bce1416dd12470"},
+    {"path": "references/01-platform-and-firmware.md", "size": 405, "sha256": "8bd457ca57f6184a853dc7d187e17c8ac487caa5afd3651fdc533e746f4dcbb5"},
+    {"path": "references/04-onboard-api.md", "size": 290, "sha256": "23482fdb2d05694d94ff0ca0cdddbc057af7d360bc0919fec8660fe370a7baf5"},
+    {"path": "references/05-storage-audio-api.md", "size": 241, "sha256": "e9410db4efa72baed6be303967ba42ba6977a41ecd9dbfc5ee094e6baaac8b8b"},
+    {"path": "references/08-external-hardware-api.md", "size": 292, "sha256": "56fd367c9c049c3295c334542b544a08b92d1d9bb8c02f9851c957f372d9d527"},
+    {"path": "references/09-safety-and-troubleshooting.md", "size": 327, "sha256": "d75c4517582b865ecf8d8df1c7c57c7bebac5d6561770f5c96911a0da42ac6df"},
+    {"path": "references/10-verification-matrix.md", "size": 417, "sha256": "b0338fb5530ff51bcfd80cc8c175ef962d4c2a9dc2ec430cafc431c2d87dedf1"},
+    {"path": "SKILL.md", "size": 1232, "sha256": "bd34912e77edc69ea30c38de6b7eb9e3d236877b404a9ed8af5fdcdf78036613"},
+    {"path": "templates/00_profile_probe.py", "size": 355, "sha256": "9007a855644b6571363526a4a40178fbf54199bddc2ecc62d5aa6b474ba81286"},
+    {"path": "templates/12_gpio_test.py", "size": 298, "sha256": "9623f0b7ffe34e90599c552f3b43183095502f91cccb1da03454bcbe05ea43c9"},
+    {"path": "templates/14_camera_preview.py", "size": 301, "sha256": "198bd0f0938b31a946c6ca7749c789ac409042162d72be41c9c804eeacc18f04"}
+  ]
+}

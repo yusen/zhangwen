@@ -1,0 +1,35 @@
+{
+  "schema": "zhangwen.hardware-skill-manifest/v1",
+  "schemaVersion": 1,
+  "skillName": "seeed-8a57f2e6cfc2",
+  "componentId": "hw_seeed_8a57f2e6cfc2",
+  "displayName": "Grove - 模拟麦克风",
+  "description": "Grove - 模拟麦克风的官方目录、产品图片与参考资料；MicroPython 驱动及跨主控接线待联调。",
+  "status": "ACTIVE",
+  "sourceKind": "BUNDLED",
+  "files": [
+    "SKILL.md",
+    "references/specifications.md",
+    "references/compatibility-rules.md",
+    "references/integration.md",
+    "references/safety.md",
+    "references/sources.md",
+    "examples/usage.md",
+    "tests/validation-cases.md"
+  ],
+  "media": [
+    {
+      "path": "assets/cover.webp",
+      "role": "cover",
+      "alt": "Grove - 模拟麦克风 官方产品图",
+      "contentType": "image/webp",
+      "sha256": "7f41e9e7165c959e161c42d649d576c6633714bc1256e4f1faf58e785a5c8414",
+      "sourceUrl": "https://files.seeedstudio.com/wiki/Grove-Analog-Microphone/img/04.png",
+      "attribution": "Seeed Grove 官方产品文档",
+      "license": "© Seeed Studio；产品图片权利归原作者；未将文档代码许可视为图片许可。"
+    }
+  ],
+  "revision": "b4132af66c9be45689011cdb",
+  "createdAt": "2026-10-15T00:00:00+08:00",
+  "updatedAt": "2026-10-15T00:00:00+08:00"
+}

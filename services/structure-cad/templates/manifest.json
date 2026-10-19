@@ -1,0 +1,159 @@
+{
+  "schema": 1,
+  "source": "User-provided ZW-CAD-intent, 2026-07 archive",
+  "templates": [
+    {
+      "id": "mpython-shell",
+      "revision": 1,
+      "title": "掌控板 3.0 外壳",
+      "description": "独立底壳与上盖，带屏幕、麦克风开口及固定结构。",
+      "size": [
+        55,
+        49,
+        10.8
+      ],
+      "notes": [
+        "适配掌控板 3.0，未确认兼容 2.0。",
+        "固定尺寸；外壳配合、公差及实物装配需核对。"
+      ],
+      "source": "server/template-library/batch-models/mpython_board_enclosure_v1.cq.py",
+      "file": "mpython-shell.py",
+      "sha256": "f30e5ebc66f27ab8259c7ce78c29613386877b0552753914f52fd2d46c9e35a4",
+      "image": "mpython-shell.png",
+      "parts": [
+        {
+          "id": "bottom",
+          "label": "底壳",
+          "object": "bottom_shell",
+          "printable": true
+        },
+        {
+          "id": "cover",
+          "label": "上盖",
+          "object": "top_cover",
+          "printable": true
+        }
+      ]
+    },
+    {
+      "id": "photo-stand",
+      "revision": 1,
+      "title": "K10 相册支架",
+      "description": "斜面支架、插槽与限位结构，附 K10 和电池参考件。",
+      "size": [
+        59.492,
+        83,
+        67.355
+      ],
+      "notes": [
+        "适配源模型中的 K10 与聚合物电池，参考件不参与打印。",
+        "固定尺寸；插槽配合及承重需实物核对。"
+      ],
+      "source": "server/template-library/unihiker-photo-album.cq.py",
+      "file": "photo-stand.py",
+      "sha256": "060bbe32c388e9e6f790f43ada9144c615dfbc5e8d2589d4595415579d416e15",
+      "image": "photo-stand.png",
+      "parts": [
+        {
+          "id": "stand",
+          "label": "相册支架",
+          "object": "base_part",
+          "printable": true
+        },
+        {
+          "id": "k10",
+          "label": "K10 参考件",
+          "object": "hardware_reference_parts:0",
+          "printable": false
+        },
+        {
+          "id": "battery",
+          "label": "电池参考件",
+          "object": "hardware_reference_parts:1",
+          "printable": false
+        }
+      ]
+    },
+    {
+      "id": "servo-side",
+      "revision": 1,
+      "title": "侧式舵机固定座",
+      "description": "L 形底板与立墙，中央穿入窗口及横向固定孔。",
+      "size": [
+        32.4,
+        20,
+        34.4
+      ],
+      "notes": [
+        "窗口 12.5 × 22.8 mm；安装孔直径 2.2 mm。",
+        "未指定舵机型号，需按实物核对空间、孔距和紧固件。"
+      ],
+      "source": "server/data/hardware-models/side_servo_mount.py",
+      "file": "servo-side.py",
+      "sha256": "f478ec3d18334fd5ab6745e771be7a8156eb1e87e7947fe9b6d336ce469f5e9b",
+      "image": "servo-side.png",
+      "parts": [
+        {
+          "id": "mount",
+          "label": "侧式固定座",
+          "object": "result",
+          "printable": true
+        }
+      ]
+    },
+    {
+      "id": "servo-horizontal",
+      "revision": 1,
+      "title": "卧式舵机固定座",
+      "description": "双立柱形成卧式安装空间，带横向连接孔。",
+      "size": [
+        42.4,
+        22.2,
+        14.4
+      ],
+      "notes": [
+        "立柱内侧间距 23.1 mm；安装孔直径 2.2 mm。",
+        "未指定舵机型号，需按实物核对空间、孔距和紧固件。"
+      ],
+      "source": "server/data/hardware-models/horizontal_servo_mount.py",
+      "file": "servo-horizontal.py",
+      "sha256": "e08ae4f5f2169ed53defc923d62852da54c7cb7446571af8c332366bd24a0f54",
+      "image": "servo-horizontal.png",
+      "parts": [
+        {
+          "id": "mount",
+          "label": "卧式固定座",
+          "object": "result",
+          "printable": true
+        }
+      ]
+    },
+    {
+      "id": "servo-vertical",
+      "revision": 1,
+      "title": "立式舵机固定座",
+      "description": "双支撑立式固定结构，带顶部圆孔及侧槽。",
+      "size": [
+        42.4,
+        22.2,
+        19.5
+      ],
+      "notes": [
+        "立柱内侧间距 23.1 mm；底板孔 2.2 mm，顶部孔 2.4 mm。",
+        "未指定舵机型号，需按实物核对空间、孔距和紧固件。"
+      ],
+      "source": "server/data/hardware-models/vertical_servo_mount.py",
+      "file": "servo-vertical.py",
+      "sha256": "6bcd6b9a785fad0a2375158c8d4d5b1cbd176434f9020319162dec924eff634f",
+      "image": "servo-vertical.png",
+      "parts": [
+        {
+          "id": "mount",
+          "label": "立式固定座",
+          "object": "result",
+          "printable": true
+        }
+      ]
+    }
+  ]
+}

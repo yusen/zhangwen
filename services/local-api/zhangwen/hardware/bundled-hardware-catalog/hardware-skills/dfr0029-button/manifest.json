@@ -1,0 +1,15 @@
+{
+  "schema": "zhangwen.hardware-skill-manifest/v1",
+  "schemaVersion": 1,
+  "skillName": "dfr0029-button",
+  "componentId": "hw_dfrobot_dfr0029_button",
+  "displayName": "DFR0029 Gravity 数字按钮",
+  "description": "DFRobot DFR0029 数字按钮的官方规格、K10 3.3V 接线、去抖和自动校验规则。",
+  "status": "ACTIVE",
+  "sourceKind": "BUNDLED",
+  "files": ["README.md", "CHANGELOG.md", "SKILL.md", "references/specifications.md", "references/compatibility-rules.md", "references/integration.md", "references/safety.md", "references/sources.md", "examples/usage.md", "tests/validation-cases.md"],
+  "media": [],
+  "revision": "e0128d9afb58b0aa5466505e",
+  "createdAt": "2026-07-25T00:00:00+08:00",
+  "updatedAt": "2026-07-25T00:00:00+08:00"
+}
