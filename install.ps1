@@ -57,7 +57,9 @@ try {
             $archive = $null
             for ($downloadAttempt = 1; $downloadAttempt -le 4; $downloadAttempt++) {
                 try {
-                    Invoke-WebRequest -UseBasicParsing -Uri $sourceUrl -OutFile $zip -TimeoutSec 600
+                    # Gitee serves a browser archive page to PowerShell's default
+                    # browser-like user agent; request its command-line ZIP response.
+                    Invoke-WebRequest -UseBasicParsing -UserAgent 'zhangwen-installer (curl-compatible)' -Uri $sourceUrl -OutFile $zip -TimeoutSec 600
                     $archive = [IO.Compression.ZipFile]::OpenRead($zip)
                     break
                 } catch {
