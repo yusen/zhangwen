@@ -53,11 +53,22 @@ try {
             Write-Host "Downloading platform $Revision ..."
             $sourceUrl = "https://gitee.com/ys_Ethan/zhangwen/repository/archive/$Revision.zip"
             if ($Source -eq 'github') { $sourceUrl = "https://codeload.github.com/yusen/zhangwen/zip/$Revision" }
-            Invoke-WebRequest -UseBasicParsing -Uri $sourceUrl -OutFile $zip -TimeoutSec 600
             Add-Type -AssemblyName System.IO.Compression.FileSystem
+            $archive = $null
+            for ($downloadAttempt = 1; $downloadAttempt -le 4; $downloadAttempt++) {
+                try {
+                    Invoke-WebRequest -UseBasicParsing -Uri $sourceUrl -OutFile $zip -TimeoutSec 600
+                    $archive = [IO.Compression.ZipFile]::OpenRead($zip)
+                    break
+                } catch {
+                    if ($Source -ne 'gitee') { throw }
+                    if ($downloadAttempt -eq 4) { throw 'Gitee did not return a readable ZIP archive. It may still be preparing or access is restricted; please retry later. The current version was preserved.' }
+                    Write-Host 'Gitee archive is not ready; retrying the same fixed revision ...'
+                    Start-Sleep -Seconds ($downloadAttempt * 2)
+                }
+            }
             $extracted = Join-Path $work 'files'
             New-Item -ItemType Directory -Path $extracted | Out-Null
-            $archive = [IO.Compression.ZipFile]::OpenRead($zip)
             try {
                 $archiveRoot = $null
                 foreach ($entry in $archive.Entries) {

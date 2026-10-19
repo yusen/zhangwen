@@ -30,7 +30,17 @@ if ! verify_package "$app"; then
   echo "Downloading platform $revision ..."
   source_url="https://gitee.com/ys_Ethan/zhangwen/repository/archive/$revision.zip"
   if [ "$source" = github ]; then source_url="https://codeload.github.com/yusen/zhangwen/zip/$revision"; fi
-  curl -fL --retry 3 --connect-timeout 15 --max-time 600 "$source_url" -o "$work/source.zip"
+  download_attempt=1
+  while :; do
+    if curl -fL --retry 3 --connect-timeout 15 --max-time 600 "$source_url" -o "$work/source.zip" && unzip -tq "$work/source.zip" >/dev/null 2>&1; then break; fi
+    if [ "$source" != gitee ] || [ "$download_attempt" -ge 4 ]; then
+      echo 'The source did not return a readable ZIP archive. It may still be preparing or access is restricted; please retry later. The current version was preserved.' >&2
+      exit 1
+    fi
+    echo 'Gitee archive is not ready; retrying the same fixed revision ...'
+    sleep "$((download_attempt * 2))"
+    download_attempt=$((download_attempt + 1))
+  done
   unzip -Z1 "$work/source.zip" | awk '/^\/|\\|(^|\/)\.\.($|\/)/ {exit 1}' || { echo 'Unsafe archive entry.' >&2; exit 1; }
   unzip -q "$work/source.zip" -d "$work/extracted"
   set -- "$work/extracted"/*
