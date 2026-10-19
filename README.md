@@ -66,3 +66,9 @@ Windows 双击 `start-web.bat`，macOS 执行 `bash start-web.sh`。已有 Node 
 [第三方来源与声明](docs/THIRD_PARTY_NOTICES.md)
 
 [项目目录与数据位置](docs/PROJECT_LAYOUT.md)
+
+## 许可证
+
+项目有权授权的原创代码采用 [Apache License 2.0](LICENSE)，版权声明和适用范围见 [NOTICE](NOTICE)。允许按协议使用、修改和商业分发。
+
+第三方代码、依赖、固件、字体、产品图片、硬件资料及导入模板保留各自版权与授权条款，不因本项目采用 Apache-2.0 而被重新授权。未明确许可的素材不自动获得 Apache-2.0 授权；来源链接或署名不代替授权。详见 [第三方声明](docs/THIRD_PARTY_NOTICES.md) 和各文件内的说明。
