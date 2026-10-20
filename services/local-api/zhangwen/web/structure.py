@@ -26,7 +26,7 @@ from pydantic import BaseModel, ConfigDict, Field, field_validator, model_valida
 
 from zhangwen.artifacts.models import ArtifactStatus, ArtifactPreview, ArtifactPreviewKind
 from zhangwen.llm.contracts import ChatMessage, ChatMessageStatus, ChatRole
-from . import design_service, builtin_templates
+from . import design_service, builtin_templates, mechanical
 from .version_names import short_name
 
 ROOT = Path(__file__).resolve().parents[4]
@@ -38,6 +38,7 @@ FILES = {'cadquery.py', 'design-state.json', 'checks.json', 'artifact.json', 'pr
 FILES.update(f'workflow/{name}' for name in ['00_requirement_analysis.json', '01_intent.json', '02_bom.json',
     '03_profile_report.json', '04_feasibility_report.json', '05_layout_plan.json', '06_checks.json', '07_cadquery.py', '08_export_manifest.json'])
 FILES.update(builtin_templates.asset_names())
+FILES.add('template-edit.json')
 
 
 class StructureInput(BaseModel):
@@ -47,6 +48,7 @@ class StructureInput(BaseModel):
     sourceRevision: int | None = Field(default=None, ge=1)
     message: str = Field(default='', max_length=4000)
     selectedIds: list[str] | None = Field(default=None, max_length=32)
+    hardwareComponentIds: list[str] | None = Field(default=None, max_length=33)
     customProfiles: list[dict[str, Any]] | None = Field(default=None, max_length=32)
     parameters: dict[str, float] = Field(default_factory=dict)
     faces: dict[str, Literal['base_floor', 'lid_inner']] = Field(default_factory=dict)
@@ -66,6 +68,13 @@ class StructureInput(BaseModel):
             raise ValueError('壁厚、底厚、盖厚至少0.8毫米。')
         if value.get('vent_count', 0) > 40:
             raise ValueError('散热孔最多40个。')
+        return value
+
+    @field_validator('hardwareComponentIds')
+    @classmethod
+    def component_ids(cls, value):
+        if value is not None and (len(set(value)) != len(value) or any(not re.fullmatch(r'[A-Za-z0-9_-]{1,150}', item) for item in value)):
+            raise ValueError('工程硬件 ID 无效或重复。')
         return value
 
 
@@ -102,6 +111,10 @@ class StructureCheckpoint(BaseModel):
                 if not isinstance(template, dict) or not isinstance(template.get('id'), str) or template['id'] not in builtin_templates.TEMPLATES or type(template.get('revision')) is not int or template['revision'] < 1:
                     raise ValueError('固定模板修订无效。')
                 expected = builtin_templates.TEMPLATES[template['id']]
+                if result.get('templateEdit') is not None:
+                    # Imported code is display-only; only bounded data can drive regeneration.
+                    source = builtin_templates.checked_source(expected).read_text(encoding='utf-8-sig')
+                    builtin_templates.template_edits.checked_spec(result['templateEdit'], expected, source)
                 if (not all(isinstance(template.get(k), str) for k in ['title', 'description', 'sourceSha256'])
                         or not re.fullmatch('[a-f0-9]{64}', template['sourceSha256'])
                         or not isinstance(template.get('notes'), list) or len(template['notes']) > 20
@@ -269,6 +282,26 @@ class StructureService:
         self.gate = asyncio.Lock()
         self.catalog = json.loads((CAD_ROOT / 'server/data/hardware-library.json').read_text(encoding='utf-8'))
 
+    def live_profiles(self):
+        hardware = self.repo.skills.web_summaries()
+        profiles = {}
+        for profile in self.catalog['profiles']:
+            existing = next((h for h in hardware if h['componentId'].endswith('_' + profile['id'])), None)
+            image = existing['media'][0]['url'] if existing and existing['media'] else ''
+            if not image and profile.get('thumbnail_url', '').startswith('/assets/hardware/'):
+                image = '/api/structure/media/' + profile['thumbnail_url'].rsplit('/', 1)[1]
+            profiles[profile['id']] = {**profile, 'thumbnail_url': image, 'componentId': existing['componentId'] if existing else None}
+        for item in self.repo.skills.list_skills():
+            manifest = self.repo.skills._read_manifest(self.repo.skills._root / item.skillName)
+            if 'references/mechanical.md' not in manifest.files:
+                continue
+            detail = self.repo.skills.get_skill(item.skillName)
+            if detail.mechanicalProfile:
+                profile = mechanical.cad_profile(detail.mechanicalProfile, detail.componentId,
+                    detail.media[0].url if detail.media else '')
+                profiles[profile['id']] = profile
+        return list(profiles.values())
+
     def get(self, project_id: str) -> dict:
         self.repo.get(project_id)
         with self.repo.connect() as conn:
@@ -353,7 +386,8 @@ class StructureService:
             previous = base['result'] if base else {}
             ids = request.selectedIds if request.selectedIds is not None else base['selectedIds'] if base else []
             profiles = request.customProfiles if request.customProfiles is not None else base['customProfiles'] if base else []
-            known = {x['id'] for x in self.catalog['profiles']}
+            live_profiles = self.live_profiles()
+            known = {x['id'] for x in live_profiles}
             for profile in profiles:
                 if not re.fullmatch(r'[A-Za-z0-9_-]{1,100}', str(profile.get('id', ''))):
                     raise HTTPException(422, '自定义结构资料须有有效id。')
@@ -382,13 +416,13 @@ class StructureService:
             state = previous.get('design_state')
             if request.action in {'build', 'parameters', 'validate'} and not state and not previous.get('designSpec'):
                 raise HTTPException(422, '当前版本没有可建模的参数草案。')
-            if request.action == 'build' and previous.get('status') != 'confirmation':
+            if request.action == 'build' and previous.get('status') != 'confirmation' and not previous.get('designSpec'):
                 raise HTTPException(422, '请先确认需求并生成参数草案。')
             offline = request.action == 'selected' or bool(base and base.get('offline') and request.action in {'build', 'parameters', 'validate'})
             prompt = request.message.strip() if request.action in {'analyze', 'selected'} else base['prompt']
             if request.action == 'selected':
                 prompt = '为选定硬件设计带盖矩形外壳'
-            body = {'prompt': prompt, 'selectedHardwareIds': ids, 'customHardwareProfiles': profiles,
+            body = {'prompt': prompt, 'selectedHardwareIds': ids, 'customHardwareProfiles': [*[p for p in live_profiles if p['id'] in ids], *profiles],
                 'parameterOverrides': request.parameters, 'hardwareFaceOverrides': request.faces,
                 'hardwareRotationOverrides': request.rotations,
                 'currentRequirementAnalysis': previous if previous.get('status') == 'requirement_analysis' else None,
@@ -423,17 +457,26 @@ class StructureService:
                 conversation = {'history': [{'request': v['result'].get('requestText') or v['prompt'],
                     'summary': v['result'].get('message', '')[:1200], 'questions': v['result'].get('questions', [])}
                     for v in history[-8:]], 'pendingQuestions': previous.get('questions', [])}
+                project = self.repo.get(project_id)
+                facts = mechanical.context(self.repo.skills, request.hardwareComponentIds if request.hardwareComponentIds is not None else [project['boardId'], *project['componentIds']])
+                for fact in facts:
+                    fact['cadProfiles'] = [p for p in live_profiles if p.get('componentId') == fact['componentId']]
+                    if fact['cadProfiles']:
+                        fact['missing'] = []
+                conversation['projectHardware'] = facts
+                conversation['selectedStructureProfiles'] = [p for p in [*live_profiles, *profiles] if p['id'] in ids]
                 if valid:
                     conversation['spec'] = valid
                 result = await design_service.act(request, previous, settings, job_root, conversation)
+                result['hardwareContext'] = facts
                 result = self.public_result(result, project_id, job_id, job_root)
                 version = {'revision': workspace['revision'] + 1, 'createdAt': datetime.now(UTC).isoformat(), 'prompt': request.message or (base['prompt'] if base else result['title']),
-                    'selectedIds': [], 'customProfiles': [], 'result': result, 'offline': bool(request.template or (base and base.get('offline') and request.action in {'build', 'parameters', 'validate'})),
+                    'selectedIds': ids, 'customProfiles': profiles, 'result': result, 'offline': bool(result.get('generationSource') == 'local_text_intent' or request.template or (base and base.get('offline') and request.action in {'build', 'parameters', 'validate'})),
                     'jobId': job_id, 'designType': request.designType, 'name': short_name(result['title'])}
                 self.commit(project_id, version, request.message or result['title'], result.get('message') or result['title'])
                 return self.get(project_id)
             project = self.repo.get(project_id)
-            selected_hardware = {project['boardId'], *project['componentIds']}
+            selected_hardware = set(request.hardwareComponentIds) if request.hardwareComponentIds is not None else {project['boardId'], *project['componentIds']}
             body['engineeringHardware'] = [{'componentId': item['componentId'], 'name': item['displayName']}
                 for item in self.repo.skills.web_summaries() if item['componentId'] in selected_hardware]
             available = all(importlib.util.find_spec(x) is not None for x in ['cadquery', 'OCP'])
@@ -486,14 +529,7 @@ def structure_router(service: StructureService, settings) -> APIRouter:
 
     @router.get('/api/structure/catalog')
     def catalog():
-        hardware = service.repo.skills.web_summaries()
-        profiles = []
-        for profile in service.catalog['profiles']:
-            existing = next((h for h in hardware if h['componentId'].endswith('_' + profile['id'])), None)
-            image = existing['media'][0]['url'] if existing and existing['media'] else ''
-            if not image and profile.get('thumbnail_url', '').startswith('/assets/hardware/'):
-                image = '/api/structure/media/' + profile['thumbnail_url'].rsplit('/', 1)[1]
-            profiles.append({**profile, 'thumbnail_url': image, 'componentId': existing['componentId'] if existing else None})
+        profiles = service.live_profiles()
         return {'profiles': profiles, 'cadqueryAvailable': all(importlib.util.find_spec(x) is not None for x in ['cadquery', 'OCP']),
                 'templates': [builtin_templates.public_template(item) for item in builtin_templates.TEMPLATES.values()]}
 

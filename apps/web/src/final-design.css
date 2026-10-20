@@ -642,6 +642,12 @@ dialog::backdrop { background: #0b182d70; backdrop-filter: blur(3px); }
 .update-versions dt { color: var(--ink-3); }
 .update-versions dd { margin: 0; overflow-wrap: anywhere; }
 .update-message, .update-save-hint { font-size: 13px; line-height: 1.8; }
+.update-release-notes { border-top: 1px solid var(--border); padding-top: 16px; margin-top: 16px; font-size: 13px; line-height: 1.8; overflow-wrap: anywhere; }
+.update-release-notes h4 { margin: 0 0 8px; font-size: 14px; }
+.update-release-notes h4 span { display: block; color: var(--ink-3); font-size: 12px; font-weight: 400; }
+.update-release-notes ul { padding-left: 20px; margin: 0; }
+.update-release-notes li + li { margin-top: 6px; }
+.update-release-notes p { margin: 0; }
 .update-save-hint { color: var(--wrn); padding: 12px; border-radius: 8px; background: var(--wrn-t); }
 .update-actions { display: flex; flex-wrap: wrap; justify-content: flex-end; gap: 10px; margin-top: 24px; }
 .update-actions button { min-height: 44px; display: flex; align-items: center; gap: 7px; padding: 9px 14px; }

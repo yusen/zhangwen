@@ -32,7 +32,9 @@ from zhangwen.web.programming import programming_context, programming_diagnostic
 from zhangwen.web.portable import ProjectSnapshot, SNAPSHOT_MAX_BYTES
 from zhangwen.web.replies import REPLY_INSTRUCTION
 from zhangwen.web.updates import UpdateManager, InstallUpdateInput
+from zhangwen.web.release_version import read_version
 from zhangwen.web.structure import StructureService, structure_router
+from zhangwen.web import mechanical
 from zhangwen.web.mode_settings import load as load_mode_settings, for_mode
 from .legacy_names import settings_path as compatible_settings_path, environment_model, session_header
 from typing import Literal
@@ -172,7 +174,8 @@ def create_app(data_dir: Path | None = None, *, port: int = 3080, dev: bool = Fa
         "baseUrl": DEFAULT_BASE_URL,
     }
     ai_settings, mode_overrides = load_mode_settings(settings_path, ai_settings)
-    app = FastAPI(title="掌问本地 Web", version="0.1.0", docs_url=None, redoc_url=None)
+    release_version = read_version(ROOT) or 'unversioned'
+    app = FastAPI(title="掌问本地 Web", version=release_version, docs_url=None, redoc_url=None)
     app.state.repo = repo
     app.state.chat_locks = {}
     app.state.ai_test_lock = asyncio.Lock()
@@ -238,7 +241,7 @@ def create_app(data_dir: Path | None = None, *, port: int = 3080, dev: bool = Fa
 
     @app.get("/api/health")
     def health():
-        return {"status": "ok", "version": "0.1.0", "transport": "web-serial", "instanceId": getattr(app.state, "instance_id", None)}
+        return {"status": "ok", "version": release_version, "transport": "web-serial", "instanceId": getattr(app.state, "instance_id", None)}
 
     @app.get("/api/session")
     def bootstrap():
@@ -334,6 +337,10 @@ def create_app(data_dir: Path | None = None, *, port: int = 3080, dev: bool = Fa
     @app.put('/api/hardware/{skill_name}/verification')
     def save_verification(skill_name: str, request: HardwareVerificationInput):
         return repo.skills.web_detail(repo.skills.save_verification(skill_name, request))
+
+    @app.put('/api/hardware/{skill_name}/mechanical')
+    def save_mechanical(skill_name: str, request: mechanical.MechanicalInput):
+        return repo.skills.web_detail(mechanical.save(repo.skills, skill_name, request))
 
     @app.get("/api/firmware/{board_id}")
     def firmware(board_id: str):

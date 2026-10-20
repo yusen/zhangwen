@@ -15,8 +15,15 @@ LAUNCHER = '''#!/bin/bash
 set -euo pipefail
 resources=$(cd "$(dirname "$0")/../Resources" && pwd)
 install_root=$(cat "$resources/install-root.txt")
-# A stable command reads current.txt, so updates do not invalidate the icon.
-exec /usr/bin/open -a Terminal "$install_root/启动掌问.command"
+# Resolve the selected runtime on every click, without opening Terminal first.
+revision=$(cat "$install_root/current.txt")
+[[ "$revision" =~ ^[0-9a-f]{40}$ ]] || exit 1
+python="$install_root/versions/$revision/.venv/bin/python"
+if [ ! -x "$python" ]; then
+  /usr/bin/osascript -e 'display alert "掌问启动提示" message "Python环境不可用，请重新运行安装命令修复。"'
+  exit 1
+fi
+exec "$python" "$resources/launch-macos.py" --install-root "$install_root"
 '''
 
 
@@ -61,7 +68,7 @@ def create_app(install_root: Path, applications: Path) -> Path:
         'CFBundleName': '掌问', 'CFBundleDisplayName': '掌问',
         'CFBundleIdentifier': 'cn.zhangwen.local-web', 'CFBundlePackageType': 'APPL',
         'CFBundleExecutable': 'zhangwen', 'CFBundleIconFile': 'palm-logo.icns',
-        'CFBundleVersion': '1', 'CFBundleShortVersionString': '0.1.0',
+        'CFBundleVersion': '2', 'CFBundleShortVersionString': '0.1.0',
         'LSMinimumSystemVersion': '13.5', 'LSUIElement': True,
         'LSApplicationCategoryType': 'public.app-category.education',
         'NSHighResolutionCapable': True,
@@ -70,8 +77,9 @@ def create_app(install_root: Path, applications: Path) -> Path:
     write('Contents/PkgInfo', b'APPL????')
     write('Contents/MacOS/zhangwen', LAUNCHER.encode(), executable=True)
     write('Contents/Resources/install-root.txt', (str(install_root) + '\n').encode())
+    write('Contents/Resources/launch-macos.py', (ROOT / 'scripts/launch-macos.py').read_bytes())
     write('Contents/Resources/palm-logo.icns', (ROOT / 'apps/web/src/assets/palm-logo.icns').read_bytes())
-    write('Contents/Resources/zhangwen-launcher.json', json.dumps({'kind': KIND, 'version': 1}).encode())
+    write('Contents/Resources/zhangwen-launcher.json', json.dumps({'kind': KIND, 'version': 2}).encode())
     return app
 
 

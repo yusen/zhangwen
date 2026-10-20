@@ -26,8 +26,8 @@ def solid_bounds(spec, scale):
 
 
 async def act(request, previous, settings, job_root, conversation=None):
-    if request.template in builtin_templates.TEMPLATES or (not request.template and previous.get('designKind') == 'builtin' and request.action not in {'analyze', 'selected'}):
-        return await builtin_templates.act(request, previous, job_root)
+    if request.template in builtin_templates.TEMPLATES or (not request.template and previous.get('designKind') == 'builtin' and request.action != 'selected'):
+        return await builtin_templates.act(request, previous, job_root, settings, conversation)
     kind = 'laser' if request.designType == 'laser' else 'parametric'
     # Text revisions must reach the model, even when the source was a template.
     editing = request.action in {'analyze', 'revise', 'selected'}
@@ -63,7 +63,8 @@ async def act(request, previous, settings, job_root, conversation=None):
               'title': spec.title, 'message': spec.summary, 'questions': spec.questions,
               'requestText': request.message or previous.get('requestText', ''), 'exports': [], 'checks': []}
     if spec.questions:
-        return {**result, 'status': 'needs_input', 'blocking_reason': 'llm_unavailable' if spec.title == '需要配置模型' else 'design_questions'}
+        retained = {key: previous[key] for key in ['build', 'exports', 'design_state', 'parameters', 'cadquery_code', 'laserDrawing', 'laserTextPaths'] if key in previous}
+        return {**result, **retained, 'status': 'needs_input', 'blocking_reason': 'llm_unavailable' if spec.title == '需要配置模型' else 'design_questions'}
     if template == 'rounded-box':
         result['parameters'] = {'design': params}
         result['parameters']['design'].pop('material', None)
@@ -105,7 +106,8 @@ async def act(request, previous, settings, job_root, conversation=None):
         size = solid_bounds(spec, scale)
         result['design_state'] = {'id': '', 'parameters': {}, 'enclosure_parameters': {'outer_box_size': dict(zip(['length_x', 'width_y', 'height_z'], size))}, 'bom': []}
         result['cadquery_code'] = solid_code(spec, scale)
-    if request.action not in {'build', 'parameters', 'validate'}:
+    auto_build = request.designType == 'model' and request.action in {'analyze', 'revise'}
+    if request.action not in {'build', 'parameters', 'validate'} and not auto_build:
         return {**result, 'status': 'confirmation', 'message': spec.summary + ' 请核对尺寸后生成。'}
     if request.action == 'validate':
         return {**previous, 'checks': result['checks'] or [{'id': 'spec', 'status': 'pass', 'message': '结构化实体尺寸与操作清单有效；实物强度及打印条件需另行核对。'}]}

@@ -36,6 +36,54 @@ jobs:
           bash -n "$app/Contents/MacOS/zhangwen"
           iconutil -c iconset "$app/Contents/Resources/palm-logo.icns" -o "$RUNNER_TEMP/palm.iconset"
           cmp "$app/Contents/Resources/install-root.txt" <(printf '%s\n' "$RUNNER_TEMP/ZhangWen Platform")
+          cmp "$app/Contents/Resources/launch-macos.py" "$RUNNER_TEMP/ZhangWen Platform/versions/$GITHUB_SHA/scripts/launch-macos.py"
+      - name: Verify macOS reopening and concurrent launch locks
+        if: runner.os == 'macOS'
+        run: |
+          cd "$RUNNER_TEMP/ZhangWen Platform/versions/$GITHUB_SHA"
+          .venv/bin/python - <<'PY'
+          import importlib.util, json, tempfile, threading
+          from concurrent.futures import ThreadPoolExecutor
+          from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
+          from pathlib import Path
+          spec = importlib.util.spec_from_file_location('reopen', 'scripts/launch-macos.py')
+          launcher = importlib.util.module_from_spec(spec)
+          spec.loader.exec_module(launcher)
+          class Handler(BaseHTTPRequestHandler):
+              def do_GET(self):
+                  self.send_response(200); self.end_headers()
+                  self.wfile.write(b'{"instanceId":"ci-owned","transport":"web-serial"}')
+              def log_message(self, *args): pass
+          server = ThreadingHTTPServer(('127.0.0.1', 0), Handler)
+          threading.Thread(target=server.serve_forever, daemon=True).start()
+          try:
+              with tempfile.TemporaryDirectory(prefix='zhangwen-app-') as directory:
+                  root = Path(directory) / "space 'quoted' $literal"
+                  data = root / 'data'; data.mkdir(parents=True)
+                  (root / '启动掌问.command').write_text('#!/bin/bash\n')
+                  (data / 'sentinel').write_bytes(b'keep user data')
+                  marker = data / '.zhangwen-web-address.json'
+                  calls = []; timers = []
+                  def open_fake(command, **kwargs):
+                      calls.append(command)
+                      if '-a' in command:
+                          def ready():
+                              marker.write_text(json.dumps({'port':server.server_port,'instanceId':'ci-owned'}))
+                          timer = threading.Timer(0.2, ready)
+                          timers.append(timer); timer.start()
+                  launcher.subprocess.run = open_fake
+                  # Native macOS flock; only opening Terminal/browser is mocked.
+                  with ThreadPoolExecutor(max_workers=5) as pool:
+                      results = list(pool.map(lambda _: launcher.launch(root, timeout=10), range(5)))
+                  for timer in timers: timer.join()
+                  assert results.count('started') == 1 and results.count('reopened') == 4
+                  assert len([c for c in calls if '-a' in c]) == 1
+                  assert launcher.launch(root) == 'reopened'
+                  assert len([c for c in calls if '-a' in c]) == 1
+                  assert (data / 'sentinel').read_bytes() == b'keep user data'
+          finally:
+              server.shutdown(); server.server_close()
+          PY
       - name: Verify startup, catalog and local data
         shell: bash
         run: |

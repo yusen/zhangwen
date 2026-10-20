@@ -7,7 +7,7 @@ import re
 from pathlib import Path
 from . import module_guides, module_support, module_verification
 
-from zhangwen.hardware.hardware_skills import HardwareSkillRepository, HardwareSkillNotFoundError, HardwareSkillValidationError, _mechanical_snapshot
+from zhangwen.hardware.hardware_skills import HardwareSkillRepository, HardwareSkillNotFoundError, HardwareSkillValidationError, HardwareSkillConflictError, HARDWARE_SKILL_ALLOWED_PATHS, _mechanical_snapshot
 from zhangwen.cad_agent.profile_repository import MechanicalProfileSnapshot
 from zhangwen.hardware.models import HardwareCategory, HardwareSkillStatus, HardwareSkillSummary, ValidationCheck, ValidationSeverity
 
@@ -42,6 +42,22 @@ def module_type(name: str, category: str) -> str:
 
 
 class WebHardwareRepository(HardwareSkillRepository):
+    def update_mechanical_files(self, skill_name, *, updates, expected_revision):
+        # The original update_files intentionally cannot add optional files.
+        # Declare this existing schema capability and reuse its atomic writer,
+        # validation, rollback and SQLite projection; no new storage is created.
+        from datetime import datetime, UTC
+        with self._lock:
+            detail = self.get_skill(skill_name)
+            if detail.revision != expected_revision:
+                raise HardwareSkillConflictError('模块资料已更新，请关闭后重新打开，核对最新修订再保存。')
+            files = {f.path: f.content for f in detail.files}
+            files.update(updates)
+            manifest = self._read_manifest(self._root / skill_name)
+            manifest.files = [p for p in HARDWARE_SKILL_ALLOWED_PATHS if p in files]
+            manifest.updatedAt = datetime.now(UTC).isoformat()
+            return self._write_package(manifest, files, sync_projection=True)
+
     def update_files(self, skill_name, *, updates, expected_revision):
         # Example text cannot change electrical or mechanical facts. The original
         # writer still validates/revisions/atomically replaces the full package,

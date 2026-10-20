@@ -21,6 +21,7 @@ from typing import Literal
 import httpx
 from fastapi import HTTPException
 from pydantic import BaseModel, ConfigDict, Field, field_validator
+from .release_version import parse_release_document, read_release, version_key
 
 REPOSITORY_REF = "https://api.github.com/repos/yusen/zhangwen/git/ref/heads/main"
 GITEE_REF = "https://gitee.com/api/v5/repos/ys_Ethan/zhangwen/branches/main"
@@ -83,6 +84,25 @@ def verify_installer(root: Path) -> None:
         raise ValueError("missing verified installer")
 
 
+def latest_release(revision: str, source: str = 'github') -> dict | None:
+    if not SHA.fullmatch(revision) or source not in {'gitee', 'github'}:
+        raise ValueError('invalid version source')
+    url = (f'https://gitee.com/ys_Ethan/zhangwen/raw/{revision}/version.json' if source == 'gitee'
+           else f'https://raw.githubusercontent.com/yusen/zhangwen/{revision}/version.json')
+    started = time.monotonic()
+    with httpx.Client(timeout=httpx.Timeout(10, connect=5), trust_env=False, follow_redirects=False) as client:
+        with client.stream('GET', url, headers={'User-Agent': 'zhangwen-update-check', 'Accept': 'application/json'}) as response:
+            if response.status_code == 404:
+                return None
+            response.raise_for_status()
+            content = bytearray()
+            for chunk in response.iter_bytes():
+                content.extend(chunk)
+                if len(content) > 4096 or time.monotonic() - started > 15:
+                    raise ValueError('oversized version response')
+    return parse_release_document(bytes(content))
+
+
 class UpdateManager:
     def __init__(self, root: Path, data_dir: Path):
         self.root = root.resolve()
@@ -111,9 +131,15 @@ class UpdateManager:
         self.lock = threading.RLock()
         self.checking = False
         self.checked_clock = 0.0
+        try:
+            current_release = read_release(self.root)
+        except (OSError, ValueError):
+            current_release = None
         self.result: dict = {
             "deployment": "managed" if self.install_root else "development",
             "currentRevision": self.current, "latestRevision": None, "checkedAt": None,
+            "currentVersion": current_release['version'] if current_release else None, "latestVersion": None,
+            "currentReleaseNotes": current_release['releaseNotes'] if current_release else [], "latestReleaseNotes": [],
             "state": "unchecked", "message": "尚未检查更新。", "canInstall": False,
             "checkToken": None, "job": None,
         }
@@ -131,14 +157,21 @@ class UpdateManager:
             if self.source_error:
                 raise ValueError("invalid installed distribution source")
             revision = latest_revision(self.source)
+            release = latest_release(revision, self.source)
+            version = release['version'] if release else None
             with self.lock:
                 if self.result["job"] and self.result["job"]["state"] == "failed":
                     self.result["job"] = None
-                self.result.update(latestRevision=revision, checkedAt=now(), checkToken=secrets.token_urlsafe(32))
+                self.result.update(latestRevision=revision, latestVersion=version,
+                                   latestReleaseNotes=release['releaseNotes'] if release else [],
+                                   checkedAt=now(), checkToken=secrets.token_urlsafe(32))
                 if not self.install_root:
                     self.result.update(state="development", canInstall=False, message="当前是开发工作区，可查看线上版本；请通过安装器部署后使用平台内更新。")
                 elif revision == self.current:
                     self.result.update(state="current", canInstall=False, message="当前已是最新版本。")
+                elif self.result['currentVersion'] and (version is None or version_key(version) <= version_key(self.result['currentVersion'])):
+                    message = '线上版本未标注版本号，已保留当前版本。' if version is None else '当前版本不低于线上版本，无需更新。'
+                    self.result.update(state='current', canInstall=False, message=message)
                 else:
                     selected = (self.install_root / "current.txt").read_text().strip()
                     ready = selected == revision

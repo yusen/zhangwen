@@ -245,6 +245,9 @@ def design_instructions(design_type):
         '单位毫米。缺少关键尺寸时questions只问一个问题，solid=[]、drawing=null，不要猜测答案。'
         'previousDesign.spec是所选版本的有效设计，history是截至该版本的同类需求记录；优先本次request，'
         '保留未要求修改的内容，不要重新引入历史中已替换的方案。pendingQuestions可用于理解本次回答。'
+        'previousDesign.projectHardware是当前项目原模块的机械资料、来源及修订，selectedStructureProfiles是选定结构硬件。'
+        '按本次请求决定哪些硬件参与结构；参考其中尺寸、坐标原点、孔位、开口和避让，不能猜缺失的数据或把外包络冒充精细模型。'
+        '需要安装或开孔而相应资料缺失时必须用questions追问；未要求安装硬件的独立作品不受缺项阻止。'
         + ('本次只做激光平面图纸：solid=[]，drawing包含完整图纸。rect的x/y为左上角，circle为圆心，'
            'polyline用points二维坐标，不要给不适用字段填null；不需要的字段可省略。'
            '全部路径必须在画布0..width/height内，最多512项，每条折线最多256点，画布最大1000mm。'
@@ -305,11 +308,11 @@ def parse_design_reply(choice, design_type):
     return spec
 
 
-async def propose(message, design_type, settings, previous=None):
+async def propose(message, design_type, settings, previous=None, *, instructions=None, parser=None):
     if not settings or not configured(settings):
         return DesignSpec(title='需要配置模型', summary='可配置结构设计师 API 后描述任意需求，或使用左侧模板直接生成。', questions=['选择左侧模板，或先配置结构设计师模型 API。'])
     user = json.dumps({'designType': design_type, 'request': message, 'previousDesign': previous}, ensure_ascii=False)
-    messages = [{'role': 'system', 'content': design_instructions(design_type)}, {'role': 'user', 'content': user}]
+    messages = [{'role': 'system', 'content': instructions or design_instructions(design_type)}, {'role': 'user', 'content': user}]
     try:
         # Both attempts share the original total deadline. Never retry network,
         # authentication or truncated replies, and never accept partial geometry.
@@ -336,7 +339,7 @@ async def propose(message, design_type, settings, previous=None):
                 if reason not in ('stop', None):
                     raise HTTPException(502, '模型没有完整完成本次设计，请调整需求后重试；输入和原版本保留。')
                 try:
-                    return parse_design_reply(choice, design_type)
+                    return parser(choice) if parser else parse_design_reply(choice, design_type)
                 except ValueError as exc:
                     detail = design_validation_detail(exc)
                     if attempt or len(json.dumps(choice, ensure_ascii=False)) > 40000:

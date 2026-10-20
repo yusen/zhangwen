@@ -19,11 +19,17 @@ export function StructurePreview({ result }: { result?: CadResult }) {
   const ready = result?.build?.status === 'artifact_exports';
   const standalone = result?.designKind === 'parametric';
   const templateParts = result?.templateParts;
+  const textTarget = result?.templateEdit?.partOperations.flatMap(part => part.operations
+    .filter(op => op.kind === 'text').map(op => ({partId: part.partId, face: op.kind === 'text' ? op.face : 'top'}))).at(-1);
+  const textFace = textTarget?.face;
+  const textPart = textTarget?.partId;
   const views: [View, string][] = result?.designKind === 'builtin' ? [
     ['assembly', '整体'], ...(templateParts?.length ? [['exploded', '分开展示'] as [View, string]] : []),
-    ...(templateParts ?? []).map(part => [part.id, part.label] as [View, string])
+    ...(templateParts ?? []).map(part => [part.id, part.label] as [View, string]),
+    ...(textTarget ? [['text', '文字面'] as [View, string]] : [])
   ] : standalone ? names.slice(0, 1) : names;
   const activeView = views.some(([key]) => key === view) ? view : 'assembly';
+  useEffect(() => { if (textFace) setView('text'); }, [textFace, result?.exports]);
   useEffect(() => {
     if (!host.current || !ready) return;
     const container = host.current;
@@ -40,6 +46,7 @@ export function StructurePreview({ result }: { result?: CadResult }) {
     const grid = new THREE.GridHelper(240, 24, 0x8494a8, 0xa0aec0); grid.rotateX(Math.PI / 2);
     (grid.material as THREE.Material).transparent = true; (grid.material as THREE.Material).opacity = .22; scene.add(grid);
     const axes = new THREE.AxesHelper(25); scene.add(axes);
+    grid.visible = axes.visible = activeView !== 'text';
     const group = new THREE.Group(); scene.add(group);
     let disposed = false, frame = 0;
     const controller = new AbortController();
@@ -47,7 +54,7 @@ export function StructurePreview({ result }: { result?: CadResult }) {
     const resize = () => { const w = Math.max(container.clientWidth, 1), h = Math.max(container.clientHeight, 1); renderer.setSize(w, h); camera.aspect = w / h; camera.updateProjectionMatrix(); };
     const observer = new ResizeObserver(resize); observer.observe(container); resize();
     const render = () => { if (disposed) return; controls.update(); renderer.render(scene, camera); frame = requestAnimationFrame(render); }; render();
-    const parts = templateParts ? (activeView === 'assembly' || activeView === 'exploded' ? templateParts.map(p => p.id) : [activeView]) : standalone ? ['base'] : activeView === 'assembly' || activeView === 'exploded' ? ['base', 'lid', 'hardware'] : [activeView];
+    const parts = activeView === 'text' && textPart ? [textPart] : templateParts ? (activeView === 'assembly' || activeView === 'exploded' ? templateParts.map(p => p.id) : [activeView]) : standalone ? ['base'] : activeView === 'assembly' || activeView === 'exploded' ? ['base', 'lid', 'hardware'] : [activeView];
     setStatus('正在载入真实模型…');
     void (async () => {
       try {
@@ -63,6 +70,14 @@ export function StructurePreview({ result }: { result?: CadResult }) {
           const material = new THREE.MeshStandardMaterial({color: part === 'hardware' || info?.printable === false ? 0x5d9e82 : part === 'lid' || part === 'cover' ? 0xd9e5ed : 0x829db7,
             roughness: .68, metalness: .05, transparent: activeView === 'exploded' && part === 'lid', opacity: activeView === 'exploded' && part === 'lid' ? .55 : 1});
           materials.push(material); const mesh = new THREE.Mesh(geometry, material);
+          if (activeView === 'text') {
+            // Outline the real mesh creases so shallow engravings remain legible
+            // without relying on shadow maps or a fabricated text overlay.
+            const edges = new THREE.EdgesGeometry(geometry, 25);
+            const ink = new THREE.LineBasicMaterial({color:0x354e65, transparent:true, opacity:.75});
+            geometries.push(edges); materials.push(ink);
+            mesh.add(new THREE.LineSegments(edges, ink));
+          }
           if (info && (activeView === 'assembly' || activeView === 'exploded')) mesh.position.fromArray(info.placement);
           if (info && activeView === 'exploded') mesh.position.x += index * Math.max(80, (state?.enclosure_parameters.outer_box_size.length_x ?? 60) + 20);
           if (!info && activeView === 'exploded' && part === 'lid') mesh.position.z += Math.max(20, (state?.enclosure_parameters.outer_box_size.height_z ?? 40) * .6);
@@ -73,16 +88,25 @@ export function StructurePreview({ result }: { result?: CadResult }) {
         if (bounds.isEmpty()) throw new Error('此版本没有可显示的模型。');
         const center = bounds.getCenter(new THREE.Vector3()), size = bounds.getSize(new THREE.Vector3());
         const distance = Math.max(size.length(), 60) * 1.5;
-        reset.current = () => { camera.position.copy(center).add(new THREE.Vector3(distance, -distance, distance * .8)); controls.target.copy(center); controls.update(); };
+        reset.current = () => {
+          let direction = new THREE.Vector3(distance, -distance, distance * .8); camera.up.set(0, 0, 1);
+          if (activeView === 'text' && textFace) {
+            const directions = {top:[0,-.15,1],bottom:[0,.15,-1],front:[.1,-1,.1],back:[-.1,1,.1],left:[-1,-.1,.1],right:[1,.1,.1]};
+            direction = new THREE.Vector3(...directions[textFace]).multiplyScalar(distance);
+            if (textFace === 'top' || textFace === 'bottom') camera.up.set(0, textFace === 'bottom' ? -1 : 1, 0);
+            light.position.copy(center).add(direction).add(new THREE.Vector3(-distance * .4, -distance * .3, 0));
+          }
+          camera.position.copy(center).add(direction); controls.target.copy(center); controls.update();
+        };
         reset.current(); setStatus('真实模型 · 拖动旋转，滚轮缩放');
       } catch (error) { if (!disposed) { group.visible = false; setStatus(error instanceof Error ? error.message : '模型载入失败'); } }
     })();
     return () => { disposed = true; controller.abort(); cancelAnimationFrame(frame); observer.disconnect(); controls.dispose(); geometries.forEach(g => g.dispose()); materials.forEach(m => m.dispose()); grid.geometry.dispose(); (grid.material as THREE.Material).dispose(); axes.geometry.dispose(); (Array.isArray(axes.material) ? axes.material : [axes.material]).forEach(m => m.dispose()); renderer.dispose(); renderer.domElement.remove(); reset.current = () => {}; };
-  }, [ready, exports, activeView, state, standalone, templateParts]);
+  }, [ready, exports, activeView, state, standalone, templateParts, textFace, textPart]);
 
   return <div className="structure-preview">
     <div className="structure-view-tabs" role="group" aria-label="模型视图">{views.map(([key, name]) => <button key={key} disabled={!ready} aria-pressed={activeView === key} onClick={() => setView(key)}>{name}</button>)}<button disabled={!ready} aria-label="重置模型视角" onClick={() => reset.current()}><RotateCcw size={15} /></button></div>
-    {ready ? <><div ref={host} className="structure-canvas" role="img" aria-label="真实结构模型预览" /><p className="structure-view-status" role="status">{status}</p></> : state ? <>
+    {ready ? <><div ref={host} className="structure-canvas" role="img" aria-label="真实结构模型预览" /><p className="structure-view-status" role="status">{status}{result?.status === 'needs_input' && ' · 本轮待补充，当前显示上一版模型'}</p></> : state ? <>
       <div className="structure-draft"><svg role="img" aria-label="结构布局草案俯视图" viewBox="-100 -85 200 170">
         {(() => { const s = state.enclosure_parameters.outer_box_size; const k = 145 / Math.max(s.length_x, s.width_y); return <g transform={`scale(${k})`}><rect className="draft-shell" x={-s.length_x / 2} y={-s.width_y / 2} width={s.length_x} height={s.width_y} rx={3} />{state.layout_plan?.hardware_transforms.map((h, i) => <g key={`${h.hardware_id}-${i}`}><rect className={`draft-part ${h.mount_surface === 'lid_inner' ? 'on-lid' : ''}`} x={h.center.x - h.bounding_box.length_x / 2} y={-h.center.y - h.bounding_box.width_y / 2} width={h.bounding_box.length_x} height={h.bounding_box.width_y} rx={1} /><text x={h.center.x} y={-h.center.y} fontSize={4 / k} textAnchor="middle">{i + 1}</text></g>)}</g>; })()}
       </svg><strong>{sizeText(state.enclosure_parameters.outer_box_size)}</strong><span>2D 布局草案 · 尚非真实模型</span></div>

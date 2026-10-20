@@ -20,6 +20,8 @@ const hex = (bytes: Uint8Array) => Array.from(bytes, b => b.toString(16).padStar
 const JSON_IMPORT = 'try:\n import json\nexcept ImportError:\n import ujson as json';
 const HASH_IMPORT = 'try:\n import hashlib\nexcept ImportError:\n import uhashlib as hashlib';
 
+class DeviceResponseTimeout extends Error {}
+
 /** One reader, one writer, a bounded buffer and one operation per browser port. */
 export class MicroPythonDevice {
   state: DeviceState = 'disconnected';
@@ -50,15 +52,25 @@ export class MicroPythonDevice {
       this.writer = this.port.writable.getWriter();
       this.reading = this.pump();
       return await this.operation(async () => {
-        await this.enterRaw();
-        const result = await this.execute('import sys, os, machine, binascii\n' + JSON_IMPORT + '\nprint(json.dumps({"implementation":sys.implementation.name,"platform":sys.platform,"machine":os.uname().machine,"uniqueId":binascii.hexlify(machine.unique_id()).decode()}))');
-        const parsed: unknown = JSON.parse(result.trim());
-        if (!parsed || typeof parsed !== 'object') throw new Error('设备身份响应无效。');
+        this.log('\n[固件检测] 正在验证 MicroPython，请稍候…\n');
+        let parsed: unknown;
+        try {
+          await this.enterRaw();
+          // Check the runtime before importing MicroPython-only board modules.
+          const result = await this.execute('import sys\n' + JSON_IMPORT + '\nif sys.implementation.name != "micropython":\n print(json.dumps({"implementation":sys.implementation.name}))\nelse:\n import os, machine, binascii\n print(json.dumps({"implementation":sys.implementation.name,"platform":sys.platform,"machine":os.uname().machine,"uniqueId":binascii.hexlify(machine.unique_id()).decode()}))');
+          parsed = JSON.parse(result.trim());
+        } catch (error) {
+          if (error instanceof DeviceResponseTimeout) throw new Error('未检测到有效的 MicroPython 响应，可能是固件版本不对，请重刷固件。若已刷入 MicroPython，请确认串口、数据线及主控已退出 BOOT 下载模式后重试连接。');
+          if (error instanceof SyntaxError || (error instanceof Error && error.message.startsWith('MicroPython:'))) throw new Error('MicroPython 固件检测未通过，请重刷当前主控对应的固件后重新连接。');
+          throw error;
+        }
+        if (!parsed || typeof parsed !== 'object') throw new Error('固件身份响应无效，无法确认 MicroPython，请重刷当前主控对应的固件。');
         const value = parsed as Record<string, unknown>;
-        if (value.implementation !== 'micropython' || ['machine', 'platform', 'uniqueId'].some(key => typeof value[key] !== 'string')) throw new Error('该设备未运行受支持的 MicroPython。');
+        if (value.implementation !== 'micropython') throw new Error('固件版本不对：当前设备不是 MicroPython 固件，请重刷当前主控对应的固件后重新连接。');
+        if (['machine', 'platform', 'uniqueId'].some(key => typeof value[key] !== 'string' || !value[key])) throw new Error('MicroPython 固件身份信息不完整，请重刷当前主控对应的固件后重新连接。');
         this.identity = value as unknown as DeviceIdentity;
         await this.friendly();
-        this.log(`\n[已识别 MicroPython] ${this.identity.machine}\n`);
+        this.log(`\n[固件检测通过 · 已识别 MicroPython] ${this.identity.machine}\n`);
         return this.identity;
       });
     } catch (error) {
@@ -123,7 +135,7 @@ export class MicroPythonDevice {
       }
       const remaining = deadline - Date.now();
       if (remaining <= 0) {
-        this.fault = new Error('设备响应超时。请重新连接并核对备份文件，当前协议状态不再可信。');
+        this.fault = new DeviceResponseTimeout('设备响应超时。请重新连接并核对备份文件，当前协议状态不再可信。');
         throw this.fault;
       }
       await new Promise<void>(resolve => {
