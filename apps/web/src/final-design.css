@@ -593,6 +593,30 @@ dialog::backdrop { background: #0b182d70; backdrop-filter: blur(3px); }
 .engineering-surface { display: contents; }
 .engineering-surface[hidden] { display: none; }
 .title-mode { flex-shrink: 0; font-weight: 600; padding-right: 14px; border-right: 1px solid var(--border2); }
+
+/* Project commands live beside the brand; device commands keep the original tiles. */
+.title-project-actions { display: flex; align-items: center; gap: 4px; padding-right: 12px; border-right: 1px solid var(--border2); flex: 0 0 auto; }
+.title-project-actions button { display: inline-flex; align-items: center; justify-content: center; gap: 6px; min-height: 32px; padding: 5px 9px; border: 1px solid transparent; border-radius: 6px; background: transparent; color: var(--ink-2); font-size: 13px; box-shadow: none; white-space: nowrap; }
+.title-project-actions button:hover:not(:disabled), .title-project-actions button[aria-expanded="true"] { background: var(--sel); color: var(--sw); }
+.title-project-actions button:disabled { opacity: .5; cursor: default; }
+.workspace-titlebar .current-project strong { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; color: var(--ink-2); }
+.document-info { white-space: nowrap; }
+.document-info.has-error { color: var(--wrn); border-color: var(--wrn); }
+.tool-group[aria-label="三师模式"] .zhangwen-tool { width: 86px; flex-basis: 86px; }
+.tool-group[aria-label="设备操作"] .zhangwen-tool:first-child { width: 72px; flex-basis: 72px; }
+.workbench-action-menu { position: fixed; z-index: 2000; width: 250px; max-width: calc(100vw - 16px); max-height: calc(100vh - 16px); overflow-y: auto; padding: 6px; border: 1px solid var(--border2); border-radius: 9px; background: var(--raised); color: var(--ink-2); box-shadow: 0 10px 30px #00000024; }
+.workbench-action-menu button { display: flex; align-items: center; gap: 10px; width: 100%; min-height: 38px; padding: 7px 10px; border: 0; border-radius: 5px; background: transparent; color: inherit; text-align: left; font-size: 13px; box-shadow: none; }
+.workbench-action-menu button > span { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.workbench-action-menu button > small { color: var(--ink-3); font-size: 11px; white-space: nowrap; }
+.workbench-action-menu button:hover:not(:disabled), .workbench-action-menu button:focus-visible { color: var(--sw); background: var(--sel); }
+.workbench-action-menu button:disabled { opacity: .45; }
+.action-menu-group { border-top: 1px solid var(--border); margin: 5px 4px 2px; padding: 9px 6px 3px; font-size: 11px; color: var(--ink-3); }
+.action-menu-trigger:focus-visible, .title-save:focus-visible, .workbench-action-menu button:focus-visible { outline: 2px solid var(--brand); outline-offset: 1px; }
+.filebar > .action-menu-trigger { min-width: 30px; padding: 5px; }
+.project-folder-status > span { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.project-folder-status > .code-check-status { display: inline-flex; align-items: center; gap: 5px; flex: 0 0 auto; margin-left: auto; font-size: 11px; white-space: nowrap; }
+.code-check-status.is-valid { color: var(--suc); }
+.code-check-status.has-error { color: var(--dng); }
 .current-project strong { overflow: hidden; white-space: nowrap; text-overflow: ellipsis; max-width: 100%; font-weight: 500; color: var(--ink-2); }
 .current-project > .dirty-dot { display: block; flex-shrink: 0; }
 .mode-picker-dialog { width: min(640px, calc(100vw - 32px)); }

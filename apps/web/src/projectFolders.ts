@@ -32,7 +32,7 @@ async function read(handle: ProjectDirectory, name: string, limit = MAX_BYTES): 
   }
 }
 export async function prepareNewDirectory(handle: ProjectDirectory): Promise<void> {
-  if (await read(handle, PROJECT_FILE) !== null) throw new Error('此文件夹已有掌问项目，请通过「加载」打开，或选择新的项目文件夹。');
+  if (await read(handle, PROJECT_FILE) !== null) throw new Error('此文件夹已有掌问项目，请通过「项目→打开项目」打开，或选择新的项目文件夹。');
   if (await read(handle, 'main.py', 65_536) !== null) throw new Error('此文件夹已有 main.py。为保留原文件，请为新项目选择另一个文件夹。');
 }
 export async function readProjectDirectory(handle: ProjectDirectory): Promise<{ snapshot: ProjectSnapshot; binding: FolderBinding; externalCode: string | null }> {

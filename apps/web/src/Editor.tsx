@@ -3,11 +3,11 @@ import { basicSetup } from 'codemirror';
 import { Annotation, Compartment, EditorSelection, EditorState } from '@codemirror/state';
 import { EditorView } from '@codemirror/view';
 import { python } from '@codemirror/lang-python';
-import { indentSelection } from '@codemirror/commands';
+import { indentSelection, undo } from '@codemirror/commands';
 import { indentUnit, HighlightStyle, syntaxHighlighting } from '@codemirror/language';
 import { tags } from '@lezer/highlight';
 
-export interface EditorHandle { formatIndentation: () => void }
+export interface EditorHandle { formatIndentation: () => void; undo: () => void }
 const externalValue = Annotation.define<boolean>();
 export const Editor = forwardRef<EditorHandle, { value: string; onChange: (value: string) => void; zoom?: number; readOnly?: boolean }>(function Editor({ value, onChange, zoom = 100, readOnly = false }, ref) {
   const host = useRef<HTMLDivElement>(null);
@@ -15,7 +15,7 @@ export const Editor = forwardRef<EditorHandle, { value: string; onChange: (value
   const editing = useRef(new Compartment());
   const callback = useRef(onChange);
   callback.current = onChange;
-  useImperativeHandle(ref, () => ({ formatIndentation: () => {
+  useImperativeHandle(ref, () => ({ undo: () => { const instance = view.current; if (instance && !instance.state.readOnly) { undo(instance); instance.focus(); } }, formatIndentation: () => {
     const instance = view.current;
     if (!instance || instance.state.readOnly) return;
     const selection = instance.state.selection;

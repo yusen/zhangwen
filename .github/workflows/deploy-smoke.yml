@@ -127,75 +127,82 @@ jobs:
                   assert available.getsockname()[1] != preferred
           with tempfile.TemporaryDirectory() as directory:
               app = create_app(Path(directory), port=3080)
-              with TestClient(app, base_url='http://127.0.0.1:3080') as client:
-                  assert client.get('/api/health').json()['transport'] == 'web-serial'
-                  assert client.get('/').status_code == 200
-                  hardware = client.get('/api/hardware').json()['skills']
-                  assert len(hardware) >= 258, len(hardware)
-                  assert len(client.get('/api/structure/catalog').json()['profiles']) == 32
-                  assert abs(cq.Workplane('XY').box(5, 6, 7).val().Volume() - 210) < 0.01
-                  token = client.get('/api/session').json()['token']
-                  client.headers.update({'origin': 'http://127.0.0.1:3080', 'x-zhangwen-session': token})
-                  # Exercise the shipped user-supplied Labplus protocol against
-                  # a fake I2C bus; never access hardware or call a real model.
-                  labplus = client.get('/api/hardware/labplus-318357bd10f2').json()
-                  assert labplus['i2c']['defaultAddress'] == '0x0b'
-                  guide = next(g for g in labplus['moduleGuides'] if g['boardId'] == 'hw_labplus_mpython_v2')
-                  cls = next(n for n in ast.parse(guide['codeTemplate']).body if isinstance(n, ast.ClassDef) and n.name == 'Ultrasonic')
-                  events = []
-                  class FakeI2C:
-                      def writeto(self, address, value): events.append(('write', address, bytes(value)))
-                      def readfrom(self, address, count):
-                          events.append(('read', address, count))
-                          return b'\xd2\x04'
-                  scope = {'i2c': FakeI2C(), 'sleep_ms': lambda value: events.append(('wait', value))}
-                  exec(compile(ast.Module(body=[cls], type_ignores=[]), '<labplus-fake>', 'exec'), scope)
-                  assert scope['Ultrasonic']().distance() == 123.4
-                  assert events == [('write', 0x0b, b'\x01'), ('wait', 2), ('read', 0x0b, 2)]
-                  context = app.state.repo.skills.render_context(labplus['componentId'], board_id='hw_labplus_mpython_v2', max_chars=20000)
-                  assert guide['codeTemplate'] in context
-                  for board in PROFILES:
-                      image = firmware_profile(board)['image']
-                      assert hashlib.sha256(firmware_image(board).read_bytes()).hexdigest() == image['sha256']
-                      response = client.get(image['url'])
-                      assert response.status_code == 200 and hashlib.sha256(response.content).hexdigest() == image['sha256']
-                  deferred = client.post('/api/projects', json={'name':'Choose controller later', 'boardId':'', 'code':''})
-                  assert deferred.status_code == 201, deferred.text
-                  deferred_id = deferred.json()['id']
-                  snapshot = client.get(f'/api/projects/{deferred_id}/snapshot').json()
-                  assert snapshot['project']['boardId'] == ''
-                  assert client.post('/api/projects/import', json=snapshot).status_code == 200
-                  assert client.post(f'/api/projects/{deferred_id}/upload-manifest', json={'expectedRevision':1}).status_code == 422
-                  drawing = f'/api/projects/{deferred_id}/structure'
-                  for action, revision in [('selected',0), ('build',1)]:
-                      response = client.post(drawing, json={'action':action,'expectedRevision':revision,'template':'plate','designType':'laser'})
-                      assert response.status_code == 200, response.text
-                  result = response.json()['versions'][0]['result']
-                  assert result['build']['status'] == 'laser_exports'
-                  assert {x['format'] for x in result['exports']} >= {'svg','dxf'}
-                  for item in result['exports']:
-                      assert client.get(item['url']).status_code == 200
-                  for action, revision in [('selected',2), ('build',3)]:
-                      response = client.post(drawing, json={'action':action,'expectedRevision':revision,'template':'box','designType':'model'})
-                      assert response.status_code == 200, response.text
-                  result = response.json()['versions'][0]['result']
-                  assert result['status'] == 'artifact', result
-                  step = next(item for item in result['exports'] if item['format'] == 'step')
-                  assert b'ISO-10303-21' in client.get(step['url']).content
-                  project = client.post('/api/projects', json={'name':'Structure deployment smoke', 'boardId':'hw_seeed_xiao_esp32s3_sense', 'code':''})
-                  assert project.status_code == 201, project.text
-                  endpoint = '/api/projects/' + project.json()['id'] + '/structure'
-                  draft = client.post(endpoint, json={'action':'selected','expectedRevision':0,'selectedIds':['xiao_esp32s3']})
-                  assert draft.status_code == 200 and draft.json()['versions'][0]['result']['status'] == 'confirmation', draft.text
-                  built = client.post(endpoint, json={'action':'build','expectedRevision':1})
-                  assert built.status_code == 200, built.text
-                  result = built.json()['versions'][0]['result']
-                  assert result['build']['status'] == 'artifact_exports', result
-                  step = next(item for item in result['exports'] if item['id'] == 'cadquery_step')
-                  assert b'ISO-10303-21' in client.get(step['url']).content
-              # sqlite connections used by repositories can await cyclic GC;
-              # release those handles before removing a temporary Windows DB.
-              gc.collect()
+              try:
+                  with TestClient(app, base_url='http://127.0.0.1:3080') as client:
+                      assert client.get('/api/health').json()['transport'] == 'web-serial'
+                      assert client.get('/').status_code == 200
+                      hardware = client.get('/api/hardware').json()['skills']
+                      assert len(hardware) >= 258, len(hardware)
+                      profiles = client.get('/api/structure/catalog').json()['profiles']
+                      assert len(profiles) >= 32, len(profiles)
+                      assert len({p['id'] for p in profiles}) == len(profiles)
+                      assert any(p['id'] == 'xiao_esp32s3' for p in profiles)
+                      print(f'Catalog ready: {len(hardware)} hardware skills, {len(profiles)} structure profiles', flush=True)
+                      assert abs(cq.Workplane('XY').box(5, 6, 7).val().Volume() - 210) < 0.01
+                      token = client.get('/api/session').json()['token']
+                      client.headers.update({'origin': 'http://127.0.0.1:3080', 'x-zhangwen-session': token})
+                      # Exercise the shipped user-supplied Labplus protocol against
+                      # a fake I2C bus; never access hardware or call a real model.
+                      labplus = client.get('/api/hardware/labplus-318357bd10f2').json()
+                      assert labplus['i2c']['defaultAddress'] == '0x0b'
+                      guide = next(g for g in labplus['moduleGuides'] if g['boardId'] == 'hw_labplus_mpython_v2')
+                      cls = next(n for n in ast.parse(guide['codeTemplate']).body if isinstance(n, ast.ClassDef) and n.name == 'Ultrasonic')
+                      events = []
+                      class FakeI2C:
+                          def writeto(self, address, value): events.append(('write', address, bytes(value)))
+                          def readfrom(self, address, count):
+                              events.append(('read', address, count))
+                              return b'\xd2\x04'
+                      scope = {'i2c': FakeI2C(), 'sleep_ms': lambda value: events.append(('wait', value))}
+                      exec(compile(ast.Module(body=[cls], type_ignores=[]), '<labplus-fake>', 'exec'), scope)
+                      assert scope['Ultrasonic']().distance() == 123.4
+                      assert events == [('write', 0x0b, b'\x01'), ('wait', 2), ('read', 0x0b, 2)]
+                      context = app.state.repo.skills.render_context(labplus['componentId'], board_id='hw_labplus_mpython_v2', max_chars=20000)
+                      assert guide['codeTemplate'] in context
+                      for board in PROFILES:
+                          image = firmware_profile(board)['image']
+                          assert hashlib.sha256(firmware_image(board).read_bytes()).hexdigest() == image['sha256']
+                          response = client.get(image['url'])
+                          assert response.status_code == 200 and hashlib.sha256(response.content).hexdigest() == image['sha256']
+                      deferred = client.post('/api/projects', json={'name':'Choose controller later', 'boardId':'', 'code':''})
+                      assert deferred.status_code == 201, deferred.text
+                      deferred_id = deferred.json()['id']
+                      snapshot = client.get(f'/api/projects/{deferred_id}/snapshot').json()
+                      assert snapshot['project']['boardId'] == ''
+                      assert client.post('/api/projects/import', json=snapshot).status_code == 200
+                      assert client.post(f'/api/projects/{deferred_id}/upload-manifest', json={'expectedRevision':1}).status_code == 422
+                      drawing = f'/api/projects/{deferred_id}/structure'
+                      for action, revision in [('selected',0), ('build',1)]:
+                          response = client.post(drawing, json={'action':action,'expectedRevision':revision,'template':'plate','designType':'laser'})
+                          assert response.status_code == 200, response.text
+                      result = response.json()['versions'][0]['result']
+                      assert result['build']['status'] == 'laser_exports'
+                      assert {x['format'] for x in result['exports']} >= {'svg','dxf'}
+                      for item in result['exports']:
+                          assert client.get(item['url']).status_code == 200
+                      for action, revision in [('selected',2), ('build',3)]:
+                          response = client.post(drawing, json={'action':action,'expectedRevision':revision,'template':'box','designType':'model'})
+                          assert response.status_code == 200, response.text
+                      result = response.json()['versions'][0]['result']
+                      assert result['status'] == 'artifact', result
+                      step = next(item for item in result['exports'] if item['format'] == 'step')
+                      assert b'ISO-10303-21' in client.get(step['url']).content
+                      project = client.post('/api/projects', json={'name':'Structure deployment smoke', 'boardId':'hw_seeed_xiao_esp32s3_sense', 'code':''})
+                      assert project.status_code == 201, project.text
+                      endpoint = '/api/projects/' + project.json()['id'] + '/structure'
+                      draft = client.post(endpoint, json={'action':'selected','expectedRevision':0,'selectedIds':['xiao_esp32s3']})
+                      assert draft.status_code == 200 and draft.json()['versions'][0]['result']['status'] == 'confirmation', draft.text
+                      built = client.post(endpoint, json={'action':'build','expectedRevision':1})
+                      assert built.status_code == 200, built.text
+                      result = built.json()['versions'][0]['result']
+                      assert result['build']['status'] == 'artifact_exports', result
+                      step = next(item for item in result['exports'] if item['id'] == 'cadquery_step')
+                      assert b'ISO-10303-21' in client.get(step['url']).content
+              finally:
+                  # Release cyclic SQLite handles even when an assertion fails,
+                  # so Windows cleanup preserves the original failure message.
+                  gc.collect()
+              print('Deployment startup/catalog/local-data smoke passed', flush=True)
           PY
       - name: Verify macOS startup repairs a missing application
         if: runner.os == 'macOS'
