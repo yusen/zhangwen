@@ -17,6 +17,7 @@ import time
 from datetime import datetime, timezone
 from pathlib import Path
 from typing import Literal
+from urllib.parse import urlsplit
 
 import httpx
 from fastapi import HTTPException
@@ -91,16 +92,24 @@ def latest_release(revision: str, source: str = 'github') -> dict | None:
            else f'https://raw.githubusercontent.com/yusen/zhangwen/{revision}/version.json')
     started = time.monotonic()
     with httpx.Client(timeout=httpx.Timeout(10, connect=5), trust_env=False, follow_redirects=False) as client:
-        with client.stream('GET', url, headers={'User-Agent': 'zhangwen-update-check', 'Accept': 'application/json'}) as response:
-            if response.status_code == 404:
-                return None
-            response.raise_for_status()
-            content = bytearray()
-            for chunk in response.iter_bytes():
-                content.extend(chunk)
-                if len(content) > 4096 or time.monotonic() - started > 15:
-                    raise ValueError('oversized version response')
-    return parse_release_document(bytes(content))
+        for attempt in range(2):
+            with client.stream('GET', url, headers={'User-Agent': 'zhangwen-update-check', 'Accept': 'application/json'}) as response:
+                if response.is_redirect and source == 'gitee' and attempt == 0:
+                    target = urlsplit(response.headers.get('location', ''))
+                    if (target.scheme == 'https' and target.netloc == 'raw.giteeusercontent.com'
+                            and target.path == urlsplit(url).path and not target.fragment):
+                        url = response.headers['location']
+                        continue
+                if response.status_code == 404:
+                    return None
+                response.raise_for_status()
+                content = bytearray()
+                for chunk in response.iter_bytes():
+                    content.extend(chunk)
+                    if len(content) > 4096 or time.monotonic() - started > 15:
+                        raise ValueError('oversized version response')
+                return parse_release_document(bytes(content))
+    raise ValueError('invalid version redirect')
 
 
 class UpdateManager:

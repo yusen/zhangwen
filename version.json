@@ -1,7 +1,8 @@
 {
-  "version": "V0.4.2026.1022.01",
+  "version": "V0.4.2026.1022.02",
   "releaseNotes": [
     "国内安装、源码下载和版本更新地址迁移至 Gitee zmh1979/ask-with-your-palm。",
-    "保留 GitHub/Gitee 双源支持；功能基于 GitHub V0.4.2026.1021.01 已发布版本。"
+    "保留 GitHub/Gitee 双源支持；功能基于 GitHub V0.4.2026.1021.01 已发布版本。",
+    "修复 Gitee 版本文件跳转导致更新检查失败，仅允许官方原文件域名下同一提交的版本文件。"
   ]
 }
