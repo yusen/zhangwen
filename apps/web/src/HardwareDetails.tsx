@@ -2,6 +2,7 @@ import type { HardwareDetail, HardwareSummary } from '../../../packages/contract
 import { Dialog } from './Dialog';
 import { HardwareExampleEditor } from './HardwareExampleEditor';
 import { HardwareVerification } from './HardwareVerification';
+import { HardwareMechanicalEditor } from './HardwareMechanicalEditor';
 
 const interfaceNames: Record<string, string> = {
   GPIO_DIGITAL: '数字输入', ADC: '模拟输入（ADC）',
@@ -42,6 +43,7 @@ export function HardwareDetails({ detail, board, boards, editExample = false, on
     {detail.catalog && <p className="module-catalog-info">{detail.catalog.brand} · {detail.catalog.moduleType}{detail.catalog.programmingSupport === 'reference' && ' · 资料已收录，编程待联调'}{detail.catalog.sourceUrl.startsWith('https://') && <> · <a href={detail.catalog.sourceUrl} target="_blank" rel="noopener noreferrer">查看官方资料 ↗</a></>}</p>}
     {detail.category !== 'MCU' && <HardwareVerification key={detail.skillName} detail={detail} board={board} boards={boards} onSaved={onSaved} />}
     {editor}
+    <HardwareMechanicalEditor key={detail.skillName} detail={detail} onSaved={onSaved} />
     {editExample ? <details className="sensor-full-docs"><summary>原资料接线与注意</summary>{reference}</details> : reference}
     <details className="sensor-full-docs"><summary>完整技术资料</summary>
       <p className="muted">资料版本：{detail.revision} · 资料核验不代表本次实物已测试。</p>

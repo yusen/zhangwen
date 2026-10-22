@@ -21,8 +21,10 @@ from typing import Literal
 import httpx
 from fastapi import HTTPException
 from pydantic import BaseModel, ConfigDict, Field, field_validator
+from .release_version import parse_release_document, read_release, version_key
 
-REPOSITORY_REF = "https://gitee.com/api/v5/repos/zmh1979/ask-with-your-palm/branches/master"
+REPOSITORY_REF = "https://api.github.com/repos/yusen/zhangwen/git/ref/heads/main"
+GITEE_REF = "https://gitee.com/api/v5/repos/zmh1979/ask-with-your-palm/branches/master"
 SHA = re.compile(r"[0-9a-f]{40}")
 
 
@@ -44,19 +46,20 @@ def now() -> str:
     return datetime.now(timezone.utc).isoformat()
 
 
-def latest_revision() -> str:
-    # One fixed repository and branch; no channel or mirror switching.
+def latest_revision(source: str = "github") -> str:
+    if source not in {"gitee", "github"}:
+        raise ValueError("invalid distribution source")
     # No model URL, browser-supplied URL, credentials, redirect or proxy routing.
     started = time.monotonic()
     with httpx.Client(timeout=httpx.Timeout(10, connect=5), trust_env=False, follow_redirects=False) as client:
-        with client.stream("GET", REPOSITORY_REF, headers={"User-Agent": "zhangwen-update-check", "Accept": "application/json"}) as response:
+        with client.stream("GET", GITEE_REF if source == "gitee" else REPOSITORY_REF, headers={"User-Agent": "zhangwen-update-check", "Accept": "application/json"}) as response:
             response.raise_for_status()
             content = bytearray()
             for chunk in response.iter_bytes():
                 content.extend(chunk)
                 if len(content) > 16_384 or time.monotonic() - started > 15:
                     raise ValueError("oversized repository response")
-    value = json.loads(content)["commit"]["sha"]
+    value = json.loads(content)["commit" if source == "gitee" else "object"]["sha"]
     if not isinstance(value, str) or not SHA.fullmatch(value):
         raise ValueError("invalid repository revision")
     return value
@@ -81,11 +84,31 @@ def verify_installer(root: Path) -> None:
         raise ValueError("missing verified installer")
 
 
+def latest_release(revision: str, source: str = 'github') -> dict | None:
+    if not SHA.fullmatch(revision) or source not in {'gitee', 'github'}:
+        raise ValueError('invalid version source')
+    url = (f'https://gitee.com/zmh1979/ask-with-your-palm/raw/{revision}/version.json' if source == 'gitee'
+           else f'https://raw.githubusercontent.com/yusen/zhangwen/{revision}/version.json')
+    started = time.monotonic()
+    with httpx.Client(timeout=httpx.Timeout(10, connect=5), trust_env=False, follow_redirects=False) as client:
+        with client.stream('GET', url, headers={'User-Agent': 'zhangwen-update-check', 'Accept': 'application/json'}) as response:
+            if response.status_code == 404:
+                return None
+            response.raise_for_status()
+            content = bytearray()
+            for chunk in response.iter_bytes():
+                content.extend(chunk)
+                if len(content) > 4096 or time.monotonic() - started > 15:
+                    raise ValueError('oversized version response')
+    return parse_release_document(bytes(content))
+
+
 class UpdateManager:
     def __init__(self, root: Path, data_dir: Path):
         self.root = root.resolve()
         self.install_root: Path | None = None
         self.current: str | None = None
+        self.source = "github"  # Existing installations keep their original channel.
         if SHA.fullmatch(self.root.name) and self.root.parent.name == "versions" and sys.platform in {"win32", "darwin"}:
             candidate = self.root.parent.parent
             try:
@@ -96,12 +119,27 @@ class UpdateManager:
                     self.install_root, self.current = candidate, self.root.name
             except OSError:
                 pass
+        self.source_error = False
+        if self.install_root:
+            try:
+                marker = self.root / ".runtime/distribution-source.txt"
+                if marker.exists():
+                    self.source = marker.read_text(encoding="utf-8").strip()
+                self.source_error = self.source not in {"gitee", "github"}
+            except (OSError, UnicodeError):
+                self.source_error = True
         self.lock = threading.RLock()
         self.checking = False
         self.checked_clock = 0.0
+        try:
+            current_release = read_release(self.root)
+        except (OSError, ValueError):
+            current_release = None
         self.result: dict = {
             "deployment": "managed" if self.install_root else "development",
             "currentRevision": self.current, "latestRevision": None, "checkedAt": None,
+            "currentVersion": current_release['version'] if current_release else None, "latestVersion": None,
+            "currentReleaseNotes": current_release['releaseNotes'] if current_release else [], "latestReleaseNotes": [],
             "state": "unchecked", "message": "尚未检查更新。", "canInstall": False,
             "checkToken": None, "job": None,
         }
@@ -116,15 +154,24 @@ class UpdateManager:
                 return self.status()
             self.checking = True
         try:
-            revision = latest_revision()
+            if self.source_error:
+                raise ValueError("invalid installed distribution source")
+            revision = latest_revision(self.source)
+            release = latest_release(revision, self.source)
+            version = release['version'] if release else None
             with self.lock:
                 if self.result["job"] and self.result["job"]["state"] == "failed":
                     self.result["job"] = None
-                self.result.update(latestRevision=revision, checkedAt=now(), checkToken=secrets.token_urlsafe(32))
+                self.result.update(latestRevision=revision, latestVersion=version,
+                                   latestReleaseNotes=release['releaseNotes'] if release else [],
+                                   checkedAt=now(), checkToken=secrets.token_urlsafe(32))
                 if not self.install_root:
                     self.result.update(state="development", canInstall=False, message="当前是开发工作区，可查看线上版本；请通过安装器部署后使用平台内更新。")
                 elif revision == self.current:
                     self.result.update(state="current", canInstall=False, message="当前已是最新版本。")
+                elif self.result['currentVersion'] and (version is None or version_key(version) <= version_key(self.result['currentVersion'])):
+                    message = '线上版本未标注版本号，已保留当前版本。' if version is None else '当前版本不低于线上版本，无需更新。'
+                    self.result.update(state='current', canInstall=False, message=message)
                 else:
                     selected = (self.install_root / "current.txt").read_text().strip()
                     ready = selected == revision
@@ -168,7 +215,7 @@ class UpdateManager:
             log_dir = self.install_root / "updates"
             log_dir.mkdir(exist_ok=True)
             env = dict(os.environ)
-            env.update(ZHANGWEN_INSTALL_DIR=str(self.install_root), ZHANGWEN_REVISION=revision, ZHANGWEN_NO_START="1")
+            env.update(ZHANGWEN_INSTALL_DIR=str(self.install_root), ZHANGWEN_REVISION=revision, ZHANGWEN_NO_START="1", ZHANGWEN_SOURCE=self.source)
             if sys.platform == "win32":
                 # -NoProfile does not discard paths inherited from PowerShell 7.
                 # Let Windows PowerShell construct its own module search path.
@@ -176,7 +223,7 @@ class UpdateManager:
                     if key.casefold() == "psmodulepath":
                         del env[key]
                 powershell = Path(os.environ.get("SystemRoot", r"C:\Windows")) / "System32/WindowsPowerShell/v1.0/powershell.exe"
-                command = [str(powershell), "-NoLogo", "-NoProfile", "-ExecutionPolicy", "Bypass", "-File", str(self.root / "install.ps1"), "-InstallDir", str(self.install_root), "-Revision", revision, "-NoStart"]
+                command = [str(powershell), "-NoLogo", "-NoProfile", "-ExecutionPolicy", "Bypass", "-File", str(self.root / "install.ps1"), "-InstallDir", str(self.install_root), "-Revision", revision, "-Source", self.source, "-NoStart"]
                 options = {"creationflags": subprocess.CREATE_NO_WINDOW}
             else:
                 command = ["/bin/bash", str(self.root / "install.sh")]

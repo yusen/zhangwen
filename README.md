@@ -24,15 +24,31 @@ curl -fsSL https://gitee.com/zmh1979/ask-with-your-palm/raw/master/install.sh | 
 
 无需预装 Git、Node.js 或 Python，无需先下载仓库。先检测已有环境，缺失才准备项目内运行时；依赖按锁定版本检查、补齐，随后构建并打开浏览器。默认 http://127.0.0.1:3080 ，端口不可用时自动切换到空闲端口，实际地址显示在服务窗口。首次安装需要联网。
 
-Windows 自动创建桌面 **ZhangWen** 启动图标（掌问手掌 Logo），以后双击即可。macOS 自动创建带掌问 Logo 的 **掌问.app**，优先放入可写的 `/Applications`，否则放入个人 `~/Applications`；可从 Finder 打开或固定到 Dock。点击后在终端启动本地服务并打开浏览器。原 `~/Library/Application Support/ZhangWen/启动掌问.command` 也可继续使用。保留服务窗口，Ctrl+C 停止服务。使用桌面 Chrome / Edge 进行 Web Serial 和本地项目文件夹操作；Safari 不支持 Web Serial。
+Windows 自动创建桌面 **ZhangWen** 启动图标（掌问手掌 Logo），以后双击即可。macOS 自动创建带掌问 Logo 的 **掌问.app**，优先放入可写的 `/Applications`，否则放入个人 `~/Applications`；可从 Finder 打开或固定到 Dock。首次点击在终端启动本地服务并打开浏览器；关闭网页后再次打开同一个掌问.app，会重开原服务页面，连续点击不会重复开终端。原 `~/Library/Application Support/ZhangWen/启动掌问.command` 也可继续使用。保留服务窗口，Ctrl+C 停止服务。使用桌面 Chrome / Edge 进行 Web Serial 和本地项目文件夹操作；Safari 不支持 Web Serial。
 
 macOS 找不到入口时，无需卸载或重启电脑：先在 Finder 按 `⌘⇧G` 分别查看 `/Applications` 与 `~/Applications`。从旧版平台内更新可能使用旧安装器，遗漏新增入口；新版本正常启动时会尝试补齐。也可先保存项目、在原服务终端按 `Ctrl+C`，再重跑上方安装命令，依赖完整时会复用，用户数据保留。安装输出中的 `Application:` 是实际入口路径；安装失败时先查看错误，不要删除 `data`。
 
-再次执行安装命令检查并安装 Gitee 最新版本；同一版本校验通过后跳过源码下载。每日启动使用图标/本地启动文件。平台支持启动检查和手动「检查更新」，确认后才安装，下次启动生效；检查失败不影响现有工作台。新版本准备成功才切换入口，旧版本和用户数据保留。
+再次执行安装命令检查并安装 Gitee 最新版本；同一版本校验通过后跳过源码下载。每日启动使用图标/本地启动文件。平台支持启动检查和手动「检查更新」，显示当前及线上发布版本号（如 `V0.4.2026.1020.01`，V0.4 + 日期 + 当天发布次数），当前编号见 [version.json](version.json)。确认后才安装，下次启动生效；检查失败不影响现有工作台。新版本准备成功才切换入口，旧版本和用户数据保留。
 
 Windows 安装、启动和后台更新会隔离当前进程的 PowerShell 模块路径，避免 PowerShell 7 / 自动化环境与系统 Windows PowerShell 5.1 混用。旧版更新出现 `Get-FileHash` 加载失败时，见[部署指南中的恢复步骤](docs/DEPLOYMENT.md#windows-powershell-模块冲突)。
 
-源码、更新与首次安装依赖均取自固定下载源：代码来自本仓库的 Gitee 地址，运行时与依赖来自国内镜像，没有备用渠道或海外回退；用户数据与程序版本分开保存。旧版 Windows 桌面版保留于原 Git 历史与 `v0.1.1` / `v0.1.3` 标签，新版不自动迁移旧桌面数据。下载来源与验证边界见 [国内安装说明](docs/DOMESTIC_INSTALLATION.md)。
+国内入口的源码、更新与首次安装依赖均使用国内下载源；用户数据与程序版本分开保存。旧版 Windows 桌面版保留于原 Git 历史与 `v0.1.1` / `v0.1.3` 标签，新版不自动迁移旧桌面数据。下载来源、切换渠道及验证边界见 [国内安装说明](docs/DOMESTIC_INSTALLATION.md)。
+
+## 使用 GitHub 下载源
+
+Windows PowerShell：
+
+```powershell
+& ([scriptblock]::Create((irm https://raw.githubusercontent.com/yusen/zhangwen/main/install.ps1))) -Source github
+```
+
+macOS：
+
+```bash
+curl -fsSL https://raw.githubusercontent.com/yusen/zhangwen/main/install.sh | ZHANGWEN_SOURCE=github bash
+```
+
+安装脚本默认使用 Gitee；选择 GitHub 时需显式指定上述参数。后续更新沿用所选来源，两边版本以各仓库实际发布为准。
 
 ## 工作台
 
@@ -47,7 +63,7 @@ Windows 安装、启动和后台更新会隔离当前进程的 PowerShell 模块
 - 「文件 → 项目程序」在项目子文件夹归档程序及测试记录，保留主控、模块和来源版本信息。
 - 页面「API 设置」可分别配置三个模式，提供 DeepSeek、GLM、Qwen、Kimi 与自定义 OpenAI 兼容接口。Key 只存本机，不随项目导出；手工编程不需要 Key。
 - 模块资料可按主控编辑本机示例、接线选项与支持主控，跨品牌使用须核对协议、引脚、电平和库。资料中的基础示例、诊断示例与未联调项有明确区分。
-- 浏览器直连 MicroPython 设备，支持 main.py 上传、SHA 回读、运行、停止、终端与文件读取。上传回读通过后自动运行，运行中按钮切换为停止；代码全屏仍保留工具栏。五款主控随包提供已固定版本与摘要的官方默认固件，点击固件并选择串口后直接更新，自动执行覆盖范围备份、镜像/芯片校验、刷入及回读；尚未完成真实刷写验收。
+- 浏览器直连 MicroPython 设备，支持 main.py 上传、SHA 回读、运行、停止、终端与文件读取。上传回读通过后自动运行，运行中按钮切换为停止；代码全屏仍保留工具栏。五款主控随包提供已固定版本与摘要的官方默认固件，连接后自动检测 MicroPython 固件，非 MicroPython 提示固件版本不对并引导重刷；无响应时提示检查连接或重刷。点击固件并选择串口后直接更新，不做固件备份，保留写入前镜像/芯片/容量检查，不做固件回读校验；尚未完成真实刷写验收。
 
 终端随新增输出自动滚到底部，重新打开显示最新内容。K10 上传检查可展开具体问题、预览官方屏幕 API 修复，接受保存后再上传；模块资料可独立标记「已核实主控」。结构设计入口为「3D造物 / 激光造物」，激光模板支持六面榫齿盒、圆角弯折盒及中文文字轮廓；圆角盒新版切缝交错接到上下边缘，旧图保留，可重新生成新版。实际弯折、刀缝与装配需按材料试切。
 
@@ -66,3 +82,9 @@ Windows 双击 `start-web.bat`，macOS 执行 `bash start-web.sh`。已有 Node 
 [第三方来源与声明](docs/THIRD_PARTY_NOTICES.md)
 
 [项目目录与数据位置](docs/PROJECT_LAYOUT.md)
+
+## 许可证
+
+项目有权授权的原创代码采用 [Apache License 2.0](LICENSE)，版权声明和适用范围见 [NOTICE](NOTICE)。允许按协议使用、修改和商业分发。
+
+第三方代码、依赖、固件、字体、产品图片、硬件资料及导入模板保留各自版权与授权条款，不因本项目采用 Apache-2.0 而被重新授权。未明确许可的素材不自动获得 Apache-2.0 授权；来源链接或署名不代替授权。详见 [第三方声明](docs/THIRD_PARTY_NOTICES.md) 和各文件内的说明。

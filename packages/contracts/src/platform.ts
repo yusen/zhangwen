@@ -5,7 +5,10 @@ export interface UpdateJob {
   startedAt: string; finishedAt?: string;
 }
 export interface PlatformUpdate {
+  /** Plain-text release items from the same version document as each label. */
+  currentReleaseNotes: string[]; latestReleaseNotes: string[];
   deployment: 'managed' | 'development'; currentRevision: string | null;
+  currentVersion: string | null; latestVersion: string | null;
   latestRevision: string | null; checkedAt: string | null;
   state: 'unchecked' | 'available' | 'current' | 'development' | 'error';
   message: string; canInstall: boolean; checkToken: string | null; job: UpdateJob | null;
@@ -26,6 +29,8 @@ export interface HardwareSummary {
   verifiedBoardIds?: string[];
 }
 export interface HardwareDetail extends HardwareSummary {
+  /** Canonical Hardware Skill mechanical profile; dimensions and coordinates are mm. */
+  mechanicalProfile?: Record<string, unknown> | null;
   files: { path: string; content: string; title: string }[];
   specification: { electrical: { voltage: number; logicLevel: number; communicationProtocol: string }; notes: string };
   localExamples?: HardwareExample[];
@@ -34,6 +39,7 @@ export interface HardwareDetail extends HardwareSummary {
   supportedBoardIds?: string[];
   i2c?: HardwareI2CInfo;
 }
+export interface SaveHardwareMechanical { expectedRevision: string; profile: Record<string, unknown>; notes: string }
 /** 7-bit device addresses from the canonical skill, not a scan or verification. */
 export interface HardwareI2CInfo { defaultAddress: string | null; addresses: string[]; notes: string; sources: string[] }
 /** Stored inside the canonical Hardware Skill examples/usage.md, scoped by board. */

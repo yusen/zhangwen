@@ -1,5 +1,9 @@
 # 第三方与资料来源
 
+## 项目许可证的适用范围
+
+根目录 LICENSE 为 Apache License 2.0，仅适用于项目有权按该协议授权的原创代码，版权与补充声明见根目录 NOTICE。第三方代码、依赖、固件、字体、图片、硬件资料及导入模板继续遵循其原有授权；它们不因出现在仓库中或被部署工具复制而自动改为 Apache-2.0。未明确许可证的来源素材不在本项目 Apache-2.0 授权范围内；仅保留来源或署名并不等于取得再分发许可。
+
 2026-10-19新增五个固定3D模板，来自用户提供的ZW-CAD-intent归档：掌控板3.0外壳、K10相册支架及侧式/卧式/立式舵机固定座。原Python源码和配套图片按只读副本保存在services/structure-cad/templates，manifest记录原相对路径、SHA-256及模板修订，原注释保持。未推定或新增来源素材的许可；参考硬件仅用于装配展示，不等同实物或打印验收。
 
 文字雕刻随包提供Noto Sans SC可变字体（Google Fonts上游，SIL Open Font License 1.1），仅使用400字重生成确定性矢量轮廓。原字体、完整OFL许可与来源/SHA在resources/fonts；不依赖系统安装字体或在线字体服务。字体轮廓通过已锁定的fonttools生成，SVG含填充轮廓，DXF含雕刻层闭合轮廓；不附加机器加工参数。
@@ -10,7 +14,7 @@
 
 浏览器固件功能使用 Espressif [esptool-js](https://github.com/espressif/esptool-js) 0.5.6（Apache-2.0），由package-lock锁定。本地构建包含其芯片支持和RAM stub资源，不通过CDN加载；依赖安装目录保留上游LICENSE。默认官方固件现保存在resources/firmware，并被部署导出白名单包含；来源、版本、摘要与原版权声明见该目录README/manifest和许可证，不新增第三方授权。
 
-Windows/macOS 安装入口在缺少运行环境时直接下载 Node.js（上游 https://nodejs.org/，含自身第三方许可证）和 python-build-standalone 的 CPython 3.13.7 独立发行版（上游 https://github.com/astral-sh/python-build-standalone ，构建 20250918）。这两份运行时以及前端的 npm 包、Python 依赖都从上述国内镜像获取，镜像内容对应上游发布文件；环境准备以 Python 自带的 venv/ensurepip/pip 完成，无需 uv。三个平台的独立运行时摘要与上游 SHA256SUMS 比对后固定；安装时再次校验。运行环境下载后保留其自带的 Python 许可证与第三方许可证文件，源码仓库不包含这些二进制。
+Windows/macOS 安装入口在缺少运行环境时直接下载 Node.js（上游 https://nodejs.org/，含自身第三方许可证）和 python-build-standalone 的 CPython 3.13.7 独立发行版（上游 https://github.com/astral-sh/python-build-standalone ，构建 20250918）。国内渠道使用 npm 国内镜像，GitHub 渠道使用上述上游发布文件；所有渠道均以 Python 自带的 venv/ensurepip/pip 准备环境，无需 uv。三个平台的独立运行时摘要与上游 SHA256SUMS 比对后固定；安装时再次校验。运行环境下载后保留其自带的 Python 许可证与第三方许可证文件，源码仓库不包含这些二进制。
 
 旧桌面版的 Wokwi Elements、ESP32-S3 QEMU 和 ESP-Claw 声明保存在旧版恢复标签的 `docs/THIRD_PARTY_NOTICES.md` 中。本版 Web 启动不安装或调用这些仿真运行时，不包含 QEMU 或 ESP-Claw 二进制。
 

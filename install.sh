@@ -9,10 +9,11 @@ lock="$install_root/install.lock"
 mkdir "$lock" 2>/dev/null || { echo "Another installer may be running; interrupted setup lock: $lock" >&2; exit 1; }
 trap 'rmdir "$lock" 2>/dev/null || true' EXIT
 revision=${ZHANGWEN_REVISION:-}
+source=${ZHANGWEN_SOURCE:-gitee}
+case "$source" in gitee|github) ;; *) echo 'Invalid distribution source.' >&2; exit 1 ;; esac
 if [ -z "$revision" ]; then
-  # Code, dependencies and updates all come from this repository and the
-  # domestic mirrors pinned in scripts/.
   ref_url=https://gitee.com/api/v5/repos/zmh1979/ask-with-your-palm/branches/master
+  if [ "$source" = github ]; then ref_url=https://api.github.com/repos/yusen/zhangwen/git/ref/heads/main; fi
   revision=$(curl -fsS --retry 3 --connect-timeout 15 --max-time 60 -H 'User-Agent: zhangwen-installer' "$ref_url" | tr '{,' '\n' | sed -nE 's/^[[:space:]]*"sha"[[:space:]]*:[[:space:]]*"([0-9a-f]{40})".*/\1/p' | sed -n '1p')
 fi
 [[ "$revision" =~ ^[0-9a-f]{40}$ ]] || { echo 'Invalid repository revision.' >&2; exit 1; }
@@ -28,10 +29,11 @@ if ! verify_package "$app"; then
   work=$(mktemp -d "$install_root/download-XXXXXX")
   echo "Downloading platform $revision ..."
   source_url="https://gitee.com/zmh1979/ask-with-your-palm/repository/archive/$revision.zip"
+  if [ "$source" = github ]; then source_url="https://codeload.github.com/yusen/zhangwen/zip/$revision"; fi
   download_attempt=1
   while :; do
     if curl -fL --retry 3 --connect-timeout 15 --max-time 600 "$source_url" -o "$work/source.zip" && unzip -tq "$work/source.zip" >/dev/null 2>&1; then break; fi
-    if [ "$download_attempt" -ge 4 ]; then
+    if [ "$source" != gitee ] || [ "$download_attempt" -ge 4 ]; then
       echo 'The source did not return a readable ZIP archive. It may still be preparing or access is restricted; please retry later. The current version was preserved.' >&2
       exit 1
     fi
@@ -48,6 +50,8 @@ else echo 'Platform files are current; skipping source download.'
 fi
 export ZHANGWEN_DATA_DIR="$install_root/data"
 export ZHANGWEN_RUNTIME_DIR="$install_root/runtime"
+export ZHANGWEN_DOWNLOAD_SOURCE=cn
+if [ "$source" = github ]; then export ZHANGWEN_DOWNLOAD_SOURCE=global; fi
 bash "$app/scripts/bootstrap-unix.sh" --prepare-only
 cat > "$install_root/启动掌问.command" <<'LAUNCH'
 #!/usr/bin/env bash
@@ -57,12 +61,23 @@ revision=$(cat "$root/current.txt")
 [[ "$revision" =~ ^[0-9a-f]{40}$ ]] || exit 1
 export ZHANGWEN_DATA_DIR="$root/data"
 export ZHANGWEN_RUNTIME_DIR="$root/runtime"
+source=github
+source_file="$root/versions/$revision/.runtime/distribution-source.txt"
+if [ -f "$source_file" ]; then source=$(cat "$source_file"); fi
+case "$source" in
+  gitee) export ZHANGWEN_DOWNLOAD_SOURCE=cn ;;
+  github) export ZHANGWEN_DOWNLOAD_SOURCE=global ;;
+  *) echo 'Invalid distribution source.' >&2; exit 1 ;;
+esac
 exec bash "$root/versions/$revision/start-web.sh"
 LAUNCH
 chmod +x "$install_root/启动掌问.command"
 app_args=(--install-root "$install_root")
 if [ -n "${ZHANGWEN_APPLICATIONS_DIR:-}" ]; then app_args+=(--applications-dir "$ZHANGWEN_APPLICATIONS_DIR"); fi
 "$app/.venv/bin/python" "$app/scripts/create-macos-app.py" "${app_args[@]}"
+mkdir -p "$app/.runtime"
+printf '%s\n' "$source" > "$app/.runtime/distribution-source.txt.tmp"
+mv "$app/.runtime/distribution-source.txt.tmp" "$app/.runtime/distribution-source.txt"
 printf '%s\n' "$revision" > "$install_root/current.txt.tmp"
 mv "$install_root/current.txt.tmp" "$install_root/current.txt"
 echo "Installed: $app"

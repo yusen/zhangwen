@@ -2,17 +2,21 @@
 import json
 import math
 from pathlib import Path
-import runpy
 import sys
 
 import cadquery as cq
 
 from .builtin_templates import TEMPLATES, checked_source
+from .template_edits import checked_spec, render_source
 
 
 def build(ident, output):
     item = TEMPLATES[ident]
-    ns = runpy.run_path(str(checked_source(item)), init_globals={'show_object': lambda *args, **kwargs: None})
+    source = checked_source(item).read_text(encoding='utf-8-sig')
+    plan_file = output / 'template-edit.json'
+    spec = checked_spec(json.loads(plan_file.read_text(encoding='utf-8')) if plan_file.exists() else {'title': item['title']}, item, source)
+    ns = {'show_object': lambda *args, **kwargs: None, '__name__': '__main__'}
+    exec(compile(render_source(source, spec, item), str(checked_source(item)), 'exec'), ns)
     parts, shapes = [], []
     for part in item['parts']:
         name, _, index = part['object'].partition(':')

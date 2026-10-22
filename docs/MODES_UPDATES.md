@@ -1,6 +1,6 @@
 # 三师模式与平台更新
 
-2026-10-16。随当前部署版发布；安装与更新以 Gitee master 的具体提交 SHA 为版本。
+2026-10-20更新：平台显示版本改为根version.json中的发布号，如V0.4.2026.1020.01；格式是V0.4、北京时间日期与当天新发布次数。启动、构建和检查不会增加次数。安装继续使用固定Git提交SHA。版本文件的releaseNotes纯文本数组承载更新说明，更新窗口展示当前/线上版本对应说明；缺少说明显示未提供。说明与版本号来自同次固定SHA请求，最多12条、每条200字、整个文件4096字节，不执行HTML或Markdown。接口增加currentReleaseNotes/latestReleaseNotes数组，旧包返回空数组。
 
 ## 使用
 
@@ -20,8 +20,8 @@
 
 跨端契约先在 `packages/contracts/src/platform.ts` 定义；后端在 `web/updates.py` 实现。
 
-- `GET /api/updates`：本进程版本、部署类型、最近检查结果和任务状态；不访问网络。
-- `POST /api/updates/check`：只访问固定的 `zmh1979/ask-with-your-palm` Gitee master 引用；30 秒内共享检查缓存。响应大小和等待受限，拒绝重定向，未使用模型 Key。
+- `GET /api/updates`：本进程版本号currentVersion、线上版本号latestVersion、内部提交标识、部署类型、最近检查结果和任务状态；不访问网络。
+- `POST /api/updates/check`：按安装渠道访问固定GitHub/Gitee仓库的main引用，再从该完整SHA读取version.json；30秒内共享检查缓存。响应大小和等待受限，拒绝重定向，未使用模型 Key。
 - `POST /api/updates/install`：严格接受 `{revision, checkToken, confirmed:true}`。只允许最近 15 分钟已检测的完整 SHA 和确认令牌；禁止额外 URL、命令与字段。
 
 检测受管安装需要匹配 `versions/SHA` 路径、有效 `current.txt`、部署清单和该安装根目录 `data`；支持 Windows/macOS。安装前逐项验证当前部署清单，再以固定参数数组调用清单内安装器，`shell=False`，Windows 隐藏后台窗口，macOS 使用 `/bin/bash`。安装器继续校验远程部署包、复用依赖与准备成功后激活；传入指定 SHA 和不启动参数。
@@ -30,4 +30,6 @@
 
 ## 验证范围
 
-后端使用隔离安装根目录、假代码托管接口与假安装进程验证版本比较、缓存、离线、严格确认、令牌/版本/过期校验、改动源码拒绝、路径保护、Windows/macOS 调用、重复安装、成功/失败、待重启恢复以及数据字节不变。浏览器使用隔离数据与 OPFS，模拟更新响应，不安装真实新版本。既有安装器此前的 Windows 实装与 macOS 两架构 CI 证据仍见 `ONE_COMMAND_DEPLOYMENT_VALIDATION.json`；本轮没有再次进行 macOS 原生安装或生产升级。
+后端使用隔离安装根目录、假 GitHub 与假安装进程验证版本比较、缓存、离线、严格确认、令牌/版本/过期校验、改动源码拒绝、路径保护、Windows/macOS 调用、重复安装、成功/失败、待重启恢复以及数据字节不变。浏览器使用隔离数据与 OPFS，模拟更新响应，不安装真实新版本。既有安装器此前的 Windows 实装与 macOS 两架构 CI 证据仍见 `ONE_COMMAND_DEPLOYMENT_VALIDATION.json`；本轮没有再次进行 macOS 原生安装或生产升级。
+
+发布维护：当前分配V0.4.2026.1020.01；同日后续新发布递增次数，新日期从01开始。版本字段严格校验日期和正整数次数，并按数值比较。相同或较旧版本不提供安装；旧包缺version.json显示未标注，不猜造日期。已标号本机遇到线上旧包时保留当前版本。开发工作区只读展示、不会原地更新。

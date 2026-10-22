@@ -9,6 +9,9 @@ export interface CadExport { id: string; label: string; format: string; url?: st
 export type BuiltinTemplateId = 'mpython-shell' | 'photo-stand' | 'servo-side' | 'servo-horizontal' | 'servo-vertical';
 export interface BuiltinTemplate { id: BuiltinTemplateId; revision: number; title: string; description: string; size: number[]; notes: string[]; image?: string; sourceSha256: string }
 export interface TemplatePart { id: string; label: string; printable: boolean; exportId: string; placement: number[]; size: number[] }
+export interface TextSolid { kind: 'text'; operation: 'add' | 'cut'; text: string; fontSize: number; depth: number; center: number[]; face: 'top' | 'bottom' | 'front' | 'back' | 'left' | 'right'; angle?: number }
+export interface TemplatePartOperations { partId: string; operations: (SolidPart | TextSolid)[] }
+export interface TemplateEditSpec { title: string; summary: string; questions: string[]; parameterOverrides: Record<string, number>; partOperations: TemplatePartOperations[] }
 export interface CadCheck { id: string; status: string; message: string; details?: unknown }
 export interface CadState {
   id: string; parameters: Record<string, number>;
@@ -29,6 +32,7 @@ export interface CadResult {
   build?: { status: string; message?: string; blocking_reason?: string };
   designKind?: 'parametric' | 'laser' | 'builtin';
   builtinTemplate?: BuiltinTemplate;
+  templateEdit?: TemplateEditSpec;
   templateParts?: TemplatePart[];
   designSpec?: DesignSpec;
   laserTextPaths?: Record<string, string>;
@@ -45,6 +49,8 @@ export interface StructureWorkspace {
   messages: { id: string; role: 'user' | 'assistant'; content: string; createdAt: string; designType?: 'model' | 'laser' }[];
 }
 export interface StructureAction {
+  /** Current engineering selection, resolved to the canonical Hardware Skills server-side. */
+  hardwareComponentIds?: string[];
   action: 'analyze' | 'confirm' | 'build' | 'revise' | 'parameters' | 'validate' | 'selected';
   expectedRevision: number; sourceRevision?: number;
   message?: string; selectedIds?: string[]; customProfiles?: Record<string, unknown>[];

@@ -7,6 +7,8 @@ runtime=${ZHANGWEN_RUNTIME_DIR:-"$project_root/.runtime"}
 mkdir -p "$runtime"
 os=$(uname -s)
 arch=$(uname -m)
+download_source=${ZHANGWEN_DOWNLOAD_SOURCE:-global}
+case "$download_source" in cn|global) ;; *) echo 'Invalid download source.' >&2; exit 1 ;; esac
 if [ "$os" = Darwin ]; then
   mac_version=$(sw_vers -productVersion)
   major=${mac_version%%.*}; remainder=${mac_version#*.}; minor=${remainder%%.*}
@@ -57,7 +59,8 @@ for candidate in "$node_dir/bin/node" "$(command -v node || true)"; do
 done
 if [ -z "$node_exe" ]; then
   name="node-v24.14.0-$node_platform.tar.gz"
-  node_url="https://cdn.npmmirror.com/binaries/node/v24.14.0/$name"
+  node_url="https://nodejs.org/dist/v24.14.0/$name"
+  if [ "$download_source" = cn ]; then node_url="https://cdn.npmmirror.com/binaries/node/v24.14.0/$name"; fi
   download_verified "$node_url" "$name" "$node_sha"
   tar -xzf "$runtime/$name" -C "$runtime"
   node_exe="$node_dir/bin/node"
@@ -90,7 +93,8 @@ if ! python_ok "$python_exe" || ! "$python_exe" -c 'import sys; assert sys.prefi
   if [ -z "$base_python" ]; then
     echo 'No working Python with venv support was found. Preparing standalone Python ...'
     name="cpython-3.13.7+20250918-$python_platform-install_only_stripped.tar.gz"
-    python_url="https://cdn.npmmirror.com/binaries/python-build-standalone/20250918/${name//+/%2B}"
+    python_url="https://github.com/astral-sh/python-build-standalone/releases/download/20250918/${name//+/%2B}"
+    if [ "$download_source" = cn ]; then python_url="https://cdn.npmmirror.com/binaries/python-build-standalone/20250918/${name//+/%2B}"; fi
     download_verified "$python_url" "$name" "$python_sha"
     python_home="$runtime/python/cpython-3.13.7-20250918-$python_platform"
     [ ! -e "$python_home" ] || { echo "Unusable managed Python preserved: $python_home" >&2; exit 1; }

@@ -1,5 +1,5 @@
 {
-  "checkedAt": "2026-10-18",
+  "checkedAt": "2026-10-21",
   "images": {
     "hw_labplus_mpython_v2": {
       "name": "mpython2.bin",
@@ -33,13 +33,14 @@
     },
     "hw_seed_unihiker_k10": {
       "name": "k10-download.bin",
-      "version": "UNIHIKER K10 MicroPython 0.9.8",
-      "downloadUrl": "https://drive.usercontent.google.com/download?id=14d7ziQHWjk0BLEEK1jS4lcNuRWWqhiTP&export=download&authuser=0&confirm=t",
+      "version": "UNIHIKER K10 MicroPython V0.9.8",
       "sourceUrl": "https://www.unihiker.com/wiki/K10/GettingStarted/gettingstarted_mpy/",
-      "notes": "官方文档当前提供的0.9.8合并镜像，16MiB Flash；平台仅覆盖镜像范围，不做官方工具的整片擦除。",
+      "notes": "按用户指定使用 Mind+ 设备包 dev-DFRobot-unihikerK10@0.0.5 内的 V0.9.8 原始固件；ESP32-S3 完整16MiB镜像，从0x0写入并覆盖全部Flash地址范围（含资源及文件系统）。不备份、不回读校验，不调用整片擦除命令。",
       "offset": 0,
-      "sha256": "bdaf319298aae2c5d155bc40ac26d721cb2abfaf9f9e43bb4bd65bef0bc22612",
-      "size": 16498431
+      "sha256": "316817f71625619306922972d4176c9394599096d0b30c035697eddff860486e",
+      "size": 16777216,
+      "sourcePackage": "dev-DFRobot-unihikerK10@0.0.5",
+      "sourceFile": "micropython_unihiker_k10_V0.9.8.bin"
     },
     "hw_labplus_mpython_esp32s3_v3": {
       "name": "mpython3.bin",

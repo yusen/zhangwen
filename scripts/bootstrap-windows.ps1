@@ -10,6 +10,9 @@ New-Item -ItemType Directory -Force -Path $runtimeRoot | Out-Null
 Set-Location -LiteralPath $projectRoot
 [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
 . (Join-Path $PSScriptRoot 'runtime-windows.ps1')
+$downloadSource = $env:ZHANGWEN_DOWNLOAD_SOURCE
+if (!$downloadSource) { $downloadSource = 'global' }
+if ($downloadSource -cnotmatch '^(cn|global)$') { throw 'Invalid download source.' }
 
 function Get-VerifiedArchive([string]$Url, [string]$Name, [string]$Sha256) {
     $archivePath = Join-Path $runtimeRoot $Name
@@ -37,7 +40,8 @@ try {
         }
         if (!$nodeRuntime) {
             Write-Host 'No working Node.js 22+ with npm was found. Preparing project-local Node.js ...'
-            $nodeUrl = 'https://cdn.npmmirror.com/binaries/node/v24.14.0/node-v24.14.0-win-x64.zip'
+            $nodeUrl = 'https://nodejs.org/dist/v24.14.0/node-v24.14.0-win-x64.zip'
+            if ($downloadSource -eq 'cn') { $nodeUrl = 'https://cdn.npmmirror.com/binaries/node/v24.14.0/node-v24.14.0-win-x64.zip' }
             $nodeZip = Get-VerifiedArchive $nodeUrl 'node-v24.14.0-win-x64.zip' '313fa40c0d7b18575821de8cb17483031fe07d95de5994f6f435f3b345f85c66'
             Expand-Archive -LiteralPath $nodeZip -DestinationPath $runtimeRoot -Force
             $nodeRuntime = Get-NodeRuntime $nodeExe
@@ -72,10 +76,11 @@ try {
             }
             if (!$basePython) {
                 Write-Host 'No working Python with venv support was found. Preparing standalone Python ...'
-                # Pinned standalone build and digest, fetched from the domestic mirror.
+                # Use the same pinned standalone build and digest for both channels.
                 $pythonName = 'cpython-3.13.7+20250918-x86_64-pc-windows-msvc-install_only_stripped.tar.gz'
                 $pythonUrlName = [uri]::EscapeDataString($pythonName)
-                $pythonUrl = "https://cdn.npmmirror.com/binaries/python-build-standalone/20250918/$pythonUrlName"
+                $pythonUrl = "https://github.com/astral-sh/python-build-standalone/releases/download/20250918/$pythonUrlName"
+                if ($downloadSource -eq 'cn') { $pythonUrl = "https://cdn.npmmirror.com/binaries/python-build-standalone/20250918/$pythonUrlName" }
                 $pythonArchive = Get-VerifiedArchive $pythonUrl $pythonName 'bc229e5364699a8456b6ceabde8348c75e62312ffd62631dd1e494a1755a45ed'
                 $pythonHome = Join-Path $managedPythonRoot 'cpython-3.13.7-20250918'
                 if (Test-Path -LiteralPath $pythonHome) { throw "Unusable managed Python preserved: $pythonHome. Rename it and retry." }

@@ -2,7 +2,9 @@
 import { devNull } from 'node:os';
 import { resolve } from 'node:path';
 
-export function dependencyNetwork(globalConfig = resolve(import.meta.dirname, '../.runtime/npm-empty-global.conf')) {
+export function dependencyNetwork(source = process.env.ZHANGWEN_DOWNLOAD_SOURCE || 'global', globalConfig = resolve(import.meta.dirname, '../.runtime/npm-empty-global.conf')) {
+  if (!['cn', 'global'].includes(source)) throw new Error('Invalid download source.');
+  if (source === 'global') return { env: {}, npmArgs: [] };
   return {
     env: {
       PIP_CONFIG_FILE: devNull,

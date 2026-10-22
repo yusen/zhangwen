@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 import palmMark from './assets/palm-mark.png';
-import { ArrowUp, BookOpen, Check, CheckCheck, ChevronRight, CircuitBoard, Download, FileCode2, Files, FolderOpen, HelpCircle, LoaderCircle, Plus, Save, Search, Sparkles, Square, Terminal, Unplug, Usb, X, Play, ZoomIn, ZoomOut, AlignLeft, Moon, Sun, Settings, PanelLeftClose, PanelLeftOpen, Maximize, Minimize, Cpu, Layers3, GraduationCap, UserRound, Box, ScanLine } from 'lucide-react';
+import { ArrowUp, BookOpen, Check, CheckCheck, ChevronRight, MoreHorizontal, Upload, Undo2, History, CircuitBoard, Download, FileCode2, Files, FolderOpen, HelpCircle, LoaderCircle, Plus, Save, Search, Sparkles, Square, Terminal, Unplug, Usb, X, Play, ZoomIn, ZoomOut, AlignLeft, Moon, Sun, Settings, PanelLeftClose, PanelLeftOpen, Maximize, Minimize, Cpu, Layers3, GraduationCap, UserRound, Box, ScanLine } from 'lucide-react';
 import type { AiSettings, ChatMessage, CheckResult, CodeRepair, CreateProject, HardwareDetail, HardwareSummary, Project, ProjectSnapshot, ProjectSummary, ProgramRunSubmission, UploadManifest, Version, WorkspaceMode } from '../../../packages/contracts/src/platform';
 import { DEFAULT_AI_MODEL } from '../../../packages/contracts/src/platform';
 import { api, ApiError, bootstrap, chat } from './api';
@@ -10,6 +10,7 @@ import { Editor, type EditorHandle } from './Editor';
 import { Dialog } from './Dialog';
 import { AiSettingsDialog } from './AiSettingsDialog';
 import { ToolbarButton } from './ToolbarButton';
+import { ActionMenu } from './ActionMenu';
 import { FeedbackToast } from './FeedbackToast';
 import { AssistantMessage } from './AssistantMessage';
 import { UserMessage } from './UserMessage';
@@ -95,7 +96,10 @@ export default function App() {
   const [folderError, setFolderError] = useState('');
   const folderPending = useRef(0);
   const folderErrorRef = useRef(folderError); folderErrorRef.current = folderError;
-  const [filesDialog, setFilesDialog] = useState(false);
+  const [filesDialog, setFilesDialog] = useState<'programs' | 'board' | null>(null);
+  const importInput = useRef<HTMLInputElement>(null);
+  const [saveIncludesPreview, setSaveIncludesPreview] = useState(false);
+  const [checkExpanded, setCheckExpanded] = useState(false);
   const [fileVersions, setFileVersions] = useState<Version[] | null>(null);
   const [uploadAfterSave, setUploadAfterSave] = useState(false);
   const [editExample, setEditExample] = useState(false);
@@ -183,7 +187,7 @@ export default function App() {
     if (!codeFullscreen) return;
     const outside = Array.from(document.querySelectorAll<HTMLElement>('.mobile-tabs, .hardware-panel, .hardware-restore, .ai-panel')).map(node => ({ node, inert: node.inert }));
     outside.forEach(({ node }) => { node.inert = true; });
-    const escape = (event: KeyboardEvent) => { if (event.key === 'Escape' && !document.querySelector('dialog[open]')) setCodeFullscreen(false); };
+    const escape = (event: KeyboardEvent) => { if (event.key === 'Escape' && !event.defaultPrevented && !document.querySelector('dialog[open]')) setCodeFullscreen(false); };
     window.addEventListener('keydown', escape);
     return () => { window.removeEventListener('keydown', escape); outside.forEach(({ node, inert }) => { node.inert = inert; }); };
   }, [codeFullscreen]);
@@ -217,7 +221,7 @@ export default function App() {
     try { await task(); } catch (err) { setError(errorText(err)); } finally { setBusy(''); }
   };
   const openAiSettings = () => void action('读取 API 设置', async () => { const settings = await api<AiSettings>('/settings/ai'); setAiConfigured(settings.aiConfigured); setAiModel(settings.aiModel); setAiBaseUrl(settings.aiBaseUrl ?? 'https://api.deepseek.com'); setAiSettingsDialog(true); });
-  const bindFolder = (value: FolderBinding | null, status = '') => { folderRef.current = value; setFolder(value); setFolderStatus(status); setFolderError(''); };
+  const bindFolder = (value: FolderBinding | null, status = '') => { folderRef.current = value; folderErrorRef.current = ''; setFolder(value); setFolderStatus(status); setFolderError(''); };
   const syncFolder = async (id: string) => {
     const binding = folderRef.current;
     if (!binding || binding.projectId !== id) return;
@@ -226,11 +230,11 @@ export default function App() {
         if (currentProject.current === id) setFolderStatus('正在同步');
         const snapshot = await api<ProjectSnapshot>(`/projects/${id}/snapshot`);
         await writeProjectDirectory(binding, snapshot);
-        if (currentProject.current === id) { setFolderStatus('已同步'); setFolderError(''); }
+        if (currentProject.current === id) { folderErrorRef.current = ''; setFolderStatus('已同步'); setFolderError(''); }
       } catch (err) {
         // A failed disk checkpoint must not turn a completed AI reply into a failure.
         await rememberFolder(binding).catch(() => {});
-        if (currentProject.current === id) { setFolderStatus('未同步'); setFolderError('本机记录已保留，项目文件夹未完成同步：' + errorText(err)); }
+        if (currentProject.current === id) { const message = '本机记录已保留，项目文件夹未完成同步：' + errorText(err); folderErrorRef.current = message; setFolderStatus('未同步'); setFolderError(message); }
       }
     };
     folderPending.current++;
@@ -273,7 +277,7 @@ export default function App() {
   const persistDraftNow = () => {
     if (project && dirty) store('zhangwen-draft-' + project.id, JSON.stringify({ code, name, board, components, baseRevision: draftRevision ?? project.revision }));
   };
-  const openSave = () => { setError(''); setCreationMode('save'); setNewFolder(null); setNewName(name === '未命名项目' ? '我的项目' : name); setNewDialog(true); };
+  const openSave = (includePreview = false) => { setSaveIncludesPreview(includePreview); setError(''); setCreationMode('save'); setNewFolder(null); setNewName(name === '未命名项目' ? '我的项目' : name); setNewDialog(true); };
   const openNew = () => {
     if (dirty && !window.confirm('当前项目有未保存更改。确定开始一个新项目吗？建议先保存当前项目。')) return;
     setError(''); setCreationMode('new'); setNewFolder(null); setNewName('我的项目'); setNewDialog(true);
@@ -317,20 +321,27 @@ export default function App() {
     window.addEventListener('beforeunload', prevent);
     return () => window.removeEventListener('beforeunload', prevent);
   }, []);
-  const save = async () => {
+  const save = async (includePreview = false) => {
     if (sendingMessage.current && !project) { setNotice('正在准备首次对话项目，请稍后保存。'); return; }
-    if (!project || !folderRef.current) { openSave(); return; }
-    if (mode === 'structure' && !dirty) { await ensureFolderPermission(folderRef.current, true); await syncFolder(project.id); setNotice('结构与项目文件已同步到本地文件夹。'); return project; }
-    if (codePreview && manualDirty && codePreview.code !== code && !window.confirm('保存此候选会替换当前手工草稿。先返回原稿保存，或确认继续？')) return;
+    if (!project || !folderRef.current) { openSave(includePreview); return; }
+    if (!manualDirty && !hardwareDirty && (!includePreview || !codePreview || codePreview.code === project.code)) {
+      await ensureFolderPermission(folderRef.current, true); await syncFolder(project.id);
+      setNotice(folderErrorRef.current ? '本机记录已保留，文件夹未同步。可重试或另存。' : '项目文件夹已同步。'); return project;
+    }
+    if (includePreview && codePreview && manualDirty && codePreview.code !== code && !window.confirm('保存此候选会替换当前手工草稿。先返回原稿保存，或确认继续？')) return;
     await ensureFolderPermission(folderRef.current, true);
-    const saved = await api<Project>('/projects/' + project.id, 'PUT', { code: visibleCode, name, boardId: board, componentIds: components, expectedRevision: draftRevision ?? project.revision });
+    const saved = await api<Project>('/projects/' + project.id, 'PUT', { code: includePreview ? visibleCode : code, name, boardId: board, componentIds: components, expectedRevision: draftRevision ?? project.revision });
     try { localStorage.removeItem('zhangwen-draft-' + project.id); } catch { /* unavailable */ }
-    applyProject(saved, false); await refreshProjects(); await syncFolder(saved.id); setNotice(`已保存到本机 · 版本 ${saved.revision}`);
+    const pending = !includePreview ? codePreview : null, pendingCandidate = candidate;
+    applyProject(saved, false); if (pending) { setCodePreview(pending); setCandidate(pendingCandidate); }
+    await refreshProjects(); await syncFolder(saved.id);
+    setNotice(folderErrorRef.current ? `本机版本 ${saved.revision} 已保留，文件夹未同步。` : `已保存到项目文件夹 · 版本 ${saved.revision}`);
     return saved;
   };
   const saveRef = useRef(save); saveRef.current = save;
+  const savingAllowed = useRef(false); savingAllowed.current = !loading && mode !== 'learning' && !aiBusy && !deviceBusy && !flashing;
   useEffect(() => {
-    const key = (event: KeyboardEvent) => { if ((event.ctrlKey || event.metaKey) && event.key.toLowerCase() === 's') { event.preventDefault(); if (!busyRef.current && !structureBusyRef.current) void action('保存', () => saveRef.current()); } };
+    const key = (event: KeyboardEvent) => { if ((event.ctrlKey || event.metaKey) && event.key.toLowerCase() === 's') { event.preventDefault(); if (savingAllowed.current && !busyRef.current && !structureBusyRef.current) void action('保存', () => saveRef.current()); } };
     window.addEventListener('keydown', key); return () => window.removeEventListener('keydown', key);
   }, []);
   const chooseProject = async (id: string) => {
@@ -352,22 +363,23 @@ export default function App() {
   };
   const finishFolderProject = async () => {
     if (!newFolder) throw new Error('请先选择本地项目文件夹。');
-    if (creationMode === 'save' && codePreview && manualDirty && codePreview.code !== code && !window.confirm('保存此候选会替换当前手工草稿。先返回原稿保存，或确认继续？')) return;
+    if (creationMode === 'save' && saveIncludesPreview && codePreview && manualDirty && codePreview.code !== code && !window.confirm('保存此候选会替换当前手工草稿。先返回原稿保存，或确认继续？')) return;
     await prepareNewDirectory(newFolder);
     if (creationMode === 'save' && project && folderRef.current) await copyProjectPrograms(folderRef.current, newFolder);
     persistDraftNow();
-    const request: CreateProject = { name: newName, boardId: creationMode === 'new' ? '' : board, code: creationMode === 'new' ? '' : visibleCode, componentIds: creationMode === 'new' ? [] : components };
+    const request: CreateProject = { name: newName, boardId: creationMode === 'new' ? '' : board, code: creationMode === 'new' ? '' : saveIncludesPreview ? visibleCode : code, componentIds: creationMode === 'new' ? [] : components };
     const value = creationMode === 'save' && project
       ? await api<Project>('/projects/' + project.id, 'PUT', { ...request, expectedRevision: draftRevision ?? project.revision })
       : await api<Project>('/projects', 'POST', request);
-    applyProject(value, false);
+    const pending = creationMode === 'save' && !saveIncludesPreview ? codePreview : null, pendingCandidate = candidate;
+    applyProject(value, false); if (pending) { setCodePreview(pending); setCandidate(pendingCandidate); }
     bindFolder({ projectId: value.id, handle: newFolder, checkpointHash: null, mainHash: null }, '未同步');
     setNewDialog(false); setGuideScope(count => count + 1); setMobileTab('code');
     if (creationMode === 'new') setHardwareCollapsed(false);
     try { localStorage.removeItem('zhangwen-scratch-code'); localStorage.removeItem('zhangwen-scratch-hardware'); localStorage.removeItem('zhangwen-draft-' + value.id); } catch { /* unavailable */ }
     await refreshProjects(); await syncFolder(value.id);
     setNotice(creationMode === 'new' ? '项目已创建，可在左侧选择主控板。' : '项目已保存到本机；文件夹同步状态见项目文件夹栏。');
-    if (uploadAfterSave) { setUploadAfterSave(false); await uploadSaved(value); }
+    if (uploadAfterSave) { setUploadAfterSave(false); if (!folderErrorRef.current) await uploadSaved(value); }
   };
   const loadFolder = async () => {
     if (dirty && !window.confirm('当前修改尚未保存，仍要加载另一个项目文件夹吗？本浏览器草稿会保留。')) return;
@@ -421,7 +433,7 @@ export default function App() {
   const connectDevice = async () => {
     const serial = serialApi();
     if (!serial || !window.isSecureContext || !navigator.locks) { setError('Web Serial 需要桌面 Chrome/Edge 和 localhost 安全上下文。'); return; }
-    setError(''); setBusy('选择并连接设备');
+    setError(''); setBusy('选择设备并检测固件');
     try {
       // requestPort runs directly in the click gesture before awaiting anything.
       const port = await serial.requestPort();
@@ -431,7 +443,7 @@ export default function App() {
           const held = new Promise<void>(done => { releasePort.current = done; });
           const next = new MicroPythonDevice(port, addLog, () => redraw(value => value + 1));
           device.current = next;
-          try { await next.connect(); resolve(); await held; }
+          try { await next.connect(); setNotice('MicroPython 固件检测通过，设备已连接。'); resolve(); await held; }
           catch (err) { releasePort.current?.(); device.current = null; reject(err); }
         }).catch(reject);
       });
@@ -460,7 +472,7 @@ export default function App() {
     const targetDevice = device.current;
     let plan: UploadManifest;
     try { plan = await api<UploadManifest>(`/projects/${saved.id}/upload-manifest`, 'POST', { expectedRevision: saved.revision }); }
-    catch (err) { if (err instanceof ApiError && err.check) { setCheck(err.check); setMobileTab('code'); } throw err; }
+    catch (err) { if (err instanceof ApiError && err.check) { setCheck(err.check); setCheckExpanded(true); setMobileTab('code'); } throw err; }
     if (currentProject.current !== saved.id || currentCode.current !== saved.code || currentHardware.current.board !== saved.boardId
       || JSON.stringify(currentHardware.current.components) !== JSON.stringify(saved.componentIds)) throw new Error('准备上传时项目已变更，请再次点击上传。');
     if (device.current !== targetDevice || targetDevice.state !== 'connected') throw new Error('设备连接已变更，请重新连接后上传。');
@@ -473,13 +485,14 @@ export default function App() {
     } finally { setProgress(null); }
   };
   const prepareUpload = async () => {
+    if (codePreview) { setNotice('请先点击「采用此代码」或「保存此版本」，再上传并运行；当前草稿仍保留。'); setMobileTab('code'); return; }
     setTerminalOpen(true); setMobileTab('code');
     if (!device.current || device.current.state === 'disconnected') await connectDevice();
     if (device.current?.state !== 'connected') return;
     if (!project || !folderRef.current) { setUploadAfterSave(true); openSave(); return; }
     await action('上传并运行', async () => {
       const saved = dirty ? await save() : project;
-      if (saved) await uploadSaved(saved);
+      if (saved && !folderErrorRef.current) await uploadSaved(saved);
     });
   };
   const sendRepl = async () => {
@@ -563,6 +576,38 @@ export default function App() {
   const outsideLibrary = components.filter(id => !boardSensors.some(item => item.componentId === id));
   const selectedSensors = components.map(id => hardware.find(item => item.componentId === id)).filter((item): item is HardwareSummary => !!item && !!moduleDirection(item));
   const receipt = device.current?.receipt;
+  const projectLocked = loading || !!busy || aiBusy || structureBusy || deviceBusy || flashing;
+  const openFiles = (view: 'programs' | 'board') => void action('读取文件信息', async () => {
+    setFileVersions(project ? (await api<{ versions: Version[] }>(`/projects/${project.id}/versions`)).versions : null);
+    setFilesDialog(view);
+  });
+  const openHistory = () => void action('读取代码版本', async () => {
+    setVersions(project ? (await api<{ versions: Version[] }>(`/projects/${project.id}/versions`)).versions : []);
+  });
+  const checkCode = () => void action('检查', async () => {
+    setCheck(await api<CheckResult>('/check', 'POST', { code: visibleCode, boardId: board, componentIds: components }));
+    setCheckExpanded(true); setMobileTab('code');
+  });
+  const loadCode = (value: string, sourceBoard?: { id: string; name: string }) => {
+    const differentBoard = sourceBoard && sourceBoard.id !== board;
+    if ((differentBoard || (code !== value && code.length)) && !window.confirm(`${differentBoard ? `此程序用于 ${sourceBoard.name}，当前主控不会切换，请核对代码与接线。` : ''}用此文件替换编辑器草稿？设备文件不会改变。`)) return;
+    setCode(value); setCodePreview(null); setSelectedVersion(null); setCheck(null); setFilesDialog(null);
+    setNotice('程序已载入编辑器，尚未保存或上传。'); setMobileTab('code');
+  };
+  const importCode = async (file?: File) => {
+    if (!file) return;
+    await action('导入程序', async () => {
+      if (!file.name.toLowerCase().endsWith('.py') || file.size > 65536) throw new Error('请选择64 KiB以内的 .py 文件。');
+      const value = new TextDecoder('utf-8', { fatal: true }).decode(await file.arrayBuffer());
+      if (value.includes('\0')) throw new Error('代码文件不能包含NUL。');
+      loadCode(value);
+    });
+  };
+  const saveState = mode === 'learning' ? '学习内容 · 界面预览' : busy.includes('保存') || folderStatus === '正在同步' ? '正在保存…'
+    : folderError ? '本机已记录 · 文件夹未同步' : manualDirty || hardwareDirty ? '未保存更改'
+    : !project ? '尚未保存项目' : !folder ? '本机已记录 · 未选文件夹' : folderStatus === '已同步' ? '已保存到项目文件夹' : `项目文件夹 · ${folderStatus}`;
+  const checkLabel = !check ? '未检查 · 点击检查' : !check.valid ? `发现 ${check.diagnostics.filter(item => item.severity === 'FAIL').length} 项问题`
+    : check.diagnostics.some(item => item.severity === 'WARNING') ? '静态检查通过 · 有提示' : '静态检查通过';
   const canRun = connected && receipt && !dirty && receipt.projectId === project?.id && receipt.revision === project.revision;
   const activeMessages = messages.filter(item => (item.boardId ?? project?.boardId ?? board) === board);
   const pastMessages = messages.filter(item => !activeMessages.includes(item));
@@ -570,37 +615,34 @@ export default function App() {
   return <div className={`app final-workbench ${hardwareCollapsed ? 'hardware-collapsed' : ''} ${codeFullscreen ? 'code-fullscreen' : ''}`}>
     <header className="workspace-titlebar">
       <a className="title-brand" href="/" aria-label="掌问工作台"><span><img src={palmMark} alt="" width={24} height={24} /></span><strong>掌问</strong></a>
-      <span className="title-filename title-mode" aria-label="当前模式">{modeInfo.name}</span>
+      <div className="title-project-actions" role="group" aria-label="项目操作">
+        <ActionMenu label="项目" disabled={projectLocked || mode === 'learning'} items={[
+          { label: '新建项目', icon: Plus, onSelect: openNew },
+          { label: '打开项目…', icon: FolderOpen, onSelect: () => void action('读取项目', async () => { await refreshProjects(); setLoadDialog(true); }) },
+          { label: '项目程序', icon: FileCode2, onSelect: () => openFiles('programs') },
+          ...projects.slice(0, 5).map((item, index) => ({ label: item.name, group: index === 0 ? '最近项目' : undefined, icon: FolderOpen, onSelect: () => void chooseProject(item.id) })),
+          { label: '另存到文件夹…', icon: Save, group: '保存位置', disabled: !project, onSelect: () => { setUploadAfterSave(false); openSave(); } },
+        ]} />
+        <button className="title-save" aria-label="保存项目" title="保存项目（Ctrl / ⌘ + S）" disabled={projectLocked || mode === 'learning'} onClick={() => void action('保存项目', save)}>{busy.includes('保存') ? <LoaderCircle size={15} className="spin" /> : <Save size={15} />}保存</button>
+      </div>
       <div className="current-project" aria-label="当前项目" title={name}><strong>{name}</strong>{dirty && <span className="dirty-dot" aria-label="代码未保存" />}</div>
-      <span className="document-info">{mode === 'engineer' ? `${dirty ? '未保存更改' : project ? '本地工作区' : '未保存'} · ${zoom}%` : mode === 'structure' ? '结构工作区 · 本机保存' : '学习工作区 · 界面预览'}</span>
+      <span className={`document-info ${folderError ? 'has-error' : ''}`} role="status" aria-label="项目保存状态">{saveState}</span>
       <button className="theme-toggle" aria-label={theme === 'light' ? '切换深色主题' : '切换浅色主题'} title={theme === 'light' ? '深色主题' : '浅色主题'} onClick={() => setTheme(value => value === 'light' ? 'dark' : 'light')}>{theme === 'light' ? <Moon size={17} /> : <Sun size={17} />}</button>
     </header>
     <header className="zhangwen-toolbar" aria-label="掌问工具栏">
       <div className="zhangwen-commands">
         <div className="tool-group" role="group" aria-label="三师模式">
-        <ToolbarButton icon={Layers3} label="模式" aria-label="模式切换" variant="brand" active={modeDialog} disabled={loading || !!busy || aiBusy || structureBusy || deviceBusy || running || flashing || deviceState === 'attention'} onClick={() => setModeDialog(true)} title={`切换三师模式 · ${modeInfo.name}`} />
+        <ToolbarButton icon={Layers3} label={modeInfo.name} aria-label="模式切换" variant="brand" active={modeDialog} disabled={loading || !!busy || aiBusy || structureBusy || deviceBusy || running || flashing || deviceState === 'attention'} onClick={() => setModeDialog(true)} title={`切换三师模式 · ${modeInfo.name}`} />
         </div>
-        {mode === 'engineer' && <><div className="tool-group" role="group" aria-label="项目操作">
-        <ToolbarButton icon={Plus} label="新建" aria-label="新建项目" disabled={loading || !!busy || aiBusy || deviceBusy} onClick={openNew} />
-        <ToolbarButton icon={FolderOpen} label="加载" active={loadDialog} disabled={loading || !!busy || aiBusy || deviceBusy} onClick={() => void action('读取项目', async () => { await refreshProjects(); setLoadDialog(true); })} />
-        <ToolbarButton icon={Save} label="保存" disabled={loading || !!busy || (aiBusy && !project)} onClick={() => void action('保存', save)} />
-        <ToolbarButton icon={Files} label="文件" active={filesDialog || versions !== null} disabled={loading || !!busy || deviceBusy} onClick={() => void action('读取文件信息', async () => { setFileVersions(project ? (await api<{ versions: Version[] }>(`/projects/${project.id}/versions`)).versions : null); setFilesDialog(true); })} title="本机代码、设备文件与项目历史版本" />
-        </div>
-        <div className="tool-group" role="group" aria-label="开发工具">
-        <ToolbarButton icon={CheckCheck} label="检查" disabled={loading || !board || !!busy} onClick={() => void action('检查', async () => { const result = await api<CheckResult>('/check', 'POST', { code: visibleCode, boardId: board, componentIds: components }); setCheck(result); setMobileTab('code'); })} />
-        <ToolbarButton icon={AlignLeft} label="格式化" title="按 Python 语法整理四空格缩进（可撤销），不运行代码" disabled={loading || !!busy || !!codePreview || !code.length} onClick={() => { setMobileTab('code'); editor.current?.formatIndentation(); setCheck(null); setNotice('已按 Python 语法整理四空格缩进，可在编辑器中撤销。请检查后再保存。'); }} />
-        </div>
+        {mode === 'engineer' && <>
         <div className="tool-group" role="group" aria-label="设备操作">
-        <ToolbarButton icon={ArrowUp} label="上传" variant="hardware" disabled={loading || !board || !!busy || aiBusy || deviceBusy || running || deviceState === 'attention'} onClick={() => void prepareUpload()} title="上传并运行 main.py：保存、备份、回读校验，通过后自动运行" />
+        <ToolbarButton icon={ArrowUp} label="上传并运行" variant="hardware" disabled={loading || !board || !!busy || aiBusy || deviceBusy || running || deviceState === 'attention'} onClick={() => void prepareUpload()} title="上传并运行 main.py：保存、备份、回读校验，通过后自动运行" />
         <ToolbarButton icon={running || deviceState === 'attention' ? Square : Play} label={running || deviceState === 'attention' ? '停止' : '运行'} emphasis active={running} disabled={!!busy || deviceBusy || !(running || canRun || deviceState === 'attention')} onClick={() => { setTerminalOpen(true); setMobileTab('code'); void action(running || deviceState === 'attention' ? '停止' : '运行', async () => { if (running || deviceState === 'attention') await device.current?.stop(); else await runProgram(); }); }} />
         <ToolbarButton icon={Terminal} label="REPL" active={terminalOpen} aria-pressed={terminalOpen} onClick={() => { setTerminalOpen(value => !value); setMobileTab('code'); }} />
+        <ToolbarButton icon={Files} label="板上文件" active={filesDialog === 'board'} disabled={loading || !!busy || deviceBusy} onClick={() => openFiles('board')} title="浏览、读取和导出板上的文件" />
         <ToolbarButton icon={Cpu} label="固件刷入" variant="hardware" disabled={loading || !board || !!busy || aiBusy || flashing || deviceState !== 'disconnected'} title={board ? `刷入 ${boardInfo?.displayName ?? '当前主控'} 对应固件；请先断开设备` : '请先在左侧选择主控板'} onClick={() => setFirmwareDialog(true)} />
         </div></>}
-        {mode === 'structure' && <><div className="tool-group" role="group" aria-label="结构项目操作">
-          <ToolbarButton icon={Plus} label="新建" aria-label="新建项目" disabled={loading || structureBusy || !!busy} onClick={openNew} />
-          <ToolbarButton icon={FolderOpen} label="加载" disabled={loading || structureBusy || !!busy} onClick={() => void action('读取项目', async () => { await refreshProjects(); setLoadDialog(true); })} />
-          <ToolbarButton icon={Save} label="保存" disabled={loading || structureBusy || !!busy} onClick={() => void action('保存', save)} />
-        </div><div className="tool-group" role="group" aria-label="结构设计功能">
+        {mode === 'structure' && <><div className="tool-group" role="group" aria-label="结构设计功能">
           <ToolbarButton icon={Box} label="3D造物" active={structureDesignType === 'model'} aria-pressed={structureDesignType === 'model'} disabled={structureBusy} onClick={() => setStructureDesignType('model')} />
           <ToolbarButton icon={ScanLine} label="激光造物" active={structureDesignType === 'laser'} aria-pressed={structureDesignType === 'laser'} disabled={structureBusy} onClick={() => setStructureDesignType('laser')} />
         </div></>}
@@ -608,9 +650,6 @@ export default function App() {
           {learningSections.map(({id,label,note,icon})=><ToolbarButton key={id} icon={icon} label={label} active={learningSection === id} variant={learningSection === id ? 'software' : 'muted'} aria-pressed={learningSection === id} aria-controls="learning-section-content" onClick={()=>setLearningSection(id)} title={`${label}${note ? ` · ${note}` : ''}`} />)}
         </div><div className="tool-group" role="group" aria-label="学习工作台操作">
           <ToolbarButton icon={learningRole === 'teacher' ? GraduationCap : UserRound} label="切换视角" active={learningRoleDialog} onClick={() => setLearningRoleDialog(true)} title={`当前：${learningRole === 'teacher' ? '教师工作台' : '学生工作台'}，点击切换`} />
-          <ToolbarButton icon={Plus} label="新建" aria-label="新建学习项目（待开发）" disabled title="学习项目操作待开发，当前可预览界面" />
-          <ToolbarButton icon={FolderOpen} label="加载" disabled title="学习项目加载待开发" />
-          <ToolbarButton icon={Save} label="保存" disabled title="学习内容保存待开发" />
         </div></>}
         <div className="tool-group" role="group" aria-label="设置与帮助">
         <ToolbarButton icon={Settings} label="API 设置" variant="muted" active={aiSettingsDialog} disabled={loading || !!busy || aiBusy || structureBusy} onClick={openAiSettings} title="设置掌问 AI API" />
@@ -618,7 +657,7 @@ export default function App() {
         <ToolbarButton icon={HelpCircle} label="帮助" variant="muted" active={helpDialog} onClick={() => setHelpDialog(true)} />
         </div>
       </div>
-      {(mode === 'engineer' || deviceState !== 'disconnected') && <button className={`connection toolbar-status ${deviceState !== 'disconnected' ? 'is-connected' : ''}`} disabled={!!busy || deviceBusy} onClick={deviceState === 'disconnected' ? () => { setTerminalOpen(true); setMobileTab('code'); void connectDevice(); } : disconnect}>{deviceBusy ? <LoaderCircle size={17} className="spin" /> : deviceState === 'disconnected' ? <Usb size={17} /> : <Unplug size={17} />}<span>{deviceState === 'disconnected' ? '连接设备' : deviceState === 'connecting' ? '正在连接' : deviceState === 'attention' ? '需要重连 · 断开' : '已连接 · 断开'}</span></button>}
+      {(mode === 'engineer' || deviceState !== 'disconnected') && <button className={`connection toolbar-status ${deviceState !== 'disconnected' ? 'is-connected' : ''}`} disabled={!!busy || deviceBusy} onClick={deviceState === 'disconnected' ? () => { setTerminalOpen(true); setMobileTab('code'); void connectDevice(); } : disconnect}>{deviceBusy ? <LoaderCircle size={17} className="spin" /> : deviceState === 'disconnected' ? <Usb size={17} /> : <Unplug size={17} />}<span>{deviceState === 'disconnected' ? '连接设备' : deviceBusy ? (busy === '选择设备并检测固件' ? '正在检测固件' : '设备处理中') : deviceState === 'attention' ? '需要重连 · 断开' : '已连接 · 断开'}</span></button>}
     </header>
     <FeedbackToast error={error} notice={notice} sequence={noticeSequence} busy={busy} progress={progress} onCancel={() => device.current?.cancel()} />
     <div className="engineering-surface" hidden={mode !== 'engineer'}>
@@ -653,26 +692,38 @@ export default function App() {
         </div>
         {chatError && <p className="chat-error" role="alert">{chatError}</p>}
         {!project && <p className="chat-hint">首次发送会自动保存当前项目、代码和已加入模块。</p>}
-        <form className="chat-form" onSubmit={event => { event.preventDefault(); void sendMessage(); }}><label className="sr-only" htmlFor="chat-message">发送给掌问 AI</label><textarea ref={chatInput} id="chat-message" value={message} onChange={event => setMessage(event.target.value)} onKeyDown={event => { if ((event.ctrlKey || event.metaKey) && event.key === 'Enter' && !event.nativeEvent.isComposing && !loading && !busy && !aiBusy && message.trim()) { event.preventDefault(); void sendMessage(); } }} placeholder="和掌问聊聊你的想法…" maxLength={4000} /><div><span>{!board ? "请先选择项目使用的主控板" : !aiConfigured ? "AI 未配置 · 点击 API 设置" : "候选预览后保存，设备操作单独确认"}</span><button className="primary icon-button" aria-label="发送" disabled={loading || !!busy || !board || !message.trim() || aiBusy}>{aiBusy ? <LoaderCircle size={19} className="spin" /> : <ArrowUp size={20} />}</button></div></form>
+        <form className="chat-form" onSubmit={event => { event.preventDefault(); void sendMessage(); }}><label className="sr-only" htmlFor="chat-message">发送给掌问 AI</label><textarea ref={chatInput} id="chat-message" value={message} onChange={event => setMessage(event.target.value)} onKeyDown={event => { if ((event.ctrlKey || event.metaKey) && event.key === 'Enter' && !event.nativeEvent.isComposing && !loading && !busy && !aiBusy && message.trim()) { event.preventDefault(); void sendMessage(); } }} placeholder="和掌问聊聊你的想法…" maxLength={4000} /><div><span>{!board ? "请先选择项目使用的主控板" : !aiConfigured ? "AI 未配置 · 点击 API 设置" : "候选采用后保存，上传后自动运行"}</span><button className="primary icon-button" aria-label="发送" disabled={loading || !!busy || !board || !message.trim() || aiBusy}>{aiBusy ? <LoaderCircle size={19} className="spin" /> : <ArrowUp size={20} />}</button></div></form>
       </section>
       <section className={`code-panel panel mobile-${mobileTab === 'code' ? 'show' : 'hide'}`}>
-        <div className="filebar"><span><FileCode2 size={16} />main.py</span><span className="filebar-space" /><span className={dirty ? 'unsaved' : 'status-ready'}>{project ? dirty ? '未保存' : '已保存' : '项目尚未保存'}</span><select className="code-version-select" aria-label="代码历史版本" disabled={!project || !codeVersions.length || !!busy || aiBusy || deviceBusy} value={codePreview ? codePreview.revision ?? 'preview' : selectedVersion ?? 'draft'} onChange={event => { if (event.target.value === 'draft') setCodePreview(null); else selectCodeVersion(Number(event.target.value)); }}><option value="draft" disabled={!codePreview}>{project ? '未保存草稿' : '尚无版本'}</option>{codePreview && !codePreview.revision && <option value="preview">AI候选 · 未保存</option>}{codeVersions.map(version => <option key={version.revision} value={version.revision}>V{version.revision} · {version.name || "MicroPython 程序"} · {version.source === 'ai' ? 'AI候选 · 未保存' : '已保存'}{version.boardId && version.boardId !== board ? ' · 其他主控' : ''}</option>)}</select><div className="editor-view-controls"><button aria-label="缩小代码" title="缩小代码" disabled={zoom <= 80} onClick={() => setZoom(value => Math.max(80, value - 10))}><ZoomOut size={16} /></button><span aria-label="代码字号比例">{zoom}%</span><button aria-label="放大代码" title="放大代码" disabled={zoom >= 160} onClick={() => setZoom(value => Math.min(160, value + 10))}><ZoomIn size={16} /></button><button aria-label={codeFullscreen ? '退出代码全屏' : '代码全屏'} title={codeFullscreen ? '退出全屏（Esc）' : '代码全屏'} onClick={() => setCodeFullscreen(value => !value)}>{codeFullscreen ? <Minimize size={16} /> : <Maximize size={16} />}</button></div><button aria-label="导出当前代码" onClick={() => download("main.py", visibleCode)}><Download size={16} />导出</button></div>
-        {project && <div className={`project-folder-status ${folderError ? 'has-error' : ''}`} role="status"><FolderOpen size={14} /><span>{folder ? `${folder.handle.name} · ${folderStatus}` : '仅在本机 · 保存时选择项目文件夹'}</span>{folder && <button disabled={!!busy || aiBusy || deviceBusy} onClick={() => { setUploadAfterSave(false); openSave(); }}>另存文件夹</button>}{folderError && <p>{folderError}</p>}</div>}
-        {codePreview && <section className="code-preview-banner" aria-label="AI代码候选预览"><div><strong>{codePreview.source === 'repair' ? '屏幕修复预览' : codePreview.source === 'pin-repair' ? '引脚修复预览' : 'AI候选'}{codePreview.revision ? ` · v${codePreview.revision}` : ''} · 尚未保存</strong><small>{manualDirty ? '原手工草稿已保留，可随时返回。' : '原保存版本保留在历史中。'}{codePreview.boardId && codePreview.boardId !== board && ' 此代码来自其他主控，请核对兼容性。'}</small></div><button disabled={!!busy || aiBusy || deviceBusy} onClick={editPreview}>继续编辑此版本</button><button disabled={!!busy || aiBusy || deviceBusy} onClick={() => { setCodePreview(null); setCheck(null); }}>返回原稿</button><button className="primary" disabled={!!busy || aiBusy || deviceBusy} onClick={() => void action('保存', save)}>保存此版本</button></section>}
+        <div className="filebar"><span><FileCode2 size={16} />main.py</span><span className="filebar-space" /><select className="code-version-select" aria-label="代码历史版本" disabled={!project || !codeVersions.length || !!busy || aiBusy || deviceBusy} value={codePreview ? codePreview.revision ?? 'preview' : selectedVersion ?? 'draft'} onChange={event => { if (event.target.value === 'draft') setCodePreview(null); else selectCodeVersion(Number(event.target.value)); }}><option value="draft" disabled={!codePreview}>{project ? '未保存草稿' : '尚无版本'}</option>{codePreview && !codePreview.revision && <option value="preview">AI候选 · 未保存</option>}{codeVersions.map(version => <option key={version.revision} value={version.revision}>V{version.revision} · {version.name || "MicroPython 程序"} · {version.source === 'ai' ? 'AI候选 · 未保存' : '已保存'}{version.boardId && version.boardId !== board ? ' · 其他主控' : ''}</option>)}</select><div className="editor-view-controls"><button aria-label="缩小代码" title="缩小代码" disabled={zoom <= 80} onClick={() => setZoom(value => Math.max(80, value - 10))}><ZoomOut size={16} /></button><span aria-label="代码字号比例">{zoom}%</span><button aria-label="放大代码" title="放大代码" disabled={zoom >= 160} onClick={() => setZoom(value => Math.min(160, value + 10))}><ZoomIn size={16} /></button><button aria-label={codeFullscreen ? '退出代码全屏' : '代码全屏'} title={codeFullscreen ? '退出全屏（Esc）' : '代码全屏'} onClick={() => setCodeFullscreen(value => !value)}>{codeFullscreen ? <Minimize size={16} /> : <Maximize size={16} />}</button></div><ActionMenu label="代码工具" align="right" disabled={loading || !!busy || deviceBusy} items={[
+          { label: '导入程序…', icon: Upload, disabled: aiBusy, onSelect: () => importInput.current?.click() },
+          { label: '导出当前程序', icon: Download, onSelect: () => download('main.py', visibleCode) },
+          { label: '整理缩进', icon: AlignLeft, group: '代码排版', disabled: !!codePreview || !code.length, onSelect: () => { editor.current?.formatIndentation(); setCheck(null); setNotice('已整理四空格缩进，不修复程序逻辑；可撤销。'); } },
+          { label: '撤销编辑', icon: Undo2, disabled: !!codePreview, shortcut: 'Ctrl / ⌘ + Z', onSelect: () => editor.current?.undo() },
+          { label: '管理版本', icon: History, group: '历史版本', disabled: !project, onSelect: openHistory },
+        ]}><MoreHorizontal size={18} /></ActionMenu></div>
+        <input ref={importInput} className="sr-only" type="file" accept=".py,text/x-python" aria-label="导入 Python 程序" onChange={event => { const file = event.target.files?.[0]; event.target.value = ''; void importCode(file); }} />
+        <div className={`project-folder-status ${folderError ? 'has-error' : ''}`}>
+          <FolderOpen size={14} /><span>{folder ? `${folder.handle.name} · ${folderStatus}` : '保存项目时选择本地文件夹'}</span>
+          {folderError && <button disabled={projectLocked} onClick={() => void action('重试文件夹同步', async () => { if (project && folderRef.current) { await ensureFolderPermission(folderRef.current, true); await syncFolder(project.id); } })}>重试同步</button>}
+          <button className={`code-check-status ${check && !check.valid ? 'has-error' : check ? 'is-valid' : ''}`} disabled={loading || !board || !!busy || deviceBusy} title="只检查代码和硬件配置，不代表实物验证通过；上传前仍会自动检查" onClick={() => { if (check) setCheckExpanded(value => !value); else checkCode(); }}><CheckCheck size={14} />{checkLabel}</button>
+          {folderError && <p role="alert">{folderError}</p>}
+        </div>
+        {codePreview && <section className="code-preview-banner" aria-label="AI代码候选预览"><div><strong>{codePreview.source === 'repair' ? '屏幕修复预览' : codePreview.source === 'pin-repair' ? '引脚修复预览' : 'AI候选'}{codePreview.revision ? ` · v${codePreview.revision}` : ''} · 尚未保存</strong><small>{manualDirty ? '原手工草稿已保留，可随时返回。' : '原保存版本保留在历史中。'}{codePreview.boardId && codePreview.boardId !== board && ' 此代码来自其他主控，请核对兼容性。'}</small></div><button disabled={!!busy || aiBusy || deviceBusy} onClick={editPreview}>采用此代码</button><button disabled={!!busy || aiBusy || deviceBusy} onClick={() => { setCodePreview(null); setCheck(null); }}>返回原稿</button><button className="primary" disabled={!!busy || aiBusy || deviceBusy} onClick={() => void action('保存此版本', () => save(true))}>保存此版本</button></section>}
         <Editor ref={editor} zoom={zoom} readOnly={loading || !!busy || deviceBusy || codePreview !== null} value={visibleCode} onChange={value => { setCode(value); setSelectedVersion(null); setCheck(null); }} />
-        {check && <section className="check-results" aria-label="检查结果"><div><strong>{check.valid ? '静态检查完成' : '检查发现问题'}</strong><button className="icon-button" aria-label="关闭检查" onClick={() => setCheck(null)}><X size={16} /></button></div>{check.diagnostics.some(item => item.repair === 'k10-screen') && <button disabled={!!busy || aiBusy || deviceBusy} onClick={previewScreenRepair}>预览屏幕修复</button>}{check.diagnostics.some(item => item.repair === 'mpython-pins') && <button disabled={!!busy || aiBusy || deviceBusy} onClick={previewPinRepair}>按P号预览修复</button>}{check.diagnostics.map((item, index) => <p className={`diagnostic ${item.severity.toLowerCase()}`} key={index}><span>{item.severity === 'PASS' ? '通过' : item.severity === 'FAIL' ? '错误' : '提示'}</span>{item.line ? `第 ${item.line} 行 · ` : ''}{item.message}</p>)}</section>}
+        {check && checkExpanded && <section className="check-results" aria-label="检查结果"><div><strong>{check.valid ? '静态检查完成' : '检查发现问题'}</strong><button disabled={!!busy || deviceBusy} onClick={checkCode}>重新检查</button><button className="icon-button" aria-label="关闭检查" onClick={() => setCheckExpanded(false)}><X size={16} /></button></div>{check.diagnostics.some(item => item.repair === 'k10-screen') && <button disabled={!!busy || aiBusy || deviceBusy} onClick={previewScreenRepair}>预览屏幕修复</button>}{check.diagnostics.some(item => item.repair === 'mpython-pins') && <button disabled={!!busy || aiBusy || deviceBusy} onClick={previewPinRepair}>按P号预览修复</button>}{check.diagnostics.map((item, index) => <p className={`diagnostic ${item.severity.toLowerCase()}`} key={index}><span>{item.severity === 'PASS' ? '通过' : item.severity === 'FAIL' ? '错误' : '提示'}</span>{item.line ? `第 ${item.line} 行 · ` : ''}{item.message}</p>)}</section>}
         <section className="terminal-panel" hidden={!terminalOpen}><div className="terminal-head"><h3><Terminal size={17} />串口终端</h3><span>{running ? '正在执行 · 发送会先中断' : connected ? 'REPL 已连接' : deviceState === 'attention' ? '连接需核对' : '未连接'}</span><button disabled={!!busy} onClick={() => setLogs('')}>清空</button><button onClick={() => void action('导出设备备份', async () => { const backup = await latestBackup(); if (!backup) throw new Error('尚无设备备份。'); if (backup.bytes) download('main-before-upload.py', backup.bytes); else setNotice('上次上传前设备不存在 main.py，无需恢复旧文件。'); })}>备份</button><button aria-label="收起终端" onClick={() => setTerminalOpen(false)}><X size={16} /></button></div><pre ref={serialLog} className="serial-log" aria-label="串口输出">{logs}</pre><form className="repl-form" onSubmit={event => { event.preventDefault(); void sendRepl(); }}><span aria-hidden="true">&gt;&gt;&gt;</span><input aria-label="REPL 命令" placeholder={running ? '输入命令，发送时先中断当前程序' : connected ? '输入命令，按 Enter 发送' : '输入命令，发送时选择并连接设备'} value={repl} maxLength={4000} onChange={event => setRepl(event.target.value)} onKeyDown={event => { if (event.ctrlKey && event.key.toLowerCase() === 'c' && event.currentTarget.selectionStart === event.currentTarget.selectionEnd && running && !busy) { event.preventDefault(); void action('中断程序', () => device.current!.stop()); } }} disabled={!!busy || deviceBusy} /><button disabled={!repl.trim() || !!busy || deviceBusy || deviceState === 'attention'} title={running ? '中断当前程序并发送' : connected ? '发送命令' : '连接设备并发送'} aria-label="发送 REPL 命令"><ArrowUp size={17} /></button></form></section>
       </section>
     </main>
     </div>
-    <StructureWorkspace key={`${project?.id ?? 'new'}-${structureDesignType}`} designType={structureDesignType} draft={structureDrafts[structureDesignType]} onDraftChange={value => setStructureDrafts(prev => ({...prev, [structureDesignType]: value}))} projectId={project?.id} active={mode === 'structure'} board={boardInfo} modules={selectedSensors} onSaveProject={openSave} onSettings={openAiSettings} onBusy={setStructureBusy} onSaved={syncFolder} />
+    <StructureWorkspace key={`${project?.id ?? 'new'}-${structureDesignType}`} designType={structureDesignType} draft={structureDrafts[structureDesignType]} onDraftChange={value => setStructureDrafts(prev => ({...prev, [structureDesignType]: value}))} projectId={project?.id} active={mode === 'structure'} board={boardInfo} modules={selectedSensors} onSaveProject={openSave} onSettings={openAiSettings} onBusy={setStructureBusy} onSaved={syncFolder} onHardwareDetail={item => openDetail(item)} />
     <LearningWorkspace active={mode === 'learning'} projectName={name} project={project} board={boardInfo} modules={selectedSensors} role={learningRole} onRole={setLearningRole} section={learningSection} onSection={setLearningSection} roleDialog={learningRoleDialog} onCloseRole={() => setLearningRoleDialog(false)} />
     <footer className="statusbar">{mode === 'engineer' ? <><span><span className="status-dot" />MicroPython · Web Serial</span><span>{components.length + (board ? 1 : 0)} 个硬件 · main.py<span className="status-separator">/</span>{device.current?.identity?.machine ?? '设备未连接'}</span><span>本机保存 · 设备操作需确认</span></> : <><span>{modeInfo.name}{mode === 'learning' ? ' · 界面预览' : ' · CadQuery'}</span><span>{mode === 'learning' ? '生成功能待开发' : '项目内容已保留'}</span></>}</footer>
     {modeDialog && <ModePicker current={mode} onSelect={selectMode} onClose={() => setModeDialog(false)} />}
     {boardDialog && <BoardPicker boards={hardware} selected={board} onClose={() => setBoardDialog(false)} onSelect={item => { switchBoard(item.componentId); setBoardDialog(false); }} onHelp={() => { setBoardDialog(false); setHelpDialog(true); }} />}
-    {loadDialog && <Dialog title="加载项目" onClose={() => setLoadDialog(false)}><p className="muted">选择项目文件夹，恢复主控、模块、过往对话和全部代码版本。</p><button className="primary choose-project-folder" disabled={!!busy} onClick={() => void loadFolder()}><FolderOpen size={19} />选择项目文件夹</button>{error && <p className="settings-error" role="alert">{error}</p>}<h3 className="recent-projects-title">最近本机项目</h3><p className="muted">也可继续打开本机工作记录；旧项目保存时可选择项目文件夹。</p>{projects.length ? projects.map(item => <button className="load-project-row" disabled={!!busy} key={item.id} onClick={async () => { if (await chooseProject(item.id)) setLoadDialog(false); }}><FolderOpen size={22} /><span><strong>{item.name}</strong><small>版本 {item.revision} · {new Date(item.updatedAt).toLocaleString()}</small></span>{item.id === project?.id ? <Check size={18} /> : <ChevronRight size={18} />}</button>) : <p>还没有最近项目，可从文件夹加载。</p>}</Dialog>}
-    {helpDialog && <Dialog title="掌问工作台使用说明" onClose={() => setHelpDialog(false)}><ol className="help-steps"><li>点击左上「模式」在智能工程师、结构设计师、学习设计师之间切换。结构设计师支持外壳需求、尺寸确认、真实模型与导出；学习设计师可预览学习设置、目标、资料和四类学习材料，生成与保存功能待开发。切换保留当前项目；主控板在智能工程师左侧选择。「检查更新」需安装器部署，确认安装后下次启动生效。</li><li>打开即进入一个未命名项目。选择主控板，添加模块并编写代码；点击「新建」或首次「保存」，选择本地项目文件夹。点击「加载→选择项目文件夹」恢复代码、对话和历史版本。</li><li>左侧用图片、名称和选项列表显示已加入的输入/输出模块，点击「添加模块」选择；任意主控均可跨品牌选择，通过品牌及传感器/执行器类型筛选。硬件栏可向左收起，点击窄栏图标恢复；收起仅增加对话宽度，代码栏保持不变。</li><li>检查代码后点击「上传」：自动连接、保存、备份并回读校验，无需再次确认。回读校验通过后自动运行，运行中可点击「停止」。模块菜单「编辑案例」可按当前主控保存接线与程序。</li><li>点击「运行」提交设备命令，通过 REPL/串口输出与实物观察判断；运行时同一按钮变为「停止」。</li><li>编辑器顶部的版本下拉框可查看保存版本与 AI 生成版本；AI 代码在右侧以候选预览，保存后成为新的当前版本；有手工修改时保留原稿。切换主控会更新对话，之前主控的记录可展开查看。「文件」可载入/导出代码或浏览设备文件；代码栏可缩放、全屏，Esc 退出全屏。</li><li>「固件刷入」自动加载当前主控对应的本地默认固件。先断开编程串口并进入下载模式，点击「一键刷入默认固件」选择设备即可更新，无需保存项目或下载备份。平台自动核对芯片、保存覆盖范围恢复备份、写入并回读校验。</li></ol><p className="muted">启用 AI：点击「API 设置」，填写 API 基础地址、模型名称和 Key，可使用 DeepSeek 或其他兼容 OpenAI Chat Completions 的服务；本机服务可免 Key。发送时当前代码与所选硬件资料会提交给所配置的服务，代码生成后在右侧预览，保存后才成为当前程序。可先点击「测试连接」。Web Serial 需要桌面 Chrome/Edge；main.py 文件上传最多 64 KiB。</p></Dialog>}
-    {firmwareDialog && boardInfo && <FirmwareDialog board={boardInfo} onClose={() => setFirmwareDialog(false)} onBusy={setFlashing} download={download} />}
+    {loadDialog && <Dialog title="打开项目" onClose={() => setLoadDialog(false)}><p className="muted">选择项目文件夹，恢复主控、模块、过往对话和全部代码版本。</p><button className="primary choose-project-folder" disabled={!!busy} onClick={() => void loadFolder()}><FolderOpen size={19} />选择项目文件夹</button>{error && <p className="settings-error" role="alert">{error}</p>}<h3 className="recent-projects-title">最近本机项目</h3><p className="muted">也可继续打开本机工作记录；旧项目保存时可选择项目文件夹。</p>{projects.length ? projects.map(item => <button className="load-project-row" disabled={!!busy} key={item.id} onClick={async () => { if (await chooseProject(item.id)) setLoadDialog(false); }}><FolderOpen size={22} /><span><strong>{item.name}</strong><small>版本 {item.revision} · {new Date(item.updatedAt).toLocaleString()}</small></span>{item.id === project?.id ? <Check size={18} /> : <ChevronRight size={18} />}</button>) : <p>还没有最近项目，可从文件夹加载。</p>}</Dialog>}
+    {helpDialog && <Dialog title="掌问工作台使用说明" onClose={() => setHelpDialog(false)}><ol className="help-steps"><li>点击工具栏当前身份（如「智能工程师」）在智能工程师、结构设计师、学习设计师之间切换。结构设计师支持外壳需求、尺寸确认、真实模型与导出；学习设计师可预览学习设置、目标、资料和四类学习材料，生成与保存功能待开发。切换保留当前项目；主控板在智能工程师左侧选择。「检查更新」需安装器部署，确认安装后下次启动生效。</li><li>打开即进入一个未命名项目。选择主控板，添加模块并编写代码；点击 Logo 旁的「项目→新建项目」或首次「保存」，选择本地项目文件夹。点击「项目→打开项目→选择项目文件夹」恢复代码、对话和历史版本。</li><li>左侧用图片、名称和选项列表显示已加入的输入/输出模块，点击「添加模块」选择；任意主控均可跨品牌选择，通过品牌及传感器/执行器类型筛选。硬件栏可向左收起，点击窄栏图标恢复；收起仅增加对话宽度，代码栏保持不变。</li><li>核对代码后点击「上传并运行」：自动连接、保存、备份并回读校验，无需再次确认。回读校验通过后自动运行，运行中可点击「停止」。模块菜单「编辑案例」可按当前主控保存接线与程序。</li><li>点击「运行」提交设备命令，通过 REPL/串口输出与实物观察判断；运行时同一按钮变为「停止」。</li><li>编辑器顶部的版本下拉框可查看保存版本与 AI 生成版本；AI 代码在右侧以候选预览，点击「采用此代码」后保存，或点击「保存此版本」，成为新的当前版本；有手工修改时保留原稿。切换主控会更新对话，之前主控的记录可展开查看。「项目→项目程序」管理测试程序；代码区「⋯」导入/导出程序、整理缩进或撤销；「板上文件」浏览设备文件；代码栏可缩放、全屏，Esc 退出全屏。</li><li>「固件刷入」自动加载当前主控对应的本地默认固件。先断开编程串口并进入下载模式，点击「一键刷入默认固件」选择设备即可更新，无需保存项目，不做固件备份。平台核对镜像、芯片与容量后直接写入，不做固件回读校验。连接设备时自动检测 MicroPython，检测不通过会提示重刷固件。</li></ol><p className="muted">启用 AI：点击「API 设置」，填写 API 基础地址、模型名称和 Key，可使用 DeepSeek 或其他兼容 OpenAI Chat Completions 的服务；本机服务可免 Key。发送时当前代码与所选硬件资料会提交给所配置的服务，代码生成后在右侧预览，需明确采用或保存此版本才成为当前程序；顶部保存只保存原稿。可先点击「测试连接」。Web Serial 需要桌面 Chrome/Edge；main.py 文件上传最多 64 KiB。</p></Dialog>}
+    {firmwareDialog && boardInfo && <FirmwareDialog board={boardInfo} onClose={() => setFirmwareDialog(false)} onBusy={setFlashing} />}
     {aiSettingsDialog && <AiSettingsDialog settings={{ aiConfigured, aiModel, aiBaseUrl }} initialMode={mode} onClose={() => setAiSettingsDialog(false)} onSaved={result => { if (!result.mode || result.mode === 'engineer') { setAiConfigured(result.aiConfigured); setAiModel(result.aiModel); setAiBaseUrl(result.aiBaseUrl ?? 'https://api.deepseek.com'); } setAiSettingsDialog(false); setNotice(result.aiConfigured ? '所选模式的 API 已保存，立即生效。' : '所选模式的 API Key 已清除。'); }} />}
     {newDialog && !boardDialog && !helpDialog && <Dialog title={creationMode === 'new' ? '新建项目' : '保存项目'} onClose={() => { if (!busy) { setNewDialog(false); setUploadAfterSave(false); } }}><form onSubmit={event => { event.preventDefault(); void action('保存项目文件夹', finishFolderProject); }}><label className="field">项目名称<input autoFocus value={newName} maxLength={80} onChange={event => setNewName(event.target.value)} required disabled={busy === '保存项目文件夹'} /></label><div className="field">项目文件夹<button type="button" className="choose-project-folder" disabled={!!busy} onClick={() => void selectNewFolder()}><FolderOpen size={19} />{newFolder ? '重新选择文件夹' : '选择本地文件夹'}</button><span className="selected-project-folder" aria-label="已选项目文件夹">{newFolder?.name ?? '尚未选择'}</span></div><p className="muted">{creationMode === 'new' ? '在所选文件夹创建空白项目，主控板可在主界面选择。取消保留当前项目。' : '保存当前代码、主控、模块，以及已有对话和代码版本。'} 文件夹包含 main.py 和 zhangwen.project.json，可在其他电脑加载。</p>{error && <p className="settings-error" role="alert">{error}</p>}<button className="primary" disabled={!newName.trim() || !newFolder || !!busy}>{creationMode === 'new' ? '创建项目' : '保存项目'}</button></form></Dialog>}
     {sensorPicker && <Dialog className="sensor-picker-dialog" title="添加模块" onClose={() => setSensorPicker(false)} headerActions={<>
@@ -684,9 +735,9 @@ export default function App() {
       <div className="sensor-picker-list module-grid">{available.map(item => { const added = components.includes(item.componentId); return <ModuleCard key={item.componentId} item={item} boards={hardware.filter(board => board.category === 'MCU')} added={added} checked={added || pendingSensors.includes(item.componentId)} disabled={added || !!busy || aiBusy || deviceBusy || (!pendingSensors.includes(item.componentId) && components.length + pendingSensors.length >= 32)} onToggle={checked => setPendingSensors(value => checked ? [...new Set([...value, item.componentId])] : value.filter(id => id !== item.componentId))} onDetail={() => openDetail(item, true)} />; })}{!available.length && <p className="catalog-empty muted">没有匹配的模块，试试其他品牌、类型或关键词。</p>}</div>
       <div className="sensor-picker-actions"><span>{pendingSensors.length ? `已选择 ${pendingSensors.length} 个` : '选择项目需要的模块'}{components.length + pendingSensors.length >= 32 && ' · 已达32项上限'}</span><button onClick={() => setSensorPicker(false)}>取消</button><button className="primary" aria-label="加入所选模块" disabled={!pendingSensors.length || !!busy || aiBusy || deviceBusy} onClick={() => { followConversation.current = false; setComponents(value => [...new Set([...value, ...pendingSensors])]); setCheck(null); setCandidate(null); setCodePreview(null); setSensorPicker(false); setMobileTab('ai'); setGuideReveal(value => value + 1); }}>{pendingSensors.length ? `加入 ${pendingSensors.length} 个模块` : '加入模块'}</button></div>
     </Dialog>}
-    {detail && <HardwareDetails detail={detail} board={boardInfo} boards={hardware.filter(item => item.category === 'MCU')} editExample={editExample} onSaved={value => { setDetail(value); setHardware(items => items.map(item => item.skillName === value.skillName ? value : item)); }} onClose={() => { setDetail(null); if (returnToPicker) setSensorPicker(true); setReturnToPicker(false); }} />}
+    {detail && <HardwareDetails detail={detail} board={boardInfo} boards={hardware.filter(item => item.category === 'MCU')} editExample={editExample} onSaved={value => { setCheck(null); setDetail(value); setHardware(items => items.map(item => item.skillName === value.skillName ? value : item)); }} onClose={() => { setDetail(null); if (returnToPicker) setSensorPicker(true); setReturnToPicker(false); }} />}
     {moduleSample && <Dialog title={`载入模块：${moduleSample.item.displayName}`} onClose={() => setModuleSample(null)}>{moduleSample.scope && <p className="module-guide-summary">{moduleSample.scope}</p>}<p className="muted">示例来自此硬件资料包。确认后替换当前 main.py 草稿；请按实际接线修改端口并检查，保存和上传仍需单独操作。</p><pre className="candidate-code">{moduleSample.code}</pre><button className="primary" onClick={() => { if (code !== moduleSample.base && !window.confirm('预览后代码已改变，仍用此示例替换当前草稿吗？')) return; setCode(moduleSample.code); setCodePreview(null); setSelectedVersion(null); setCheck(null); setModuleSample(null); setMobileTab('code'); setNotice('已载入当前主控的模块示例，尚未保存或上传。请核对固件、端口和接线。'); }}>替换当前代码</button></Dialog>}
-    {filesDialog && <DeviceFilesDialog device={device.current} connected={connected} code={visibleCode} versions={fileVersions} disabled={!!busy} onClose={() => setFilesDialog(false)} onDownload={download} onHistory={() => { setFilesDialog(false); setVersions(fileVersions); }} folder={folder} board={boardInfo} componentIds={components} programReceipt={project && board === project.boardId && !dirty ? receipt ?? null : null} programRun={runSubmission} onChooseFolder={() => { setFilesDialog(false); setUploadAfterSave(false); openSave(); }} onLoad={(value, sourceBoard) => { const differentBoard = sourceBoard && sourceBoard.id !== board; if ((differentBoard || (code !== value && code.length)) && !window.confirm(`${differentBoard ? `此程序用于 ${sourceBoard.name}，当前主控不会切换，请核对代码与接线。` : ''}用此文件替换编辑器草稿？设备文件不会改变。`)) return; setCode(value); setCodePreview(null); setSelectedVersion(null); setCheck(null); setFilesDialog(false); setNotice('文件已载入编辑器，尚未保存或上传。'); setMobileTab('code'); }} />}
-    {versions && <Dialog title="保存的代码版本" onClose={() => setVersions(null)}><p className="muted">选择一个版本放入编辑器，再保存会创建新版本。历史记录不会被覆盖。</p><button onClick={() => void action("重新载入", async () => { if (dirty && !window.confirm("重新载入会放弃本地草稿，请先导出需要保留的代码。继续吗？")) return; if (!project) return; const saved = await api<Project>("/projects/" + project.id); try { localStorage.removeItem("zhangwen-draft-" + project.id); } catch { /* unavailable */ } applyProject(saved, false); setVersions(null); })}>重新载入当前已保存项目</button>{versions.map(version => <article className="version-row" key={version.revision}><div><strong>版本 {version.revision}</strong><small>{new Date(version.createdAt).toLocaleString()}</small></div><button onClick={() => { selectCodeVersion(version.revision); setVersions(null); }}>载入代码</button><button onClick={() => download(`main-v${version.revision}.py`, version.code)}><Download size={17} />导出</button></article>)}</Dialog>}
+    {filesDialog && <DeviceFilesDialog view={filesDialog} device={device.current} connected={connected} code={visibleCode} versions={fileVersions} disabled={!!busy} onClose={() => setFilesDialog(null)} onDownload={download} onHistory={() => { setFilesDialog(null); setVersions(fileVersions); }} folder={folder} board={boardInfo} componentIds={components} programReceipt={project && board === project.boardId && !dirty ? receipt ?? null : null} programRun={runSubmission} onChooseFolder={() => { setFilesDialog(null); setUploadAfterSave(false); openSave(); }} onLoad={loadCode} />}
+    {versions && <Dialog title="保存的代码版本" onClose={() => setVersions(null)}><p className="muted">选择一个版本放入编辑器，再保存会创建新版本。历史记录不会被覆盖。</p><button onClick={() => void action("重新载入", async () => { if (dirty && !window.confirm("重新载入会放弃本地草稿，请先导出需要保留的代码。继续吗？")) return; if (!project) return; const saved = await api<Project>("/projects/" + project.id); try { localStorage.removeItem("zhangwen-draft-" + project.id); } catch { /* unavailable */ } applyProject(saved, false); setVersions(null); })}>重新载入当前已保存项目</button>{versions.map(version => <article className="version-row" key={version.revision}><div><strong>V{version.revision} · {version.name || "MicroPython 程序"}</strong><small>{new Date(version.createdAt).toLocaleString()}</small></div><button onClick={() => { selectCodeVersion(version.revision); setVersions(null); }}>载入代码</button><button onClick={() => download(`main-v${version.revision}.py`, version.code)}><Download size={17} />导出</button></article>)}</Dialog>}
   </div>;
 }
