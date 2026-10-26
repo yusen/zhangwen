@@ -59,6 +59,8 @@ export interface StructureAction {
   designType?: 'model' | 'laser'; template?: BuiltinTemplateId | 'box' | 'cup' | 'bracket' | 'plate' | 'round-tag' | 'panel-box' | 'finger-box' | 'rounded-box';
 }
 export interface StructureCatalog { profiles: CadProfile[]; cadqueryAvailable: boolean; templates?: BuiltinTemplate[] }
+/** Transient deterministic laser preview; never saves a version or exports files. */
+export interface LaserPreviewInput { expectedRevision: number; sourceRevision: number; parameters: Record<string, number> }
 export interface SolidPart { kind: 'box' | 'cylinder' | 'sphere'; operation: 'add' | 'cut'; label: string; size: number[]; center: number[]; rotation: number[] }
 export interface LaserShape { kind: 'rect' | 'circle' | 'polyline' | 'line' | 'text'; operation: 'cut' | 'engrave'; x: number; y: number; width: number; height: number; radius: number; points: number[][]; closed: boolean; text?: string; fontSize?: number }
 export interface PanelText { panel: 'left' | 'right' | 'front' | 'back' | 'bottom' | 'top'; x: number; y: number; text: string; fontSize: number }

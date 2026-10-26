@@ -1,0 +1,185 @@
+{
+  "id": "mg90s_servo",
+  "name": "MG90S 9g Servo",
+  "category": "actuator",
+  "roles": [
+    "servo",
+    "actuator",
+    "motion"
+  ],
+  "dimensions_mm": {
+    "length_x": 22.3,
+    "width_y": 11.8,
+    "height_z": 30,
+    "width": 22.3,
+    "depth": 11.8,
+    "height": 30,
+    "body_length_x": 22.3,
+    "body_width_y": 11.8,
+    "body_height_z": 23,
+    "top_large_diameter": 11.8,
+    "top_large_height": 4,
+    "top_large_center_x": 5.25,
+    "top_small_diameter": 5.5,
+    "top_small_height": 4,
+    "output_shaft_diameter": 5,
+    "output_shaft_height": 3,
+    "lug_extension_x": 5,
+    "lug_thickness_z": 2,
+    "wire_port_z_from_bottom": 3
+  },
+  "coordinate_system": {
+    "origin": "servo_body_center",
+    "x_axis": "servo body length",
+    "y_axis": "servo body width",
+    "positive_z": "servo top/output shaft side"
+  },
+  "mounting": {
+    "mode": "servo_lug_screws_and_shaft_clearance",
+    "mating_hardware_face": "+Z",
+    "preferred_enclosure_surface": "lid_inner",
+    "clearance_mm": 0.8,
+    "retainer_height_mm": 2
+  },
+  "opening": [
+    {
+      "id": "output_shaft_clearance",
+      "type": "round_hole",
+      "basis": "servo_output_shaft",
+      "preferred_face": "top",
+      "diameter_mm": 6,
+      "clearance_mm": 0.5
+    }
+  ],
+  "keepouts": [
+    {
+      "id": "servo_sweep_clearance",
+      "shape": "box",
+      "size_mm": {
+        "length_x": 30.3,
+        "width_y": 19.8,
+        "height_z": 35
+      },
+      "center_mm": {
+        "x": 0,
+        "y": 0,
+        "z": 15
+      }
+    }
+  ],
+  "cad_reference": {
+    "shape": "servo_reference",
+    "color": "#6f6f7d"
+  },
+  "source_status": "用户实测/确认数据：MG90S 主体 22.3 x 11.8 x 23mm；顶面大圆柱直径 11.8mm、高 4mm 且与主体 +X 面相切；小圆柱直径 5.5mm、高 4mm 位于主体顶面中心；输出轴直径 5mm、高 3mm 且与大圆柱同心；安装耳位于主体 ±X 面，外伸 5mm、厚 2mm、孔径 2.2mm；接线口在主体 +X 面，距主体 -Z 面 3mm。",
+  "legacy_reference": {
+    "source": "ZW-CAD/server/hardware-profiles.js",
+    "notes": [
+      {
+        "id": "mounting_holes_mm",
+        "value": {
+          "type": "through_hole_pair",
+          "hole_diameter": 2.2,
+          "holes": [
+            {
+              "x": -13.65,
+              "y": 0,
+              "z": 4.7
+            },
+            {
+              "x": 13.65,
+              "y": 0,
+              "z": 4.7
+            }
+          ],
+          "axis": "+Z",
+          "source_status": "用户确认：安装耳在主体 ±X 面，孔中心按外伸 5mm 的中点推导为 x=±13.65，z=-11.5+16.2=4.7。"
+        }
+      },
+      {
+        "id": "grove_features_mm",
+        "value": {
+          "connector_keepout": {
+            "width": 12,
+            "depth": 6,
+            "height": 5,
+            "center_x": 0,
+            "center_y": -2.9000000000000004,
+            "center_z": 4.1
+          },
+          "kind": "mg90s_servo",
+          "coordinate_notes": "舵机主体中心为原点；X 为主体长度方向，Y 为主体宽度方向，+Z 为顶面。",
+          "body": {
+            "length_x": 22.3,
+            "width_y": 11.8,
+            "height_z": 23
+          },
+          "top_large_cylinder": {
+            "face": "+Z",
+            "diameter": 11.8,
+            "height": 4,
+            "center_x": 5.25,
+            "center_y": 0,
+            "tangent_side": "+X"
+          },
+          "top_small_cylinder": {
+            "face": "+Z",
+            "diameter": 5.5,
+            "height": 4,
+            "center_x": 0,
+            "center_y": 0
+          },
+          "output_shaft": {
+            "face": "+Z",
+            "diameter": 5,
+            "height": 3,
+            "center_x": 5.25,
+            "center_y": 0,
+            "coaxial_with": "top_large_cylinder",
+            "opening_basis": "output_shaft"
+          },
+          "mounting_lugs": {
+            "sides": [
+              "-X",
+              "+X"
+            ],
+            "extension_x": 5,
+            "thickness_z": 2,
+            "hole_diameter": 2.2,
+            "hole_centers": [
+              {
+                "x": -13.65,
+                "y": 0,
+                "z": 4.7
+              },
+              {
+                "x": 13.65,
+                "y": 0,
+                "z": 4.7
+              }
+            ]
+          },
+          "wire_exit": {
+            "side": "+X",
+            "z_from_body_bottom": 3
+          },
+          "installation": {
+            "mounting_mode": "side_lug_screws_and_shaft_clearance",
+            "mating_hardware_face": "+Z",
+            "mating_enclosure_surface": "servo_bracket",
+            "placement_rule": "安装时以两个 ±X 安装耳孔和 +Z 输出轴作为定位基准；实际旋转和平移由确定性布局器根据腿部结构计算。"
+          },
+          "opening": {
+            "type": "servo_output_shaft_clearance",
+            "basis": "output_shaft",
+            "center_x": 5.25,
+            "center_y": 0,
+            "diameter": 5,
+            "rule": "舵机输出轴开孔或避让以直径 5mm 输出轴为基准，最终余量由具体连杆/舵盘结构决定。"
+          }
+        }
+      }
+    ]
+  },
+  "thumbnail_url": "/assets/hardware/mg90s_servo.jpg"
+}

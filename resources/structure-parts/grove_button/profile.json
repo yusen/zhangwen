@@ -1,0 +1,142 @@
+{
+  "id": "grove_button",
+  "name": "Grove - Button",
+  "category": "button",
+  "roles": [
+    "button",
+    "input"
+  ],
+  "dimensions_mm": {
+    "length_x": 20,
+    "width_y": 20,
+    "height_z": 17.6,
+    "pcb_thickness": 1.6,
+    "component_height_top": 8,
+    "component_height_bottom": 8,
+    "width": 20,
+    "depth": 20,
+    "height": 17.6,
+    "pcb_thickness_assumed": 1.6
+  },
+  "coordinate_system": {
+    "origin": "pcb_center",
+    "x_axis": "board length",
+    "y_axis": "board width",
+    "positive_z": "module active/component side"
+  },
+  "mounting": {
+    "mode": "flush_inner_surface",
+    "mating_hardware_face": "+Z",
+    "preferred_enclosure_surface": "lid_inner",
+    "clearance_mm": 0.7,
+    "retainer_height_mm": 2
+  },
+  "opening": [
+    {
+      "id": "button_hole",
+      "type": "round_hole",
+      "basis": "button_actuator",
+      "preferred_face": "top",
+      "diameter_mm": 9,
+      "clearance_mm": 0.7
+    }
+  ],
+  "keepouts": [
+    {
+      "id": "button_travel",
+      "shape": "box",
+      "size_mm": {
+        "length_x": 20,
+        "width_y": 16,
+        "height_z": 17.6
+      },
+      "center_mm": {
+        "x": 0,
+        "y": 0,
+        "z": 0
+      },
+      "note": "按钮本体已由硬件 bounding_box 覆盖；此 keepout 表示按钮周围需要保留的操作/行程包络，坐标以硬件中心为原点。"
+    }
+  ],
+  "cad_reference": {
+    "shape": "button_pcb",
+    "color": "#226846"
+  },
+  "source_status": "用户实测/确认数据：PCB X 长 20mm、Y 宽 20mm、厚 1.6mm；Grove 接口在 -Z 面且靠 +X 边；按钮主体在 +Z 面。",
+  "source_urls": [
+    "https://wiki.seeedstudio.com/Grove-Button/",
+    "https://wiki.seeedstudio.com/Grove_System"
+  ],
+  "legacy_reference": {
+    "source": "ZW-CAD/server/hardware-profiles.js",
+    "notes": [
+      {
+        "id": "mounting_holes_mm",
+        "value": {
+          "type": "through_hole_pair",
+          "hole_diameter": 2.1,
+          "screw": "M2",
+          "holes": [
+            {
+              "x": -10,
+              "y": 0
+            },
+            {
+              "x": 10,
+              "y": 0
+            }
+          ],
+          "source_status": "用户实测/确认数据；坐标以 PCB 中心为原点，X 为长度方向，Y 为宽度方向。"
+        }
+      },
+      {
+        "id": "grove_features_mm",
+        "value": {
+          "connector_keepout": {
+            "side": "+X",
+            "face": "-Z",
+            "width": 5,
+            "depth": 15,
+            "height": 8,
+            "center_x": 4.5,
+            "center_y": 0,
+            "center_z": 4
+          },
+          "kind": "button",
+          "coordinate_notes": "PCB 中心为原点；X 为长度方向，Y 为宽度方向，+Z 为正面。",
+          "button": {
+            "face": "+Z",
+            "body_center_x": -3,
+            "body_center_y": 0,
+            "body_width": 8,
+            "body_depth": 8,
+            "body_height": 4,
+            "actuator_center_x": -3,
+            "actuator_center_y": 0,
+            "actuator_diameter": 6,
+            "actuator_height": 4,
+            "opening_basis": "actuator",
+            "opening_notes": "生成按键开口时以顶面按动钮直径 6mm 为基准，不以 8x8mm 方形主体为基准。"
+          },
+          "installation": {
+            "mounting_mode": "flush_inner_surface",
+            "mating_hardware_face": "+Z",
+            "mating_enclosure_surface": "inner_surface",
+            "placement_rule": "安装时让硬件局部 +Z 面与外壳内表面重合，按动钮朝向用户按压方向；若安装到侧壁，由确定性布局器按目标外壳面计算旋转和平移。"
+          },
+          "opening": {
+            "type": "single_button_round_hole",
+            "basis": "actuator",
+            "center_x": -3,
+            "center_y": 0,
+            "diameter": 7,
+            "clearance_diameter": 1,
+            "rule": "按键开孔中心对准按动钮中心，开孔直径 = 按动钮直径 6mm + 1mm。"
+          },
+          "default_hole_radius": 3
+        }
+      }
+    ]
+  },
+  "thumbnail_url": "https://files.seeedstudio.com/wiki/Grove_Button/img/button_s.jpg"
+}

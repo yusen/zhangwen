@@ -48,7 +48,7 @@ def bind_available_port(preferred: int) -> socket.socket:
 def main() -> None:
     parser = argparse.ArgumentParser(description="掌问本地 Web 工作台")
     parser.add_argument("--no-open", action="store_true", help="不自动打开浏览器")
-    parser.add_argument("--port", type=int, default=3080, help="首选端口（默认3080），不可用时自动切换")
+    parser.add_argument("--port", type=int, default=30801, help="首选端口（默认30801），不可用时自动切换")
     parser.add_argument("--dev", action="store_true", help="允许本机 Vite 5173 代理")
     args = parser.parse_args()
     if not 1024 <= args.port <= 65535:

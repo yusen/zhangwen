@@ -164,7 +164,7 @@ async def generate_reply(request: ChatInput, repo: WebRepository, history: list[
         raise HTTPException(502, f"{provider} 连接中断或返回了不完整的回答，请稍后重试。输入已保留，代码未修改。") from exc
 
 
-def create_app(data_dir: Path | None = None, *, port: int = 3080, dev: bool = False) -> FastAPI:
+def create_app(data_dir: Path | None = None, *, port: int = 30801, dev: bool = False) -> FastAPI:
     data_dir = data_dir or Path(os.environ.get("ZHANGWEN_DATA_DIR", ROOT / ".data"))
     repo = WebRepository(data_dir)
     settings_path = compatible_settings_path(data_dir)
@@ -378,6 +378,14 @@ def create_app(data_dir: Path | None = None, *, port: int = 3080, dev: bool = Fa
     @app.get('/api/projects/{project_id}/snapshot')
     def snapshot(project_id: str):
         return repo.export_project(project_id)
+
+    @app.get('/api/projects/{project_id}/hardware-resources')
+    def project_hardware_resources(project_id: str, expectedRevision: int | None = None):
+        from .hardware_export import project_resources
+        with repo.lock, repo.skills._lock:
+            if expectedRevision is not None and repo.get(project_id)['revision'] != expectedRevision:
+                raise HTTPException(409, '项目版本已变化，请重新保存后归档硬件资料。')
+            return project_resources(repo, app.state.structure, project_id)
 
     @app.get("/api/projects/{project_id}")
     def get(project_id: str):

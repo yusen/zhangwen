@@ -20,7 +20,7 @@ Windows/macOS 安装入口在缺少运行环境时直接下载 Node.js（上游 
 
 本轮多品牌模块资料和官方产品图来自盛思（乐动）、Seeed Studio Grove及N+公开文档。逐项文档与原图URL、署名、版权状态、图像处理和SHA见 `vendor-catalog-manifest.json` 及各包 `references/sources.md`。盛思声明保留所有版权，N+文档署名©2020 nplus；未把文档/代码许可证当作产品图片许可。官方图片包含厂商产品示意图，均未由AI合成；按用户要求随部署资料保留来源与版权声明。
 
-掌控板2.0编程摘要依据用户指定的 https://mpython.readthedocs.io/zh-cn/v2.0.1/index.html 及其同版本库说明。官方署名©2018–2020 labplus，All Rights Reserved；仅保留调用摘要、来源与项目最小例程，未镜像整站或授予额外许可。核对URL与SHA见 `services/local-api/zhangwen/web/programming-skills/mpython-v2/references/sources.json`。
+掌控板2.0编程摘要依据用户指定的 https://mpython.readthedocs.io/zh-cn/v2.0.1/index.html 及其同版本库说明。官方署名©2018–2020 labplus，All Rights Reserved；仅保留调用摘要、来源与项目最小例程，未镜像整站或授予额外许可。核对URL与SHA见 `resources/hardware-skills/labplus-mpython-v2/programming/references/sources.json`。
 
 主控选择补充的三张配图来自 Espressif ESP32-C3-DevKitM-1 官方文档、Seeed Studio XIAO ESP32S3 Sense 官方文档与盛思掌控板2.0官方硬件说明。图片版权归各厂商，保留原图来源，不将文档/代码许可证当作图片的额外授权。原图URL、原始/转换SHA、尺寸与处理说明见 `apps/web/src/assets/boards/sources.json`；图片仅用于产品识别，通用C3注明开发板示例，掌控板2.0为官方产品示意图。配图不改变原Hardware Skill与硬件能力定义。
 

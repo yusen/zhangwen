@@ -26,7 +26,7 @@ from pydantic import BaseModel, ConfigDict, Field, field_validator, model_valida
 
 from zhangwen.artifacts.models import ArtifactStatus, ArtifactPreview, ArtifactPreviewKind
 from zhangwen.llm.contracts import ChatMessage, ChatMessageStatus, ChatRole
-from . import design_service, builtin_templates, mechanical
+from . import design_service, builtin_templates, mechanical, hardware_resources
 from .version_names import short_name
 
 ROOT = Path(__file__).resolve().parents[4]
@@ -76,6 +76,18 @@ class StructureInput(BaseModel):
         if value is not None and (len(set(value)) != len(value) or any(not re.fullmatch(r'[A-Za-z0-9_-]{1,150}', item) for item in value)):
             raise ValueError('工程硬件 ID 无效或重复。')
         return value
+
+
+class LaserPreviewInput(BaseModel):
+    model_config = ConfigDict(extra='forbid')
+    expectedRevision: int = Field(ge=0)
+    sourceRevision: int = Field(ge=1)
+    parameters: dict[str, float]
+
+    @field_validator('parameters')
+    @classmethod
+    def finite_dimensions(cls, value):
+        return StructureInput.finite_dimensions(value)
 
 
 class StructureCheckpoint(BaseModel):
@@ -280,13 +292,13 @@ class StructureService:
         self.repo = repo
         self.root = (data_dir / 'structure').resolve()
         self.gate = asyncio.Lock()
-        self.catalog = json.loads((CAD_ROOT / 'server/data/hardware-library.json').read_text(encoding='utf-8'))
+        self.catalog = {'profiles': hardware_resources.structure_profiles()}
 
     def live_profiles(self):
         hardware = self.repo.skills.web_summaries()
         profiles = {}
         for profile in self.catalog['profiles']:
-            existing = next((h for h in hardware if h['componentId'].endswith('_' + profile['id'])), None)
+            existing = next((h for h in hardware if h['componentId'] == profile.get('componentId')), None)
             image = existing['media'][0]['url'] if existing and existing['media'] else ''
             if not image and profile.get('thumbnail_url', '').startswith('/assets/hardware/'):
                 image = '/api/structure/media/' + profile['thumbnail_url'].rsplit('/', 1)[1]
@@ -368,6 +380,21 @@ class StructureService:
         except ValueError as exc:
             raise HTTPException(502, '结构工具未返回完整结果，原版本已保留。') from exc
 
+    async def preview_laser(self, project_id: str, request: LaserPreviewInput) -> dict:
+        workspace = self.get(project_id)
+        if workspace['revision'] != request.expectedRevision:
+            raise HTTPException(409, '结构版本已更新，请重新加载记录后预览。')
+        base = next((v for v in workspace['versions'] if v['revision'] == request.sourceRevision
+                     and v.get('designType') == 'laser'), None)
+        if not base:
+            raise HTTPException(404, '激光历史版本不存在。')
+        previous = base['result']
+        if not previous.get('designSpec') or previous.get('status') == 'needs_input':
+            raise HTTPException(422, '请先补全图纸需求。')
+        action = StructureInput(action='parameters', designType='laser', expectedRevision=request.expectedRevision,
+                                sourceRevision=request.sourceRevision, parameters=request.parameters)
+        return await design_service.act(action, previous, {}, None, preview_only=True)
+
     async def act(self, project_id: str, request: StructureInput, settings: dict) -> dict:
         if self.gate.locked():
             raise HTTPException(409, '已有结构设计正在处理，请完成后再操作。')
@@ -389,6 +416,8 @@ class StructureService:
             live_profiles = self.live_profiles()
             known = {x['id'] for x in live_profiles}
             for profile in profiles:
+                if profile.get('id') in known:
+                    raise HTTPException(422, '临时结构资料ID重复或与原模块冲突，请使用独立ID。')
                 if not re.fullmatch(r'[A-Za-z0-9_-]{1,100}', str(profile.get('id', ''))):
                     raise HTTPException(422, '自定义结构资料须有有效id。')
                 dims = profile.get('dimensions_mm', {})
@@ -541,10 +570,10 @@ def structure_router(service: StructureService, settings) -> APIRouter:
 
     @router.get('/api/structure/media/{name}')
     def profile_image(name: str):
-        directory = CAD_ROOT / 'public/assets/hardware'
-        if name not in {p.name for p in directory.iterdir() if p.is_file()}:
+        relative = hardware_resources.index()['legacyMedia'].get(name)
+        if relative is None:
             raise HTTPException(404, '结构图片不存在。')
-        return FileResponse(directory / name)
+        return FileResponse(hardware_resources.resource_path(relative))
 
     @router.get('/api/projects/{project_id}/structure')
     def workspace(project_id: str):
@@ -553,6 +582,10 @@ def structure_router(service: StructureService, settings) -> APIRouter:
     @router.post('/api/projects/{project_id}/structure')
     async def action(project_id: str, body: StructureInput):
         return await service.act(project_id, body, settings())
+
+    @router.post('/api/projects/{project_id}/structure/preview')
+    async def preview(project_id: str, body: LaserPreviewInput):
+        return await service.preview_laser(project_id, body)
 
     @router.get('/api/projects/{project_id}/structure/assets/{job_id}/{result_id}/{filename:path}')
     def asset(project_id: str, job_id: str, result_id: str, filename: str):

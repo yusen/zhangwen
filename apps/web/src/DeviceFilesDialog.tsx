@@ -25,7 +25,7 @@ export function DeviceFilesDialog({ view, device, connected, code, versions, dis
   };
   const locked = disabled || !!busy || programBusy;
   const decode = (value: Uint8Array) => new TextDecoder('utf-8', { fatal: true }).decode(value);
-  return <Dialog className="device-files-dialog" title={view === 'programs' ? '项目程序' : '板上文件'} onClose={() => { if (!busy && !programBusy) onClose(); }}>
+  return <Dialog className="device-files-dialog" title={view === 'programs' ? '项目程序' : '板载文件'} onClose={() => { if (!busy && !programBusy) onClose(); }}>
     {view === 'programs' && <ProjectPrograms folder={folder} code={code} board={board} componentIds={componentIds} versions={versions} receipt={programReceipt} run={programRun} disabled={disabled || !!busy} onBusy={setProgramBusy} onChooseFolder={onChooseFolder} onLoad={onLoad} onDownload={onDownload} />}
     {view === 'board' && <section className="file-section"><h3>设备根目录</h3><p className="muted">{connected ? '浏览和读取文件会校验摘要；上传仅允许项目清单中的 main.py。' : '连接 MicroPython 设备并停止程序后，可浏览和读取设备文件。'}</p>
       <button disabled={!connected || locked} onClick={() => void task('读取设备目录', async () => { if (!device) return; setPreview(null); setFiles(await device.listFiles()); })}><RefreshCw size={16} />刷新设备文件</button>

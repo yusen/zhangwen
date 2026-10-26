@@ -95,12 +95,20 @@ export type ChatEvent =
   | { type: 'done'; messages: ChatMessage[] }
   | { type: 'error'; detail: string };
 export interface Version { revision: number; code: string; checksum: string; createdAt: string; source?: 'saved' | 'ai'; boardId?: string; messageId?: string; name?: string }
-/** Portable checkpoint of the original SQLite project, never includes API settings. */
+/** Portable checkpoint of the original SQLite project, never includes API settings.
+ * Structure asset keys are internal identities, not user-facing directory names.
+ * Folder mirrors may use readable categories without changing this import contract. */
 export interface ProjectSnapshot {
   format: 'zhangwen-project'; schemaVersion: 1; portableId: string;
   project: { name: string; boardId: string; componentIds: string[]; revision: number };
   versions: Version[]; messages: ChatMessage[];
   structure?: { versions: import('./structure').StructureVersion[]; messages: { id: string; role: string; content: string; createdAt: string }[]; assets: Record<string, { sha256: string; content: string }> };
+}
+/** Current resource copies for the saved selection; inert, outside device manifests. */
+export interface HardwareResourceBundle {
+  schemaVersion: 1;
+  modules: { id: string; name: string; componentId: string | null; revision: string;
+    files: { path: string[]; sha256: string; content: string }[] }[];
 }
 /** User-named program archive in a project folder; physical results are user observations. */
 export interface ProjectProgramRecord {

@@ -1,0 +1,151 @@
+{
+  "id": "grove_bme280",
+  "name": "Grove - Temp&Humi&Barometer Sensor (BME280)",
+  "category": "sensor",
+  "roles": [
+    "temperature",
+    "humidity",
+    "sensor",
+    "barometer",
+    "pressure"
+  ],
+  "dimensions_mm": {
+    "length_x": 40,
+    "width_y": 20,
+    "height_z": 6.6,
+    "pcb_thickness": 1.6,
+    "component_height_bottom": 5,
+    "width": 40,
+    "depth": 20,
+    "height": 6.6,
+    "component_height_top": 0,
+    "pcb_thickness_assumed": 1.6
+  },
+  "coordinate_system": {
+    "origin": "pcb_center",
+    "x_axis": "board length",
+    "y_axis": "board width",
+    "positive_z": "module active/component side"
+  },
+  "mounting": {
+    "mode": "vented_sampling_surface",
+    "mating_hardware_face": "-Z",
+    "preferred_enclosure_surface": "lid_inner",
+    "clearance_mm": 0.7,
+    "retainer_height_mm": 2
+  },
+  "opening": [
+    {
+      "id": "sensor_vents",
+      "type": "slot_array",
+      "basis": "bme280_sensor_body",
+      "preferred_face": "front",
+      "count": 6,
+      "slot_mm": {
+        "width": 1.6,
+        "length": 12
+      },
+      "pitch_mm": 3,
+      "clearance_mm": 0.5
+    }
+  ],
+  "keepouts": [
+    {
+      "id": "sensor_air_volume",
+      "shape": "box",
+      "size_mm": {
+        "length_x": 16,
+        "width_y": 12,
+        "height_z": 7
+      },
+      "center_mm": {
+        "x": -6,
+        "y": 0,
+        "z": 3.5
+      }
+    }
+  ],
+  "cad_reference": {
+    "shape": "sensor_pcb",
+    "color": "#18734c"
+  },
+  "source_status": "用户确认数据：尺寸、接口、安装孔、传感器主体位置与 grove_sht4x 完全一致；BME280 可测温度、湿度和气压。",
+  "source_urls": [
+    "https://wiki.seeedstudio.com/Grove-Barometer_Sensor-BME280/",
+    "https://wiki.seeedstudio.com/Grove_System"
+  ],
+  "legacy_reference": {
+    "source": "ZW-CAD/server/hardware-profiles.js",
+    "notes": [
+      {
+        "id": "mounting_holes_mm",
+        "value": {
+          "type": "through_hole_triple",
+          "hole_diameter": 2.1,
+          "screw": "M2",
+          "holes": [
+            {
+              "x": -20,
+              "y": 0
+            },
+            {
+              "x": 10,
+              "y": 10
+            },
+            {
+              "x": 10,
+              "y": -10
+            }
+          ],
+          "source_status": "用户确认：固定孔数量、位置、孔径与 grove_sht4x 一致。"
+        }
+      },
+      {
+        "id": "grove_features_mm",
+        "value": {
+          "connector_keepout": {
+            "side": "+X",
+            "face": "-Z",
+            "width": 8,
+            "depth": 15,
+            "height": 5,
+            "center_x": 14,
+            "center_y": 0,
+            "center_z": 2.5,
+            "center_z_from_pcb_center": -3.3
+          },
+          "kind": "environment_sensor",
+          "coordinate_notes": "PCB 中心为原点；X 为长度方向，Y 为宽度方向，+Z 为正面。",
+          "sensor_body": {
+            "type": "bme280",
+            "face": "-Z",
+            "center_x": -10,
+            "center_y": 0,
+            "center_z": -1.3,
+            "body_width": 2,
+            "body_depth": 2,
+            "body_height": 1
+          },
+          "installation": {
+            "mounting_mode": "vented_sampling_surface",
+            "mating_hardware_face": "-Z",
+            "mating_enclosure_surface": "inner_surface",
+            "placement_rule": "安装时让硬件局部 -Z 传感器面朝向外壳通风/采样开孔；若安装到侧壁，由确定性布局器按目标外壳面计算旋转和平移。"
+          },
+          "opening": {
+            "type": "sensor_vent",
+            "basis": "sensor_body",
+            "center_x": -10,
+            "center_y": 0,
+            "basis_size": [
+              2,
+              2
+            ],
+            "rule": "通风/采样开孔中心对准 BME280 传感器主体中心，开孔基准使用 2x2mm 传感器主体位置，不以整块 PCB 中心为基准。"
+          }
+        }
+      }
+    ]
+  },
+  "thumbnail_url": "https://files.seeedstudio.com/wiki/Grove-Barometer_Sensor-BME280/img/BME280.jpg"
+}

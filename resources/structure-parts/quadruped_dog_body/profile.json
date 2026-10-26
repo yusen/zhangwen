@@ -1,0 +1,289 @@
+{
+  "id": "quadruped_dog_body",
+  "name": "8 舵机机器狗身体",
+  "category": "structural_part",
+  "roles": [
+    "structural_part",
+    "placeholder"
+  ],
+  "dimensions_mm": {
+    "length_x": 155,
+    "width_y": 100,
+    "height_z": 55,
+    "width": 155,
+    "depth": 100,
+    "height": 55,
+    "wall_thickness": 1.5,
+    "lid_thickness": 1.5,
+    "hip_servo_plus_x_body_center_x": 59.85,
+    "hip_servo_minus_x_body_center_x": -59.85,
+    "hip_servo_side_y": 50,
+    "hip_servo_bottom_inner_z": -26,
+    "hip_servo_mount_center_z": -20.1,
+    "hip_servo_body_center_y": 46.3,
+    "hip_servo_output_top_y_abs": 64.8
+  },
+  "coordinate_system": {
+    "origin": "part_center",
+    "x_axis": "part length",
+    "y_axis": "part width",
+    "positive_z": "part height/up direction"
+  },
+  "mounting": {
+    "mode": "body_shell_with_slot_lid_four_side_hip_servos_and_leg_segments",
+    "mating_hardware_face": "mg90s_servo mounting lug -Z face",
+    "preferred_enclosure_surface": "base_floor",
+    "clearance_mm": 1,
+    "retainer_height_mm": 0,
+    "note": "???????????????????????"
+  },
+  "opening": [],
+  "keepouts": [],
+  "cad_reference": {
+    "shape": "structural_placeholder",
+    "color": "#64748b"
+  },
+  "source_status": "用户确认：狗身体暂定为长方体，长 155mm、宽 100mm、高 55mm、壁厚 1.5mm，内部空心带卡槽盖；四个髋关节舵机通过固定耳固定在机身 ±Y 外侧面，每侧两个，输出轴位于机身外且靠近对应 ±X 侧壁。",
+  "legacy_reference": {
+    "source": "ZW-CAD/server/hardware-profiles.js",
+    "notes": [
+      {
+        "id": "mounting_holes_mm",
+        "value": {
+          "type": "hip_servo_side_mounts",
+          "hole_diameter": 2.2,
+          "screw": "MG90S 安装螺丝",
+          "hardware_id": "mg90s_servo",
+          "holes": [
+            {
+              "mount": "plus_x_plus_y_hip",
+              "x": 46.2,
+              "y": 50,
+              "z": -20.1
+            },
+            {
+              "mount": "plus_x_plus_y_hip",
+              "x": 73.5,
+              "y": 50,
+              "z": -20.1
+            },
+            {
+              "mount": "minus_x_plus_y_hip",
+              "x": -73.5,
+              "y": 50,
+              "z": -20.1
+            },
+            {
+              "mount": "minus_x_plus_y_hip",
+              "x": -46.2,
+              "y": 50,
+              "z": -20.1
+            },
+            {
+              "mount": "plus_x_minus_y_hip",
+              "x": 46.2,
+              "y": -50,
+              "z": -20.1
+            },
+            {
+              "mount": "plus_x_minus_y_hip",
+              "x": 73.5,
+              "y": -50,
+              "z": -20.1
+            },
+            {
+              "mount": "minus_x_minus_y_hip",
+              "x": -73.5,
+              "y": -50,
+              "z": -20.1
+            },
+            {
+              "mount": "minus_x_minus_y_hip",
+              "x": -46.2,
+              "y": -50,
+              "z": -20.1
+            }
+          ],
+          "output_shaft_centers": [
+            {
+              "mount": "plus_x_plus_y_hip",
+              "x": 65.1,
+              "y": 63.3,
+              "z": -20.1,
+              "top_face_y": 64.8
+            },
+            {
+              "mount": "minus_x_plus_y_hip",
+              "x": -65.1,
+              "y": 63.3,
+              "z": -20.1,
+              "top_face_y": 64.8
+            },
+            {
+              "mount": "plus_x_minus_y_hip",
+              "x": 65.1,
+              "y": -63.3,
+              "z": -20.1,
+              "top_face_y": -64.8
+            },
+            {
+              "mount": "minus_x_minus_y_hip",
+              "x": -65.1,
+              "y": -63.3,
+              "z": -20.1,
+              "top_face_y": -64.8
+            }
+          ],
+          "recommended_fastening": "MG90S 本地 +Z 输出轴面朝向机身外侧 ±Y；本地 -Z 固定耳面与机身 ±Y 外侧面重合；本地 +X 输出轴侧朝向对应的机身 ±X 端。",
+          "source_status": "用户确认装配规则后推导：靠 +X/-X 的舵机固定耳外端面与机身对应 X 侧壁内侧面重合，得到舵机体中心 x=±59.85；固定耳 -Z 面贴机身 ±Y 外侧面，得到舵机体中心 y=±46.3。"
+        }
+      },
+      {
+        "id": "structural_features_mm",
+        "value": {
+          "kind": "quadruped_dog_body",
+          "coordinate_notes": "结构件自身中心为原点；X 为身体长度方向（首版试装中 +X 暂作前方），Y 为身体宽度方向，+Z 为顶部开口方向。",
+          "shell": {
+            "length_x": 155,
+            "width_y": 100,
+            "height_z": 55,
+            "wall_thickness": 1.5,
+            "hollow": true
+          },
+          "lid": {
+            "type": "slot_lid",
+            "thickness": 1.5,
+            "clearance": 0.4,
+            "slot_lip_width": 2,
+            "slot_lip_height": 1.5
+          },
+          "hip_servo_mounts": {
+            "hardware_id": "mg90s_servo",
+            "count": 4,
+            "orientation_rule": "MG90S 本地 +Z/输出轴方向朝机身外侧 ±Y；本地 +X/输出轴偏置方向朝对应机身 ±X 侧壁；本地 -Z 固定耳面贴机身 ±Y 外侧面。",
+            "centers": [
+              {
+                "id": "plus_x_plus_y_hip",
+                "x": 59.85,
+                "y": 46.3,
+                "z": -20.1,
+                "x_side": "+X",
+                "y_side": "+Y"
+              },
+              {
+                "id": "minus_x_plus_y_hip",
+                "x": -59.85,
+                "y": 46.3,
+                "z": -20.1,
+                "x_side": "-X",
+                "y_side": "+Y"
+              },
+              {
+                "id": "plus_x_minus_y_hip",
+                "x": 59.85,
+                "y": -46.3,
+                "z": -20.1,
+                "x_side": "+X",
+                "y_side": "-Y"
+              },
+              {
+                "id": "minus_x_minus_y_hip",
+                "x": -59.85,
+                "y": -46.3,
+                "z": -20.1,
+                "x_side": "-X",
+                "y_side": "-Y"
+              }
+            ],
+            "bottom_contact": {
+              "body_bottom_inner_z": -26,
+              "servo_body_center_z": -20.1,
+              "rule": "MG90S 装配后的最低点贴住机身底壳内表面。"
+            },
+            "face_opening": {
+              "length_x": 24.3,
+              "height_z": 13.8,
+              "wall_cut_depth_y": 3.5,
+              "clearance": 1,
+              "basis": "servo body pocket where MG90S lower body passes through the ±Y wall behind the fixed ears"
+            },
+            "screw_holes": {
+              "diameter": 2.2,
+              "pitch_x": 27.3,
+              "holes_per_mount": 2
+            },
+            "output_shaft": {
+              "diameter": 5,
+              "center_offset_x_from_mount_center": 5.25,
+              "shaft_center_y_abs": 63.3,
+              "top_face_y_abs": 64.8
+            },
+            "assembled_reference": {
+              "show_by_default": true,
+              "servo_body_center_x_abs": 59.85,
+              "servo_body_center_y_abs": 46.3,
+              "servo_body_center_z": -20.1,
+              "transform_rule": "global translate([mount.x_side * 59.85, mount.y_side * 46.3, -20.1]) then rotate([-mount.y_side * 90, 0, 0]) and rotate local Z by 180 degrees when x_side is -X; this maps MG90S local +Z/output shaft direction to global ±Y and local +X/output offset toward the selected ±X side."
+            }
+          },
+          "leg_segments": {
+            "thigh": {
+              "hardware_id": "quadruped_dog_thigh",
+              "count": 4,
+              "length_x": 60,
+              "width_y": 15,
+              "height_z": 18,
+              "angle_y_deg": -45,
+              "angle_rule": "OpenSCAD 绕 Y 轴 -45 度，使大腿从 -Z 竖直参考方向偏向全局 +X。"
+            },
+            "shin": {
+              "hardware_id": "quadruped_dog_shin",
+              "count": 4,
+              "length_x": 50,
+              "width_y": 12,
+              "height_z": 10,
+              "distal_round_radius": 5,
+              "angle_y_deg": 45,
+              "assembly_rule": "小腿上端轴孔与大腿远端轴孔同轴连接，绕同方向 Y 轴取绝对 +45 度姿态，使小腿从 -Z 竖直参考方向偏向全局 -X。"
+            },
+            "knee_joint": {
+              "hole_diameter": 3,
+              "hole_axis": "Y",
+              "hole_end_offset": 5,
+              "assembly_rule": "装配视图中先沿大腿姿态定位大腿轴孔中心，再让小腿轴孔中心与其重合。"
+            },
+            "knee_servo_mounts": {
+              "hardware_id": "mg90s_servo",
+              "count": 4,
+              "mounting_face": "thigh local +X face, the assembled face closest to global +Z",
+              "servo_mating_face": "mg90s_servo mounting lug -Z face",
+              "center_in_thigh_frame": {
+                "x": 5.3,
+                "y": 0,
+                "z": 5.25
+              },
+              "rotation_in_thigh_frame": "rotate([0, 90, 0]) then rotate([0, 0, 180])",
+              "output_alignment_rule": "膝关节舵机中心位置保持不变，输出轴偏心方向朝向大腿局部 +Z，也就是靠近髋关节舵机方向。"
+            }
+          },
+          "installation": {
+            "mounting_mode": "body_shell_with_slot_lid_four_side_hip_servos_and_leg_segments",
+            "mating_hardware_face": "mg90s_servo mounting lug -Z face",
+            "mating_enclosure_surface": "body ±Y outer side faces",
+            "placement_rule": "四个髋关节舵机通过固定耳贴装到机身 ±Y 外侧面；每个侧壁两个舵机分别靠近 +X 和 -X，输出轴朝外并靠近对应 X 端；舵机最低点贴住底壳内表面。"
+          },
+          "opening": {
+            "type": "top_service_opening_and_hip_servo_side_mounts",
+            "basis": "inner_cavity_and_mg90s_servo",
+            "rule": "顶部开口用于装配和维护；四个侧面髋关节安装位包含舵机身体穿墙窗口和两个固定耳螺丝孔，输出轴位于机身外侧不再穿过侧壁。"
+          }
+        }
+      }
+    ]
+  },
+  "integration_status": "placeholder_only",
+  "notes": [
+    "? ZW-CAD ??? profile ???????????????????????????"
+  ],
+  "thumbnail_url": "/assets/hardware/quadruped_dog_body.svg"
+}

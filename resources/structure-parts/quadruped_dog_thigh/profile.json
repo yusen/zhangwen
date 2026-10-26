@@ -1,0 +1,154 @@
+{
+  "id": "quadruped_dog_thigh",
+  "name": "8 舵机机器狗大腿",
+  "category": "structural_part",
+  "roles": [
+    "structural_part",
+    "placeholder"
+  ],
+  "dimensions_mm": {
+    "length_x": 60,
+    "width_y": 15,
+    "height_z": 18,
+    "width": 60,
+    "depth": 15,
+    "height": 18,
+    "knee_hole_diameter": 3,
+    "knee_hole_end_offset_x": 5,
+    "servo_horn_hole_diameter": 1.5,
+    "servo_horn_hole_pitch": 13.6
+  },
+  "coordinate_system": {
+    "origin": "part_center",
+    "x_axis": "part length",
+    "y_axis": "part width",
+    "positive_z": "part height/up direction"
+  },
+  "mounting": {
+    "mode": "servo_output_face_alignment",
+    "mating_hardware_face": "mg90s_servo output shaft face",
+    "preferred_enclosure_surface": "base_floor",
+    "clearance_mm": 1,
+    "retainer_height_mm": 0,
+    "note": "???????????????????????"
+  },
+  "opening": [],
+  "keepouts": [],
+  "cad_reference": {
+    "shape": "structural_placeholder",
+    "color": "#64748b"
+  },
+  "source_status": "用户确认：大腿暂定为长方体，长 60mm、宽 15mm、高 18mm；一个侧面对齐舵机。",
+  "legacy_reference": {
+    "source": "ZW-CAD/server/hardware-profiles.js",
+    "notes": [
+      {
+        "id": "mounting_holes_mm",
+        "value": {
+          "type": "servo_horn_and_knee_axis_holes",
+          "hardware_id": "quadruped_dog_shin",
+          "hole_diameter": 3,
+          "hole_axis": "Y",
+          "holes": [
+            {
+              "role": "servo_horn_screw",
+              "x": -21,
+              "y": 0,
+              "z": -6.8,
+              "diameter": 1.5,
+              "axis": "Y"
+            },
+            {
+              "role": "servo_horn_screw",
+              "x": -21,
+              "y": 0,
+              "z": 6.8,
+              "diameter": 1.5,
+              "axis": "Y"
+            },
+            {
+              "role": "knee_axis",
+              "x": 25,
+              "y": 0,
+              "z": 0,
+              "diameter": 3,
+              "axis": "Y"
+            }
+          ],
+          "recommended_fastening": "大腿内侧预留两个直径 1.5mm、间距 13.6mm 的一字型舵盘固定孔；大腿 +X 远端预留直径 3mm 的 Y 向贯穿轴孔，用于与小腿轴孔同轴连接。",
+          "source_status": "用户确认大小腿用直径 3mm 轴孔连接；用户确认大腿内侧安装一字型舵盘，两个 1.5mm 固定孔间距缩短为 13.6mm。"
+        }
+      },
+      {
+        "id": "structural_features_mm",
+        "value": {
+          "kind": "quadruped_dog_thigh",
+          "coordinate_notes": "结构件自身中心为原点；X 为大腿长度方向，Y 为宽度方向，Z 为高度方向；-X 端面为舵机对齐面。",
+          "body": {
+            "length_x": 60,
+            "width_y": 15,
+            "height_z": 18
+          },
+          "servo_alignment": {
+            "hardware_id": "mg90s_servo",
+            "mating_face": "-X",
+            "face_center": {
+              "x": -30,
+              "y": 0,
+              "z": 0
+            },
+            "axis_marker_diameter": 5,
+            "rule": "大腿 -X 端面中心对齐 MG90S 输出轴中心；实际锁紧孔/舵盘结构后续再按实物补充。"
+          },
+          "servo_horn_mount": {
+            "horn_type": "single_arm",
+            "hole_diameter": 1.5,
+            "hole_pitch": 13.6,
+            "hole_axis": "Y",
+            "hole_centers": [
+              {
+                "x": -21,
+                "y": 0,
+                "z": -6.8
+              },
+              {
+                "x": -21,
+                "y": 0,
+                "z": 6.8
+              }
+            ],
+            "rule": "一字型舵盘贴在大腿内侧面，两个固定孔以髋舵机输出轴中心为中点，沿大腿 18mm 高度方向排布。"
+          },
+          "knee_joint": {
+            "mating_hardware_id": "quadruped_dog_shin",
+            "hole_diameter": 3,
+            "hole_axis": "Y",
+            "hole_center": {
+              "x": 25,
+              "y": 0,
+              "z": 0
+            },
+            "end_offset_x": 5,
+            "rule": "大腿 +X 远端孔与小腿 +X 上端孔同轴连接。"
+          },
+          "installation": {
+            "mounting_mode": "servo_output_face_alignment",
+            "mating_hardware_face": "mg90s_servo output shaft face",
+            "mating_enclosure_surface": "thigh -X end face",
+            "placement_rule": "装配时让大腿 -X 端面中心对齐髋关节舵机输出轴中心；首版机身装配视图中大腿长度方向先向 -Z 下方延伸。"
+          },
+          "opening": {
+            "type": "none_pending_servo_horn_details",
+            "basis": "servo_alignment_face",
+            "rule": "当前只做端面对齐，不开舵盘锁紧孔；等待舵盘或连接方式尺寸确认后再开孔。"
+          }
+        }
+      }
+    ]
+  },
+  "integration_status": "placeholder_only",
+  "notes": [
+    "? ZW-CAD ??? profile ???????????????????????????"
+  ],
+  "thumbnail_url": "/assets/hardware/quadruped_dog_thigh.svg"
+}

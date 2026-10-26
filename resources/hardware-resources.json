@@ -1,0 +1,2094 @@
+{
+  "schema": "zhangwen.hardware-resources/v1",
+  "modules": {
+    "d-robotics-rdk-x5": {
+      "componentId": "hw_drobotics_rdk_x5",
+      "files": {
+        "structure/README.md": "5dfae2ebbd02ac479a69d7807f8dfaa5f3a10323094cb39436c21c12f0e41195"
+      }
+    },
+    "dfr0026-ambient-light-sensor": {
+      "componentId": "hw_dfrobot_dfr0026",
+      "files": {
+        "examples/reviewed.md": "66450859ca99b22b73154a3d42d0d7ae069acea053b648f881bd24c40cff3082",
+        "structure/README.md": "bd91f214dde0e4c97bf29810ccbcfb2645b83746d3e34f48bc30bbeba24fca63"
+      }
+    },
+    "dfr0029-button": {
+      "componentId": "hw_dfrobot_dfr0029_button",
+      "files": {
+        "examples/reviewed.md": "5b50a9034446f823d2c2a6fbf25decba7e738851cf258632a23011a9fae41328",
+        "structure/README.md": "320e3cbda138470522f994d3ae3849e1c4800f4088c32d03d7760fbda09cf4e7"
+      }
+    },
+    "dfr0486": {
+      "componentId": "hw_dfrobot_dfr0486",
+      "files": {
+        "examples/reviewed.md": "22b4975ab37a2ccf4e0c190bddef3037dc5ed51eb5322c435a86ab6cd181bd86",
+        "structure/README.md": "6bce9ccfff46f1b34c8c050664860e39e8b60eb8e2e00956e81c5dab1050c326"
+      }
+    },
+    "dfr0523": {
+      "componentId": "hw_dfrobot_dfr0523",
+      "files": {
+        "examples/reviewed.md": "15a1f21a9ca3af5246c4b7625749f4b0075240defebcd5bb4f4ac294268a2777",
+        "structure/README.md": "a50b6774a4604de33c1c1529f248288dfeb8faa2d2a22dd3eca4ce8ac7edb5bf"
+      }
+    },
+    "dfrobot-dfr0017-k10": {
+      "componentId": "hw_dfrobot_dfr0017_k10",
+      "files": {
+        "examples/reviewed.md": "669a2874d05f929c2bc42a9ef9e23436f99be17c644b0fffabf84c568422f530",
+        "structure/README.md": "7cccb1833daf8cf106be71c768e9755e55fbdf4cf45fd30fcaaebf9375910b1d"
+      }
+    },
+    "dfrobot-dfr0023-k10": {
+      "componentId": "hw_dfrobot_dfr0023_k10",
+      "files": {
+        "examples/reviewed.md": "244d066b0e2f3fb816f831faf19fa080d5b5151ca65928d12d90d7eef9e29b01",
+        "structure/README.md": "89179dbac893533a052743e201517b75b5abd58e712eb1057008fb0ddd7fb789"
+      }
+    },
+    "dfrobot-dfr0024-k10": {
+      "componentId": "hw_dfrobot_dfr0024_k10",
+      "files": {
+        "examples/reviewed.md": "4970a9aa0fade400b8a4b8e90eb72fa23f5be595d5772590da9eb9e7589292fc",
+        "structure/README.md": "b0782f675fcae0c78f35013461f728a5644951032e9ecbc3176e40211899744e"
+      }
+    },
+    "dfrobot-dfr0026-k10": {
+      "componentId": "hw_dfrobot_dfr0026_k10",
+      "files": {
+        "examples/reviewed.md": "60829dad7585e7dde19dac6fca4fb2d566f3847ccaf5f30d426bc7d8b3b4ca56",
+        "structure/README.md": "389527a58dbddcd1554690886f53aca3d5fd4ffb8c3ac45b3973bc3606ec15a0"
+      }
+    },
+    "dfrobot-dfr0027-k10": {
+      "componentId": "hw_dfrobot_dfr0027_k10",
+      "files": {
+        "examples/reviewed.md": "a3b149e1bb93a8a06e887c3e5574c18a197e98599b118c4fed0857af41985ddb",
+        "structure/README.md": "a7e32abe5df94272ae15ebb7555efbdf911372be3e36cfd1aa20de36a8c848fa"
+      }
+    },
+    "dfrobot-dfr0029-k10": {
+      "componentId": "hw_dfrobot_dfr0029_k10",
+      "files": {
+        "examples/reviewed.md": "858d69f99a265eaaddb7014cda6d778b1ccfb31b743ba3e0938f782caff36c70",
+        "structure/README.md": "35b17854aa4993ec1f994a0f00b45a8dedf9375f809df77940a7933fd5636ab5"
+      }
+    },
+    "dfrobot-dfr0030-k10": {
+      "componentId": "hw_dfrobot_dfr0030_k10",
+      "files": {
+        "examples/reviewed.md": "b4125fe128e1be8cf0658367a4fb0a6c7d4e81a86059cc8f3da9e130422c2a0f",
+        "structure/README.md": "d42e5588dc29aeb41d95db165bcebe2fd605858c2b656e8ff2fd3b7a9fbe56a9"
+      }
+    },
+    "dfrobot-dfr0033-k10": {
+      "componentId": "hw_dfrobot_dfr0033_k10",
+      "files": {
+        "examples/reviewed.md": "23081f57679436bf5e8ee8b1a89fc612b58e164cde0b2e59491bb20f2078d3d5",
+        "structure/README.md": "83525e0256c19e72ff79eff588d787243b833851ec42efdf192c2e160c0711da"
+      }
+    },
+    "dfrobot-dfr0034-k10": {
+      "componentId": "hw_dfrobot_dfr0034_k10",
+      "files": {
+        "examples/reviewed.md": "2c878acb28bc565a911aabeb378a68638b35d557b40a556231f7ae61cf3194bd",
+        "structure/README.md": "eb7a3c67515e2f7e21791631aafc630d7f2a98f28107c85bfc1b59602676c166"
+      }
+    },
+    "dfrobot-dfr0051-k10": {
+      "componentId": "hw_dfrobot_dfr0051_k10",
+      "files": {
+        "examples/reviewed.md": "05bc28147b25f7a29301625b0c996f6ab044df159bff7da6c5e1c97420c0f3a2",
+        "structure/README.md": "ccf6954db32bd6f82549ce011a87c8fc701dba69a8caf50fd604068dd5d7c70a"
+      }
+    },
+    "dfrobot-dfr0052-k10": {
+      "componentId": "hw_dfrobot_dfr0052_k10",
+      "files": {
+        "examples/reviewed.md": "1219fa0b799094b98874ca28ec17ca8cfb24bcd48c247fc2f41ed40a615d3fac",
+        "structure/README.md": "795d8afc608b92070851866a71be5aa28adb327505b2555bf6b21ac19eee62ba"
+      }
+    },
+    "dfrobot-dfr0058-k10": {
+      "componentId": "hw_dfrobot_dfr0058_k10",
+      "files": {
+        "examples/reviewed.md": "7571ba881057557cac0602197175c9ecb566c593e2dfcff50832776783a8d057",
+        "structure/README.md": "c7056cd26c0b45603649aba8c71cb4e5393e84ed5b96e79077e18a786b8ec6fc"
+      }
+    },
+    "dfrobot-dfr0061-k10": {
+      "componentId": "hw_dfrobot_dfr0061_k10",
+      "files": {
+        "examples/reviewed.md": "d024259f66c40fb3208516f018cd48db798c8bc4153593529e790c89e6f00bb0",
+        "structure/README.md": "6e9ab2474dffe778a4b80991bf265a8cd2db40fd05811377d3d67d95de54fd03"
+      }
+    },
+    "dfrobot-dfr0067-k10": {
+      "componentId": "hw_dfrobot_dfr0067_k10",
+      "files": {
+        "examples/reviewed.md": "5a203c44e2ae848d1300b544104ba401971e03b344496d7eed23c299cd18e828",
+        "structure/README.md": "798eeaa865dfdd4265fadd0aad5427adb64b65dc1108e5437b3254e80e4dc688"
+      }
+    },
+    "dfrobot-dfr0076-k10": {
+      "componentId": "hw_dfrobot_dfr0076_k10",
+      "files": {
+        "examples/reviewed.md": "730734e40763e933ceff3de6e60f8cbc6b74f1ee409e93ca1646e678ad47753d",
+        "structure/README.md": "e8701283af0599072f9f1de34d33370bbe96fbcd1b1875ee5466e019533bfc1c"
+      }
+    },
+    "dfrobot-dfr0198-k10": {
+      "componentId": "hw_dfrobot_dfr0198_k10",
+      "files": {
+        "examples/reviewed.md": "75d7fc456b0d9cd100d2ee7bd82a5fd019df9ca3ecdac3d51211cde9695b70c9",
+        "structure/README.md": "c543e705cb7e317a555e7a47e822dca7f76ccc0c454c49d08b3e236c355bf95e"
+      }
+    },
+    "dfrobot-dfr0299-k10": {
+      "componentId": "hw_dfrobot_dfr0299_k10",
+      "files": {
+        "examples/reviewed.md": "ecd6328a7931492f3be0863a049a54093444e31aba3a2ff1ce795454bc465c7f",
+        "structure/README.md": "732a9be41fecdec703240551c4c5985aade54f12cc1a1f3627c896362d1e493e"
+      }
+    },
+    "dfrobot-dfr0523-k10": {
+      "componentId": "hw_dfrobot_dfr0523_k10",
+      "files": {
+        "examples/reviewed.md": "de3355d1ec2b6cd9cdc22c5c872e91cf695946175ee14bd156b2fb088fda6552",
+        "structure/README.md": "b379172763042dadd4e0fe6757beb7792b7239faade405319793a8d96c8ed069"
+      }
+    },
+    "dfrobot-dfr0534-k10": {
+      "componentId": "hw_dfrobot_dfr0534_k10",
+      "files": {
+        "examples/reviewed.md": "2a101a7c4f9ed95d9493eb0233972b1ebd42d9c669d42985046eafbafcf06fc3",
+        "structure/README.md": "2a1d03208dbf25d311cb92b7ca6f064b88124a6938e492c339062e4a8375bbe0"
+      }
+    },
+    "dfrobot-dfr0553-k10": {
+      "componentId": "hw_dfrobot_dfr0553_k10",
+      "files": {
+        "examples/reviewed.md": "5eb6286d0dfdbcac8edf6b4dcdd61e02b26ff67378054eaee10a820ae438de04",
+        "structure/README.md": "371959a15db5e7f7cb79b61d70efa874b97a7774d1947f49b5e3c59d3e6603fa"
+      }
+    },
+    "dfrobot-dfr0563-k10": {
+      "componentId": "hw_dfrobot_dfr0563_k10",
+      "files": {
+        "examples/reviewed.md": "1cd2cae9f321c4dbd4bc7e6d29e261d98aa29528b73bc5d3b5e235424609c68d",
+        "structure/README.md": "bf9dcbe8420404b92df3d233246da1a6b374fcf21c2804bd9ef901ead699fb85"
+      }
+    },
+    "dfrobot-dfr0646-k10": {
+      "componentId": "hw_dfrobot_dfr0646_k10",
+      "files": {
+        "examples/reviewed.md": "2bb5a9d323bcac083473cbc048ed88a134c8e284db84ecb2ff541004087cc143",
+        "structure/README.md": "d1dec4610d29a2a7b7d8204b952a659b6cf54d53656d93756058885b9c112c56"
+      }
+    },
+    "dfrobot-dfr0715-k10": {
+      "componentId": "hw_dfrobot_dfr0715_k10",
+      "files": {
+        "examples/reviewed.md": "d409c320a3a6a16df4e732c7cbc968cd55727f9023f11f9b9397ef827336daaf",
+        "structure/README.md": "b768e1cb7b44bee01cb4179e05b2041812f784bf1cc494c07468cb3a89fb9575"
+      }
+    },
+    "dfrobot-dfr0760-k10": {
+      "componentId": "hw_dfrobot_dfr0760_k10",
+      "files": {
+        "examples/reviewed.md": "206dffed2d396a6aa43545df2d896217f66287ffaf31d3b52adff9142e5eca3f",
+        "structure/README.md": "c282ded3023aae9fe5cd547c88a70829bf7a6c2ee11a24034453a0db92dadd6c"
+      }
+    },
+    "dfrobot-dfr0888-k10": {
+      "componentId": "hw_dfrobot_dfr0888_k10",
+      "files": {
+        "examples/reviewed.md": "9058fbda4793c31067a4fbe65494f3d3c29b4d595a34d0718201d66c54a07ec1",
+        "structure/README.md": "657e84700d6898d054efd0687a4b6e76f2e7014c173181ebc34d58787cd93bb3"
+      }
+    },
+    "dfrobot-fit0352-k10": {
+      "componentId": "hw_dfrobot_fit0352_k10",
+      "files": {
+        "examples/reviewed.md": "db4578bd2c53442ddd345e47d6f45d58d74fc24bce81bc6c97261857529e2f49",
+        "structure/README.md": "35159575777107a97d2a7d6f032b2ea4b17a0b056f91d70dbf50bf93acfb3b5e"
+      }
+    },
+    "dfrobot-fit0656-k10": {
+      "componentId": "hw_dfrobot_fit0656_k10",
+      "files": {
+        "examples/reviewed.md": "f48017d275f7116600ee007b261bd76a42057920ff928d546fcaa011f44bb828",
+        "structure/README.md": "53ff8855d138d746254e39ca953152a684c12489806bd2b2d0c21fd61332e2fc"
+      }
+    },
+    "dfrobot-kit0021-k10": {
+      "componentId": "hw_dfrobot_kit0021_k10",
+      "files": {
+        "examples/reviewed.md": "b73ea04b2f9ea4dbbaf33585badd1aac9f65d4fd63b414a3984ef85ca962a713",
+        "structure/README.md": "a487ea524c06fcce5ebe5809445b264a8a6b4ac835f2e94447daf8c804537f16"
+      }
+    },
+    "dfrobot-kit0176-k10": {
+      "componentId": "hw_dfrobot_kit0176_k10",
+      "files": {
+        "examples/reviewed.md": "253178169cc6a374b2723382740bb49621aa683d4c2a404be08f706d8d17cafa",
+        "structure/README.md": "4432c4a165d789ecec7613a76512889aecf7e793c079ba0551b5070edebd4439"
+      }
+    },
+    "dfrobot-sen0114-k10": {
+      "componentId": "hw_dfrobot_sen0114_k10",
+      "files": {
+        "examples/reviewed.md": "e817c36104185480dd5c2008eb95a7c6407b10297223984265b37bca3dbaf374",
+        "structure/README.md": "722d79458e5aabb7353a5aef5907cfae44ecc6f5680c8830c20a611df90e0f29"
+      }
+    },
+    "dfrobot-sen0121-k10": {
+      "componentId": "hw_dfrobot_sen0121_k10",
+      "files": {
+        "examples/reviewed.md": "6cdade5697bfed52678d226824908e6061b4c6a0be28cacdd003843a62b9cfe4",
+        "structure/README.md": "7cd87bc152bf23f5a1734c46d81cd80643a0522c3bb9a06cfb1d891b161eb9a3"
+      }
+    },
+    "dfrobot-sen0137-k10": {
+      "componentId": "hw_dfrobot_sen0137_k10",
+      "files": {
+        "examples/reviewed.md": "a0b89c57c240dfa8f0e0ea59f3650d38d0541a7c30f5ddd549f78808721c665d",
+        "structure/README.md": "8c890cd55f8f112d83ef73637e6afacf9edb14650045541fbe027ee853ea3818"
+      }
+    },
+    "dfrobot-sen0203-k10": {
+      "componentId": "hw_dfrobot_sen0203_k10",
+      "files": {
+        "examples/reviewed.md": "f50d4cb25668949a3213d67b70db6e8472ea905db12f501a371943c3930ee8f6",
+        "structure/README.md": "0ba9fefd7315c1bf1e9e433819020a6d6d0655ccd6b8d91df800982c86dfa61c"
+      }
+    },
+    "dfrobot-sen0206-k10": {
+      "componentId": "hw_dfrobot_sen0206_k10",
+      "files": {
+        "examples/reviewed.md": "aa7be4cc45df754bc1d858dff2d3fe998fd372fc4613903f8e437af834355f0f",
+        "structure/README.md": "dd8d46e2f40b3062a08bd0f1ed2f03102f3d735b5486169ceb9665dc9176b7fe"
+      }
+    },
+    "dfrobot-sen0224-k10": {
+      "componentId": "hw_dfrobot_sen0224_k10",
+      "files": {
+        "examples/reviewed.md": "a9f529b44bec1a2e66ccb172860a19a990544d483895f502c94e3be42108f231",
+        "structure/README.md": "e05f12326621cfb9ae7b7fb2896034ee45b5e4060e4613610bc1b505a4b03d21"
+      }
+    },
+    "dfrobot-sen0228-k10": {
+      "componentId": "hw_dfrobot_sen0228_k10",
+      "files": {
+        "examples/reviewed.md": "5fe82b1082250f5ae77ba29556b4dcdb8975552816b382492beed2d09cb928d0",
+        "structure/README.md": "6762707c65536ac54e52356de538734150dddd185ff287d47fb18ea345e82419"
+      }
+    },
+    "dfrobot-sen0236-k10": {
+      "componentId": "hw_dfrobot_sen0236_k10",
+      "files": {
+        "examples/reviewed.md": "c4fd3d3f0adcaa1e6df2a22b6ac17a7a024575a3aa716afa9278c2dd02da34f5",
+        "structure/README.md": "29bcf18f91796af4013a40c35f8b9cea7a0ac9bbf8d8c726b8825c54e0d3b0f5"
+      }
+    },
+    "dfrobot-sen0248-k10": {
+      "componentId": "hw_dfrobot_sen0248_k10",
+      "files": {
+        "examples/reviewed.md": "1bbe25c55b28369f1936554efa2faa29f39b39877147f34bb283541861eb6088",
+        "structure/README.md": "e1b541909f6ce5fbdbe296d2fc68bf187d293f8d5600bd44c476010b9f9b043d"
+      }
+    },
+    "dfrobot-sen0250-k10": {
+      "componentId": "hw_dfrobot_sen0250_k10",
+      "files": {
+        "examples/reviewed.md": "1ddc1afc253cad5cd18dbeac1292b57fa451f42c7a9b2b2001ee87bd6e9af6ce",
+        "structure/README.md": "1413c3ffb34f05c88cde45ce8e7270fdc565f424e67a59324f129cd068019adc"
+      }
+    },
+    "dfrobot-sen0251-k10": {
+      "componentId": "hw_dfrobot_sen0251_k10",
+      "files": {
+        "examples/reviewed.md": "0f3eeecbc4534205b8260c781510eded10dee46235e5e0a8737e6dae80f91a38",
+        "structure/README.md": "c656087b2f3bd228dbf5791d8a0a25095f2107513f6f2013bce6448381a51a00"
+      }
+    },
+    "dfrobot-sen0263-k10": {
+      "componentId": "hw_dfrobot_sen0263_k10",
+      "files": {
+        "examples/reviewed.md": "d633e3225a29ab07747bddda37e8073982d71bb04ced938cafbab7607d5920f6",
+        "structure/README.md": "fd27f77a2a27ded0bd669c02094b2a48d646cc7d23d46c091ad7c06796dd11a8"
+      }
+    },
+    "dfrobot-sen0291-k10": {
+      "componentId": "hw_dfrobot_sen0291_k10",
+      "files": {
+        "examples/reviewed.md": "2f936311cb8da3f0617722c653ed436491afba58570b6e77b930f651a528ed8c",
+        "structure/README.md": "331d778a099593dfd5f42de283158aa7029c8f6dd8a2e0cc882a40b66bb0369b"
+      }
+    },
+    "dfrobot-sen0305-k10": {
+      "componentId": "hw_dfrobot_sen0305_k10",
+      "files": {
+        "examples/reviewed.md": "c2bc4c2f438dc488e1e123a3b8e279713cb76b0233f7fa9845a7fc0c9da7c5d2",
+        "structure/README.md": "653e04c9b34616e311c267be0122b4721b2d97a8bea855d51595acf1b1b57f94"
+      }
+    },
+    "dfrobot-sen0315-k10": {
+      "componentId": "hw_dfrobot_sen0315_k10",
+      "files": {
+        "examples/reviewed.md": "7607d79a756aaf1ba367b6716b5b99ad4440f25a937a5a9b47561206ef89ce32",
+        "structure/README.md": "359cd4f13ef0cd52a279076abccfcfa7da6a8cce2720a70eadc9eb54f3b19a8a"
+      }
+    },
+    "dfrobot-sen0321-k10": {
+      "componentId": "hw_dfrobot_sen0321_k10",
+      "files": {
+        "examples/reviewed.md": "cdd11988e97092b3abc45dee00c57c7007d7564a83ebedcff7af752108d676d6",
+        "structure/README.md": "d68be581f9fd10b1510bf3e26a7b290b894c5f01b589984445e2e1e4e66af2a0"
+      }
+    },
+    "dfrobot-sen0322-k10": {
+      "componentId": "hw_dfrobot_sen0322_k10",
+      "files": {
+        "examples/reviewed.md": "4b956dc2b6cf7f0c5e6ea7980e9df6ceb3ebd1dcfa14768d7de46569ec315d41",
+        "structure/README.md": "09d74d5dd8f2bfc47b0b8cd2bf993440687a931c98808e6b030c30f6101e8e62"
+      }
+    },
+    "dfrobot-sen0334-k10": {
+      "componentId": "hw_dfrobot_sen0334_k10",
+      "files": {
+        "examples/reviewed.md": "7e7070086c66b5cd67423f605cd28439531b46bb875853a0f5df0ebc4bf5712d",
+        "structure/README.md": "5e370fc480a1ecf4a3b53e9997aea8d75cb6fef54bfc7dcf80330755fe43efa6"
+      }
+    },
+    "dfrobot-sen0336-k10": {
+      "componentId": "hw_dfrobot_sen0336_k10",
+      "files": {
+        "examples/reviewed.md": "942af33f8b9fde1ec85838eb64a418fc5a56962940069fb7f3d87259a92206b8",
+        "structure/README.md": "e794a0ea4a10ebe197734a539493bdd8af33cf1c46fc2e7c68eb1d5e5a1aa610"
+      }
+    },
+    "dfrobot-sen0359-k10": {
+      "componentId": "hw_dfrobot_sen0359_k10",
+      "files": {
+        "examples/reviewed.md": "4c051e32ea597922fe718a76fe31cd13686eff9090a7afc1e90034ee50b3dcb0",
+        "structure/README.md": "d249704ca8930da967443bc0f36e7605a4e470523c336ad7bdc728813ed17eda"
+      }
+    },
+    "dfrobot-sen0364-k10": {
+      "componentId": "hw_dfrobot_sen0364_k10",
+      "files": {
+        "examples/reviewed.md": "b44c737cd21ddcf3446c3d99d7a835e67de329e79950d57fd139cd36c83a43ce",
+        "structure/README.md": "0cc289bd5f74bf6c0947221e9c3d5420f68c0c11a53833c27e368e0e1bb5cf13"
+      }
+    },
+    "dfrobot-sen0376-k10": {
+      "componentId": "hw_dfrobot_sen0376_k10",
+      "files": {
+        "examples/reviewed.md": "31e923e003bbe3338a876cce2f90d6f934028d7e7164783b33a9e256a07f118e",
+        "structure/README.md": "b4bd8f9eb3d65c5f54188e7eb55b6d39f8eac6805bdb593ac6901a0075c188ea"
+      }
+    },
+    "dfrobot-sen0388-urm09-k10-micropython": {
+      "componentId": "hw_dfrobot_sen0388_urm09_trig_k10",
+      "files": {
+        "examples/reviewed.md": "59d34813c4cde27aa1fc6237329fb0f55c90e855e4c45f17b4bfcdb30f3307af",
+        "structure/README.md": "cca2620dd8ed6f91412b1d2dd71a10252cacb54019b95c9ec330077bded735a9"
+      }
+    },
+    "dfrobot-sen0514-k10": {
+      "componentId": "hw_dfrobot_sen0514_k10",
+      "files": {
+        "examples/reviewed.md": "9ede6a08afe60261f552bb6cf492c4521dc5ff9eb911597095a99f6e84fd2cbd",
+        "structure/README.md": "b0d6e1a09c6ace518485f6b36ca6b4065e6ac8103f6176ef1d1ce8d0c05473d8"
+      }
+    },
+    "dfrobot-sen0517-k10": {
+      "componentId": "hw_dfrobot_sen0517_k10",
+      "files": {
+        "examples/reviewed.md": "a3ebfdae37b80de8b0e6a9d10b4fb496e0b273f84b0303a28e5535a09ee5752f",
+        "structure/README.md": "99e137ad13d2ec1674f6092cfb232dc326693e3933908bd1966f0dcbe4c5bd83"
+      }
+    },
+    "dfrobot-sen0518-k10": {
+      "componentId": "hw_dfrobot_sen0518_k10",
+      "files": {
+        "examples/reviewed.md": "676e58fe365bff35e4e82c483612092df88ee2f0fbfab0af5f435d88a412931b",
+        "structure/README.md": "eda81bce005ac413de5f18ce320fe69237293ebbebaa895f2184725eae020536"
+      }
+    },
+    "dfrobot-sen0536-k10": {
+      "componentId": "hw_dfrobot_sen0536_k10",
+      "files": {
+        "examples/reviewed.md": "1dfedc8356f0fada193354fc698061f6c49bfba9e1e0e4e24e3080de7b8fa38d",
+        "structure/README.md": "fdf7e3aaa4fff4b2f73a8069bfb144a625da42a41bf429c11cfae9cbee4ef986"
+      }
+    },
+    "dfrobot-sen0540-k10": {
+      "componentId": "hw_dfrobot_sen0540_k10",
+      "files": {
+        "examples/reviewed.md": "eb6c22fc4304ea6d05d627abe2f230cab7b35858df01feefcd80eff92f16f06b",
+        "structure/README.md": "74dd5ed37737567b5e247e32811eda2d7793e6f4ddb8d718e3b03b67b3efbd89"
+      }
+    },
+    "dfrobot-sen0575-k10": {
+      "componentId": "hw_dfrobot_sen0575_k10",
+      "files": {
+        "examples/reviewed.md": "df93080841cdf9809f8b97ceb8d6162943bf043161f4f164a73f98689946d7f5",
+        "structure/README.md": "510737ecebc6175eaaa30e7958df85065a14d2a29371ff28231d7c41f2ad0e63"
+      }
+    },
+    "dfrobot-sen0619-k10": {
+      "componentId": "hw_dfrobot_sen0619_k10",
+      "files": {
+        "examples/reviewed.md": "1d7736571f540e33b6f1739ddb05c9d59b5478517a828ae1a7c271e801fbcbd4",
+        "structure/README.md": "635500ad9d1397cc27c4bfc1c9c28cdf539f57de9bffe9375def9ae430ed8931"
+      }
+    },
+    "dfrobot-ser0006-k10": {
+      "componentId": "hw_dfrobot_ser0006_k10",
+      "files": {
+        "examples/reviewed.md": "f1c43d4e78ac85130fdee599aeb3c4bc4b10a4218d2ebbe769838806d8d5862b",
+        "structure/README.md": "c794b33fdcdcf5126ae3f24de05c8809b52309e48439494ca465b92ac90e5133"
+      }
+    },
+    "dfrobot-ser0035-k10": {
+      "componentId": "hw_dfrobot_ser0035_k10",
+      "files": {
+        "examples/reviewed.md": "a2d9bf6f591365cc255da6ff518cc2b6d120ebdfcc8ad0709606278994603584",
+        "structure/README.md": "8d7f15181f57340616a964c7edc4facb38d9a9fb669173e606b2d100e99f3cf8"
+      }
+    },
+    "dfrobot-ser0043-k10": {
+      "componentId": "hw_dfrobot_ser0043_k10",
+      "files": {
+        "examples/reviewed.md": "ea358db0825b0de7ba34aa0f0fac2c8d4062bb73cabcf963564f972fde22ed04",
+        "structure/README.md": "2e2bd49aed8271de7b8f4a483de2c3444d2aca12eb146cf9da2c8876a2605a0e"
+      }
+    },
+    "esp32-generic-c3": {
+      "componentId": "hw_esp32_generic_c3",
+      "files": {
+        "structure/README.md": "ba7ef78836382e36f4225d1962ad605f0c6c7b20463e57cb327569d878fa20d5"
+      }
+    },
+    "k10": {
+      "componentId": "hw_seed_unihiker_k10",
+      "files": {
+        "programming/references/03-screen-api.md": "ca1ac9d5cd6db0c3b4378ec2637c6ce7f9646efef836c365a965a7635e987716",
+        "programming/SKILL.md": "a922b5b0416ef13793105de1f4774c98634057980f1ad9c783bdc256fd68a94b",
+        "programming/templates/01_screen_shapes.py": "653f2012487a101e6a9bd8558df2d60fcd062270ae853373e3017c3b18e772b1",
+        "structure/README.md": "8a0bc693545fb30d71d2cfbc0bffccc5f24c6cc9d606137efdeae8c7cc5873fb"
+      }
+    },
+    "labplus-1ca3b4f76905": {
+      "componentId": "hw_labplus_1ca3b4f76905",
+      "files": {
+        "examples/reviewed.md": "e90e5cbbb18f28697a3ad7dc8a425efce35a786722ad3483eee64542d66c5bf7",
+        "structure/README.md": "11f0161e41cfe8b53c133378fe2ba89c45c5deff011ea74bee0f60ef406714cc"
+      }
+    },
+    "labplus-1d0f8e82ebc8": {
+      "componentId": "hw_labplus_1d0f8e82ebc8",
+      "files": {
+        "examples/reviewed.md": "f4e13dc95b300cef3f22a218cf160e486931bbebc0ac9c121004418865bbd841",
+        "structure/README.md": "d058ad5fed8c5508d5798b9445d8c9dc961fe279ca0e91fd5fb6f93ee6a5110a"
+      }
+    },
+    "labplus-2dedf3069103": {
+      "componentId": "hw_labplus_2dedf3069103",
+      "files": {
+        "examples/reviewed.md": "76f3e00885dc3d96bb8d8a81529bf7dd75652361cc0360c4c3c88b984949d528",
+        "structure/README.md": "b673e127f603e4f0f45529e374dab06c86b55c1ad5a2b9fd65302b8c1504ee0c"
+      }
+    },
+    "labplus-30314065cbab": {
+      "componentId": "hw_labplus_30314065cbab",
+      "files": {
+        "examples/reviewed.md": "c2088536cb78c7cad510cb2e7d687e7445fc174e0799133c5238909451f2aadc",
+        "structure/README.md": "24a6bb1a7e2011c3f6b338683f83c1be2ca31a21d84270d719b6159a01d89739"
+      }
+    },
+    "labplus-318357bd10f2": {
+      "componentId": "hw_labplus_318357bd10f2",
+      "files": {
+        "examples/reviewed.md": "7f9c220e6568af710108c7c76904b368655ab99e7d5e08559a9fabe27ab6b64e",
+        "structure/README.md": "050529e2c913f90a454089e857bee70947b190df9ad6c50e9c60682d500c0625"
+      }
+    },
+    "labplus-35c06a9f5db4": {
+      "componentId": "hw_labplus_35c06a9f5db4",
+      "files": {
+        "examples/reviewed.md": "d0ef090219f7a6fb497adc687fe95b0bcbd407c5cb16b8cc3008441366fd720b",
+        "structure/README.md": "c2e4007d59c7b2e5f821ff070f54229618794610c6d6727d277c9548d3d6666a"
+      }
+    },
+    "labplus-3ef1d6ece471": {
+      "componentId": "hw_labplus_3ef1d6ece471",
+      "files": {
+        "examples/reviewed.md": "f7e530575124abc1bfd079092b68118d806c1d3ee089df014b2c4c9dfe9bdfef",
+        "structure/README.md": "ee15c28c67621d619cc799a5b5d3d6aec3708d89a2fad6da2cbfc36c89f7b8c9"
+      }
+    },
+    "labplus-401e62aca057": {
+      "componentId": "hw_labplus_401e62aca057",
+      "files": {
+        "examples/reviewed.md": "b1c57053dc71f5ebf275e7adfa6aa6da49e3d12565e775bb9cd5b58e6a7cace3",
+        "structure/README.md": "cd34fe55767c7f1f2d846561fe4e04de3b804dd86a4b9915cdd0eb52cc1515c7"
+      }
+    },
+    "labplus-44cb76b88e83": {
+      "componentId": "hw_labplus_44cb76b88e83",
+      "files": {
+        "examples/reviewed.md": "c8b088126bc7ba71b42e61db8347da64070a0fd88d9deba338510b711da3128e",
+        "structure/README.md": "6d3344738d5bf311ebe88fe8e4d928dbbc83e3301e0a7a1ce95b29cd73d68ae8"
+      }
+    },
+    "labplus-47b93fa3ffee": {
+      "componentId": "hw_labplus_47b93fa3ffee",
+      "files": {
+        "examples/reviewed.md": "265c5bf8c2c8586410e01b4ca020d5f2568f1f7c80a1ba85ff153541e0e97be5",
+        "structure/README.md": "70ea4c3290c8cef572aa8dbfa7fd9b958f4d96bd80e356e54d3af87a5451170f"
+      }
+    },
+    "labplus-4a7d76f441ef": {
+      "componentId": "hw_labplus_4a7d76f441ef",
+      "files": {
+        "examples/reviewed.md": "064e974513ba87b6e7c6bd3ceb68c193b041c7586ef5a6e7d84a580d02c48b23",
+        "structure/README.md": "25149736c6a0d872c98a50d835fc6a5070add182da66c67d413ac6940be4d947"
+      }
+    },
+    "labplus-505f5d1ce2a8": {
+      "componentId": "hw_labplus_505f5d1ce2a8",
+      "files": {
+        "examples/reviewed.md": "e5980c5a8ebb7252208db386aca4b49aab44f7bf7a3f59568c87397ce46219d1",
+        "structure/README.md": "b2faaf06af1d6e0603dad9b01359ad313db62c13fdea78992a069ed339a40091"
+      }
+    },
+    "labplus-55b9d62884a6": {
+      "componentId": "hw_labplus_55b9d62884a6",
+      "files": {
+        "examples/reviewed.md": "db47653a9a6cb88175683751389187eeeb71d25eee486a70693324e363e1ccae",
+        "structure/README.md": "6e03f41950ceaa27d5bfd606f9efa9a18a153e8fde136fbd89ab33a328f95b97"
+      }
+    },
+    "labplus-5b24aea98225": {
+      "componentId": "hw_labplus_5b24aea98225",
+      "files": {
+        "examples/reviewed.md": "14e87f2102ea18fc0b5987970da471be33ddb095cd8b3805bc542bd2f02e77aa",
+        "structure/README.md": "ff9bb98af072e28e222a1e1b465e702728c02b3d629a866647e3ee3813b6c270"
+      }
+    },
+    "labplus-6306ec4829f9": {
+      "componentId": "hw_labplus_6306ec4829f9",
+      "files": {
+        "examples/reviewed.md": "18bb399d64860107b916206b5575f47fa1ae14e25f0e23e182b2475de5a0a7e9",
+        "structure/README.md": "5a849b09efd2aa59ddb031d90545f57e51792b0fc87625bf5012add92bc977e6"
+      }
+    },
+    "labplus-696705786a8b": {
+      "componentId": "hw_labplus_696705786a8b",
+      "files": {
+        "examples/reviewed.md": "fad97a12fc0311767874888c4904ab2c28a706e947431a9a1fd33af7ae5b1e0e",
+        "structure/README.md": "9e1139017f4a6dd0870b13e988c9ed593a480fc22a034fbd5193a0acdfb0513a"
+      }
+    },
+    "labplus-6dafa52a65af": {
+      "componentId": "hw_labplus_6dafa52a65af",
+      "files": {
+        "examples/reviewed.md": "237330ff1d62319935a600f5690a39afb23a1fc2360f3352bfe536a6e135fe5c",
+        "structure/README.md": "81b0da8e3fd9ebc7f29ecb13431d9754988e506223863cebc1ccf2f84083b234"
+      }
+    },
+    "labplus-716cdd52a32d": {
+      "componentId": "hw_labplus_716cdd52a32d",
+      "files": {
+        "examples/reviewed.md": "28d3467875fad0adb81663feb557bcb96bf04038e96e9abb7a81691ac2809fc6",
+        "structure/README.md": "c3a1184a65426eab4ad709502cefae4015b540e6dd427122ed5deb224585770c"
+      }
+    },
+    "labplus-7af2cde0e65a": {
+      "componentId": "hw_labplus_7af2cde0e65a",
+      "files": {
+        "examples/reviewed.md": "05051cd9e744d96c2365a45782154ef2caafcf063f8c5383dd3f59c38f9b4484",
+        "structure/README.md": "dd5d7efe4c0e7fe6b9c673287a407ae0c022bf58a253fdca3fecd59069fd0bb5"
+      }
+    },
+    "labplus-7e1f47131e0b": {
+      "componentId": "hw_labplus_7e1f47131e0b",
+      "files": {
+        "examples/reviewed.md": "6f960a76d16aecb3dd4f2aa82fc5461e90732f03f3edc6c8628e5303c8d62863",
+        "structure/README.md": "c327da10aeb804a083b82133c5e785f1876c410714a9ae2e302c2da618b1ce86"
+      }
+    },
+    "labplus-828910203606": {
+      "componentId": "hw_labplus_828910203606",
+      "files": {
+        "examples/reviewed.md": "edc331238b95967e909ddf96ba25252704aeef900fc060bb764e2df2e69d634b",
+        "structure/README.md": "0cd477ba9b69b2af0069df9f66b586573f45365ac22002c1e2529da931791408"
+      }
+    },
+    "labplus-84dc86f7b28c": {
+      "componentId": "hw_labplus_84dc86f7b28c",
+      "files": {
+        "examples/reviewed.md": "a521994e4182aa4b5d9586c8968caa6d73a05682efd237e3092a00489a625169",
+        "structure/README.md": "d75f2b9372e156c70c6c598e120cdc2c3ce8a38d82e13b3c8aac96398cd48bd2"
+      }
+    },
+    "labplus-85f71ea88a77": {
+      "componentId": "hw_labplus_85f71ea88a77",
+      "files": {
+        "examples/reviewed.md": "ccb222116face749f8b5dbfbbb7e30a7816f3609cd365cc3ee318efeb308f7d7",
+        "structure/README.md": "506b94c8624490811e8a1c01e3c748d8f46b493eba259f4b5054b81bcbbc39b7"
+      }
+    },
+    "labplus-8760b02b3fe7": {
+      "componentId": "hw_labplus_8760b02b3fe7",
+      "files": {
+        "examples/reviewed.md": "e257e842aca25e5874300b25690a5e664ff50d608efe30b0b375dc313669ec6e",
+        "structure/README.md": "9851039d7a02d042f5d5137de9f8a5d950180a95bfab72c0663cc3fdfe86110a"
+      }
+    },
+    "labplus-87d187e346f7": {
+      "componentId": "hw_labplus_87d187e346f7",
+      "files": {
+        "examples/reviewed.md": "f77074e100a516b5a24604a4c13d30b5e7aa00c4607406181d4e625af437e088",
+        "structure/README.md": "2ec057fad30432ad460e91b01d00eaf2fbcc473b3db39d269fa649eae436e1c3"
+      }
+    },
+    "labplus-89634d2b755b": {
+      "componentId": "hw_labplus_89634d2b755b",
+      "files": {
+        "examples/reviewed.md": "19c7fd26819291b230e9d14ab9fa1f2d61674349149dfc35477036cf028fddb1",
+        "structure/README.md": "2be8f76e9c8b72ffde918d35c333dcf609baa7e1238e1ee615e1915afb615bca"
+      }
+    },
+    "labplus-8ab9e3fea99d": {
+      "componentId": "hw_labplus_8ab9e3fea99d",
+      "files": {
+        "examples/reviewed.md": "a496879952412e4427f56cc57e3ebb8a17078dd0b1e860415c762ee39f5577ac",
+        "structure/README.md": "304db0b2a3e8d67dad6c655c1847012ed9aa13bb33e99d12b938ae0cc1946171"
+      }
+    },
+    "labplus-8df95567ea4f": {
+      "componentId": "hw_labplus_8df95567ea4f",
+      "files": {
+        "examples/reviewed.md": "28c102986cc492014b6148ae7d7636c0f49387a40b7455147576a5f0efb19b00",
+        "structure/README.md": "72fba01e69d91ae0e7add4bfb847707333f8d98fec7e376ac658127a2569b05f"
+      }
+    },
+    "labplus-8e9496414ad6": {
+      "componentId": "hw_labplus_8e9496414ad6",
+      "files": {
+        "examples/reviewed.md": "eb3abc4fa489a5b01bacc9420fc1ba5c2dbe45e7271be7cc4a7b968eda27acaf",
+        "structure/README.md": "6cb427377e79a97929e2d909676c5c511f4b830dd893e50280e1473af5cbd832"
+      }
+    },
+    "labplus-9084b07bd892": {
+      "componentId": "hw_labplus_9084b07bd892",
+      "files": {
+        "examples/reviewed.md": "df60bf09dd1751cd9df4f553039787440cc9626aed486203653af8248bcce6a6",
+        "structure/README.md": "0dc3b465f8722456ff92b7b8212e0601b96ef67aa32b0ce31e65579c1e423351"
+      }
+    },
+    "labplus-929ff6038a2a": {
+      "componentId": "hw_labplus_929ff6038a2a",
+      "files": {
+        "examples/reviewed.md": "46b95125f7287712c5d32da2ba067322e024ba5e2a22f53679592ecb281c41b0",
+        "structure/README.md": "9ba93fb5d4ee81a238afc4a7058cae86b20cf8919587a1cbda423d9bd5430cba"
+      }
+    },
+    "labplus-9a155a9d4670": {
+      "componentId": "hw_labplus_9a155a9d4670",
+      "files": {
+        "examples/reviewed.md": "a215dea2aebb6302f3067aa7bb17bfec913dc9fc2b4e9ad72f78d77719e6b397",
+        "structure/README.md": "9be2c9c0362a282cc77aa08562acb268721339facf2b98d6fe99ebef3ac9c771"
+      }
+    },
+    "labplus-9a60f813c280": {
+      "componentId": "hw_labplus_9a60f813c280",
+      "files": {
+        "examples/reviewed.md": "bf2770f7e49e5293cbf88e18fe0ced84c8c7b2b198bac12a0ff66876d8122f95",
+        "structure/README.md": "9f4e5b73f768fbe658c7f47847915ba0fbda114eb1da3b16db93bd8a22d4eeb6"
+      }
+    },
+    "labplus-9da6c501625a": {
+      "componentId": "hw_labplus_9da6c501625a",
+      "files": {
+        "examples/reviewed.md": "bcf089e5c4c8d9b0eaf502622f96eae186265930decf5e06a951257f67653517",
+        "structure/README.md": "5717dd2f1ea21aec6246d827bcc4ac12318a0e2c6836cbd54b0c0f5dcedbbaac"
+      }
+    },
+    "labplus-a13d2a73b51e": {
+      "componentId": "hw_labplus_a13d2a73b51e",
+      "files": {
+        "examples/reviewed.md": "56be1d4d48daa8f526cfacbc682195319a137533e596bf9602d2a177c7dde7cc",
+        "structure/README.md": "94f477ed03189b7464ba69eb3640965633feac167b548540247858acba0816ad"
+      }
+    },
+    "labplus-a24681c02b11": {
+      "componentId": "hw_labplus_a24681c02b11",
+      "files": {
+        "examples/reviewed.md": "5f986f3a93e26309fc7f0b70f52bb4db7272c9123331a1bd532bc5381063051a",
+        "structure/README.md": "9264cd34d1c27bf445cde8067488c7b44b26eb53b0fabb15a1b264d886496925"
+      }
+    },
+    "labplus-a648f2a134c2": {
+      "componentId": "hw_labplus_a648f2a134c2",
+      "files": {
+        "examples/reviewed.md": "7364bf5351a6a9aa45cc635260985e310b77fc069a1d8d80c4a73bae343cab4e",
+        "structure/README.md": "6fa443b19ba2cf187a648665fa566e1d238c867033ebc2ff1208f6fbe881f163"
+      }
+    },
+    "labplus-ac865b39ac86": {
+      "componentId": "hw_labplus_ac865b39ac86",
+      "files": {
+        "examples/reviewed.md": "45def2b50c30447fb238b63a7fd08a561886d2c94147790161a83e6093780f3d",
+        "structure/README.md": "299426b54d90ae01cf394b0d8c189abc1b8a237bccf6535af73ca2752e8acb47"
+      }
+    },
+    "labplus-b4cc39437859": {
+      "componentId": "hw_labplus_b4cc39437859",
+      "files": {
+        "examples/reviewed.md": "8f09da57a51e1cc0bc5af840a02e5ede067ba14fd03c523583c69d7093235f94",
+        "structure/README.md": "52b674d4b0584192fdb08d5c48b744c2fd9c80956ec05cf37c5796293b524a1c"
+      }
+    },
+    "labplus-b94b67e6f02c": {
+      "componentId": "hw_labplus_b94b67e6f02c",
+      "files": {
+        "examples/reviewed.md": "03cbe8928b1d425a889b9cc5c807cee2e4be8b7b5163fff0a656b221b97f7bc5",
+        "structure/README.md": "0eb08c6b4f95a2a8d56780f780fd8be89ee0078dceeed8c7a61545d29085fba1"
+      }
+    },
+    "labplus-bc49b3acdae6": {
+      "componentId": "hw_labplus_bc49b3acdae6",
+      "files": {
+        "examples/reviewed.md": "b3e32d86e18d4854d626202d812d7654b0f97c6390fcf46ed83fad19b34613d4",
+        "structure/README.md": "11fe441f07fe60aff6b9e6f2cfee8e554d8170eba4c67c1ddf3e3e1559e8cc3a"
+      }
+    },
+    "labplus-c448bb0d8dd4": {
+      "componentId": "hw_labplus_c448bb0d8dd4",
+      "files": {
+        "examples/reviewed.md": "b96e36fbd9424754b12381a77ad065f7624fd129aecbe4127711f4e6bc21ab7d",
+        "structure/README.md": "1aa757f9dfd7fb1d27b8cfaaf60528ee6cfda79556b24b5401ba0bda8156e6d5"
+      }
+    },
+    "labplus-c48d19378c28": {
+      "componentId": "hw_labplus_c48d19378c28",
+      "files": {
+        "examples/reviewed.md": "3a211cae7da2e07d7e2bb12fb7eea00b221e0a7d42518c0d1d3fb4a50cb18378",
+        "structure/README.md": "71182b6b8bf787d69eb68264654cb14fd68de490dba73b744a751349e3e16e6c"
+      }
+    },
+    "labplus-cf69c01bfa27": {
+      "componentId": "hw_labplus_cf69c01bfa27",
+      "files": {
+        "examples/reviewed.md": "f43e835bb60d0494349e7044a68708dd3d539a8413a2e03bbce1186b67a708c1",
+        "structure/README.md": "8170f7bb18b8699339f5cf3bb4e1b11e82dd2da607facdc881bdaabf9b3b95a6"
+      }
+    },
+    "labplus-d31ced3adb68": {
+      "componentId": "hw_labplus_d31ced3adb68",
+      "files": {
+        "examples/reviewed.md": "ca04bbd7e319f9588fda3893b2e9c94c7522f8193808c1fed9e8885925c38b76",
+        "structure/README.md": "58af7ff932ed4b92390e5b10ab59ac008b52ecc5717f4e48a3404c167768b648"
+      }
+    },
+    "labplus-d4d3817b95cf": {
+      "componentId": "hw_labplus_d4d3817b95cf",
+      "files": {
+        "examples/reviewed.md": "6a7cea826d2bbe0b141ecb7ed660893e5246079c353933b95d8a01c3b85cf4bb",
+        "structure/README.md": "5a5da09319696933423494c8d81bb27de2e65f138c0cb1b2ae83b78aeff5d59e"
+      }
+    },
+    "labplus-dc9beba4542c": {
+      "componentId": "hw_labplus_dc9beba4542c",
+      "files": {
+        "examples/reviewed.md": "a2e20a587d14cd8bc3224bc0af3fad3f68fc75a7d73face723523960a37d00c4",
+        "structure/README.md": "f37fd70d5a505955a3ab2cf391f027e7d79fc1e11829cc89d9846b05b230dc37"
+      }
+    },
+    "labplus-e7d83530f1ae": {
+      "componentId": "hw_labplus_e7d83530f1ae",
+      "files": {
+        "examples/reviewed.md": "584f8698c1db244d1ea2f05e25e4f4927785b2624d4ac259beba733eb4baf807",
+        "structure/README.md": "749d3d0e0f058ff3f531312ee2fb8822798ed2596acb9cfe9cee8bd7b8fb9b90"
+      }
+    },
+    "labplus-eabda30c851e": {
+      "componentId": "hw_labplus_eabda30c851e",
+      "files": {
+        "examples/reviewed.md": "703ea1b44c5cd7c579b55bc105c55827bdc38e274a894efe99d77e2889768ff5",
+        "structure/README.md": "728571bf87a457bc73d95dd09ef9fa8dcf75627c399043939d6dad18a4da5de2"
+      }
+    },
+    "labplus-efd635954f2a": {
+      "componentId": "hw_labplus_efd635954f2a",
+      "files": {
+        "examples/reviewed.md": "676550d9d1242d954410246072730ffe486336828c538a71fb58f9c930987513",
+        "structure/README.md": "16c440651fd3d03e33388883482fcd61863749151ffc6fcf6f452a6ee44f79d5"
+      }
+    },
+    "labplus-f13c852fb7f1": {
+      "componentId": "hw_labplus_f13c852fb7f1",
+      "files": {
+        "examples/reviewed.md": "b1f3aa8ff34100249ce7d0c84b37d38e2418fd7004aa74ed98e8353426d019ec",
+        "structure/README.md": "9d5e7b3abb82e83cde518e332c1ebf7551c92122fca783bbebf01828a3370814"
+      }
+    },
+    "labplus-f2d23891735d": {
+      "componentId": "hw_labplus_f2d23891735d",
+      "files": {
+        "examples/reviewed.md": "491a980f19ee9b28f12bb66bb6128c8b4eeef884fc25ec6ca51025d4067cbd70",
+        "structure/README.md": "6bfce437315271e4e15ec4a6216c7f2e64f38b0a880133fbc0740984b37e3cd7"
+      }
+    },
+    "labplus-f91d6811dc71": {
+      "componentId": "hw_labplus_f91d6811dc71",
+      "files": {
+        "examples/reviewed.md": "5f5927a724b5053ced2103e875d64145a4dabae57fc6be81d46eed787c5f658c",
+        "structure/README.md": "5b3fe62cfc75a805acbff583a83ce2d6420efae36145b787130f7588a42c6efe"
+      }
+    },
+    "labplus-fd25ec66ad0b": {
+      "componentId": "hw_labplus_fd25ec66ad0b",
+      "files": {
+        "examples/reviewed.md": "0e231235b8c11d07b7a601ed212f0a111ae42dbac398a5c8924c3f64bbef3564",
+        "structure/README.md": "3c1caf6545cd07ad8b2585d88357d75c95f8f4e19eb4527890cda9784eaaf2de"
+      }
+    },
+    "labplus-fe5868bcf647": {
+      "componentId": "hw_labplus_fe5868bcf647",
+      "files": {
+        "examples/reviewed.md": "d1c6acf1b927dd8b6162e806f1dd638bbc5648592fba496d74e5c846aa57cb12",
+        "structure/README.md": "4e78e846a475159ec452723722fb5bc64bcd68cf0c5ade5918a7b63987449768"
+      }
+    },
+    "labplus-ffca49372bbb": {
+      "componentId": "hw_labplus_ffca49372bbb",
+      "files": {
+        "examples/reviewed.md": "907444cee70130a04145df585ae1c493257ebe7d157ced5f922d9c97ad94b773",
+        "structure/README.md": "cc1a1d12bd58bd4e13c9841d18ad8d10cbfbecc57c3a3e102031640394c5c63b"
+      }
+    },
+    "labplus-fffc88a41e8a": {
+      "componentId": "hw_labplus_fffc88a41e8a",
+      "files": {
+        "examples/reviewed.md": "4b66b6797176253d5690d200bb4730e052eae34e9bb424a1ba7b8cdbd67a2e09",
+        "structure/README.md": "0ef7e25e2d4ef3b9b34200c30bba5e9e79d79da2d520faae381181478d111bbd"
+      }
+    },
+    "labplus-mpython-esp32s3-v3": {
+      "componentId": "hw_labplus_mpython_esp32s3_v3",
+      "files": {
+        "programming/references/api.md": "ec3b5653473e6f3b977d4e9517f8930ecb868945c380d7ec2e9855c4a4c053bf",
+        "programming/SKILL.md": "aedae42a466aa49e354b0ced431e9ee3f2b228b4a8abb81d70beee6bf4d0fd0d",
+        "structure/README.md": "3e5d6313965f60a5cad1abddea183e2f9b1f91d192c6cf8b394cf9b5f33d6178"
+      }
+    },
+    "labplus-mpython-v2": {
+      "componentId": "hw_labplus_mpython_v2",
+      "files": {
+        "programming/references/api.md": "461d9129e211008bff7ab54c6734c385aea8ec11d8b979b0f6b76044298a823f",
+        "programming/references/sources.json": "dd994af3bce4d00e0d4d3276746d533ff5c2fe4384951b7b0d21a1d4ca632139",
+        "programming/SKILL.md": "e52792dc50814c291f233a7147fab67a43c83de0e950e2603d5fde70e5c462ea",
+        "structure/README.md": "9ff76eb0aa11df009d035863f13a337ef0bc8ce2a64bd13326d01ba64d5dda9f"
+      }
+    },
+    "nplus-06196a60bde7": {
+      "componentId": "hw_nplus_06196a60bde7",
+      "files": {
+        "examples/reviewed.md": "4d2f5d10440b748d3dc5040d1adab4a91ab5282d35eb12e1755dc6b6d64dbe8c",
+        "structure/README.md": "c3c6c9f68515a451c074603418c6a8497b6e7647aca7f5b212927d8b4e5f7b28"
+      }
+    },
+    "nplus-181b370224a3": {
+      "componentId": "hw_nplus_181b370224a3",
+      "files": {
+        "examples/reviewed.md": "ab3ea78866292e955534dc5e488e90693f4525be791e30f4d64fc5b98cc8a7c3",
+        "structure/README.md": "09cb1cf920088a9aae4f2a496e6273c258a505ad6157ca47dba7e8f3646ff6dd"
+      }
+    },
+    "nplus-2ad6a9f375bf": {
+      "componentId": "hw_nplus_2ad6a9f375bf",
+      "files": {
+        "examples/reviewed.md": "9509c2a8cfbd123449314226718f7a71376e9e6759ee6259a0eb52edac4bb51c",
+        "structure/README.md": "d77444768034669fd80cd2d9390826b522b29636de44955cd6dcac2680296e6c"
+      }
+    },
+    "nplus-2e2a935b49b1": {
+      "componentId": "hw_nplus_2e2a935b49b1",
+      "files": {
+        "examples/reviewed.md": "a857bc007e98c96a48eac6fb8c1306d85ae097c81681990758ab455cca628246",
+        "structure/README.md": "3a12dba07858494a4658f47da0a54bdc7966e4520e23a37fe76d03016e534653"
+      }
+    },
+    "nplus-2ece1cbc4594": {
+      "componentId": "hw_nplus_2ece1cbc4594",
+      "files": {
+        "examples/reviewed.md": "1e8793ef76cff88d8eab500389774e5acc91a5a3c249d6b23a6849c494c89ad1",
+        "structure/README.md": "3731e5171343e3c095acd537b55ca48e9e2ab87f13cdbeff18d7b4d3aa717dac"
+      }
+    },
+    "nplus-32294829cb77": {
+      "componentId": "hw_nplus_32294829cb77",
+      "files": {
+        "examples/reviewed.md": "60115c7d91899f6f47bbeab746446228c7536d517eaaa14b27d742ee343bea91",
+        "structure/README.md": "011ecfb10af66689254db6a4ad849f81ae23f824c3138cd79f3c5178e2b8c5a4"
+      }
+    },
+    "nplus-34d13fd4035d": {
+      "componentId": "hw_nplus_34d13fd4035d",
+      "files": {
+        "examples/reviewed.md": "c5566018620f083a9f6997d8016e393d99311db1f088ef6b6e58a643ae810282",
+        "structure/README.md": "cc540050ccf6bba680cdd1817b50f7c3a35246e712bbd744ac20907e4d9c5017"
+      }
+    },
+    "nplus-4cedf680cdc2": {
+      "componentId": "hw_nplus_4cedf680cdc2",
+      "files": {
+        "examples/reviewed.md": "1b36cd66d34bfdcd9b40feb0611229dbeb76bb970ac506e979df25bca6a9ef3e",
+        "structure/README.md": "89bde6fd7e0132c88573c53049ba011116072ec2b62b077589e53b5d6d22f556"
+      }
+    },
+    "nplus-5da3f3ba7d1d": {
+      "componentId": "hw_nplus_5da3f3ba7d1d",
+      "files": {
+        "examples/reviewed.md": "4f2c49df1c98788a92c72ebc23892291eaf51e0596fb62288f4f801ec4573ba9",
+        "structure/README.md": "82313ac1f0f821b3dae7bec098b191ab33a745e985679c0001eec0ce934d7885"
+      }
+    },
+    "nplus-71df1fef655e": {
+      "componentId": "hw_nplus_71df1fef655e",
+      "files": {
+        "examples/reviewed.md": "577e3bd05a5d3d7bae647f0584db083d822a4b294890a85b9d10c59ebfbc3580",
+        "structure/README.md": "be02096909ddb97a60b256ee29cc865b7dd162432c83222a28519655ffd4d881"
+      }
+    },
+    "nplus-81c91725522e": {
+      "componentId": "hw_nplus_81c91725522e",
+      "files": {
+        "examples/reviewed.md": "3feeb5854c71ef7718baf45f98c4a8d7bbbc03b9a554900e51a155bb91870ab6",
+        "structure/README.md": "97148ac4686403aa3193cac86754154bc678732e596a4ada65c93d19097bc1a0"
+      }
+    },
+    "nplus-84ece2b19dae": {
+      "componentId": "hw_nplus_84ece2b19dae",
+      "files": {
+        "examples/reviewed.md": "3428430d992711c33511e25582171b1213f9108ed7d3ee2d818814c6fce9d2c5",
+        "structure/README.md": "9bc0fa2d71005ee0930f1a5a11ae0a34939e6b81270795addfcf8959642c23c4"
+      }
+    },
+    "nplus-8cbe6d8de049": {
+      "componentId": "hw_nplus_8cbe6d8de049",
+      "files": {
+        "examples/reviewed.md": "b397b00869bbac0984a61e54596c0ff6649394496d73c184bb9fc8299368cf7c",
+        "structure/README.md": "20f9b92fc6234e271e203d88886f3aec2065b433531dbffe8175ca5cb60572d7"
+      }
+    },
+    "nplus-ae9a4dbea9c2": {
+      "componentId": "hw_nplus_ae9a4dbea9c2",
+      "files": {
+        "examples/reviewed.md": "6f8eaa1dc0f840470c994ba7afce5ee2b1d51d4f5810dafbfea8e87b1d642d1d",
+        "structure/README.md": "e760c10b8e5a624ec5a8f948dce94406024a784d98d9fcc744177bf5993327bf"
+      }
+    },
+    "nplus-ceb3ab3cb2e7": {
+      "componentId": "hw_nplus_ceb3ab3cb2e7",
+      "files": {
+        "examples/reviewed.md": "3a68ca847dc15d8ff53c5e85e657e2af46e5491ead344d5d219f39127ae4d788",
+        "structure/README.md": "f5ab5503b5b46a8fe5b0cd108f4f72aae9eaf8db7406933691a018117e27a9b7"
+      }
+    },
+    "nplus-d2b4b38a4c73": {
+      "componentId": "hw_nplus_d2b4b38a4c73",
+      "files": {
+        "examples/reviewed.md": "5df9105ba7efdbb508de2289c9e9fca6d268912dfd05709414cd00040d7195cb",
+        "structure/README.md": "89fd4a26d1eb4add03d2b8bc362e2ee0b64c3b350d9c97ce720335c51bbaef80"
+      }
+    },
+    "nplus-d6083f07c228": {
+      "componentId": "hw_nplus_d6083f07c228",
+      "files": {
+        "examples/reviewed.md": "b840710a85b9ffd4ca11b5ca88bd745d5323d7ef10d00ac4e85c0ee061bcbb83",
+        "structure/README.md": "e0ad6a8d2fe729eba32e1ccbd015ab9de6d6681228e3b20bffae952609956f42"
+      }
+    },
+    "nplus-dbe8c4f7e0ad": {
+      "componentId": "hw_nplus_dbe8c4f7e0ad",
+      "files": {
+        "examples/reviewed.md": "edf4239cfa2a47851a356d3a7445e7377883c4239558628f1c0c2301e5358ae2",
+        "structure/README.md": "0058d2f6829fd5ac9c0d5cb25534508ceb3b8aaa1643c6b41f4522d73da7bfe8"
+      }
+    },
+    "nplus-dd530eaae1ba": {
+      "componentId": "hw_nplus_dd530eaae1ba",
+      "files": {
+        "examples/reviewed.md": "1b87d2bc2d03407fc823bb423a23717ee3f258bd440dba4576b4873078f034b3",
+        "structure/README.md": "199dc61206d154e2e6afe47c7b851a57f69fb9f4d2c40fbdb0762b615a6d6c0b"
+      }
+    },
+    "nplus-f22fdbbb328c": {
+      "componentId": "hw_nplus_f22fdbbb328c",
+      "files": {
+        "examples/reviewed.md": "2521749142d055bad7bd4ee3648b6693a470cabe56342a5b74018edf5f6fced5",
+        "structure/README.md": "32dab48cc2027469f577aa32fa99160ca2fbcb7d6b3c12d37f415eb5ffc57f19"
+      }
+    },
+    "nplus-fe83f6e5c369": {
+      "componentId": "hw_nplus_fe83f6e5c369",
+      "files": {
+        "examples/reviewed.md": "b05bac7f2f4f19f19b8e2545b2d54dc86c39da136ffee8aa06f929b4acccfdbd",
+        "structure/README.md": "1561ac61a74dc2d877e547a45d4d19b43fa4dcf353e5225ea1ae84c4b09a77cf"
+      }
+    },
+    "regulated-5v-3a-power": {
+      "componentId": "hw_power_5v_3a_regulated",
+      "files": {
+        "examples/reviewed.md": "18705de8a0c3b4b2b973de34bc9e8d8a420c646ffaae983f45bc8e7a8d171cfe",
+        "structure/README.md": "daccb281a413d4e2bf99b5cd19eccb90f37638177fb33b4c84bfd444a1fe5e26"
+      }
+    },
+    "seeed-0137185ddf8d": {
+      "componentId": "hw_seeed_0137185ddf8d",
+      "files": {
+        "examples/reviewed.md": "5bee21e18f7bbcd230ed28645c4ab8e6155d49f0024f096914c7dad1be258523",
+        "structure/README.md": "d6e239ebf3dc628bbde98663764028fef6c5068a217bfcd8a10605833e3c5aa2"
+      }
+    },
+    "seeed-0410c2c50453": {
+      "componentId": "hw_seeed_0410c2c50453",
+      "files": {
+        "examples/reviewed.md": "1c470fc542c4ef4fd61a3b88f336cf9da0e9e43014c3193c84954c75a1ca66e7",
+        "structure/README.md": "93ffdd9d77c625d5c7c53198a32ce0fef6a75e82e793a36cff0119ccffff4fa5"
+      }
+    },
+    "seeed-07c5d32e3278": {
+      "componentId": "hw_seeed_07c5d32e3278",
+      "files": {
+        "examples/reviewed.md": "28a5917a4f764bda5161ccaf200ed7ad929cb4a53b975256eddae9e7f732e323",
+        "structure/README.md": "e37af79207475a8c94dde785cde2154b4d8e1cb71a1e36a60b4682e7064fae6b"
+      }
+    },
+    "seeed-0950be1c2c87": {
+      "componentId": "hw_seeed_0950be1c2c87",
+      "files": {
+        "examples/reviewed.md": "9586d47f85d2db8cf5337abf07b1ac570999a45ffd2d97a6c7c2b4f38dcaea89",
+        "structure/README.md": "5fa24dbf8445cdcceca6ad983990851a8714329c927349600c0c30831e0c1dcc"
+      }
+    },
+    "seeed-0d9e8c0d3156": {
+      "componentId": "hw_seeed_0d9e8c0d3156",
+      "files": {
+        "examples/reviewed.md": "7844631780fe18be02f8e47d25cfae000ad95e6bdb102b2eb2f8168770bbb87a",
+        "structure/README.md": "acf68cc4ca1914a07a73fb21590f6a442aa7cdaa16411aad09d051b59ed63230"
+      }
+    },
+    "seeed-103213e13283": {
+      "componentId": "hw_seeed_103213e13283",
+      "files": {
+        "examples/reviewed.md": "35ca2ef6dbb002347f90cedbe19e0d300f59bb4351c2db7bc8fb23dcc10400eb",
+        "structure/README.md": "1b6171f6137045bb649149ff15b882501b64c81e0d192c25281198cd53f01918"
+      }
+    },
+    "seeed-109825053ca0": {
+      "componentId": "hw_seeed_109825053ca0",
+      "files": {
+        "examples/reviewed.md": "22255bca7584fc54a444375701f3fb6580bd55cb2e57eab51befe8b7e3abf04d",
+        "structure/README.md": "b32f5529ba258b1c467889fd0f70605d1c002d07525a6ef8d16855333e65c782"
+      }
+    },
+    "seeed-1167ab92f33b": {
+      "componentId": "hw_seeed_1167ab92f33b",
+      "files": {
+        "examples/reviewed.md": "7316ef4c6eebc9cbb1f5ea1b5efedef7714430599e604863dd7aa691746afd02",
+        "structure/README.md": "66d35f02aebc1823a151f1ea39ffac202efb4a6a27089ed2f46624e67b091f27"
+      }
+    },
+    "seeed-12a992e413cd": {
+      "componentId": "hw_seeed_12a992e413cd",
+      "files": {
+        "examples/reviewed.md": "6202e21e875d9cb01e02d5f47f4afcf00510d1dfeaacb15494eb3403773e37ac",
+        "structure/README.md": "7e8acea047fbdcaeef0bebadecda8c2b37237ada45eb2c1d82fedd8a452b785e"
+      }
+    },
+    "seeed-18757192f955": {
+      "componentId": "hw_seeed_18757192f955",
+      "files": {
+        "examples/reviewed.md": "4be9f9f64eec4f9cf985afab4725ac9241a34baeebd041a72b02c3d2ed83843d",
+        "structure/README.md": "80844e03f11babf7a0eddfaebf446d5f2b4e08d6150011e0301b09e59756a3d0"
+      }
+    },
+    "seeed-1c5a28775936": {
+      "componentId": "hw_seeed_1c5a28775936",
+      "files": {
+        "examples/reviewed.md": "c266d276f60af079f9c5dff46e221cbd564cb0fb2c02b239f9ec520997d4f41d",
+        "structure/README.md": "7d873eadf3f9a2bebc1200b40a1837911eea5ef9da9c65501f4257e4deb70936"
+      }
+    },
+    "seeed-1ca60d89258e": {
+      "componentId": "hw_seeed_1ca60d89258e",
+      "files": {
+        "examples/reviewed.md": "d9a76ebde57b190d61139ea86160b5a60588ae5642b089ce4523537a9267d769",
+        "structure/README.md": "f1d506c3420506ea1160cddb9242757830bec5b0c016c81f34b4a42b804b0492"
+      }
+    },
+    "seeed-1d6b01150edf": {
+      "componentId": "hw_seeed_1d6b01150edf",
+      "files": {
+        "examples/reviewed.md": "588ecdb745bb8e84c43e8bade039bfa15becee46b7912c296336b48c0c581f5f",
+        "structure/README.md": "523622590c1b52a2f4f20ebf5feee2718190ff65340015cb5620eb909a5f0fea"
+      }
+    },
+    "seeed-22adc1470586": {
+      "componentId": "hw_seeed_22adc1470586",
+      "files": {
+        "examples/reviewed.md": "e9d7be2dd1954926e08aeedf25bad61590a6da87d692ed5a16ac200645d95c01",
+        "structure/README.md": "29387efc517be7f2ddf569ee29d2f5df521de43f3e405465fa5387b2b168de5c"
+      }
+    },
+    "seeed-26600bc16499": {
+      "componentId": "hw_seeed_26600bc16499",
+      "files": {
+        "examples/reviewed.md": "a9b8d6c73909b552a68556af630a83cb8d5556c3bb46cc55b00144dab28f26f5",
+        "structure/README.md": "9a05404181da8f46f30ff2e9e752bad756c42f16fe0394d4352889b091cfcce5"
+      }
+    },
+    "seeed-2ba7ae88d840": {
+      "componentId": "hw_seeed_2ba7ae88d840",
+      "files": {
+        "examples/reviewed.md": "c56b533bfe4fe071a93ca15bc0c29615e13731bf7f24372a18b43f883007fdb9",
+        "structure/README.md": "ac7b651668d804e26a5877022017c22b286d3acbb45818dba0fd5e26282cf36c"
+      }
+    },
+    "seeed-2c56388e9e3a": {
+      "componentId": "hw_seeed_2c56388e9e3a",
+      "files": {
+        "examples/reviewed.md": "2468c95a8a66215df08f5707a11c4172ab140dc372a6a82711f3cdfd2caee452",
+        "structure/README.md": "48de71888ec653e93d4e38bf5fa34ff31606ac7885952e370c673d7728539acd"
+      }
+    },
+    "seeed-3270077a17d0": {
+      "componentId": "hw_seeed_3270077a17d0",
+      "files": {
+        "examples/reviewed.md": "17761e30fcafdc99e2b49dc57b37eaaf93dbf41fcdd72593cd6e6e71486c9760",
+        "structure/README.md": "681cce339d30ff0fbbc8a9e2219d89cc84a4dd188a4505e4b9a99c3a64cd9786"
+      }
+    },
+    "seeed-32c137047f2a": {
+      "componentId": "hw_seeed_32c137047f2a",
+      "files": {
+        "examples/reviewed.md": "115816fffddf9f996c7bd897b9df87f1fb5a518f3746d6d963a70e0eec693510",
+        "structure/README.md": "17e22bcaef24c9fdfdf64afa3c2096824afa890f0d1bd10d801dfd7ec98f1ecf"
+      }
+    },
+    "seeed-371cf6142b6c": {
+      "componentId": "hw_seeed_371cf6142b6c",
+      "files": {
+        "examples/reviewed.md": "7703d7295cc9cd328a71c8c048f4052bc8f338761061a11750c60c4e226ad23a",
+        "structure/README.md": "fd16c2639f5c65ca5edbff839c67c958720731f827ec3ce80851991c7631cee9"
+      }
+    },
+    "seeed-375de9b47216": {
+      "componentId": "hw_seeed_375de9b47216",
+      "files": {
+        "examples/reviewed.md": "0a96849aa37da31ff3cad93af5e8377c4026d9f5df0c0c49ee8f6aa346f6d746",
+        "structure/README.md": "545ecc0400f398c420014b96ba98a8eada65c367258d290e462d866adde86a44"
+      }
+    },
+    "seeed-3956393bcdc4": {
+      "componentId": "hw_seeed_3956393bcdc4",
+      "files": {
+        "examples/reviewed.md": "853d3f4bfe0b2922d6a4936692db947b99d63867e519eeedc1ac85f26577dd5d",
+        "structure/README.md": "0f855320439b470cf4772b772ac611ab119bf2ebc870a88fb642357fbaa7849d"
+      }
+    },
+    "seeed-3a429b7ce7b4": {
+      "componentId": "hw_seeed_3a429b7ce7b4",
+      "files": {
+        "examples/reviewed.md": "3d0358e304fd48ffc87afd3570cf775c62a5b7986af6e252a6a8542dc8b2ad8d",
+        "structure/README.md": "c3d357d675900ec83dae38a639dc443dd59fd5a875a0252da9b846382d8be85a"
+      }
+    },
+    "seeed-3bc17a38eb0d": {
+      "componentId": "hw_seeed_3bc17a38eb0d",
+      "files": {
+        "examples/reviewed.md": "8869c5c96e0de9f0904710d697b25750ec2dfd74da4ee4081e0ab5b2dc693080",
+        "structure/README.md": "dd046ea870934a6ca3160f02541b43fab1230f68da432330219b9e3aa5983a3f"
+      }
+    },
+    "seeed-46151ae00fc3": {
+      "componentId": "hw_seeed_46151ae00fc3",
+      "files": {
+        "examples/reviewed.md": "3c681d2aab79f4a9a6c00da08a0f01aafd9834957a0d0fe960950caf3de8204c",
+        "structure/README.md": "7b65d3b3336dcd5662c0fcc8fdc796f170e2621a33f2da6cf0c6c90e6505bcab"
+      }
+    },
+    "seeed-461d2210b1e2": {
+      "componentId": "hw_seeed_461d2210b1e2",
+      "files": {
+        "examples/reviewed.md": "fbf821352889c38d541e8c61bb688e7b6529d4a7f768ea6ad8bc115dd93c4966",
+        "structure/README.md": "19b4c183176230af6760f46deb8972dcc1011617dff2076f58436793c671ee8f"
+      }
+    },
+    "seeed-4eaa2dda46e1": {
+      "componentId": "hw_seeed_4eaa2dda46e1",
+      "files": {
+        "examples/reviewed.md": "56dc876f5a1323423ad947ccf700f07325740c10cb31374bf6ce51528103bafa",
+        "structure/README.md": "c3659ce6b29299da36f188fb0e3411cd0c7b8ed84aee80455e87cec0e4e5a9d2"
+      }
+    },
+    "seeed-4eaed70891cc": {
+      "componentId": "hw_seeed_4eaed70891cc",
+      "files": {
+        "examples/reviewed.md": "9934322c1b8730b7a826be3d54c833f59a6f5e91c7a1adc6ccfd2ddc1369c51d",
+        "structure/README.md": "3e901d2a3b1bb34ce6c71803eabdc13c292bf865bac8f9b8e30e6d36e8c92294"
+      }
+    },
+    "seeed-5066d8d97ab2": {
+      "componentId": "hw_seeed_5066d8d97ab2",
+      "files": {
+        "examples/reviewed.md": "82c180f18693790facfc81029c50a595392e76c0c4beec0ad32521925bc0197e",
+        "structure/README.md": "3dbb18c1a65efaed9c74b02eea38f6af09e180609dd07f12f321a352c86004e8"
+      }
+    },
+    "seeed-54a8e75399c8": {
+      "componentId": "hw_seeed_54a8e75399c8",
+      "files": {
+        "examples/reviewed.md": "ee1f696d6b3ffd305b50c069673643458989821f3223250f147f1ae05c8472d2",
+        "structure/README.md": "754e8a86d49e87346228f8ccc372e97913deb5222465f7852029dca5dac03e61"
+      }
+    },
+    "seeed-57cea188b3c8": {
+      "componentId": "hw_seeed_57cea188b3c8",
+      "files": {
+        "examples/reviewed.md": "984455a227aefe6ed62ef027c17f9e47fe658a6f1735ba448c170903344dcbaf",
+        "structure/README.md": "839a8321f16041372442e4911980556ae2ff225709a8f0f6fd32dc8e386c3717"
+      }
+    },
+    "seeed-5cc7c9821886": {
+      "componentId": "hw_seeed_5cc7c9821886",
+      "files": {
+        "examples/reviewed.md": "9e8a74d16ec78f54c926a160dc9e7fcf58a18cb8cd53b22293f784a57e0111c8",
+        "structure/README.md": "d3cbc6be8be7fff197c1484335a0c0d612dd097717ae93bf0e9a86e656ac081f"
+      }
+    },
+    "seeed-5dd78b197ea5": {
+      "componentId": "hw_seeed_5dd78b197ea5",
+      "files": {
+        "examples/reviewed.md": "14e2f949a54a76886da2a047949e5a113a6d674e83c7ccd7f9664a3819278499",
+        "structure/README.md": "bab6b0c88e061ac4f80d291af16c58473f27346af78ce732ceaec13d441e3dac"
+      }
+    },
+    "seeed-5ec686341098": {
+      "componentId": "hw_seeed_5ec686341098",
+      "files": {
+        "examples/reviewed.md": "c59a673aee6a2fcf1e98e325dad8400e6b667b125d0ad4b5c6cb34596e29ab96",
+        "structure/README.md": "16f03fac429f3c7778d855142b877b68ee87ab6dfb736aaadfd0b5937a35f0b7"
+      }
+    },
+    "seeed-5f7d4f105a2e": {
+      "componentId": "hw_seeed_5f7d4f105a2e",
+      "files": {
+        "examples/reviewed.md": "75afe9d33f4a34b4a9c075da8731a9fbc83a1050de713eafc72a6d31398377dc",
+        "structure/README.md": "53da3d7afb8a095c2da3bdd4f4f42a08f1d3edd163a3100d303bf2b79a57d7fc"
+      }
+    },
+    "seeed-61865e007a2b": {
+      "componentId": "hw_seeed_61865e007a2b",
+      "files": {
+        "examples/reviewed.md": "6e9f31652bcd0ee75d5ef550b62fdb49f54374230d5ac7ff01cee734c4ea938d",
+        "structure/README.md": "6e06e7ee23e40a9a22660875f716ba456f3385d41a1c9e87e9ebef385dcde076"
+      }
+    },
+    "seeed-6239cd1b67a4": {
+      "componentId": "hw_seeed_6239cd1b67a4",
+      "files": {
+        "examples/reviewed.md": "673184d63c99f6b4a965de957f0644e1823484ed7452fdb9026da84f4b778f80",
+        "structure/README.md": "ad544e46b647445872303f5e5e5aef56d7331000646979b33a0f9e94830aee9e"
+      }
+    },
+    "seeed-64f0edd63c61": {
+      "componentId": "hw_seeed_64f0edd63c61",
+      "files": {
+        "examples/reviewed.md": "0ba1e201592a346520373535e57009556b1b5c1f958d335ef9cffae01c7ebbec",
+        "structure/README.md": "7b9eb7637c3a54e3b010722255e8a98796ed9ab77090b259ee5b1c613c9d5c80"
+      }
+    },
+    "seeed-66caab2289e5": {
+      "componentId": "hw_seeed_66caab2289e5",
+      "files": {
+        "examples/reviewed.md": "ec7e92403057a08d5cdea3c725563b5fea09bfc07b323d42ad68f913f4057aff",
+        "structure/README.md": "32e64b55998a5d8704811bce11b162f4fad2d969dd0521760bc6c61f055cea79"
+      }
+    },
+    "seeed-67f6def98cc0": {
+      "componentId": "hw_seeed_67f6def98cc0",
+      "files": {
+        "examples/reviewed.md": "59ce5c65c7313e4016d41a423cff0f796ce56220076b227602fcb34d0847677f",
+        "structure/README.md": "155e8d56602e85a142eb50dc23d7ad69e470dbf25eb6fa88830a3c5c993c52cf"
+      }
+    },
+    "seeed-6b0ece4cbc2a": {
+      "componentId": "hw_seeed_6b0ece4cbc2a",
+      "files": {
+        "examples/reviewed.md": "2af3ab325857eb6ba06ff059ef497a085a12aa9f80bacc1b085e02b231974e88",
+        "structure/README.md": "a296efa8657966782abb187f54f3487d0419c3ca395bddba6b7cd71915b1d380"
+      }
+    },
+    "seeed-6bfbf54535b7": {
+      "componentId": "hw_seeed_6bfbf54535b7",
+      "files": {
+        "examples/reviewed.md": "17227dee712fb5439d1931822b4efd909f2c179840b0212d0d3efac9c142bfa7",
+        "structure/README.md": "1180096e8fc99a919669fd3cd98a428c6ff3d997eb2bb74e387f06e20895b6bc"
+      }
+    },
+    "seeed-6fecc6d91cd0": {
+      "componentId": "hw_seeed_6fecc6d91cd0",
+      "files": {
+        "examples/reviewed.md": "5a3fbccafb2771725e1a068eedb42ddccd418fdfe963d2dcb55f36754d846197",
+        "structure/README.md": "7d6e1f410baa9790126beec1bb591db1b7fcef8e2ceea85ad34b182fcc96d749"
+      }
+    },
+    "seeed-767591cb0e1e": {
+      "componentId": "hw_seeed_767591cb0e1e",
+      "files": {
+        "examples/reviewed.md": "8f47d951c189bebce0de14c6ff0eb7f7f6228d1098495573fbe2605a062a95b1",
+        "structure/README.md": "986d599d416c7516f84e68034df75fe43c61ad8c4f8a031d15d4de75f38d98be"
+      }
+    },
+    "seeed-792adc1fd0fb": {
+      "componentId": "hw_seeed_792adc1fd0fb",
+      "files": {
+        "examples/reviewed.md": "403f3b0372d5e16eeecb5fe7e01209890eb037597f0df5d4866887ace043bd0e",
+        "structure/README.md": "37b1a42e5e4fa91d539301f73bdb34644416082bf11065969e2e0352e9a1c279"
+      }
+    },
+    "seeed-7c76cc7ebdd8": {
+      "componentId": "hw_seeed_7c76cc7ebdd8",
+      "files": {
+        "examples/reviewed.md": "4e8b0b8da93a4388934cd0ec50862d5a4f9e8a798ebfa6e2a130543d75f92c0f",
+        "structure/README.md": "08b1d71715450b0b68de933388341574b205bb807610a1b22b01714c53a7b0f7"
+      }
+    },
+    "seeed-7dc6b8b8d567": {
+      "componentId": "hw_seeed_7dc6b8b8d567",
+      "files": {
+        "examples/reviewed.md": "d5da02c25e1b91a968c42efa652ffca33ee9e332c4ad8fdfdfb8f37f8efa95c6",
+        "structure/README.md": "8fffdb7ca6563d2f31967babbe026aef6b7e44d7ad126009940195ffe8aa16c8"
+      }
+    },
+    "seeed-8618c0e89426": {
+      "componentId": "hw_seeed_8618c0e89426",
+      "files": {
+        "examples/reviewed.md": "d3bd9822537b46ab936e62b2dbcb2fbb705cd9a8fe765c3751ea3f7b8afd1de7",
+        "structure/README.md": "21f313a79886225b9a0d08afc1b1de0fe0dc53bb5a1a28f63a5a8ea33fe22eb9"
+      }
+    },
+    "seeed-8758bc404b06": {
+      "componentId": "hw_seeed_8758bc404b06",
+      "files": {
+        "examples/reviewed.md": "abfb18679e96ff78e78431b04ada48cca35d1cbdb5d6a929e6e2246a69e4e688",
+        "structure/README.md": "60f82fd968c98beb2eeedc7298703d3e2e1198bb62e4ba0c8ca7c9918e2f15c1"
+      }
+    },
+    "seeed-8a57f2e6cfc2": {
+      "componentId": "hw_seeed_8a57f2e6cfc2",
+      "files": {
+        "examples/reviewed.md": "46f1f6ee98b0a7d6ddafee1316e99fff13894c5b45a71fc6d7f3b632d3436782",
+        "structure/README.md": "43f0881667e5183283909c7e0057bc716989a5d501f8f1297ddc81f095d792a6"
+      }
+    },
+    "seeed-8c3008e1bd3b": {
+      "componentId": "hw_seeed_8c3008e1bd3b",
+      "files": {
+        "examples/reviewed.md": "d1ace00424b788b25e0fcdb16a111b7e8f8c08c635d0dbabc2dc87bf5b7bd08f",
+        "structure/README.md": "a776da817ec700b1b39b1f045dfe2cf0599d9af9b980c4d313265ccecc44b75d"
+      }
+    },
+    "seeed-8d753967b667": {
+      "componentId": "hw_seeed_8d753967b667",
+      "files": {
+        "examples/reviewed.md": "82f485e2535520fad6bd0aa5d1a0d0da7556ec66455da8d4239a0cda8b245176",
+        "structure/README.md": "cdfc11ff16ba13730be7ab946cc1c7cee151b4dcc97dd13a9b947dca3f00f197"
+      }
+    },
+    "seeed-8e6320218d33": {
+      "componentId": "hw_seeed_8e6320218d33",
+      "files": {
+        "examples/reviewed.md": "6b9054c348358fcbc9a12f859e138402669292b4b882a684988bd73b502ca754",
+        "structure/README.md": "4f28c01ec38215a6a61718b40365baa2cfbd0918467dcede2405a3033a542e9a"
+      }
+    },
+    "seeed-96e749688c3c": {
+      "componentId": "hw_seeed_96e749688c3c",
+      "files": {
+        "examples/reviewed.md": "cedbf4360e4180b9db45856710a8a1687380ee298e85ba634384f00b60e85678",
+        "structure/README.md": "1962b1f9f2b2a9d5b4c15c6f230d76a11550f7ac4bb6fc3fd74c1d72e6137beb"
+      }
+    },
+    "seeed-9a6bd6552e09": {
+      "componentId": "hw_seeed_9a6bd6552e09",
+      "files": {
+        "examples/reviewed.md": "3f6bd37e457f7cbed18e39267085f01b7b4b1eb280d80e54924c1bb0910145ae",
+        "structure/README.md": "a17d59beee7af0c916986e3496f6d487b1dd7eea3c9cbb8d26805e2da121a187"
+      }
+    },
+    "seeed-9adcc004448e": {
+      "componentId": "hw_seeed_9adcc004448e",
+      "files": {
+        "examples/reviewed.md": "5c07044e4c735e29aff4b4128e5494e1f1d8ea8b2d7caaf2e7285ab8db0db362",
+        "structure/README.md": "3150f31c3acfe7e360badf579dca27264e34fbf36dcaf68a1654a415cd1b78f3"
+      }
+    },
+    "seeed-9ba25d1ecb9d": {
+      "componentId": "hw_seeed_9ba25d1ecb9d",
+      "files": {
+        "examples/reviewed.md": "517672fa96c8676035105999fdfb89b5f61c0775f8d5bd373240ea96712dc986",
+        "structure/README.md": "b7ae6d97df0c226fb90888cf899fb408993afe1b25f5f24802ff77684aa902ac"
+      }
+    },
+    "seeed-a159cc12f3b5": {
+      "componentId": "hw_seeed_a159cc12f3b5",
+      "files": {
+        "examples/reviewed.md": "9f49385a9b08d92bb5147ff533aa1f29299a2e89f11aca9ff44e1ba911122cfa",
+        "structure/README.md": "60b9b9c95492cae0dc7ada90a079de246000c84b95c0f09e925938b4e8594bf1"
+      }
+    },
+    "seeed-a213fd1d2d56": {
+      "componentId": "hw_seeed_a213fd1d2d56",
+      "files": {
+        "examples/reviewed.md": "1ab657f9597682e3cfedcb2948375db09ac71586d3c341da9950401dd2871319",
+        "structure/README.md": "9e22de3ad7c72c432980b456c4b4ae5dbb9c7d1456c867d35aed18fa5598d5b1"
+      }
+    },
+    "seeed-a404ef452c36": {
+      "componentId": "hw_seeed_a404ef452c36",
+      "files": {
+        "examples/reviewed.md": "b7fd64cf1bc7648c4d2dd027118a9e49a98231a4dee998db85eae523d3632611",
+        "structure/README.md": "07efc8020c00ccfef6f08fc388cc8d8b6fe68a178eb2bd0797b002d6f34a0187"
+      }
+    },
+    "seeed-a54bf6bfc2f7": {
+      "componentId": "hw_seeed_a54bf6bfc2f7",
+      "files": {
+        "examples/reviewed.md": "f3447c2c197dddeabed81c73bfb989a86838cb166d610634c0876e79b7ca9ad9",
+        "structure/README.md": "07aa32ee89f30e91bd4b17b366c23e616d28fee6677946f9496907ad71ecd170"
+      }
+    },
+    "seeed-a5beb1d4e27d": {
+      "componentId": "hw_seeed_a5beb1d4e27d",
+      "files": {
+        "examples/reviewed.md": "e870bc4475b2480eaf38c71c8284c6d5687cc6bd555afdbfb1f235d6bac11965",
+        "structure/README.md": "7c361efb8a58f6460861d9af25951ab1b09ed44a2a094405baabf6e46999ce1c"
+      }
+    },
+    "seeed-a68c3f15cd64": {
+      "componentId": "hw_seeed_a68c3f15cd64",
+      "files": {
+        "examples/reviewed.md": "54e4915554fda225ca2a20baa3094ae3133aabe34a1056082efe2ec666c18568",
+        "structure/README.md": "1e4391cae751609c374afbb6f221cc637c1227164abfe5917cdd4e1fe48c89ca"
+      }
+    },
+    "seeed-a76022d75858": {
+      "componentId": "hw_seeed_a76022d75858",
+      "files": {
+        "examples/reviewed.md": "bbd41bf83f7e11fb08dad36dbbc3b79217ae335b9d23f15b8421ddb42bc56071",
+        "structure/README.md": "b00a45cd3beb40c1af2b848de4f5445928c7f888e2bd306bfa500a852ad61ae9"
+      }
+    },
+    "seeed-ad55a9b99ab3": {
+      "componentId": "hw_seeed_ad55a9b99ab3",
+      "files": {
+        "examples/reviewed.md": "fd6dfddb8d57bc5e001bb30d6682d024a2c4a81017131c07bca9dc95d69354ad",
+        "structure/README.md": "d3977fe058a43dbd038e8b4f644a921f4403f24a6493ca0a568e185c40ba47fd"
+      }
+    },
+    "seeed-ae644fbada35": {
+      "componentId": "hw_seeed_ae644fbada35",
+      "files": {
+        "examples/reviewed.md": "b55001c569d16eca897112f1e6f78fee463542a0d361686ffe983eb7d050aecb",
+        "structure/README.md": "82e67a34da5236b94baa4e4c6644f0e035f256172057908d297c21352a6b2a76"
+      }
+    },
+    "seeed-aff5028c9998": {
+      "componentId": "hw_seeed_aff5028c9998",
+      "files": {
+        "examples/reviewed.md": "ca2114e7b156503ee85906dbd163cca6bd53beac8e34227f867f734e9470eefe",
+        "structure/README.md": "6a2eaec9f8c7276f206a3114948c6a3f39a130a1a248fe42a9ef0b9d848f4984"
+      }
+    },
+    "seeed-b2a68addbbde": {
+      "componentId": "hw_seeed_b2a68addbbde",
+      "files": {
+        "examples/reviewed.md": "4adef7896cae8f236c5734d5b9d8c510f25d90cac7a330e2a7aed73c0d4d7840",
+        "structure/README.md": "820795d848f50428539dd99a31d71d7863a2fe019b431c6b5ff51f6bf3d0d497"
+      }
+    },
+    "seeed-b3b05c6e9bf7": {
+      "componentId": "hw_seeed_b3b05c6e9bf7",
+      "files": {
+        "examples/reviewed.md": "e8d76f0f7247f0003f6cd87742a6f0ac76f8183cdd0ed482e8a729b3c56d5256",
+        "structure/README.md": "11dbec4b0702d4ed414f2d97c6b3ab51bf70d674e03080a92d8ad995d48e4846"
+      }
+    },
+    "seeed-b69e4322172c": {
+      "componentId": "hw_seeed_b69e4322172c",
+      "files": {
+        "examples/reviewed.md": "b27bfbb6f6808c5d818186fa81b7f2338b448d25414d561da31fb0761e490824",
+        "structure/README.md": "dc29463164bf2d4e8602c3681cab4b9fc215fd02cd9c2b8c2a6cdb143cc3ef99"
+      }
+    },
+    "seeed-b69e55506017": {
+      "componentId": "hw_seeed_b69e55506017",
+      "files": {
+        "examples/reviewed.md": "d06e06571f977c810d8bbd77cda612a69490aa65f058a78b0be679cf95f0b6d9",
+        "structure/README.md": "d326aaf4272f048069b18f68f36a7e0bd5e76622410a8738b11e167a34bf3a1a"
+      }
+    },
+    "seeed-b75201dcf141": {
+      "componentId": "hw_seeed_b75201dcf141",
+      "files": {
+        "examples/reviewed.md": "038d5508ac5eec65908af36c6437f465db7b83a6a4dd2433bebb89e997f04b7b",
+        "structure/README.md": "0e16aabf51eaf1397923959b94f4cd31d3706fb4434f90e034dff185847a0dc7"
+      }
+    },
+    "seeed-b7990c2c3f06": {
+      "componentId": "hw_seeed_b7990c2c3f06",
+      "files": {
+        "examples/reviewed.md": "d5130fb37a6808b36ea8b81034b8d959aa25c047117b068742eefef7e1dd12ae",
+        "structure/README.md": "e6fea44a96f26a76a708dc5837df9004d81e9f64c462a7dbf5be4199a6a79c3e"
+      }
+    },
+    "seeed-b7a6fe2288ff": {
+      "componentId": "hw_seeed_b7a6fe2288ff",
+      "files": {
+        "examples/reviewed.md": "5815200f795e9274b1b9d14b5167d4d3729cc53d77fc6846deef30ebd8b471f8",
+        "structure/README.md": "21bd65864cf4163c2c3bd0a5a441fb53c080d8c2e71de8c38a04d9fdfc7cb394"
+      }
+    },
+    "seeed-b87269034150": {
+      "componentId": "hw_seeed_b87269034150",
+      "files": {
+        "examples/reviewed.md": "96f3b3e908271386f04ca7c66118224335e50f733056d5c2d42f4263cc79dd47",
+        "structure/README.md": "6799688106d2f5c5e73906d89fc2c5dcb3a532af6a5338ef045f48266d9cce75"
+      }
+    },
+    "seeed-bbcf60e2e897": {
+      "componentId": "hw_seeed_bbcf60e2e897",
+      "files": {
+        "examples/reviewed.md": "3cbf9ad3a0a71b60b853a65b83e659713bdd44eb9ad9dcb01a782a0f355bf56e",
+        "structure/README.md": "8e25d497d30297611190f33e6787fbcd23e76f5918e402fae8ff5f88bd2d6981"
+      }
+    },
+    "seeed-bc967bed5067": {
+      "componentId": "hw_seeed_bc967bed5067",
+      "files": {
+        "examples/reviewed.md": "3613b38efcce86a1bffdaa7240d5ed6756a4c90d6a11451bb122749f4cd61010",
+        "structure/README.md": "7f4260b78b55f5003f9b16edb5d3fc4e2ce2635535b8d34fbd67f99b9fc93a58"
+      }
+    },
+    "seeed-be82233357d8": {
+      "componentId": "hw_seeed_be82233357d8",
+      "files": {
+        "examples/reviewed.md": "5a1bb7b770eb91d545f90fee69bb036554357af32b5622d9a0bdf1204a752250",
+        "structure/README.md": "36a3c8266c8c92aae84fbf41a2b3e0396ae418d6bc45bf5f4a820e6c4b8f3536"
+      }
+    },
+    "seeed-bee2eebec97f": {
+      "componentId": "hw_seeed_bee2eebec97f",
+      "files": {
+        "examples/reviewed.md": "a85244f9cd195eb949f6bc1ddd9efdbbfbbe82b3273e2c9d7f8f966539779624",
+        "structure/README.md": "1897a25b168a1138291389f9b51d0c360560f4aba804490e91df20be833f7b73"
+      }
+    },
+    "seeed-c55ce3abb1de": {
+      "componentId": "hw_seeed_c55ce3abb1de",
+      "files": {
+        "examples/reviewed.md": "43500bbcd4d30c816861c9fd3ca4d45cdfeb6a26ebffd3258d47fb96f650b2e1",
+        "structure/README.md": "65be3aa3d36fad69467ed91b7d2266f7bb14fb2b6241a594616fc010857c7a11"
+      }
+    },
+    "seeed-c562f4f68dc1": {
+      "componentId": "hw_seeed_c562f4f68dc1",
+      "files": {
+        "examples/reviewed.md": "ad61516f33f465b7472a60ff058f4687d842424ad8d132d81228cbd404d23c26",
+        "structure/README.md": "c3f9b5f6d065d3325e7ed63406b36a1af8a9026bedc7828dee81e692f7c99691"
+      }
+    },
+    "seeed-c785de026b91": {
+      "componentId": "hw_seeed_c785de026b91",
+      "files": {
+        "examples/reviewed.md": "faab5317a98bf5bed4398296a1f01e5f6c0dd1a91e00e4ed4526df7a75600ead",
+        "structure/README.md": "c0ac70726548d37637150db3d1557e435791177df770af9f7d35882b129cd61f"
+      }
+    },
+    "seeed-c7d403f7875c": {
+      "componentId": "hw_seeed_c7d403f7875c",
+      "files": {
+        "examples/reviewed.md": "13b295a65394ceb9aef6fb4cd9d98664091a84927f24d1a7ff8965d0f50fb201",
+        "structure/README.md": "7d6e1f410baa9790126beec1bb591db1b7fcef8e2ceea85ad34b182fcc96d749"
+      }
+    },
+    "seeed-cc08f2cc43d5": {
+      "componentId": "hw_seeed_cc08f2cc43d5",
+      "files": {
+        "examples/reviewed.md": "bd9897539de8addc2689deb548452e82bbfbe3fcab09d9d71d59b87d0d785a56",
+        "structure/README.md": "0fb11a947f479a4140f71e1eb58bd87c3c7d0a24b7f88e088e82c239cfe788fe"
+      }
+    },
+    "seeed-cca7fe9f1082": {
+      "componentId": "hw_seeed_cca7fe9f1082",
+      "files": {
+        "examples/reviewed.md": "0cc96b93349cc1f75c3a6f3dca38d46017aec7877b904af0f25c70c1d6deba78",
+        "structure/README.md": "ce099191d2209c8e69d65c19817e330ad9affcff1fbad6282030fd5c580ba1c9"
+      }
+    },
+    "seeed-cefc77fb6aac": {
+      "componentId": "hw_seeed_cefc77fb6aac",
+      "files": {
+        "examples/reviewed.md": "b9d167d7909f936749b57d398fe898eaf7d6f6cd8db5cfdd6a4f9e2d7fb19271",
+        "structure/README.md": "b4aed542ef8225a47b34b0a2882b7509d1ba1466bc45a241cdbb0653b256e3d5"
+      }
+    },
+    "seeed-d25a8a8a81eb": {
+      "componentId": "hw_seeed_d25a8a8a81eb",
+      "files": {
+        "examples/reviewed.md": "2c5933f2d765a224d9d05f38422a69f59f7d57653108d7aaa17203c969c57c7f",
+        "structure/README.md": "03188a1d349c5921bb6edbf3ecffce4866ac63f4ba805e5ded1854da4aeaf0a3"
+      }
+    },
+    "seeed-d49cad7bbd15": {
+      "componentId": "hw_seeed_d49cad7bbd15",
+      "files": {
+        "examples/reviewed.md": "8dfc2e3543ce99e4a5d0e6b66f9fb8d49efa3e439e74e73874732c1c773b3e10",
+        "structure/README.md": "8872ba25de026fb3c9d192dee332a608d0ea2e95b2013deb98c07345643ba0c8"
+      }
+    },
+    "seeed-d49d5ffefb36": {
+      "componentId": "hw_seeed_d49d5ffefb36",
+      "files": {
+        "examples/reviewed.md": "022756aa2abf5c70f82b9fbd9fee438138f2e113c5125295a2ce507cdf134d39",
+        "structure/README.md": "a81a7c497b3025631033bbab7c8ff284431c763275f996685d9a5a95927ca1d8"
+      }
+    },
+    "seeed-d4c300ea87bc": {
+      "componentId": "hw_seeed_d4c300ea87bc",
+      "files": {
+        "examples/reviewed.md": "669d2901e148a09d01b93755ec3acade9e06ff4e1154962cf3184dd5e42efd46",
+        "structure/README.md": "e4f4a84e63ecc8ceb08be171f9fd99596dcf572898506b266a375a8da28d3fbb"
+      }
+    },
+    "seeed-db50405f8594": {
+      "componentId": "hw_seeed_db50405f8594",
+      "files": {
+        "examples/reviewed.md": "6f574b5b9ca5b8a51a205f7743231d0ff2bbfdb0395d66ff578b9fc0abd2f2b8",
+        "structure/README.md": "f106cfdc89c836bbbba7b0d0d26741684d17ca874190ccdcbd8c309bf649ce7d"
+      }
+    },
+    "seeed-dcd4bb798707": {
+      "componentId": "hw_seeed_dcd4bb798707",
+      "files": {
+        "examples/reviewed.md": "ef1e4c0604b646d4d53557825a203dc0a1d6745e50d810313ca6b2986b6f6257",
+        "structure/README.md": "f6fd5940508b77c84e28bda4f2d34416c2f31e43adfcf01cc1236ce14d0772a0"
+      }
+    },
+    "seeed-dd22ac2e907f": {
+      "componentId": "hw_seeed_dd22ac2e907f",
+      "files": {
+        "examples/reviewed.md": "f57d25999a098975f2f358341f747ad20dd9a58b9064df3d243c7d9fd331c4b3",
+        "structure/README.md": "fd24fe620d3d941f0beb3c1bd67a02d625c17e73c5508dfa847a4892ce61b285"
+      }
+    },
+    "seeed-dd6223a49b86": {
+      "componentId": "hw_seeed_dd6223a49b86",
+      "files": {
+        "examples/reviewed.md": "2824f1df35ba1b9684aa9da9320ba802f8eaa9487bc0c795175892a0ca1eb56a",
+        "structure/README.md": "b22f0ae683dad1777c44df7a3b754a16f6f7a939f6d6abd6cf23853c3c181549"
+      }
+    },
+    "seeed-decba7adfcd3": {
+      "componentId": "hw_seeed_decba7adfcd3",
+      "files": {
+        "examples/reviewed.md": "66a5c87809b9c7925bac2c742367611e4d206cad84f8e8c15f34c9885f9fdf22",
+        "structure/README.md": "38cf2016c43d2bc80494d59258be85189e9e519f6d798710bc7b623877d2d55b"
+      }
+    },
+    "seeed-e5476c152750": {
+      "componentId": "hw_seeed_e5476c152750",
+      "files": {
+        "examples/reviewed.md": "52cef31f3d9c1f33c1e966f028521c9421731c98768466867c9a5d9df2b3a055",
+        "structure/README.md": "9cd4d855239b338b6ce2e90c28b7d2595e71f13b2e8f71b6c7986ffd28aa96fc"
+      }
+    },
+    "seeed-e7190e62f8e7": {
+      "componentId": "hw_seeed_e7190e62f8e7",
+      "files": {
+        "examples/reviewed.md": "19595980c5a9239d34323e9a2ea25480011d3406e41cfec68f135a59ea6358fc",
+        "structure/README.md": "fe86559206b8ee94989249eed81cea1efb60275b3ab7e338c60809a6085376fb"
+      }
+    },
+    "seeed-e776f477db5d": {
+      "componentId": "hw_seeed_e776f477db5d",
+      "files": {
+        "examples/reviewed.md": "742d7e5db9e57f62f571c7794a40cc28d8d40350a051fc89f9e3280a47469abe",
+        "structure/README.md": "8fcd1e6a6ad9f4d28e2961a782b1c63d8dbdf8afa0011909aa888a853d425934"
+      }
+    },
+    "seeed-e9dfe387c88b": {
+      "componentId": "hw_seeed_e9dfe387c88b",
+      "files": {
+        "examples/reviewed.md": "5dda6d3d3e585cad02696aa86ecc3cb50d37c14f7f1f7085a06c187f0d0ce389",
+        "structure/README.md": "552c85ca4549ad0a69e6a9d3cb77786601166afa3c00faf1130c0b29e19e955f"
+      }
+    },
+    "seeed-ebfbb71ba78d": {
+      "componentId": "hw_seeed_ebfbb71ba78d",
+      "files": {
+        "examples/reviewed.md": "d6b22b9e27486724d4a41c82426c6d225e52a934ce3f77616462762558dfeebb",
+        "structure/README.md": "fee61bbb65b244fdfcb98ca8f5b768531313681070da0659aab74a2c60811d0c"
+      }
+    },
+    "seeed-f0d7db4959a4": {
+      "componentId": "hw_seeed_f0d7db4959a4",
+      "files": {
+        "examples/reviewed.md": "2335988d2a8f96103484ced60011e6d860fce7ea55044ccae974507e7281c519",
+        "structure/README.md": "baf07e023e3af3b5f620a0334a4ed6c0e2573a0f62f015dae26e324c88df4052"
+      }
+    },
+    "seeed-f19d4107e2a1": {
+      "componentId": "hw_seeed_f19d4107e2a1",
+      "files": {
+        "examples/reviewed.md": "aeeab071bb282dec4fabdce5a890f42eb0fbb9692097d68f7f5b1c05fadc4f76",
+        "structure/README.md": "49eb7550821e7c7f3dbbc9271070a6548b76d731ad02222909bf1d6a506d7306"
+      }
+    },
+    "seeed-f226fa37b837": {
+      "componentId": "hw_seeed_f226fa37b837",
+      "files": {
+        "examples/reviewed.md": "1a728b0ed40d89d98880678e3b14ddb29d2536c4561b78bddd41cbf521eda4df",
+        "structure/README.md": "55c08e185027b80f6a0cbe4cfe9c2e4c41ef4e40d9e4bcf836c4ba64b41b3734"
+      }
+    },
+    "seeed-f22c17defd6c": {
+      "componentId": "hw_seeed_f22c17defd6c",
+      "files": {
+        "examples/reviewed.md": "3fb10af776cbdc4d5f4bf832835e33d3f46bc8aeb3e02eeb59169b9a8544ab6f",
+        "structure/README.md": "29e98055f8c69cd3166c7fba4f4ebfee2f61a47a62e1b6e3b7faa13df66c3d3e"
+      }
+    },
+    "seeed-f6293e923185": {
+      "componentId": "hw_seeed_f6293e923185",
+      "files": {
+        "examples/reviewed.md": "82f0e1bc5071e195440de6c1e8eefe3e33b1e6ae4a78cf48ac13d40eb88e3e65",
+        "structure/README.md": "eb6cfe730e6c0f85929c1926a07e7249f12c86051d578a3c6c03d14cabc6e411"
+      }
+    },
+    "seeed-fb5be16db18d": {
+      "componentId": "hw_seeed_fb5be16db18d",
+      "files": {
+        "examples/reviewed.md": "7540ec2bce34255f92b2a09b9fb2d70b8072d5d9644e28b446e33700d3fa0fe6",
+        "structure/README.md": "3d08945538d03fbe7a25a18814c33fd3a64ce2dbf8f0320ea9d8cbc489cdb0ef"
+      }
+    },
+    "seeed-studio-xiao-esp32s3-sense": {
+      "componentId": "hw_seeed_xiao_esp32s3_sense",
+      "files": {
+        "structure/profile.json": "5f2ee9d406bc5a5df5a11bdee89c308b28daba1c40197cbb1df5dd71f00209d4",
+        "structure/README.md": "d822f5d9513a3f150914e8e7c1779dd33d4d92b688b7af381ded1335e1d3efd9"
+      }
+    },
+    "seeed-xiao-esp32s3-micropython": {
+      "componentId": "hw_seeed_xiao_esp32s3",
+      "files": {
+        "structure/profile.json": "d856c8253f16863191a1d8a5faf0db5fad445a57e75c9fce76fa625d4cc98ff7",
+        "structure/README.md": "1877e9afb07383dd6188d610c37f30efcc9b2c475d8578f36dd8f294254db06f"
+      }
+    },
+    "sen0193": {
+      "componentId": "hw_dfrobot_sen0193",
+      "files": {
+        "examples/reviewed.md": "3f6b6944e4e936992a670925c41b0f6791e2f3ff55e2526cbe560d7add07895a",
+        "structure/README.md": "137876ad46aec8fe0058b4f756e3280e2ce066495f312e52683d7fc71b90dc96"
+      }
+    },
+    "sen0388": {
+      "componentId": "hw_dfrobot_sen0388",
+      "files": {
+        "examples/reviewed.md": "dd0bd78281d2e987ec2b934faa4d9951f7702e14b5a38bb05c3a544d596f9ded",
+        "structure/README.md": "269bec38943ff96a3126444f19471b351c022c677d169384b05c8c25a76a16ff"
+      }
+    }
+  },
+  "structure": {
+    "version": "2026-06-12",
+    "units": "mm",
+    "coordinate_system": {
+      "pcb_origin": "PCB center",
+      "x_axis": "PCB length direction",
+      "y_axis": "PCB width direction",
+      "positive_z": "front/component side"
+    },
+    "migration": {
+      "source": "ZW-CAD/server/hardware-profiles.js",
+      "source_profile_count": 31,
+      "retained_intent_profiles": [
+        "battery_18650_holder"
+      ],
+      "notes": "OpenSCAD ??????????? intent/CadQuery ??????????????"
+    },
+    "profiles": [
+      {
+        "id": "xiao_samd21",
+        "componentId": null,
+        "skillName": null,
+        "path": "structure-parts/xiao_samd21/profile.json"
+      },
+      {
+        "id": "xiao_rp2040",
+        "componentId": null,
+        "skillName": null,
+        "path": "structure-parts/xiao_rp2040/profile.json"
+      },
+      {
+        "id": "xiao_rp2350",
+        "componentId": null,
+        "skillName": null,
+        "path": "structure-parts/xiao_rp2350/profile.json"
+      },
+      {
+        "id": "xiao_nrf52840",
+        "componentId": null,
+        "skillName": null,
+        "path": "structure-parts/xiao_nrf52840/profile.json"
+      },
+      {
+        "id": "xiao_nrf52840_sense",
+        "componentId": null,
+        "skillName": null,
+        "path": "structure-parts/xiao_nrf52840_sense/profile.json"
+      },
+      {
+        "id": "xiao_nrf52840_plus",
+        "componentId": null,
+        "skillName": null,
+        "path": "structure-parts/xiao_nrf52840_plus/profile.json"
+      },
+      {
+        "id": "xiao_nrf52840_sense_plus",
+        "componentId": null,
+        "skillName": null,
+        "path": "structure-parts/xiao_nrf52840_sense_plus/profile.json"
+      },
+      {
+        "id": "xiao_esp32c3",
+        "componentId": null,
+        "skillName": null,
+        "path": "structure-parts/xiao_esp32c3/profile.json"
+      },
+      {
+        "id": "xiao_esp32c5",
+        "componentId": null,
+        "skillName": null,
+        "path": "structure-parts/xiao_esp32c5/profile.json"
+      },
+      {
+        "id": "xiao_esp32c6",
+        "componentId": null,
+        "skillName": null,
+        "path": "structure-parts/xiao_esp32c6/profile.json"
+      },
+      {
+        "id": "xiao_esp32s3",
+        "componentId": "hw_seeed_xiao_esp32s3",
+        "skillName": "seeed-xiao-esp32s3-micropython",
+        "path": "hardware-skills/seeed-xiao-esp32s3-micropython/structure/profile.json"
+      },
+      {
+        "id": "xiao_esp32s3_sense",
+        "componentId": "hw_seeed_xiao_esp32s3_sense",
+        "skillName": "seeed-studio-xiao-esp32s3-sense",
+        "path": "hardware-skills/seeed-studio-xiao-esp32s3-sense/structure/profile.json"
+      },
+      {
+        "id": "xiao_esp32s3_plus",
+        "componentId": null,
+        "skillName": null,
+        "path": "structure-parts/xiao_esp32s3_plus/profile.json"
+      },
+      {
+        "id": "xiao_ra4m1",
+        "componentId": null,
+        "skillName": null,
+        "path": "structure-parts/xiao_ra4m1/profile.json"
+      },
+      {
+        "id": "xiao_mg24",
+        "componentId": null,
+        "skillName": null,
+        "path": "structure-parts/xiao_mg24/profile.json"
+      },
+      {
+        "id": "xiao_mg24_sense",
+        "componentId": null,
+        "skillName": null,
+        "path": "structure-parts/xiao_mg24_sense/profile.json"
+      },
+      {
+        "id": "xiao_nrf54l15",
+        "componentId": null,
+        "skillName": null,
+        "path": "structure-parts/xiao_nrf54l15/profile.json"
+      },
+      {
+        "id": "xiao_nrf54l15_sense",
+        "componentId": null,
+        "skillName": null,
+        "path": "structure-parts/xiao_nrf54l15_sense/profile.json"
+      },
+      {
+        "id": "grove_oled_096",
+        "componentId": null,
+        "skillName": null,
+        "path": "structure-parts/grove_oled_096/profile.json"
+      },
+      {
+        "id": "grove_button",
+        "componentId": null,
+        "skillName": null,
+        "path": "structure-parts/grove_button/profile.json"
+      },
+      {
+        "id": "grove_dual_button",
+        "componentId": null,
+        "skillName": null,
+        "path": "structure-parts/grove_dual_button/profile.json"
+      },
+      {
+        "id": "grove_passive_buzzer",
+        "componentId": null,
+        "skillName": null,
+        "path": "structure-parts/grove_passive_buzzer/profile.json"
+      },
+      {
+        "id": "grove_sht4x",
+        "componentId": null,
+        "skillName": null,
+        "path": "structure-parts/grove_sht4x/profile.json"
+      },
+      {
+        "id": "grove_bme280",
+        "componentId": null,
+        "skillName": null,
+        "path": "structure-parts/grove_bme280/profile.json"
+      },
+      {
+        "id": "grove_digital_pir",
+        "componentId": null,
+        "skillName": null,
+        "path": "structure-parts/grove_digital_pir/profile.json"
+      },
+      {
+        "id": "grove_ultrasonic_ranger",
+        "componentId": null,
+        "skillName": null,
+        "path": "structure-parts/grove_ultrasonic_ranger/profile.json"
+      },
+      {
+        "id": "mg90s_servo",
+        "componentId": null,
+        "skillName": null,
+        "path": "structure-parts/mg90s_servo/profile.json",
+        "thumbnail": "structure-parts/mg90s_servo/mg90s_servo.jpg"
+      },
+      {
+        "id": "pca9685_servo_controller",
+        "componentId": null,
+        "skillName": null,
+        "path": "structure-parts/pca9685_servo_controller/profile.json",
+        "thumbnail": "structure-parts/pca9685_servo_controller/pca9685_servo_controller.jpg"
+      },
+      {
+        "id": "quadruped_dog_body",
+        "componentId": null,
+        "skillName": null,
+        "path": "structure-parts/quadruped_dog_body/profile.json",
+        "thumbnail": "structure-parts/quadruped_dog_body/quadruped_dog_body.svg"
+      },
+      {
+        "id": "quadruped_dog_thigh",
+        "componentId": null,
+        "skillName": null,
+        "path": "structure-parts/quadruped_dog_thigh/profile.json",
+        "thumbnail": "structure-parts/quadruped_dog_thigh/quadruped_dog_thigh.svg"
+      },
+      {
+        "id": "quadruped_dog_shin",
+        "componentId": null,
+        "skillName": null,
+        "path": "structure-parts/quadruped_dog_shin/profile.json",
+        "thumbnail": "structure-parts/quadruped_dog_shin/quadruped_dog_shin.svg"
+      },
+      {
+        "id": "battery_18650_holder",
+        "componentId": null,
+        "skillName": null,
+        "path": "structure-parts/battery_18650_holder/profile.json",
+        "thumbnail": "structure-parts/battery_18650_holder/battery_18650_holder.png"
+      }
+    ]
+  },
+  "legacyMedia": {
+    "mg90s_servo.jpg": "structure-parts/mg90s_servo/mg90s_servo.jpg",
+    "pca9685_servo_controller.jpg": "structure-parts/pca9685_servo_controller/pca9685_servo_controller.jpg",
+    "quadruped_dog_body.svg": "structure-parts/quadruped_dog_body/quadruped_dog_body.svg",
+    "quadruped_dog_thigh.svg": "structure-parts/quadruped_dog_thigh/quadruped_dog_thigh.svg",
+    "quadruped_dog_shin.svg": "structure-parts/quadruped_dog_shin/quadruped_dog_shin.svg",
+    "battery_18650_holder.png": "structure-parts/battery_18650_holder/battery_18650_holder.png"
+  },
+  "structureFiles": {
+    "hardware-skills/seeed-studio-xiao-esp32s3-sense/structure/profile.json": "5f2ee9d406bc5a5df5a11bdee89c308b28daba1c40197cbb1df5dd71f00209d4",
+    "hardware-skills/seeed-xiao-esp32s3-micropython/structure/profile.json": "d856c8253f16863191a1d8a5faf0db5fad445a57e75c9fce76fa625d4cc98ff7",
+    "structure-parts/battery_18650_holder/battery_18650_holder.png": "489c5541fe1ff715187c25c64153f06a25e69246782c72916273caa8a8239338",
+    "structure-parts/battery_18650_holder/profile.json": "cdbc6c3f8ba175c73f2e2248588274e986ab2cecaf6ea2953b64bb7dc0370bc0",
+    "structure-parts/grove_bme280/profile.json": "3ae04b50c49594a80cc9c5b07f6acd349b7b5c48c61a4ba214c3624d7fc6b325",
+    "structure-parts/grove_button/profile.json": "0c4dcf4d26a35dbd5f97f8fc114aba28fa0f2d3503ae356bbb6ba2c7095bbedf",
+    "structure-parts/grove_digital_pir/profile.json": "28232465c1e1741c51fe444d6fcd89f98bbdfdd7a81b5895f39f0a7a2c460df1",
+    "structure-parts/grove_dual_button/profile.json": "e6546ba17e1403dd5763c4c3e9788b36673d0bf9aa642a42aa4afa6b75f2d4b7",
+    "structure-parts/grove_oled_096/profile.json": "e2e7ecf702e2d314c4e4ce85baf79ab88beadc3ef7b3ffce53d211bed349377c",
+    "structure-parts/grove_passive_buzzer/profile.json": "e7d354f228d0acc7114e660290872cc09ff15590cbd2d61a4a785bfe3724331d",
+    "structure-parts/grove_sht4x/profile.json": "2bd8e2f77fa1e0a8becd4a5458f1677c483fefca1a9dcc90abf59e0c06792ab5",
+    "structure-parts/grove_ultrasonic_ranger/profile.json": "f662b2e1d4c5525f3a4e0a8eb1f524117cf608c066c367a83102a1fd0173f063",
+    "structure-parts/mg90s_servo/mg90s_servo.jpg": "f50087106100a4aebcf8daa804fe5518de0ca5814108256d56af03d92377385e",
+    "structure-parts/mg90s_servo/profile.json": "b90b4184f7c24e99a05876b0616dd26182e4117284c0df667dcddfe399c57c19",
+    "structure-parts/pca9685_servo_controller/pca9685_servo_controller.jpg": "f44e1a927eaef936d007860735885dcee68db404fcbcac1a4e43dcd4c24677bb",
+    "structure-parts/pca9685_servo_controller/profile.json": "9007be1dc500196adc7f34011fa83e2145330c0be6b854cd58dd6b1116725d9e",
+    "structure-parts/quadruped_dog_body/profile.json": "b565fa73feb3c8310970de19710bdc9ab13f1ae624f303e4f1d8fc54341079f6",
+    "structure-parts/quadruped_dog_body/quadruped_dog_body.svg": "f9072be2f873227c610f3694d8359396737b29ea3035a7b20f4b83f91210bd42",
+    "structure-parts/quadruped_dog_shin/profile.json": "f2644dde883660fa1a2f4d64fa703a56428cfeccf985075d42da4a5ac8bedbed",
+    "structure-parts/quadruped_dog_shin/quadruped_dog_shin.svg": "b883c1a19ee70e101d6b762387bb516dee14d775fc9f8474d78afb97ec7947f3",
+    "structure-parts/quadruped_dog_thigh/profile.json": "cf8738770c1e5d3e4b9a883539e88673769ee4d1cc4408322b5f80adc642a5d0",
+    "structure-parts/quadruped_dog_thigh/quadruped_dog_thigh.svg": "962b5cc8d2cdfc223ff93c91b9c9d60fe8d31c19aafc10da94b17193b2eb09ff",
+    "structure-parts/xiao_esp32c3/profile.json": "fe8e06348fef5878e6aef8a6613a4157d007166744b6fd45fcf89c5dd119d604",
+    "structure-parts/xiao_esp32c5/profile.json": "4157959cb482ad081e222bf4f2f0fabc484b597b44f56bc2a56295cff7a69d7e",
+    "structure-parts/xiao_esp32c6/profile.json": "5fda7268392a1f8dda9e269b7e702fc5f6722c3855d5c1011a66f2a4ca72903c",
+    "structure-parts/xiao_esp32s3_plus/profile.json": "cd2e3f4b875e5c9a3c27d0c3ec6786c6a45ca9c038e41001b956e08f4031bcb3",
+    "structure-parts/xiao_mg24/profile.json": "872c1119f494ea63d6a76acc5c09718ede6cf205cbd46ca4c642f657b9be79e2",
+    "structure-parts/xiao_mg24_sense/profile.json": "5367947469a3f0b1c197860f98ebdff84a0bb8c6543cd8932cf8c1794f6d19cd",
+    "structure-parts/xiao_nrf52840/profile.json": "53dd030e27ff6fb74d1dbb30b565a6ac8e6c7c61a734b964bf4d10c25d12eb08",
+    "structure-parts/xiao_nrf52840_plus/profile.json": "fd506290e87d91310d62afb3bfc14453ebc11b8691cadab7eb0b4d244db31261",
+    "structure-parts/xiao_nrf52840_sense/profile.json": "e13f394df895ba44bc961455d24271e0d6b95b073d5f06805574f2b89683e2b1",
+    "structure-parts/xiao_nrf52840_sense_plus/profile.json": "12f06f7e9df14fcf7f222338dfa9251d8f35bfddfc84f30cb3bed64c30303e28",
+    "structure-parts/xiao_nrf54l15/profile.json": "8676b6b7a34b01e1ba43b76a2f835a1662dfba1530ee963650da6e394f920aa9",
+    "structure-parts/xiao_nrf54l15_sense/profile.json": "a8daa2828380f4e0e696d7c200c29cd246d60154619dac275201387fec3a0267",
+    "structure-parts/xiao_ra4m1/profile.json": "0be8fd61eb0b6b732e411de947b6ca8cb8889f6304506293d8a332b2b19d66c8",
+    "structure-parts/xiao_rp2040/profile.json": "81bd99b990e1297bfb0dbe6f24c53dd0b50f3df15247d4c5983577c2fe769910",
+    "structure-parts/xiao_rp2350/profile.json": "c54ba28572fe34a13cac37c440dd254f726fc293d1b95c91112bab7cd979f92c",
+    "structure-parts/xiao_samd21/profile.json": "ff5fa295090c4e4fef8a472da8cb4af8fd9cb6cadd989cc36a9b86c73d22f493"
+  }
+}

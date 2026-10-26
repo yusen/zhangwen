@@ -1,0 +1,167 @@
+{
+  "id": "grove_ultrasonic_ranger",
+  "name": "Grove - Ultrasonic Ranger",
+  "category": "sensor",
+  "roles": [
+    "ultrasonic",
+    "distance",
+    "sensor"
+  ],
+  "dimensions_mm": {
+    "length_x": 50,
+    "width_y": 25,
+    "height_z": 13.6,
+    "pcb_thickness": 1.6,
+    "component_height_top": 12,
+    "width": 50,
+    "depth": 25,
+    "height": 13.6,
+    "component_height_bottom": 0,
+    "pcb_thickness_assumed": 1.6
+  },
+  "coordinate_system": {
+    "origin": "pcb_center",
+    "x_axis": "board length",
+    "y_axis": "board width",
+    "positive_z": "module active/component side"
+  },
+  "mounting": {
+    "mode": "flush_inner_surface",
+    "mating_hardware_face": "+Z",
+    "preferred_enclosure_surface": "lid_inner",
+    "clearance_mm": 0.7,
+    "retainer_height_mm": 2
+  },
+  "opening": [
+    {
+      "id": "left_transducer_window",
+      "type": "round_hole",
+      "basis": "left_transducer_face",
+      "preferred_face": "top",
+      "diameter_mm": 17,
+      "clearance_mm": 0.6
+    },
+    {
+      "id": "right_transducer_window",
+      "type": "round_hole",
+      "basis": "right_transducer_face",
+      "preferred_face": "top",
+      "diameter_mm": 17,
+      "clearance_mm": 0.6
+    }
+  ],
+  "keepouts": [
+    {
+      "id": "transducer_volume",
+      "shape": "box",
+      "size_mm": {
+        "length_x": 42,
+        "width_y": 18,
+        "height_z": 13.6
+      },
+      "center_mm": {
+        "x": 0,
+        "y": 0,
+        "z": 6.8
+      }
+    }
+  ],
+  "cad_reference": {
+    "shape": "ultrasonic_sensor_pcb",
+    "color": "#18734c"
+  },
+  "source_status": "用户实测/确认数据：PCB 长 50mm、宽 25mm、厚度按 1.6mm；两个 +Z 面探头直径 16mm、高 12mm、中心距 25mm；Grove 接口在 +Z 面且长边突出 PCB -Y 边 2mm；三个固定孔均完整在 PCB 上。",
+  "source_urls": [
+    "https://wiki.seeedstudio.com/Grove-Ultrasonic_Ranger/"
+  ],
+  "legacy_reference": {
+    "source": "ZW-CAD/server/hardware-profiles.js",
+    "notes": [
+      {
+        "id": "mounting_holes_mm",
+        "value": {
+          "type": "through_hole_triple",
+          "hole_diameter": 2.1,
+          "screw": "M2",
+          "holes": [
+            {
+              "x": -23,
+              "y": 0
+            },
+            {
+              "x": 10,
+              "y": -10.5
+            },
+            {
+              "x": 10,
+              "y": 10.5
+            }
+          ],
+          "source_status": "用户确认：一个孔靠近 PCB -X 边且圆心距边 2mm；另外两个孔 x=10，分别靠近 -Y/+Y 边且圆心距边 2mm。"
+        }
+      },
+      {
+        "id": "grove_features_mm",
+        "value": {
+          "connector_keepout": {
+            "side": "-Y",
+            "face": "+Z",
+            "width": 15,
+            "depth": 8,
+            "height": 5,
+            "center_x": 0,
+            "center_y": -10.5,
+            "center_z": 3.3,
+            "center_z_from_pcb_center": 3.3,
+            "outer_overhang_y": 2
+          },
+          "kind": "ultrasonic_ranger",
+          "coordinate_notes": "PCB 中心为原点；X 为长度方向，Y 为宽度方向，+Z 为正面。",
+          "transducers": {
+            "face": "+Z",
+            "diameter": 16,
+            "height": 12,
+            "pitch_x": 25,
+            "centers": [
+              {
+                "x": -12.5,
+                "y": 0
+              },
+              {
+                "x": 12.5,
+                "y": 0
+              }
+            ],
+            "opening_basis": "transducer_faces"
+          },
+          "installation": {
+            "mounting_mode": "flush_inner_surface",
+            "mating_hardware_face": "+Z",
+            "mating_enclosure_surface": "inner_surface",
+            "placement_rule": "安装时让硬件局部 +Z 面与外壳内表面重合，两个超声波探头朝向测距方向；若安装到侧壁，由确定性布局器按目标外壳面计算旋转和平移。"
+          },
+          "opening": {
+            "type": "two_transducer_round_holes",
+            "basis": "transducer_faces",
+            "diameter": 17,
+            "clearance_diameter": 1,
+            "centers": [
+              {
+                "x": -12.5,
+                "y": 0
+              },
+              {
+                "x": 12.5,
+                "y": 0
+              }
+            ],
+            "rule": "两个圆形开孔分别对准探头中心，开孔直径 = 探头直径 16mm + 1mm。"
+          },
+          "default_hole_radius": 8.5,
+          "opening_notes": "生成超声波开口时以两个探头直径 16mm + 1mm 余量为基准。"
+        }
+      }
+    ]
+  },
+  "thumbnail_url": "https://files.seeedstudio.com/wiki/Grove_Ultrasonic_Ranger/img/Ultrasonic.jpg"
+}

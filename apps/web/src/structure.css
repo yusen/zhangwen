@@ -23,8 +23,8 @@
 .structure-template-info p { margin: 7px 0; }
 .laser-preview { min-height: 250px; }
 .laser-sheet { flex: 1; min-height: 0; display: flex; flex-direction: column; padding: 14px; }
-.laser-sheet svg { flex: 1; min-height: 160px; width: 100%; max-height: 100%; }
-.laser-sheet p { margin: 8px 0 0; text-align: center; font-size: 12px; color: var(--ink-2); }
+.laser-sheet svg { flex: 1; min-height: 0; width: 100%; max-height: 100%; }
+.laser-sheet p { flex-shrink: 0; margin: 8px 0 0; text-align: center; font-size: 12px; color: var(--ink-2); }
 .laser-stock { fill: #f2e5cd; stroke: #d2bc93; stroke-width: .3; }
 .laser-sheet.cut .laser-stock { fill: #fff; stroke: #b6b6b6; }
 .laser-path { fill: none; stroke-width: 1.2; }

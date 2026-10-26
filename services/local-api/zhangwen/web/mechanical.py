@@ -56,7 +56,24 @@ def context(skills, component_ids):
 def cad_profile(profile, component, image=''):
     """Data-only adapter to the existing enclosure worker's profile contract."""
     mounting = profile['mounting']
+    issues = []
+    if mounting.get('mating_hardware_face') in {'+X', '-X', '+Y', '-Y'}:
+        issues.append('侧向安装面的孔位投影尚未支持，请提供适用于底板或上盖的安装方案')
+    if mounting.get('strategy') == 'edge_retainer':
+        issues.append('该模块要求边缘卡持，当前外壳适配器未实现其卡持几何')
+    if mounting['holes'] and mounting.get('strategy') != 'hole_fastened':
+        issues.append('已提供孔位但未声明孔固定策略，不能自动改成螺钉安装')
+    # PCB origin may differ from envelope origin, so only envelope-centred profiles
+    # have enough information for this bound check.
+    if profile['coordinate_system']['origin'] == 'envelope_center':
+        dims = profile['dimensions']
+        for hole in mounting['holes']:
+            if (abs(hole['center']['x']) + hole['diameter']/2 > dims['length_x']/2 or
+                    abs(hole['center']['y']) + hole['diameter']/2 > dims['width_y']/2):
+                issues.append('安装孔超出已声明的包络，须核对原点、孔径与孔中心')
     return {'id': profile['profile_id'], 'name': profile['display_name'], 'componentId': component,
+            'constraint_issues': issues, 'canonical_mounting': mounting,
+            'orientation_assumption': '未声明贴合面；底板方向为待确认默认值' if not mounting.get('mating_hardware_face') else '',
             'revision': profile['revision'], 'category': profile['category'], 'roles': profile['roles'],
             'thumbnail_url': image, 'dimensions_mm': profile['dimensions'], 'coordinate_system': profile['coordinate_system'],
             'mounting': {'mode': 'screw_holes' if mounting['holes'] else 'envelope_only',

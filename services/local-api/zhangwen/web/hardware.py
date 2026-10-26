@@ -5,7 +5,7 @@ Preserves copied V1 files and never exposes unrelated archived controllers.
 import json
 import re
 from pathlib import Path
-from . import module_guides, module_support, module_verification
+from . import module_guides, module_support, module_verification, hardware_resources
 
 from zhangwen.hardware.hardware_skills import HardwareSkillRepository, HardwareSkillNotFoundError, HardwareSkillValidationError, HardwareSkillConflictError, HARDWARE_SKILL_ALLOWED_PATHS, _mechanical_snapshot
 from zhangwen.cad_agent.profile_repository import MechanicalProfileSnapshot
@@ -17,7 +17,6 @@ WEB_CONTROLLERS = frozenset({
     "hw_labplus_mpython_esp32s3_v3", "hw_labplus_mpython_v2", "hw_esp32_generic_c3",
 })
 RELEASE_CATALOG = Path(__file__).resolve().parents[4] / "resources/hardware-skills"
-VENDOR_CATALOG = RELEASE_CATALOG.parent / "vendor-hardware-skills"
 EXAMPLES_START = '<!-- zhangwen:local-examples:v1 -->'
 EXAMPLES_END = '<!-- /zhangwen:local-examples:v1 -->'
 EXAMPLES_PATTERN = re.compile(re.escape(EXAMPLES_START) + r'\s*```json\s*\n(.*?)\n```\s*' + re.escape(EXAMPLES_END), re.S)
@@ -42,6 +41,12 @@ def module_type(name: str, category: str) -> str:
 
 
 class WebHardwareRepository(HardwareSkillRepository):
+    web_controllers = WEB_CONTROLLERS
+    def _read_files(self, root, manifest):
+        if root.parent.resolve() == hardware_resources.CATALOG.resolve():
+            return hardware_resources.source_files(root, manifest)
+        return super()._read_files(root, manifest)
+
     def update_mechanical_files(self, skill_name, *, updates, expected_revision):
         # The original update_files intentionally cannot add optional files.
         # Declare this existing schema capability and reuse its atomic writer,
@@ -120,12 +125,11 @@ class WebHardwareRepository(HardwareSkillRepository):
         self.install_bundled_catalog(source_root=RELEASE_CATALOG)
 
     def install_web_boards(self) -> None:
-        self.install_bundled_catalog(source_root=Path(__file__).with_name("board-skills"))
+        # Included in the unified catalog; retained for startup/API compatibility.
+        return None
 
     def install_vendor_catalog(self) -> None:
-        if not VENDOR_CATALOG.is_dir():
-            raise RuntimeError("多品牌模块资料目录缺失，请重新下载完整项目。")
-        self.install_bundled_catalog(source_root=VENDOR_CATALOG)
+        return None
 
     def install_module_guides(self) -> int:
         return module_guides.install(self, WEB_CONTROLLERS)
@@ -279,7 +283,9 @@ class WebHardwareRepository(HardwareSkillRepository):
     @staticmethod
     def reference_only(detail) -> bool:
         electrical = detail.specification.electrical
-        return detail.category != HardwareCategory.MCU and (electrical.voltage <= 0 or electrical.logicLevel <= 0)
+        if detail.category in {HardwareCategory.MCU, HardwareCategory.STRUCTURE}:
+            return False
+        return electrical.voltage <= 0 or (detail.category != HardwareCategory.POWER and electrical.logicLevel <= 0)
 
     def component_from_detail(self, detail):
         component = super().component_from_detail(detail)
@@ -294,13 +300,14 @@ class WebHardwareRepository(HardwareSkillRepository):
         return component
 
     def validate_component_ids(self, component_ids):
-        known, unknown = [], []
-        for component_id in component_ids:
+        known, unknown, details = [], [], []
+        for component_id in dict.fromkeys(component_ids):
             try:
                 detail = self.get_active_by_component_id(component_id)
             except HardwareSkillNotFoundError:
                 known.append(component_id)  # Original missing-component diagnostic.
                 continue
+            details.append(detail)
             if self.reference_only(detail):
                 unknown.append(detail)
             else:
@@ -310,9 +317,8 @@ class WebHardwareRepository(HardwareSkillRepository):
             result.checks.append(ValidationCheck(dimension='unverified_reference', severity=ValidationSeverity.WARNING,
                 message=f'{detail.displayName}：资料已收录，电气参数及 MicroPython 驱动尚未完成联调。',
                 details='未对未知参数进行兼容比较；请核对官方资料、供电、信号电平、引脚与固件。'))
-        if unknown and result.overall == ValidationSeverity.PASS:
-            result.overall = ValidationSeverity.WARNING
-        return result
+        from .hardware_constraints import complete_checks
+        return complete_checks(self, details, result)
 
     def render_context(self, component_id: str, *, max_chars: int = 24000, board_id: str | None = None) -> str:
         detail = self.get_active_by_component_id(component_id)

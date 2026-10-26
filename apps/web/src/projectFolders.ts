@@ -1,6 +1,8 @@
-import type { ProjectSnapshot } from '../../../packages/contracts/src/platform';
+import type { ProjectSnapshot, HardwareResourceBundle } from '../../../packages/contracts/src/platform';
 import { openPlatformDatabase, lockProjectFolder } from './legacyBrowserNames';
 import { sha256 } from './serial';
+import { projectFolderFiles, hardwareFolderFiles } from './projectFolderLayout';
+import { api } from './api';
 
 export const PROJECT_FILE = 'zhangwen.project.json';
 const MAX_BYTES = 32 * 1024 * 1024;
@@ -58,6 +60,36 @@ async function write(handle: ProjectDirectory, name: string, data: string): Prom
   try { await stream.write(data); await stream.close(); }
   catch (error) { await stream.abort().catch(() => {}); throw error; }
 }
+async function writeImmutableFile(root: ProjectDirectory, path: string[], bytes: Uint8Array<ArrayBuffer>, checksum: string): Promise<void> {
+  let directory: FileSystemDirectoryHandle = root;
+  for (const part of path.slice(0, -1)) directory = await directory.getDirectoryHandle(part, { create: true });
+  const name = path.at(-1)!, label = path.join('/');
+  let existing: FileSystemFileHandle | null = null;
+  try { existing = await directory.getFileHandle(name); }
+  catch (error) { if (!(error instanceof DOMException && error.name === 'NotFoundError')) throw error; }
+  if (existing) {
+    const previous = await existing.getFile();
+    if (previous.size !== bytes.byteLength || await sha256(new Uint8Array(await previous.arrayBuffer())) !== checksum) {
+      throw new Error(`文件 ${label} 已被外部修改，未覆盖。`);
+    }
+  } else {
+    const handle = await directory.getFileHandle(name, { create: true });
+    let writer: FileSystemWritableFileStream | null = null;
+    try { writer = await handle.createWritable(); await writer.write(bytes); await writer.close(); }
+    catch (error) {
+      await writer?.abort().catch(() => {});
+      // Only discard the empty file just created by this failed attempt. Never
+      // remove a pre-existing file or any bytes that appeared in the meantime.
+      try {
+        const pending = await directory.getFileHandle(name);
+        if (await pending.isSameEntry(handle) && (await pending.getFile()).size === 0) await directory.removeEntry(name);
+      } catch { /* A later retry still reports any remaining conflict. */ }
+      throw error;
+    }
+  }
+  const check = new Uint8Array(await (await (await directory.getFileHandle(name)).getFile()).arrayBuffer());
+  if (await sha256(check) !== checksum) throw new Error(`文件 ${label} 回读不一致，未覆盖项目快照。`);
+}
 export async function writeProjectDirectory(binding: FolderBinding, snapshot: ProjectSnapshot): Promise<void> {
   const task = async () => {
     await ensureFolderPermission(binding);
@@ -69,36 +101,26 @@ export async function writeProjectDirectory(binding: FolderBinding, snapshot: Pr
     if (!current || current.source === 'ai') throw new Error('项目缺少当前已保存代码，未写文件夹。');
     const json = JSON.stringify(snapshot, null, 2) + '\n';
     if (new TextEncoder().encode(json).length > MAX_BYTES) throw new Error('项目快照超过32MiB，未截断或覆盖。');
+    // Validate all source paths and bytes before changing the folder. Internal job IDs
+    // stay in the checkpoint; visible copies are grouped by purpose and version.
+    const resources = await api<HardwareResourceBundle>(`/projects/${binding.projectId}/hardware-resources?expectedRevision=${snapshot.project.revision}`);
+    const decoded = new Map<string, Promise<{ bytes: Uint8Array<ArrayBuffer>; checksum: string }>>();
+    const files = await Promise.all([...projectFolderFiles(snapshot), ...hardwareFolderFiles(resources)].map(async file => {
+      const source = 'text' in file.data ? 'text:' + file.data.text : 'base64:' + file.data.base64;
+      let pending = decoded.get(source);
+      if (!pending) {
+        const bytes = 'text' in file.data ? new TextEncoder().encode(file.data.text) :
+          Uint8Array.from(atob(file.data.base64), char => char.charCodeAt(0));
+        pending = sha256(bytes).then(checksum => ({ bytes, checksum })); decoded.set(source, pending);
+      }
+      const { bytes, checksum } = await pending;
+      if (checksum !== file.sha256) throw new Error('项目历史文件校验失败，未覆盖文件夹快照。');
+      return { ...file, bytes };
+    }));
+    for (const file of files) await writeImmutableFile(binding.handle, file.path, file.bytes, file.sha256);
     if (main !== current.code) {
       await write(binding.handle, 'main.py', current.code);
       binding.mainHash = await hash(current.code);
-    }
-    // Immutable CAD files remain visible alongside the portable checkpoint.
-    // Every path is validated again here before browser-authorized folder I/O.
-    if (snapshot.structure?.assets) {
-      const root = await binding.handle.getDirectoryHandle('structure', { create: true });
-      for (const [key, asset] of Object.entries(snapshot.structure.assets)) {
-        const parts = key.split('/');
-        if (parts.length < 3 || parts.length > 4 || !/^[a-f0-9]{32}$/.test(parts[0]) || !/^ZW-PRODUCT-\d{8}-\d{6}(?:-\d{2})?$/.test(parts[1]) || parts.slice(2).some(p => !/^[a-zA-Z0-9_.-]+$/.test(p) || p === '.' || p === '..')) throw new Error('结构资产路径无效，未覆盖文件夹快照。');
-        const bytes = Uint8Array.from(atob(asset.content), char => char.charCodeAt(0));
-        if (await sha256(bytes) !== asset.sha256) throw new Error('结构文件校验失败，未覆盖项目快照。');
-        let directory = root;
-        for (const part of parts.slice(0, -1)) directory = await directory.getDirectoryHandle(part, { create: true });
-        const name = parts.at(-1)!;
-        let existing: FileSystemFileHandle | null = null;
-        try { existing = await directory.getFileHandle(name); } catch (e) { if (!(e instanceof DOMException && e.name === 'NotFoundError')) throw e; }
-        if (existing) {
-          const previous = new Uint8Array(await (await existing.getFile()).arrayBuffer());
-          if (await sha256(previous) !== asset.sha256) throw new Error(`结构文件 ${name} 已被外部修改，未覆盖。`);
-        } else {
-          const handle = await directory.getFileHandle(name, { create: true });
-          const writer = await handle.createWritable();
-          try { await writer.write(bytes); await writer.close(); }
-          catch (e) { await writer.abort().catch(() => {}); throw e; }
-        }
-        const check = new Uint8Array(await (await (await directory.getFileHandle(name)).getFile()).arrayBuffer());
-        if (await sha256(check) !== asset.sha256) throw new Error(`结构文件 ${name} 回读不一致，未覆盖项目快照。`);
-      }
     }
     await write(binding.handle, PROJECT_FILE, json);
     binding.checkpointHash = await hash(json);

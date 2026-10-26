@@ -448,7 +448,13 @@ dialog::backdrop { background: #0b182d70; backdrop-filter: blur(3px); }
 .choose-project-folder { display: inline-flex; align-items: center; justify-content: center; gap: 8px; min-height: 44px; padding: 10px 14px; }
 .selected-project-folder { display: block; font-size: 13px; font-weight: 400; color: var(--ink-3); overflow-wrap: anywhere; padding-top: 8px; }
 .recent-projects-title { font-size: 14px; margin: 24px 0 6px; }
-.app.code-fullscreen .workbench { display: flex; }
+/* Keep fullscreen above the responsive three-column rules, including :has()
+   when the hidden conversation panel still carries the selected mobile tab. */
+.app.code-fullscreen .workbench,
+.app.code-fullscreen .workbench:has(.ai-panel.mobile-show) {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+}
 .app.code-fullscreen .hardware-panel,
 .app.code-fullscreen .hardware-restore,
 .app.code-fullscreen .ai-panel,
@@ -575,6 +581,9 @@ dialog::backdrop { background: #0b182d70; backdrop-filter: blur(3px); }
 .code-preview-banner { display: flex; flex-wrap: wrap; align-items: center; gap: 6px; padding: 8px 10px; background: var(--sel); border-bottom: 1px solid var(--border2); font-size: 12px; flex-shrink: 0; }
 .code-preview-banner > div { flex: 1 1 180px; }
 .code-preview-banner small { display: block; margin-top: 4px; color: var(--ink-2); }
+.code-source-note { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; padding: 6px 10px; color: var(--ink-2); border-bottom: 1px solid var(--border2); font-size: 12px; flex-shrink: 0; }
+.code-source-note button { min-height: 32px; padding: 4px 8px; border: 1px solid var(--border2); }
+.laser-draft-status { margin: 0; padding: 8px 12px; flex-shrink: 0; }
 .code-preview-banner button { min-height: 44px; padding: 5px 8px; border: 1px solid var(--border2); font-size: 12px; }
 @media (max-width: 767px) {
   .workbench, .workbench:has(.ai-panel.mobile-show) { display: flex; min-height: 650px; }

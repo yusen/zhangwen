@@ -554,6 +554,9 @@ export function findInvalidProfileFields(profile) {
 
 export function validateProfileContract(profile) {
   const report = createProfileIssueReport();
+  if (Array.isArray(profile.constraint_issues)) {
+    for (const issue of profile.constraint_issues) addProfileIssue(report, 'mounting_issues', issue);
+  }
   for (const field of REQUIRED_PROFILE_FIELDS) {
     if (!(field in profile)) addProfileIssue(report, 'missing_required', field);
   }
@@ -580,7 +583,7 @@ export function validateProfileContract(profile) {
     for (const field of ['mode', 'mating_hardware_face', 'preferred_enclosure_surface']) {
       if (!normalizeString(profile.mounting[field])) addProfileIssue(report, 'mounting_issues', `mounting.${field}`);
     }
-    if (!isPositiveNumber(profile.mounting.clearance_mm)) addProfileIssue(report, 'mounting_issues', 'mounting.clearance_mm');
+    if (!isNonNegativeNumber(profile.mounting.clearance_mm)) addProfileIssue(report, 'mounting_issues', 'mounting.clearance_mm');
     if ('retainer_height_mm' in profile.mounting && !isNonNegativeNumber(profile.mounting.retainer_height_mm)) {
       addProfileIssue(report, 'mounting_issues', 'mounting.retainer_height_mm');
     }

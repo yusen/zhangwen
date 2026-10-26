@@ -22,7 +22,7 @@ export function LaserPreview({ result }: { result?: CadResult }) {
         const points = shape.points.map(p => p.join(',')).join(' ');
         return shape.closed ? <polygon {...props} points={points} /> : <polyline {...props} points={points} />;
       })}
-    </svg><p>红线切割 · 蓝线雕刻 · 毫米尺寸{result?.status !== 'artifact' && ' · 待确认草案'}</p></div>
+    </svg><p>红线切割 · 蓝线雕刻 · 毫米尺寸{result?.status === 'needs_input' ? ' · 等待补充，显示此前保留图纸' : result?.status !== 'artifact' && ' · 待确认草案'}</p></div>
       : <div className="structure-preview-empty"><ScanLine size={44} strokeWidth={1.3} /><h3>开启你的激光造物</h3><p>描述尺寸、材料与轮廓，或先选择左侧模板。</p><span>SVG / DXF · 不依赖 LaserMaker</span></div>}
   </div>;
 }

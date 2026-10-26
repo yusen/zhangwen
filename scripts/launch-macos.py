@@ -15,7 +15,7 @@ from pathlib import Path
 
 def running_url(install_root: Path) -> str | None:
     # Match the same data-directory marker as the server's single-instance
-    # check. Never infer ownership from port 3080 being occupied.
+    # check. Never infer ownership from the default port being occupied.
     for name in ('.zhangwen-web-address.json', '.mu-web-address.json'):
         try:
             marker = install_root / 'data' / name

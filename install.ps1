@@ -1,6 +1,7 @@
 param(
     [string]$InstallDir = ([IO.Path]::Combine([Environment]::GetFolderPath('LocalApplicationData'), 'ZhangWen')),
     [switch]$NoStart,
+    [switch]$Reinstall,
     [string]$Revision = '',
     [string]$DesktopDir = [Environment]::GetFolderPath('Desktop'),
     [ValidateSet('gitee', 'github')][string]$Source = 'gitee'
@@ -45,8 +46,8 @@ try {
             }
             return $true
         }
-        if (!(Test-Package $appDir)) {
-            if (Test-Path -LiteralPath $appDir) { throw 'Existing version has modified or missing files. It was preserved; move it aside before retrying.' }
+        $previousPackage = $null
+        if ($Reinstall -or !(Test-Package $appDir)) {
             $work = Join-Path $InstallDir ('download-' + [guid]::NewGuid().ToString('N'))
             New-Item -ItemType Directory -Path $work | Out-Null
             $zip = Join-Path $work 'source.zip'
@@ -90,15 +91,37 @@ try {
                 }
             } finally { $archive.Dispose() }
             if (!(Test-Package $extracted)) { throw 'Deployment file verification failed; nothing activated.' }
-            Move-Item -LiteralPath $extracted -Destination $appDir
+            if (Test-Path -LiteralPath $appDir) {
+                # Rename only after the replacement is fully verified. Keep the
+                # old package for rollback; data and shared runtime stay in place.
+                $previousPackage = Join-Path $work 'previous-version'
+                try { [IO.Directory]::Move($appDir, $previousPackage) }
+                catch { throw 'Cannot replace the installed version. Save your work, stop the ZhangWen service and close programs using this folder, then retry the same command. Nothing was activated.' }
+            }
+            try { [IO.Directory]::Move($extracted, $appDir) }
+            catch {
+                if ($previousPackage) { [IO.Directory]::Move($previousPackage, $appDir) }
+                throw
+            }
             # Download diagnostics are retained; no recursive deletion of user folders.
         } else { Write-Host 'Platform files are current; skipping source download.' }
         $env:ZHANGWEN_DATA_DIR = Join-Path $InstallDir 'data'
         $env:ZHANGWEN_RUNTIME_DIR = Join-Path $InstallDir 'runtime'
         $env:ZHANGWEN_DOWNLOAD_SOURCE = 'cn'
         if ($Source -eq 'github') { $env:ZHANGWEN_DOWNLOAD_SOURCE = 'global' }
-        & $windowsPowerShell -NoLogo -NoProfile -ExecutionPolicy Bypass -File (Join-Path $appDir 'scripts/bootstrap-windows.ps1') -PrepareOnly
-        if ($LASTEXITCODE -ne 0) { throw 'Environment setup failed. The previous version remains selected.' }
+        try {
+            & $windowsPowerShell -NoLogo -NoProfile -ExecutionPolicy Bypass -File (Join-Path $appDir 'scripts/bootstrap-windows.ps1') -PrepareOnly
+            if ($LASTEXITCODE -ne 0) { throw 'Environment setup failed. The previous version remains selected.' }
+        } catch {
+            if ($previousPackage) {
+                # The virtual environment is prepared at its final absolute path.
+                # Never relocate a prepared venv and activate it at another path.
+                [IO.Directory]::Move($appDir, (Join-Path $work 'failed-version'))
+                [IO.Directory]::Move($previousPackage, $appDir)
+                Write-Host 'Previous program folder restored; user data was preserved.'
+            }
+            throw
+        }
         $launcher = Join-Path $InstallDir 'launch.ps1'
         $launcherText = @'
 $ErrorActionPreference = 'Stop'

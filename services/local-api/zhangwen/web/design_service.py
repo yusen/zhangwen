@@ -25,7 +25,11 @@ def solid_bounds(spec, scale):
     return [round((max(b[i][1] for b in bounds) - min(b[i][0] for b in bounds)) * scale, 3) for i in range(3)]
 
 
-async def act(request, previous, settings, job_root, conversation=None):
+async def act(request, previous, settings, job_root, conversation=None, *, preview_only=False):
+    if preview_only and (request.designType != 'laser' or request.action != 'parameters'
+                         or previous.get('designKind') == 'builtin'
+                         or previous.get('designTemplate') in builtin_templates.TEMPLATES):
+        raise HTTPException(422, '参数预览仅用于激光图纸。')
     if request.template in builtin_templates.TEMPLATES or (not request.template and previous.get('designKind') == 'builtin' and request.action != 'selected'):
         return await builtin_templates.act(request, previous, job_root, settings, conversation)
     kind = 'laser' if request.designType == 'laser' else 'parametric'
@@ -107,7 +111,7 @@ async def act(request, previous, settings, job_root, conversation=None):
         result['design_state'] = {'id': '', 'parameters': {}, 'enclosure_parameters': {'outer_box_size': dict(zip(['length_x', 'width_y', 'height_z'], size))}, 'bom': []}
         result['cadquery_code'] = solid_code(spec, scale)
     auto_build = request.designType == 'model' and request.action in {'analyze', 'revise'}
-    if request.action not in {'build', 'parameters', 'validate'} and not auto_build:
+    if preview_only or (request.action not in {'build', 'parameters', 'validate'} and not auto_build):
         return {**result, 'status': 'confirmation', 'message': spec.summary + ' 请核对尺寸后生成。'}
     if request.action == 'validate':
         return {**previous, 'checks': result['checks'] or [{'id': 'spec', 'status': 'pass', 'message': '结构化实体尺寸与操作清单有效；实物强度及打印条件需另行核对。'}]}

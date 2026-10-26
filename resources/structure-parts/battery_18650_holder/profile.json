@@ -1,0 +1,50 @@
+{
+  "id": "battery_18650_holder",
+  "name": "Single 18650 Battery Holder",
+  "category": "power",
+  "roles": [
+    "battery",
+    "power"
+  ],
+  "dimensions_mm": {
+    "length_x": 77,
+    "width_y": 21,
+    "height_z": 21
+  },
+  "coordinate_system": {
+    "origin": "holder_center",
+    "x_axis": "battery length",
+    "y_axis": "holder width",
+    "positive_z": "battery removal side"
+  },
+  "mounting": {
+    "mode": "floor_screws_or_strap",
+    "mating_hardware_face": "-Z",
+    "preferred_enclosure_surface": "base_floor",
+    "clearance_mm": 1,
+    "retainer_height_mm": 3
+  },
+  "opening": [],
+  "keepouts": [
+    {
+      "id": "battery_removal_space",
+      "shape": "box",
+      "size_mm": {
+        "length_x": 80,
+        "width_y": 24,
+        "height_z": 26
+      },
+      "center_mm": {
+        "x": 0,
+        "y": 0,
+        "z": 13
+      }
+    }
+  ],
+  "cad_reference": {
+    "shape": "battery_holder",
+    "color": "#2d3436"
+  },
+  "source_status": "通用 18650 座暂定尺寸，制造前需用户确认",
+  "thumbnail_url": "/assets/hardware/battery_18650_holder.png"
+}

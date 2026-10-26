@@ -1,0 +1,150 @@
+{
+  "id": "pca9685_servo_controller",
+  "name": "PCA9685 16-Channel Servo Controller",
+  "category": "controller",
+  "roles": [
+    "compute",
+    "servo_controller",
+    "pwm",
+    "controller"
+  ],
+  "dimensions_mm": {
+    "length_x": 62.3,
+    "width_y": 25.3,
+    "height_z": 14.2,
+    "pcb_thickness": 1.2,
+    "component_height_top": 13,
+    "width": 62.3,
+    "depth": 25.3,
+    "height": 14.2,
+    "component_height_bottom": 0,
+    "connector_length_x": 8.3,
+    "connector_width_y": 15,
+    "connector_height_z": 4,
+    "connector_outer_protrusion_x": 5.3,
+    "main_component_diameter": 8,
+    "main_component_height": 13
+  },
+  "coordinate_system": {
+    "origin": "pcb_center",
+    "x_axis": "board length",
+    "y_axis": "board width",
+    "positive_z": "module active/component side"
+  },
+  "mounting": {
+    "mode": "tray_or_four_corner_screws",
+    "mating_hardware_face": "-Z",
+    "preferred_enclosure_surface": "base_floor",
+    "clearance_mm": 0.8,
+    "retainer_height_mm": 2
+  },
+  "opening": [
+    {
+      "id": "side_connector",
+      "type": "rectangular_cutout",
+      "basis": "servo_connector_keepout",
+      "preferred_face": "left",
+      "size_mm": {
+        "width": 16.6,
+        "height": 5.2
+      },
+      "clearance_mm": 0.8
+    }
+  ],
+  "keepouts": [
+    {
+      "id": "servo_connector_keepout",
+      "shape": "box",
+      "size_mm": {
+        "length_x": 70.3,
+        "width_y": 27.3,
+        "height_z": 14.2
+      },
+      "center_mm": {
+        "x": 0,
+        "y": 0,
+        "z": 7.1
+      }
+    }
+  ],
+  "cad_reference": {
+    "shape": "servo_reference",
+    "color": "#1f8a5b"
+  },
+  "source_status": "用户实测/确认数据：PCB 62.3 x 25.3 x 1.2mm；+X 接口尺寸 8.3 x 15 x 4mm 并突出 5.3mm；PCB 中心有直径 8mm、高 13mm 圆柱主要零部件；四个 2.1mm 安装孔位于 x=55.5、y=19 中心矩形四角。",
+  "legacy_reference": {
+    "source": "ZW-CAD/server/hardware-profiles.js",
+    "notes": [
+      {
+        "id": "mounting_holes_mm",
+        "value": {
+          "type": "through_hole_quad",
+          "hole_diameter": 2.1,
+          "screw": "M2",
+          "holes": [
+            {
+              "x": -27.75,
+              "y": -9.5
+            },
+            {
+              "x": -27.75,
+              "y": 9.5
+            },
+            {
+              "x": 27.75,
+              "y": -9.5
+            },
+            {
+              "x": 27.75,
+              "y": 9.5
+            }
+          ],
+          "source_status": "用户确认：四孔位于 x=55.5、y=19 中心矩形四角，因此相对 PCB 中心坐标为 x=±27.75、y=±9.5。"
+        }
+      },
+      {
+        "id": "grove_features_mm",
+        "value": {
+          "connector_keepout": {
+            "side": "+X",
+            "face": "+Z",
+            "length_x": 8.3,
+            "width_y": 15,
+            "height_z": 4,
+            "outer_protrusion_x": 5.3,
+            "center_x": 32.3,
+            "center_y": 0,
+            "center_z": 2.6
+          },
+          "kind": "pca9685_servo_controller",
+          "coordinate_notes": "PCB 中心为原点；X 为 PCB 长度方向，Y 为 PCB 宽度方向，+Z 为主要零部件面。",
+          "main_component": {
+            "face": "+Z",
+            "shape": "cylinder",
+            "diameter": 8,
+            "height": 13,
+            "center_x": 0,
+            "center_y": 0,
+            "center_z": 7.1
+          },
+          "installation": {
+            "mounting_mode": "four_corner_screws",
+            "mating_hardware_face": "-Z",
+            "mating_enclosure_surface": "internal_support",
+            "placement_rule": "PCB 通过四个 2.1mm 安装孔固定在内部托台或螺丝柱上；+X 接口侧需要为插拔和线束预留空间。"
+          },
+          "opening": {
+            "type": "side_connector_clearance",
+            "basis": "connector_keepout",
+            "side": "+X",
+            "width_y": 15,
+            "height_z": 4,
+            "outer_protrusion_x": 5.3,
+            "rule": "若接口需要露出外壳，开孔中心对准 +X 接口，孔尺寸按 15mm 宽、4mm 高并加装配余量。"
+          }
+        }
+      }
+    ]
+  },
+  "thumbnail_url": "/assets/hardware/pca9685_servo_controller.jpg"
+}

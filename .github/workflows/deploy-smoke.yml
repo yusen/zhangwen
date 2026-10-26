@@ -126,9 +126,9 @@ jobs:
                   assert available.getsockname()[0] == '127.0.0.1'
                   assert available.getsockname()[1] != preferred
           with tempfile.TemporaryDirectory() as directory:
-              app = create_app(Path(directory), port=3080)
+              app = create_app(Path(directory))
               try:
-                  with TestClient(app, base_url='http://127.0.0.1:3080') as client:
+                  with TestClient(app, base_url='http://127.0.0.1:30801') as client:
                       assert client.get('/api/health').json()['transport'] == 'web-serial'
                       assert client.get('/').status_code == 200
                       hardware = client.get('/api/hardware').json()['skills']
@@ -140,7 +140,7 @@ jobs:
                       print(f'Catalog ready: {len(hardware)} hardware skills, {len(profiles)} structure profiles', flush=True)
                       assert abs(cq.Workplane('XY').box(5, 6, 7).val().Volume() - 210) < 0.01
                       token = client.get('/api/session').json()['token']
-                      client.headers.update({'origin': 'http://127.0.0.1:3080', 'x-zhangwen-session': token})
+                      client.headers.update({'origin': 'http://127.0.0.1:30801', 'x-zhangwen-session': token})
                       # Exercise the shipped user-supplied Labplus protocol against
                       # a fake I2C bus; never access hardware or call a real model.
                       labplus = client.get('/api/hardware/labplus-318357bd10f2').json()

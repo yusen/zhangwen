@@ -1,21 +1,22 @@
 """Board-specific code references, kept separate from immutable legacy packages."""
 import ast
 from pathlib import Path
+from . import hardware_resources
 
-SKILLS = {"hw_labplus_mpython_v2": "mpython-v2", "hw_labplus_mpython_esp32s3_v3": "mpython-v3"}
+SKILLS = {"hw_labplus_mpython_v2": "labplus-mpython-v2", "hw_labplus_mpython_esp32s3_v3": "labplus-mpython-esp32s3-v3"}
 
 
 def programming_context(board_id: str) -> str:
     if board_id == 'hw_seed_unihiker_k10':
-        root = Path(__file__).with_name('programming-skills') / 'unihiker-k10'
-        original = Path(__file__).resolve().parents[1] / 'hardware/board-skills/unihiker-k10'
+        root = hardware_resources.programming_root('k10')
+        original = root
         return (root / 'SKILL.md').read_text(encoding='utf-8') + '\n' + '\n'.join(
             (original / file).read_text(encoding='utf-8') for file in
             ('references/03-screen-api.md', 'templates/01_screen_shapes.py'))
     name = SKILLS.get(board_id)
     if not name:
         return ""
-    root = Path(__file__).with_name("programming-skills") / name
+    root = hardware_resources.programming_root(name)
     return "\n".join((root / file).read_text(encoding="utf-8") for file in ("SKILL.md", "references/api.md"))
 
 

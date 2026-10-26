@@ -1,7 +1,7 @@
 import { lazy, Suspense, useEffect, useRef, useState } from 'react';
 import { ArrowUp, Box, CheckCheck, ChevronRight, Download, FileCode2, FolderOpen, LoaderCircle, Maximize, Minimize, PanelLeftClose, PanelLeftOpen, Plus, Settings, SlidersHorizontal, Sparkles, X } from 'lucide-react';
 import type { HardwareSummary } from '../../../packages/contracts/src/platform';
-import type { CadProfile, CadResult, StructureAction, StructureCatalog, StructureWorkspace as Workspace } from '../../../packages/contracts/src/structure';
+import type { CadProfile, CadResult, LaserPreviewInput, StructureAction, StructureCatalog, StructureWorkspace as Workspace } from '../../../packages/contracts/src/structure';
 import { api, ApiError, bootstrap } from './api';
 import { Dialog } from './Dialog';
 import { CaseTemplatePicker } from './CaseTemplatePicker';
@@ -39,6 +39,7 @@ export function StructureWorkspace({ projectId, active, board, modules, designTy
   const [selected, setSelected] = useState<string[]>([]);
   const [customProfiles, setCustomProfiles] = useState<Record<string, unknown>[]>([]);
   const [params, setParams] = useState<Record<string, number>>({});
+  const [laserDraft, setLaserDraft] = useState<{key: string; result?: CadResult; error?: string} | null>(null);
   const [faces, setFaces] = useState<Record<string, 'base_floor' | 'lid_inner'>>({});
   const [rotations, setRotations] = useState<Record<string, number>>({});
   const [busy, setBusy] = useState('');
@@ -101,6 +102,25 @@ export function StructureWorkspace({ projectId, active, board, modules, designTy
   const missingParts = projectHardware.filter(h => !catalog?.profiles.some(p => p.componentId === h.componentId));
   const bom = result?.bom ?? result?.partial_bom ?? [];
   const dimensionsDirty = JSON.stringify(params) !== JSON.stringify(flatten(result)) || !!Object.keys(faces).length || !!Object.keys(rotations).length;
+  const previewKey = JSON.stringify([projectId, workspace.revision, current?.revision, params]);
+  const draftPreview = laserDraft?.key === previewKey ? laserDraft : null;
+  const previewDirty = laser && dimensionsDirty && !!result?.designSpec && result.status !== 'needs_input';
+  useEffect(() => {
+    if (!active || !previewDirty || !projectId || !current || busy) return;
+    let live = true;
+    if (Object.values(params).some(value => !Number.isFinite(value))) {
+      setLaserDraft({key: previewKey, error: '请填写完整的有效尺寸。'});
+      return;
+    }
+    const timer = setTimeout(() => {
+      void api<CadResult>(`/projects/${projectId}/structure/preview`, 'POST', {
+        expectedRevision: workspace.revision, sourceRevision: current.revision, parameters: params,
+      } satisfies LaserPreviewInput).then(value => {
+        if (live) setLaserDraft({key: previewKey, result: value});
+      }).catch(error => { if (live) setLaserDraft({key: previewKey, error: errorText(error)}); });
+    }, 250);
+    return () => { live = false; clearTimeout(timer); };
+  }, [active, previewDirty, projectId, current, busy, previewKey, params, workspace.revision]);
   const selectVersion = (revision: number) => { if (dimensionsDirty && !window.confirm('尺寸参数尚未应用，切换会恢复所选版本的参数。继续吗？')) return; setSelectedVersion(revision); setError(''); };
   const report = result?.requirement_analysis_report as {functions?: {name: string; matched_hardware_name?: string; library_status?: string}[]} | undefined;
   const addProfile = () => { try { const value: unknown = JSON.parse(profileText); if (!value || typeof value !== 'object' || Array.isArray(value) || !('id' in value) || typeof value.id !== 'string') throw new Error('需要包含id的硬件结构资料对象。'); if (catalog?.profiles.some(p => p.id === value.id)) throw new Error('此id属于已有结构资料，请为自定义资料使用新id。'); const p = value as Record<string, unknown>; setCustomProfiles(v => [...v.filter(x => x.id !== p.id), p]); setSelected(v => [...new Set([...v, p.id as string])]); setCustom(false); setError(''); } catch (e) { setError(errorText(e)); } };
@@ -149,8 +169,8 @@ export function StructureWorkspace({ projectId, active, board, modules, designTy
         <form className="chat-form" onSubmit={e => {e.preventDefault(); void act(current ? 'revise' : 'analyze', input);}}><label className="sr-only" htmlFor="structure-message">发送给结构设计师</label><textarea id="structure-message" placeholder={laser ? "描述材料、厚度、图案轮廓与毫米尺寸…" : result?.builtinTemplate ? `基于${result.builtinTemplate.title}，描述要调整的尺寸、孔位、凹字或结构…` : "描述3D作品与毫米尺寸，或说明希望修改的地方…"} value={input} maxLength={4000} disabled={!projectId || !!busy} onChange={e => setInput(e.target.value)} onKeyDown={e => {if ((e.ctrlKey || e.metaKey) && e.key === 'Enter' && !e.nativeEvent.isComposing && input.trim()) {e.preventDefault(); void act(current ? 'revise' : 'analyze', input);}}} /><div><span>{laser ? "工程硬件资料共用 → 确认尺寸 → 导出图纸" : result?.builtinTemplate ? "基于当前案例对话 → 检查并更新3D" : "3D对话 → 校验尺寸 → 更新模型预览"}</span><button className="primary icon-button" aria-label="发送结构需求" disabled={!projectId || !input.trim() || !!busy}>{busy ? <LoaderCircle size={19} className="spin" /> : <ArrowUp size={20} />}</button></div></form>
       </section>
       <section className={`panel structure-model structure-mobile-${tab === 'model' ? 'show' : 'hide'}`}>
-        <div className="filebar"><span><Box size={16} />{laser ? "激光造物" : "3D造物"}</span><select aria-label="结构历史版本" disabled={!versions.length || !!busy} value={current?.revision ?? ''} onChange={e => selectVersion(Number(e.target.value))}>{!versions.length && <option value="">尚无版本</option>}{versions.map(v => <option key={v.revision} value={v.revision}>V{v.revision} · {v.name || v.result.title || v.prompt.slice(0, 24)} · {stageLabels[v.result.status] ?? '检查结果'}</option>)}</select><span className="filebar-space" /><button disabled={!(result?.design_state || result?.designSpec) || !!busy} onClick={() => void act('validate')}><CheckCheck size={15} />检查</button><button aria-label={fullscreen ? '退出模型全屏' : '模型全屏'} onClick={() => setFullscreen(v => !v)}>{fullscreen ? <Minimize size={16} /> : <Maximize size={16} />}</button><button disabled={!result?.exports?.length} onClick={() => setExports(true)}><Download size={16} />导出</button></div>
-        {active && laser ? <LaserPreview result={result} /> : active && <Suspense fallback={<p className="structure-caption" role="status">正在准备模型视图区…</p>}><StructurePreview result={result} /></Suspense>}
+        <div className="filebar"><span><Box size={16} />{laser ? "激光造物" : "3D造物"}</span><select aria-label="结构历史版本" disabled={!versions.length || !!busy} value={current?.revision ?? ''} onChange={e => selectVersion(Number(e.target.value))}>{!versions.length && <option value="">尚无版本</option>}{versions.map(v => <option key={v.revision} value={v.revision}>V{v.revision} · {v.name || v.result.title || v.prompt.slice(0, 24)} · {stageLabels[v.result.status] ?? '检查结果'}</option>)}</select><span className="filebar-space" /><button disabled={!(result?.design_state || result?.designSpec) || !!busy} onClick={() => void act('validate')}><CheckCheck size={15} />检查</button><button aria-label={fullscreen ? '退出模型全屏' : '模型全屏'} onClick={() => setFullscreen(v => !v)}>{fullscreen ? <Minimize size={16} /> : <Maximize size={16} />}</button><button disabled={!result?.exports?.length || (laser && dimensionsDirty) || !!busy} onClick={() => setExports(true)}><Download size={16} />导出</button></div>
+        {active && laser ? <><LaserPreview result={previewDirty && draftPreview?.result ? draftPreview.result : result} />{previewDirty && <p className="structure-caption laser-draft-status" role="status">{draftPreview?.error ? `${draftPreview.error} 当前仍显示 V${current?.revision} 已应用图纸。` : draftPreview?.result ? '参数草案预览 · 尚未应用；应用参数后可导出新图纸。' : `正在更新参数预览；当前仍显示 V${current?.revision} 已应用图纸。`}</p>}</> : active && <Suspense fallback={<p className="structure-caption" role="status">正在准备模型视图区…</p>}><StructurePreview result={result} /></Suspense>}
         <section className="structure-inspector" aria-label="结构参数与检查"><details open><summary><SlidersHorizontal size={15} />尺寸与布局{dimensionsDirty && <small>未应用</small>}</summary>
           {result?.builtinTemplate && <div className="structure-template-info"><strong>{result.builtinTemplate.title} · 案例改造</strong><p>{sizeText(result.design_state?.enclosure_parameters.outer_box_size)}</p><p>原模板适配参考（改造后需重新核对）：</p>{result.builtinTemplate.notes.map(note => <p key={note}>{note}</p>)}<p>模板修订 {result.builtinTemplate.revision}。可对话调整原模板尺寸、开孔或增添结构。</p>{result.templateEdit?.summary && <p>{result.templateEdit.summary}</p>}{!!Object.keys(result.templateEdit?.parameterOverrides ?? {}).length && <p aria-label="模板参数修改">已调整 {Object.keys(result.templateEdit?.parameterOverrides ?? {}).length} 项模板尺寸</p>}{result.templateEdit?.partOperations.map(part => <p key={part.partId}>{result.templateParts?.find(item => item.id === part.partId)?.label ?? '打印部件'} · {part.operations.length} 项结构改造</p>)}{result.status === 'needs_input' && <p>等待补充说明，当前显示此前保留的模型。</p>}</div>}
           {result?.designTemplate === 'rounded-box' && <p className="structure-caption">宽度、深度、高度均为盒子外尺寸。{result.designSpec?.roundedBox?.pattern_version === 2 ? '四角切缝交错接到上下边缘，保留中间连接桥。' : '旧版切缝未接通上下边缘，应用参数可生成修正版。'}接缝需胶合，材料与榫接须先试切。刀缝在加工软件中补偿。</p>}{!result?.parameters && <p className="structure-caption">确认需求后可在这里调整毫米尺寸。</p>}

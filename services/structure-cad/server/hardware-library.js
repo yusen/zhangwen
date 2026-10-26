@@ -1,13 +1,25 @@
-import { readFileSync } from 'node:fs';
+import { readFileSync, realpathSync } from 'node:fs';
+import { createHash } from 'node:crypto';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
-const libraryPath = path.join(__dirname, 'data', 'hardware-library.json');
-
-const library = JSON.parse(readFileSync(libraryPath, 'utf8'));
+const resourceRoot = path.resolve(__dirname, '../../../resources');
+const resourceIndex = JSON.parse(readFileSync(path.join(resourceRoot, 'hardware-resources.json'), 'utf8'));
+if (resourceIndex.schema !== 'zhangwen.hardware-resources/v1') throw new Error('Invalid hardware resource index');
+const library = {...resourceIndex.structure, profiles: resourceIndex.structure.profiles.map(entry => {
+  const target = path.resolve(resourceRoot, entry.path);
+  if (!target.startsWith(resourceRoot + path.sep) || realpathSync(target) !== target) throw new Error('Hardware profile path outside resources');
+  const raw = readFileSync(target);
+  if (createHash('sha256').update(raw).digest('hex') !== resourceIndex.structureFiles[entry.path]) throw new Error('Hardware profile digest mismatch');
+  const profile = JSON.parse(raw.toString('utf8'));
+  if (profile.id !== entry.id) throw new Error('Hardware profile identity mismatch');
+  if (entry.skillName && resourceIndex.modules[entry.skillName]?.componentId !== entry.componentId) throw new Error('Hardware component identity mismatch');
+  return {...profile, componentId: entry.componentId};
+})};
 const profilesById = new Map(library.profiles.map((profile) => [profile.id, deepFreeze(profile)]));
+if (profilesById.size !== library.profiles.length) throw new Error('Duplicate hardware profile identity');
 
 export function listHardwareLibrary() {
   return {

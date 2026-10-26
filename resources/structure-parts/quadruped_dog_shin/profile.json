@@ -1,0 +1,118 @@
+{
+  "id": "quadruped_dog_shin",
+  "name": "8 舵机机器狗小腿",
+  "category": "structural_part",
+  "roles": [
+    "structural_part",
+    "placeholder"
+  ],
+  "dimensions_mm": {
+    "length_x": 50,
+    "width_y": 12,
+    "height_z": 10,
+    "width": 50,
+    "depth": 12,
+    "height": 10,
+    "distal_round_radius": 5,
+    "knee_hole_diameter": 3,
+    "knee_hole_end_offset_x": 5
+  },
+  "coordinate_system": {
+    "origin": "part_center",
+    "x_axis": "part length",
+    "y_axis": "part width",
+    "positive_z": "part height/up direction"
+  },
+  "mounting": {
+    "mode": "thigh_end_face_alignment",
+    "mating_hardware_face": "quadruped_dog_thigh distal end face",
+    "preferred_enclosure_surface": "base_floor",
+    "clearance_mm": 1,
+    "retainer_height_mm": 0,
+    "note": "???????????????????????"
+  },
+  "opening": [],
+  "keepouts": [],
+  "cad_reference": {
+    "shape": "structural_placeholder",
+    "color": "#64748b"
+  },
+  "source_status": "用户确认：小腿暂定为长方体，长 50mm、宽 12mm、高 10mm；首版只做四条小腿的整体试装。",
+  "legacy_reference": {
+    "source": "ZW-CAD/server/hardware-profiles.js",
+    "notes": [
+      {
+        "id": "mounting_holes_mm",
+        "value": {
+          "type": "knee_axis_hole",
+          "hardware_id": "quadruped_dog_thigh",
+          "hole_diameter": 3,
+          "hole_axis": "Y",
+          "holes": [
+            {
+              "role": "knee_axis",
+              "x": 20,
+              "y": 0,
+              "z": 0,
+              "diameter": 3,
+              "axis": "Y"
+            }
+          ],
+          "recommended_fastening": "小腿 +X 上端预留直径 3mm 的 Y 向贯穿轴孔，用于与大腿远端轴孔同轴连接。",
+          "source_status": "用户确认大小腿用直径 3mm 轴孔连接；孔中心暂按距连接端面 5mm 建模。"
+        }
+      },
+      {
+        "id": "structural_features_mm",
+        "value": {
+          "kind": "quadruped_dog_shin",
+          "coordinate_notes": "结构件自身中心为原点；X 为小腿长度方向，Y 为宽度方向，Z 为高度方向；+X 端面暂作为大腿连接面。",
+          "body": {
+            "length_x": 50,
+            "width_y": 12,
+            "height_z": 10,
+            "distal_round_radius": 5
+          },
+          "knee_joint": {
+            "mating_hardware_id": "quadruped_dog_thigh",
+            "hole_diameter": 3,
+            "hole_axis": "Y",
+            "hole_center": {
+              "x": 20,
+              "y": 0,
+              "z": 0
+            },
+            "end_offset_x": 5,
+            "rule": "小腿 +X 上端孔与大腿 +X 远端孔同轴连接。"
+          },
+          "thigh_alignment": {
+            "hardware_id": "quadruped_dog_thigh",
+            "mating_face": "+X",
+            "face_center": {
+              "x": 25,
+              "y": 0,
+              "z": 0
+            },
+            "rule": "小腿 +X 端面中心对齐大腿远端中心；首版机身装配视图中小腿长度方向继续向 -Z 下方延伸。"
+          },
+          "installation": {
+            "mounting_mode": "thigh_end_face_alignment",
+            "mating_hardware_face": "quadruped_dog_thigh distal end face",
+            "mating_enclosure_surface": "shin +X end face",
+            "placement_rule": "装配时让小腿上端贴住大腿下端，四条小腿分别跟随四条大腿的 X/Y 中心位置。"
+          },
+          "opening": {
+            "type": "knee_joint_axis_hole",
+            "basis": "thigh_alignment_face",
+            "rule": "小腿 +X 上端开直径 3mm 的 Y 向贯穿轴孔，孔中心距 +X 端面 5mm。"
+          }
+        }
+      }
+    ]
+  },
+  "integration_status": "placeholder_only",
+  "notes": [
+    "? ZW-CAD ??? profile ???????????????????????????"
+  ],
+  "thumbnail_url": "/assets/hardware/quadruped_dog_shin.svg"
+}

@@ -1,0 +1,156 @@
+{
+  "id": "xiao_esp32c5",
+  "name": "Seeed Studio XIAO ESP32-C5",
+  "category": "controller",
+  "roles": [
+    "compute",
+    "wifi",
+    "ble",
+    "usb"
+  ],
+  "dimensions_mm": {
+    "length_x": 21,
+    "width_y": 17.8,
+    "height_z": 4.8,
+    "pcb_thickness": 1.6,
+    "component_height_top": 3.2,
+    "width": 21,
+    "depth": 17.8,
+    "pcb_thickness_assumed": 1.6,
+    "component_height_bottom": 0
+  },
+  "coordinate_system": {
+    "origin": "pcb_center",
+    "x_axis": "board length",
+    "y_axis": "board width",
+    "positive_z": "front/component side"
+  },
+  "mounting": {
+    "mode": "tray_with_side_retainers",
+    "mating_hardware_face": "-Z",
+    "preferred_enclosure_surface": "base_floor",
+    "clearance_mm": 0.6,
+    "retainer_height_mm": 2.4
+  },
+  "opening": [
+    {
+      "id": "usb_c",
+      "type": "rectangular_cutout",
+      "basis": "usb_c_connector",
+      "preferred_face": "left",
+      "size_mm": {
+        "width": 10,
+        "height": 5.6
+      },
+      "clearance_mm": 0.8
+    }
+  ],
+  "keepouts": [
+    {
+      "id": "top_components",
+      "shape": "box",
+      "size_mm": {
+        "length_x": 16,
+        "width_y": 13,
+        "height_z": 4.2
+      },
+      "center_mm": {
+        "x": -2,
+        "y": 0,
+        "z": 2.1
+      }
+    }
+  ],
+  "cad_reference": {
+    "shape": "pcb_with_usb",
+    "color": "#1f8a5b"
+  },
+  "source_status": "Seeed 官方 XIAO 系列页给出 21 x 17.8mm 经典外形；ESP32-C5 Wiki 提供产品上下文",
+  "source_urls": [
+    "https://wiki.seeedstudio.com/xiao_esp32c5_getting_started/",
+    "https://www.seeed.cc/xiao-series-page"
+  ],
+  "legacy_reference": {
+    "source": "ZW-CAD/server/hardware-profiles.js",
+    "notes": [
+      {
+        "id": "mounting_holes_mm",
+        "value": {
+          "type": "none",
+          "holes": [],
+          "recommended_fastening": "XIAO 主控板没有专用螺丝固定孔，外壳建模应使用托台、限位筋、轻压扣或压框固定。",
+          "source_status": "Seeed 官方机械资料显示 XIAO 经典外形；未记录专用螺丝固定孔。"
+        }
+      },
+      {
+        "id": "typec_port_mm",
+        "value": {
+          "type": "usb_c",
+          "side": "+X",
+          "width": 6.8,
+          "depth": 8.94,
+          "height": 3.2,
+          "outer_protrusion": 1.5,
+          "center_x": 8.6,
+          "center_y": 0,
+          "width_x": 6.8,
+          "length_y": 8.94,
+          "center_x_from_board_center": 8.6,
+          "center_y_from_board_center": 0,
+          "center_z_from_board_bottom": 3.2,
+          "center_z_from_pcb_center": 2.4000000000000004
+        }
+      },
+      {
+        "id": "xiao_features_mm",
+        "value": {
+          "kind": "xiao_controller",
+          "coordinate_notes": "PCB 中心为原点；X 为长度方向，Y 为宽度方向，+Z 为正面。",
+          "main_component": {
+            "face": "+Z",
+            "length_x": 12,
+            "width_y": 13,
+            "height": 1,
+            "center_x": -3,
+            "center_y": 0,
+            "center_z_from_pcb_center": 1.3
+          },
+          "typec_port": {
+            "type": "usb_c",
+            "side": "+X",
+            "width": 6.8,
+            "depth": 8.94,
+            "height": 3.2,
+            "outer_protrusion": 1.5,
+            "center_x": 8.6,
+            "center_y": 0,
+            "width_x": 6.8,
+            "length_y": 8.94,
+            "center_x_from_board_center": 8.6,
+            "center_y_from_board_center": 0,
+            "center_z_from_board_bottom": 3.2,
+            "center_z_from_pcb_center": 2.4000000000000004,
+            "opening_basis": "typec_receptacle"
+          },
+          "installation": {
+            "mounting_mode": "slot_or_retainer",
+            "mating_hardware_face": "-Z",
+            "mating_enclosure_surface": "internal_support",
+            "placement_rule": "主控 PCB 平放在外壳内部托台/限位结构上；实际装配位置由确定性布局器按外壳坐标计算。"
+          },
+          "opening": {
+            "type": "typec_side_cutout",
+            "basis": "typec_receptacle",
+            "side": "+X",
+            "width_y": 8.94,
+            "height_z": 3.2,
+            "clearance_y": 0.8,
+            "clearance_z": 0.8,
+            "rule": "Type-C 开孔位于 PCB +X 边，中心对准 Type-C 母座，孔尺寸按母座 Y/Z 外形加装配余量。"
+          }
+        }
+      }
+    ]
+  },
+  "thumbnail_url": "https://files.seeedstudio.com/wiki/XIAO_ESP32C5/Getting_started/XIAO_ESP32-C5_front_pinout.png"
+}

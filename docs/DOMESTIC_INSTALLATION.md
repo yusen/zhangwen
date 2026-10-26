@@ -2,13 +2,17 @@
 
 国内发布仓库为 https://gitee.com/zmh1979/ask-with-your-palm ，新版是本地 Web 平台。新版不会读取或搬迁旧桌面用户库。
 
+旧 `ys_Ethan/zhangwen` 安装与更新地址已失效。`a1b22e8d0cd6` 用户须从新入口更新原安装目录；旧程序不会自动迁移更新源。请先保存项目、停止原服务并保留data，自定义路径沿用原安装根目录。CMD与PowerShell使用同一条命令，逐阶段恢复见[部署指南](DEPLOYMENT.md#旧版更新地址失效)。
+
 ## 一条命令
 
-Windows 10/11 x64 的 PowerShell：
+Windows 10/11 x64，**CMD、Windows PowerShell 和 PowerShell 7 均执行同一条命令**。首次安装与覆盖重装通用：
 
-```powershell
-irm https://gitee.com/zmh1979/ask-with-your-palm/raw/master/install.ps1 | iex
+```cmd
+powershell.exe -NoLogo -NoProfile -ExecutionPolicy Bypass -Command "[Net.ServicePointManager]::SecurityProtocol=[Net.SecurityProtocolType]::Tls12; & ([scriptblock]::Create([Text.Encoding]::UTF8.GetString([Net.WebClient]::new().DownloadData('https://gitee.com/zmh1979/ask-with-your-palm/raw/master/install.ps1')))) -Reinstall"
 ```
+
+首次安装创建程序和桌面入口；再次执行会下载并覆盖同一安装位置的程序，保留项目、对话和 API 设置。重装前先保存项目，在原服务窗口按 Ctrl+C；自定义安装过路径的用户须继续指定原 `-InstallDir`，见[部署指南](DEPLOYMENT.md)。
 
 macOS 13.5+（Apple Silicon / Intel）：
 
@@ -39,7 +43,7 @@ curl -fsSL https://gitee.com/zmh1979/ask-with-your-palm/raw/master/install.sh | 
 Windows 自定义目录、仅安装：
 
 ```powershell
-& ([scriptblock]::Create((irm https://gitee.com/zmh1979/ask-with-your-palm/raw/master/install.ps1))) -InstallDir 'D:\Apps\掌问平台' -NoStart
+& ([scriptblock]::Create((irm https://gitee.com/zmh1979/ask-with-your-palm/raw/master/install.ps1))) -Reinstall -InstallDir 'D:\Apps\掌问平台' -NoStart
 ```
 
 macOS 自定义目录、仅安装：

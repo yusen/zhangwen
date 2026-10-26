@@ -16,7 +16,7 @@ from .models import Boundary
 START = '<!-- zhangwen:module-guides:v1 -->'
 END = '<!-- /zhangwen:module-guides:v1 -->'
 PATTERN = re.compile(re.escape(START) + r'\s*```json\s*\n(.*?)\n```\s*' + re.escape(END), re.S)
-SUPPLEMENTS = Path(__file__).resolve().parents[4] / 'resources/hardware-example-supplements'
+SUPPLEMENTS = Path(__file__).resolve().parents[4] / 'resources/hardware-skills'
 
 
 class Choice(Boundary):
@@ -170,7 +170,7 @@ def install(repository, boards):
     if not SUPPLEMENTS.is_dir():
         raise RuntimeError('模块案例补充资料缺失，请重新下载完整项目。')
     changed = 0
-    for source in sorted(SUPPLEMENTS.glob('*/examples/usage.md')):
+    for source in sorted(SUPPLEMENTS.glob('*/examples/reviewed.md')):
         if source.is_symlink() or any(parent.is_symlink() for parent in source.parents if parent != SUPPLEMENTS.parent):
             raise HardwareSkillValidationError('模块补充资料不能使用符号链接。')
         skill_name = source.parent.parent.name
