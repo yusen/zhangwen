@@ -164,8 +164,8 @@ def local_text_edit(message, previous, item, source, conversation):
 
 async def propose_edit(message, previous, item, source, settings, conversation):
     if not settings or not configured(settings):
-        return TemplateEditSpec(title=item['title'], summary='原模板模型已保留。配置结构设计师 API 后，可以对话修改此模板。',
-            questions=['请先配置结构设计师 API，再描述要修改的部件、尺寸或孔位。'])
+        return TemplateEditSpec(title=item['title'], summary='原模板模型已保留。配置结构工程师的 AI 服务 后，可以对话修改此模板。',
+            questions=['请先配置结构工程师的 AI 服务，再描述要修改的部件、尺寸或孔位。'])
     def parse(choice):
         message = choice.get('message')
         content = message.get('content') if isinstance(message, dict) else None
@@ -175,7 +175,9 @@ async def propose_edit(message, previous, item, source, settings, conversation):
         if content.startswith('```') and content.endswith('```'):
             content = content.partition('\n')[2][:-3].strip()
         return checked_spec(json.loads(content), item, source)
-    instructions = ('你是掌问模板改造助手。只能基于给定的原始CAD模板返回一个完整JSON改造方案，不能返回Python、文件、命令或重建为普通方盒。'
+    instructions = ('你是掌问的结构工程师。用户是教师、学生或DIY爱好者，使用容易理解的中文，不称老板或总办。'
+        '用户可以直接找你，是否协作由用户决定；记录本次变化，不声称已向造物统筹师或智能工程师发送任务。'
+        '只能基于给定的原始CAD模板返回一个完整JSON改造方案，不能返回Python、文件、命令或重建为普通方盒。'
         'parameterOverrides仅能使用allowedParameters中的现有参数名，数值单位毫米，角度参数为度；保留未请求修改的配合和硬件尺寸。'
         'partOperations仅能作用于printable=true部件。每个操作为box/cylinder/sphere的add或cut；尺寸为XYZ全长，圆柱XY是直径、Z是高度，圆柱初始沿Z轴，'
         '先绕全局X/Y/Z旋转，再平移到center。坐标是原模板装配坐标，并非归零后的打印坐标。加料必须连接原实体，切孔必须与原实体相交。'

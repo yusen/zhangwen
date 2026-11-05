@@ -3,6 +3,7 @@ import { openPlatformDatabase, lockProjectFolder } from './legacyBrowserNames';
 import { sha256 } from './serial';
 import { projectFolderFiles, hardwareFolderFiles } from './projectFolderLayout';
 import { api } from './api';
+import { workflowFolderFiles } from './workflowUtils';
 
 export const PROJECT_FILE = 'zhangwen.project.json';
 const MAX_BYTES = 32 * 1024 * 1024;
@@ -12,6 +13,8 @@ export type ProjectDirectory = FileSystemDirectoryHandle & {
 };
 export interface FolderBinding {
   projectId: string; handle: ProjectDirectory; checkpointHash: string | null; mainHash: string | null;
+  /** Local-only convenience, never included in a portable snapshot. */
+  nativePath?: string;
 }
 interface PickerWindow extends Window {
   showDirectoryPicker?: (options: { id: string; mode: 'readwrite' }) => Promise<ProjectDirectory>;
@@ -36,18 +39,19 @@ async function read(handle: ProjectDirectory, name: string, limit = MAX_BYTES): 
 export async function prepareNewDirectory(handle: ProjectDirectory): Promise<void> {
   if (await read(handle, PROJECT_FILE) !== null) throw new Error('此文件夹已有掌问项目，请通过「项目→打开项目」打开，或选择新的项目文件夹。');
   if (await read(handle, 'main.py', 65_536) !== null) throw new Error('此文件夹已有 main.py。为保留原文件，请为新项目选择另一个文件夹。');
+  if (await read(handle, 'chat-task.txt', 65_536) !== null) throw new Error('此文件夹已有 chat-task.txt，请选择新的项目文件夹。');
 }
 export async function readProjectDirectory(handle: ProjectDirectory): Promise<{ snapshot: ProjectSnapshot; binding: FolderBinding; externalCode: string | null }> {
   const raw = await read(handle, PROJECT_FILE);
   if (raw === null) throw new Error('所选文件夹没有 zhangwen.project.json，请选择掌问项目文件夹。');
   let snapshot: ProjectSnapshot;
-  try { snapshot = JSON.parse(raw) as ProjectSnapshot; } catch { throw new Error('项目快照不是有效 JSON，未修改文件或当前项目。'); }
+  try { snapshot = JSON.parse(raw) as ProjectSnapshot; } catch { throw new Error('项目项目备份不是有效 JSON，未修改文件或当前项目。'); }
   if (snapshot?.format !== 'zhangwen-project' || snapshot.schemaVersion !== 1) throw new Error('不支持此项目格式或版本。');
   // The service performs full schema and checksum validation before import.
-  const main = await read(handle, 'main.py', 65_536);
+  const main = await read(handle, snapshot.project?.programmingMode === 'chat-coding' ? 'chat-task.txt' : 'main.py', 65_536);
   const current = Array.isArray(snapshot.versions) ? snapshot.versions.find(item => item.revision === snapshot.project?.revision) : undefined;
   const externalCode = main !== null && current && main !== current.code ? main : null;
-  if (externalCode?.includes('\0')) throw new Error('main.py 包含 NUL，无法作为代码草稿载入。');
+  if (externalCode?.includes('\0')) throw new Error('任务或程序文件包含 NUL，无法作为草稿载入。');
   return { snapshot, externalCode, binding: { projectId: '', handle, checkpointHash: await hash(raw), mainHash: main === null ? null : await hash(main) } };
 }
 export async function ensureFolderPermission(binding: FolderBinding, request = false): Promise<void> {
@@ -88,24 +92,26 @@ async function writeImmutableFile(root: ProjectDirectory, path: string[], bytes:
     }
   }
   const check = new Uint8Array(await (await (await directory.getFileHandle(name)).getFile()).arrayBuffer());
-  if (await sha256(check) !== checksum) throw new Error(`文件 ${label} 回读不一致，未覆盖项目快照。`);
+  if (await sha256(check) !== checksum) throw new Error(`文件 ${label} 回读不一致，未覆盖项目项目备份。`);
 }
 export async function writeProjectDirectory(binding: FolderBinding, snapshot: ProjectSnapshot): Promise<void> {
   const task = async () => {
     await ensureFolderPermission(binding);
-    const raw = await read(binding.handle, PROJECT_FILE), main = await read(binding.handle, 'main.py', 65_536);
+    const primaryFile = snapshot.project.programmingMode === 'chat-coding' ? 'chat-task.txt' : 'main.py';
+    const raw = await read(binding.handle, PROJECT_FILE), main = await read(binding.handle, primaryFile, 65_536);
     if ((raw === null ? null : await hash(raw)) !== binding.checkpointHash || (main === null ? null : await hash(main)) !== binding.mainHash) {
       throw new Error('项目文件夹已被其他页面或编辑器修改。未覆盖磁盘文件；请重新加载该文件夹，或选择另一个文件夹另存。');
     }
     const current = snapshot.versions.find(item => item.revision === snapshot.project.revision);
     if (!current || current.source === 'ai') throw new Error('项目缺少当前已保存代码，未写文件夹。');
     const json = JSON.stringify(snapshot, null, 2) + '\n';
-    if (new TextEncoder().encode(json).length > MAX_BYTES) throw new Error('项目快照超过32MiB，未截断或覆盖。');
+    if (new TextEncoder().encode(json).length > MAX_BYTES) throw new Error('项目项目备份超过32MiB，未截断或覆盖。');
     // Validate all source paths and bytes before changing the folder. Internal job IDs
     // stay in the checkpoint; visible copies are grouped by purpose and version.
     const resources = await api<HardwareResourceBundle>(`/projects/${binding.projectId}/hardware-resources?expectedRevision=${snapshot.project.revision}`);
     const decoded = new Map<string, Promise<{ bytes: Uint8Array<ArrayBuffer>; checksum: string }>>();
-    const files = await Promise.all([...projectFolderFiles(snapshot), ...hardwareFolderFiles(resources)].map(async file => {
+    const learningFiles = await workflowFolderFiles(snapshot.project.name, snapshot.workflow);
+    const files = await Promise.all([...projectFolderFiles(snapshot), ...hardwareFolderFiles(resources), ...learningFiles].map(async file => {
       const source = 'text' in file.data ? 'text:' + file.data.text : 'base64:' + file.data.base64;
       let pending = decoded.get(source);
       if (!pending) {
@@ -114,12 +120,21 @@ export async function writeProjectDirectory(binding: FolderBinding, snapshot: Pr
         pending = sha256(bytes).then(checksum => ({ bytes, checksum })); decoded.set(source, pending);
       }
       const { bytes, checksum } = await pending;
-      if (checksum !== file.sha256) throw new Error('项目历史文件校验失败，未覆盖文件夹快照。');
+      if (checksum !== file.sha256) throw new Error('项目历史文件校验失败，未覆盖文件夹项目备份。');
       return { ...file, bytes };
     }));
+    const referenceFiles = await Promise.all((snapshot.references ?? []).map(async item => {
+      if (!/^ref_[a-f0-9]{32}$/.test(item.id) || !Number.isSafeInteger(item.version) || item.version < 1 ||
+          item.name.split('/').some(part => !part || part === '.' || part === '..' || /[\\<>:"|?*\x00-\x1f]/.test(part))) {
+        throw new Error('项目资料路径无效，未写入文件夹。');
+      }
+      const bytes = item.encoding === 'text' ? new TextEncoder().encode(item.original) : Uint8Array.from(atob(item.original), c => c.charCodeAt(0));
+      return { path: ['资料归档', item.id, `V${item.version}`, ...item.name.split('/')], bytes, checksum: await sha256(bytes) };
+    }));
     for (const file of files) await writeImmutableFile(binding.handle, file.path, file.bytes, file.sha256);
+    for (const file of referenceFiles) await writeImmutableFile(binding.handle, file.path, file.bytes, file.checksum);
     if (main !== current.code) {
-      await write(binding.handle, 'main.py', current.code);
+      await write(binding.handle, primaryFile, current.code);
       binding.mainHash = await hash(current.code);
     }
     await write(binding.handle, PROJECT_FILE, json);

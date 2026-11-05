@@ -71,7 +71,7 @@
     "shape": "servo_reference",
     "color": "#6f6f7d"
   },
-  "source_status": "用户实测/确认数据：MG90S 主体 22.3 x 11.8 x 23mm；顶面大圆柱直径 11.8mm、高 4mm 且与主体 +X 面相切；小圆柱直径 5.5mm、高 4mm 位于主体顶面中心；输出轴直径 5mm、高 3mm 且与大圆柱同心；安装耳位于主体 ±X 面，外伸 5mm、厚 2mm、孔径 2.2mm；接线口在主体 +X 面，距主体 -Z 面 3mm。",
+  "source_status": "用户实测/确认数据：MG90S 主体 22.3 x 11.8 x 23mm；顶面大圆柱直径 11.8mm、高 4mm 且与主体 +X 面相切；小圆柱直径 5.5mm、高 4mm 位于主体顶面中心；输出轴直径 5mm、高 3mm 且与大圆柱同心；安装耳位于主体 ±X 面，外伸 5mm、厚 2mm、孔径 2.2mm；接线口在主体 +X 面，距主体 -Z 面 3mm。 结构关联：2026-11-04由用户指定，DFRobot SER0006 舵机模块采用 MG90S 9g Servo 作为结构参考；此关联不声明两种舵机的外形与安装尺寸相同，未新增实物核实记录。",
   "legacy_reference": {
     "source": "ZW-CAD/server/hardware-profiles.js",
     "notes": [

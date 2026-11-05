@@ -8,7 +8,7 @@ from datetime import datetime
 
 from fastapi import HTTPException
 from .design_specs import DesignSpec, template_spec, propose, solid_code, svg, dxf
-from . import laser_text, laser_rounded_box, builtin_templates
+from . import laser_text, laser_rounded_box, builtin_templates, hardware_installations
 
 
 def solid_bounds(spec, scale):
@@ -54,6 +54,13 @@ async def act(request, previous, settings, job_root, conversation=None, *, previ
             spec = DesignSpec.model_validate(previous['designSpec']) if request.action == 'validate' or not template else template_spec(template, params)
         else:
             raise HTTPException(422, '请先输入需求或选择设计模板。')
+        if not editing and previous.get('designSpec') and not spec.hardwarePlacements:
+            # Template regeneration must retain the installations, including an
+            # explicitly empty selection. Historical files keep their sources.
+            spec.hardwarePlacements = [hardware_installations.HardwarePlacement.model_validate(p)
+                for p in previous['designSpec'].get('hardwarePlacements', [])]
+        if request.hardwarePlacements is not None and not request.template:
+            spec.hardwarePlacements = request.hardwarePlacements
         spec.check_kind(request.designType)
         if spec.fingerBox and not spec.questions:
             template = 'finger-box'
@@ -67,8 +74,22 @@ async def act(request, previous, settings, job_root, conversation=None, *, previ
               'title': spec.title, 'message': spec.summary, 'questions': spec.questions,
               'requestText': request.message or previous.get('requestText', ''), 'exports': [], 'checks': []}
     if spec.questions:
-        retained = {key: previous[key] for key in ['build', 'exports', 'design_state', 'parameters', 'cadquery_code', 'laserDrawing', 'laserTextPaths'] if key in previous}
+        retained = {key: previous[key] for key in ['build', 'exports', 'design_state', 'parameters', 'cadquery_code', 'laserDrawing', 'laserTextPaths', 'hardwareInstallations'] if key in previous}
         return {**result, **retained, 'status': 'needs_input', 'blocking_reason': 'llm_unavailable' if spec.title == '需要配置模型' else 'design_questions'}
+    try:
+        placements = [p.model_dump() for p in spec.hardwarePlacements]
+        old_installations = previous.get('hardwareInstallations', [])
+        old_placements = [i['placement'] for i in old_installations]
+        if request.action == 'validate' and placements != old_placements:
+            raise ValueError('安装布局尚未应用，请先生成图纸，再检查已应用版本。')
+        # Exact source replay for unchanged placements while resizing/validating.
+        # A changed placement or revision always goes through current facts.
+        installations = old_installations if not editing and placements == old_placements else hardware_installations.resolve(
+            spec.hardwarePlacements, (conversation or {}).get('projectHardware', []))
+        installation_drawing, installation_report = hardware_installations.apply(spec, installations)
+        result['hardwareInstallations'] = installation_report
+    except (ValueError, KeyError, TypeError) as exc:
+        raise HTTPException(422, str(exc)) from exc
     if template == 'rounded-box':
         result['parameters'] = {'design': params}
         result['parameters']['design'].pop('material', None)
@@ -91,11 +112,16 @@ async def act(request, previous, settings, job_root, conversation=None, *, previ
             from .design_specs import Drawing
             drawing = Drawing.model_validate(data)
         else:
-            drawing = spec.drawing
+            drawing = installation_drawing
         result['laserDrawing'] = drawing.model_dump(mode='json')
         result['laserTextPaths'] = {str(i):laser_text.svg_path(shape) for i,shape in enumerate(drawing.shapes) if shape.kind == 'text'}
         result['checks'] = [{'id': 'paths', 'status': 'pass', 'message': f'{len(drawing.shapes)}条路径；坐标范围、闭合要求与完全重复路径检查通过。'},
                             {'id': 'fabrication', 'status': 'warning', 'message': '名义尺寸，未补偿刀缝；材料、孔间距、交叉路径与装配需加工前复核。'}]
+        if installation_report:
+            result['checks'].append({'id': 'hardware-installation', 'status': 'pass',
+                'message': f'{len(installation_report)}个器件按原模块资料生成安装轮廓及{sum(i["cutCount"] for i in installation_report)}个切口；完整板面、同面器件/避让/文字与切口间距检查通过。'})
+            result['checks'].append({'id': 'hardware-assembly', 'status': 'warning',
+                'message': '蓝色矩形为包络安装标记；未自动镜像。跨面器件碰撞、插头接线、紧固件及实物方向需装配复核；不代表已实物安装。'})
         if spec.fingerBox:
             result['checks'].insert(1, {'id': 'joinery', 'status': 'pass', 'message': '六块板按同一边长分段生成交替互补榫齿，三面角部统一分配；改变尺寸或板厚会重新生成轮廓。'})
         if spec.roundedBox:
@@ -151,5 +177,9 @@ async def act(request, previous, settings, job_root, conversation=None, *, previ
         result['checks'] = [{'id': 'solid', 'status': 'pass', 'message': f'实体有效，{report["solids"]}个实体，体积{report["volume"]:.1f}mm³。'},
                             {'id': 'print', 'status': 'warning', 'message': '几何有效性不能代替打印、强度或实物装配验收。'}]
         result['build'] = {'status': 'artifact_exports', 'message': '真实STEP/STL已生成。'}
-    (output / 'design-spec.json').write_text(json.dumps({'spec': spec.model_dump(mode='json'), 'scale': scale}, ensure_ascii=False), encoding='utf-8')
+    (output / 'design-spec.json').write_text(json.dumps({'spec': spec.model_dump(mode='json'), 'scale': scale,
+        'hardwareInstallations': installation_report,
+        'drawing': result.get('laserDrawing')}, ensure_ascii=False), encoding='utf-8')
+    if spec.drawing:
+        result['exports'].append(export('design-spec.json', '安装清单与尺寸来源 · JSON', 'json'))
     return {**result, 'status': 'artifact', 'message': result['build']['message']}

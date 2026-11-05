@@ -23,6 +23,7 @@ from typing import Any, Literal
 from fastapi import APIRouter, HTTPException
 from fastapi.responses import FileResponse
 from pydantic import BaseModel, ConfigDict, Field, field_validator, model_validator
+from .hardware_installations import HardwarePlacement
 
 from zhangwen.artifacts.models import ArtifactStatus, ArtifactPreview, ArtifactPreviewKind
 from zhangwen.llm.contracts import ChatMessage, ChatMessageStatus, ChatRole
@@ -49,6 +50,7 @@ class StructureInput(BaseModel):
     message: str = Field(default='', max_length=4000)
     selectedIds: list[str] | None = Field(default=None, max_length=32)
     hardwareComponentIds: list[str] | None = Field(default=None, max_length=33)
+    hardwarePlacements: list[HardwarePlacement] | None = Field(default=None, max_length=33)
     customProfiles: list[dict[str, Any]] | None = Field(default=None, max_length=32)
     parameters: dict[str, float] = Field(default_factory=dict)
     faces: dict[str, Literal['base_floor', 'lid_inner']] = Field(default_factory=dict)
@@ -56,7 +58,7 @@ class StructureInput(BaseModel):
     resolutionOptionId: str = Field(default='', max_length=150)
     designType: Literal['model', 'laser'] = 'model'
     template: Literal['box', 'cup', 'bracket', 'plate', 'round-tag', 'panel-box', 'finger-box', 'rounded-box',
-                      'mpython-shell', 'photo-stand', 'servo-side', 'servo-horizontal', 'servo-vertical'] | None = None
+                      'auto-open-lid-box', 'mpython-shell', 'photo-stand', 'servo-side', 'servo-horizontal', 'servo-vertical'] | None = None
 
     @field_validator('parameters')
     @classmethod
@@ -83,6 +85,7 @@ class LaserPreviewInput(BaseModel):
     expectedRevision: int = Field(ge=0)
     sourceRevision: int = Field(ge=1)
     parameters: dict[str, float]
+    hardwarePlacements: list[HardwarePlacement] | None = Field(default=None, max_length=33)
 
     @field_validator('parameters')
     @classmethod
@@ -157,10 +160,19 @@ class StructureCheckpoint(BaseModel):
                 raise ValueError('未知的结构几何类型。')
             if 'designSpec' in result or 'laserDrawing' in result:
                 from .design_specs import DesignSpec, Drawing
+                from . import hardware_installations
+                parsed_spec = None
                 if result.get('designSpec') is not None:
-                    DesignSpec.model_validate(result['designSpec']).check_kind(version.get('designType', 'model'))
+                    parsed_spec = DesignSpec.model_validate(result['designSpec']).check_kind(version.get('designType', 'model'))
                 if result.get('laserDrawing') is not None:
                     Drawing.model_validate(result['laserDrawing'])
+                installations = hardware_installations.checked_snapshots(result.get('hardwareInstallations', []))
+                if parsed_spec and not parsed_spec.questions and (parsed_spec.hardwarePlacements or installations):
+                    if [p.model_dump() for p in parsed_spec.hardwarePlacements] != [i['placement'] for i in installations]:
+                        raise ValueError('安装位置与机械资料快照不一致。')
+                    final_drawing, _ = hardware_installations.apply(parsed_spec, installations)
+                    if final_drawing != Drawing.model_validate(result.get('laserDrawing')):
+                        raise ValueError('安装图纸与所用机械资料不一致。')
             if not isinstance(result.get('parameters', {}), dict) or not isinstance(result.get('questions', []), list):
                 raise ValueError('结构参数或问题格式无效。')
             for key in ('checks', 'exports', 'resolution_options', 'bom', 'partial_bom'):
@@ -303,14 +315,15 @@ class StructureService:
             if not image and profile.get('thumbnail_url', '').startswith('/assets/hardware/'):
                 image = '/api/structure/media/' + profile['thumbnail_url'].rsplit('/', 1)[1]
             profiles[profile['id']] = {**profile, 'thumbnail_url': image, 'componentId': existing['componentId'] if existing else None}
-        for item in self.repo.skills.list_skills():
-            manifest = self.repo.skills._read_manifest(self.repo.skills._root / item.skillName)
+        for item in hardware:
+            manifest = self.repo.skills._read_manifest(self.repo.skills._root / item['skillName'])
             if 'references/mechanical.md' not in manifest.files:
                 continue
-            detail = self.repo.skills.get_skill(item.skillName)
+            detail = self.repo.skills.get_skill(item['skillName'])
             if detail.mechanicalProfile:
                 profile = mechanical.cad_profile(detail.mechanicalProfile, detail.componentId,
                     detail.media[0].url if detail.media else '')
+                profile['skillRevision'] = detail.revision
                 profiles[profile['id']] = profile
         return list(profiles.values())
 
@@ -392,8 +405,13 @@ class StructureService:
         if not previous.get('designSpec') or previous.get('status') == 'needs_input':
             raise HTTPException(422, '请先补全图纸需求。')
         action = StructureInput(action='parameters', designType='laser', expectedRevision=request.expectedRevision,
-                                sourceRevision=request.sourceRevision, parameters=request.parameters)
-        return await design_service.act(action, previous, {}, None, preview_only=True)
+                                sourceRevision=request.sourceRevision, parameters=request.parameters,
+                                hardwarePlacements=request.hardwarePlacements)
+        # Same captured sources for ordinary parameter previews; an explicit new
+        # profile revision is resolved read-only from the original Skill store.
+        changed = request.hardwarePlacements is not None and [p.model_dump() for p in request.hardwarePlacements] != [i['placement'] for i in previous.get('hardwareInstallations', [])]
+        facts = mechanical.context(self.repo.skills, [p.componentId for p in request.hardwarePlacements]) if changed and request.hardwarePlacements else []
+        return await design_service.act(action, previous, {}, None, {'projectHardware': facts}, preview_only=True)
 
     async def act(self, project_id: str, request: StructureInput, settings: dict) -> dict:
         if self.gate.locked():
@@ -413,7 +431,10 @@ class StructureService:
             previous = base['result'] if base else {}
             ids = request.selectedIds if request.selectedIds is not None else base['selectedIds'] if base else []
             profiles = request.customProfiles if request.customProfiles is not None else base['customProfiles'] if base else []
-            live_profiles = self.live_profiles()
+            # Standalone boxes and revision-bound installations use their own
+            # Skill facts/snapshots; scan the catalogue only for selected/custom
+            # legacy profile IDs. This also avoids repeated full scans per edit.
+            live_profiles = self.live_profiles() if ids or profiles else []
             known = {x['id'] for x in live_profiles}
             for profile in profiles:
                 if profile.get('id') in known:
@@ -490,10 +511,14 @@ class StructureService:
                 facts = mechanical.context(self.repo.skills, request.hardwareComponentIds if request.hardwareComponentIds is not None else [project['boardId'], *project['componentIds']])
                 for fact in facts:
                     fact['cadProfiles'] = [p for p in live_profiles if p.get('componentId') == fact['componentId']]
-                    if fact['cadProfiles']:
+                    if fact['cadProfiles'] and fact.get('mechanicalProfile'):
                         fact['missing'] = []
                 conversation['projectHardware'] = facts
+                from .workflow import context as project_definition_context
+                conversation['confirmedProjectDefinition'] = project_definition_context(self.repo, project_id)
                 conversation['selectedStructureProfiles'] = [p for p in [*live_profiles, *profiles] if p['id'] in ids]
+                if request.hardwarePlacements is not None:
+                    conversation['pendingHardwarePlacements'] = [p.model_dump() for p in request.hardwarePlacements]
                 if valid:
                     conversation['spec'] = valid
                 result = await design_service.act(request, previous, settings, job_root, conversation)
@@ -506,6 +531,8 @@ class StructureService:
                 return self.get(project_id)
             project = self.repo.get(project_id)
             selected_hardware = set(request.hardwareComponentIds) if request.hardwareComponentIds is not None else {project['boardId'], *project['componentIds']}
+            from .workflow import context as project_definition_context
+            body['confirmedProjectDefinition'] = project_definition_context(self.repo, project_id)
             body['engineeringHardware'] = [{'componentId': item['componentId'], 'name': item['displayName']}
                 for item in self.repo.skills.web_summaries() if item['componentId'] in selected_hardware]
             available = all(importlib.util.find_spec(x) is not None for x in ['cadquery', 'OCP'])

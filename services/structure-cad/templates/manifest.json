@@ -3,6 +3,31 @@
   "source": "User-provided ZW-CAD-intent, 2026-07 archive",
   "templates": [
     {
+      "id": "auto-open-lid-box",
+      "revision": 1,
+      "title": "自动感应开盖盒",
+      "description": "100 × 80 × 60 mm 感应盒，带超声波探头开孔、舵机托台和外置铰链；上盖以打开 70° 的姿态预览。",
+      "size": [100, 108.834, 124.236],
+      "notes": [
+        "盒体、上盖为两个打印件；K10、IO 扩展板、舵机、超声波与舵机臂仅为装配参考。",
+        "标称盒体 100 × 80 × 60 mm、壁厚 2 mm；初始尺寸为含铰链的开盖预览外廓，不含外置硬件。",
+        "尚未包含舵机到上盖的活动连杆及铰链轴，需补齐传动件并核对实际硬件尺寸、公差和装配；未完成实物开盖验收。"
+      ],
+      "source": "server/template-library/batch-models/unihiker_auto_open_lid_box_v1.cq.py",
+      "file": "auto-open-lid-box.py",
+      "sha256": "8608f82b54577cea5837cb34f8651b6525dfb8883e09b1985f84e6db7544312f",
+      "image": "auto-open-lid-box.png",
+      "parts": [
+        {"id": "base", "label": "盒体", "object": "base_part", "printable": true},
+        {"id": "lid", "label": "上盖", "object": "lid_part", "printable": true},
+        {"id": "k10", "label": "K10 参考件", "object": "hardware_reference_parts:0", "printable": false},
+        {"id": "expansion", "label": "IO 扩展板参考件", "object": "hardware_reference_parts:1", "printable": false},
+        {"id": "servo", "label": "舵机参考件", "object": "hardware_reference_parts:2", "printable": false},
+        {"id": "ultrasonic", "label": "超声波参考件", "object": "hardware_reference_parts:3", "printable": false},
+        {"id": "horn", "label": "舵机臂参考件", "object": "hardware_reference_parts:4", "printable": false}
+      ]
+    },
+    {
       "id": "mpython-shell",
       "revision": 1,
       "title": "掌控板 3.0 外壳",

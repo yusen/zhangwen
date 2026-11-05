@@ -1,0 +1,9 @@
+{
+  "mosaicoIdea": false,
+  "retainedProgramming": [
+    "MicroPython",
+    "Mosaico Lua",
+    "Mosaico Claw"
+  ],
+  "localDevelopmentPreserved": true
+}

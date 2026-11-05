@@ -1,0 +1,104 @@
+.reference-dialog { width: min(900px, calc(100vw - 32px)); }
+.reference-dialog .dialog-body { display: grid; gap: 16px; }
+.reference-actions { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; }
+.reference-actions label { display: inline-flex; align-items: center; gap: 8px; }
+.reference-field, .reference-form > label { display: grid; gap: 8px; margin-block: 12px; }
+.reference-field input, .reference-field textarea, .reference-form input, .reference-form textarea, .reference-form select { width: 100%; min-width: 0; background: var(--raised); border: 1px solid var(--border); color: var(--ink-1); }
+.reference-form { border: 1px solid var(--border); border-radius: 10px; padding: 16px; min-width: 0; }
+.reference-form-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px; }
+.reference-form-grid label { display: grid; gap: 8px; }
+.reference-file-button { position: relative; cursor: pointer; display: inline-flex; gap: 8px; align-items: center; flex-wrap: wrap; border: 1px solid var(--border); padding: 8px 12px; border-radius: 8px; min-height: 44px; }
+.reference-file-button:focus-within { outline: 2px solid var(--ink-2); outline-offset: 2px; }
+.reference-file-button input { position: absolute; width: 1px; height: 1px; opacity: 0; }
+.reference-list { display: grid; gap: 12px; }
+.reference-list article { border: 1px solid var(--border); border-radius: 10px; padding: 12px; display: flex; gap: 12px; align-items: center; flex-wrap: wrap; }
+.reference-list article > div { display: grid; gap: 6px; flex: 1 1 200px; overflow-wrap: anywhere; }
+.reference-list select { border: 1px solid var(--border); border-radius: 6px; }
+.reference-preview { display: grid; gap: 12px; min-width: 0; }
+.reference-preview pre { max-height: 340px; overflow: auto; }
+.reference-status, .reference-preview pre, .reference-sources pre, .verification-grid pre { white-space: pre-wrap; overflow-wrap: anywhere; font-size: 13px; line-height: 1.65; }
+.reference-sources { margin-top: 12px; border-top: 1px solid var(--border); padding-top: 10px; }
+.reference-sources details { margin-top: 8px; }
+.verification-grid { display: grid; gap: 10px; grid-template-columns: repeat(2, minmax(0, 1fr)); margin-block: 14px; }
+.verification-grid article { display: grid; gap: 8px; align-content: start; padding: 12px; border: 1px solid var(--border); border-radius: 8px; min-width: 0; }
+.verification-badge { color: var(--ink-3); font-size: 12px; line-height: 1.5; }
+:root { --verification-info: #245b9c; --verification-pass: #176543; --verification-pending: #86500a; --verification-fail: #ad2828; }
+[data-theme="dark"] { --verification-info: #9bc9ff; --verification-pass: #82ddb2; --verification-pending: #f2c87e; --verification-fail: #ffadad; }
+.verification-badge.documented { color: var(--verification-info); }
+.verification-badge.passed { color: var(--verification-pass); }
+.verification-badge.pending { color: var(--verification-pending); }
+.verification-badge.failed { color: var(--verification-fail); }
+@media (max-width: 600px) { .verification-grid, .reference-form-grid { grid-template-columns: minmax(0, 1fr); } }
+
+/* Resource views keep the common path short and reveal editing on demand. */
+.reference-dialog[open], .hardware-resource-dialog[open] { display: flex; flex-direction: column; overflow: hidden; max-height: calc(100dvh - 40px); }
+.reference-dialog { width: min(800px, calc(100vw - 32px)); }
+.hardware-resource-dialog { width: min(840px, calc(100vw - 32px)); }
+.reference-dialog .dialog-head, .hardware-resource-dialog .dialog-head { flex: 0 0 auto; gap: 12px; }
+.reference-dialog .dialog-body, .hardware-resource-dialog .dialog-body { min-height: 0; overflow-y: auto; padding: 20px 24px; }
+.hardware-resource-dialog .dialog-body { display: block; }
+.hardware-resource-dialog [hidden] { display: none !important; }
+.hardware-resource-dialog .dialog-head-actions { margin-left: auto; }
+.resource-overview { display: flex; align-items: center; gap: 16px; margin-bottom: 18px; }
+.resource-overview img { width: 72px; height: 64px; object-fit: contain; flex-shrink: 0; }
+.resource-overview p { margin: 0 0 8px; overflow-wrap: anywhere; }
+.resource-overview small, .resource-empty small { color: var(--ink-3); }
+.resource-tabs { display: flex; gap: 8px; border-bottom: 1px solid var(--border); margin-bottom: 18px; }
+.resource-tabs button { border-radius: 6px 6px 0 0; border: 0; border-bottom: 2px solid transparent; padding: 10px 16px; min-height: 44px; color: var(--ink-3); }
+.resource-tabs button[aria-selected="true"] { color: var(--ink-1); border-bottom-color: var(--ink-1); background: var(--raised); }
+.resource-section-head, .resource-test-summary { display: flex; gap: 12px; align-items: center; justify-content: space-between; flex-wrap: wrap; }
+.resource-section-head h3, .resource-section-head p { margin: 0; }
+.resource-test-summary { margin-top: 18px; padding: 14px 0; border-top: 1px solid var(--border); }
+.resource-test-summary > div:first-child { display: grid; gap: 6px; }
+.resource-test-summary .verification-badge { font-size: 14px; }
+.resource-code, .resource-caution { margin-top: 12px; }
+.resource-code pre, .hardware-resource-dialog pre { white-space: pre-wrap; overflow-wrap: anywhere; overflow: auto; max-height: 350px; font-size: 13px; line-height: 1.65; }
+.resource-notes { white-space: pre-wrap; overflow-wrap: anywhere; }
+.resource-back { justify-self: start; margin-bottom: 10px; }
+.resource-inline { margin-top: 8px; }
+.resource-menu { position: relative; flex-shrink: 0; }
+.resource-menu summary { list-style: none; cursor: pointer; display: flex; align-items: center; justify-content: center; min-width: 44px; min-height: 44px; border: 1px solid var(--border); border-radius: 8px; font-size: 22px; }
+.resource-menu summary::-webkit-details-marker { display: none; }
+.resource-menu > div { display: grid; padding: 6px; gap: 4px; min-width: 180px; border: 1px solid var(--border); border-radius: 8px; background: var(--panel); }
+.resource-menu > div button, .resource-menu > div label { text-align: left; justify-content: flex-start; min-height: 44px; padding: 8px 12px; margin: 0; }
+.dialog-head .resource-menu > div { position: absolute; z-index: 5; top: 100%; right: 0; box-shadow: 0 8px 24px #0002; }
+.reference-list article { flex-wrap: wrap; }
+.reference-list .reference-name { display: flex; gap: 10px; align-items: center; flex: 1 1 160px; text-align: left; min-width: 0; padding: 8px 0; }
+.reference-name strong { overflow-wrap: anywhere; }
+.reference-name small, .reference-mode { font-size: 12px; color: var(--ink-3); }
+.reference-mode.pin { color: var(--verification-info); }
+.reference-mode.off { opacity: .8; }
+.reference-list .resource-menu[open] { flex: 1 1 100%; }
+.reference-list .resource-menu[open] > summary { width: 44px; margin-left: auto; }
+.reference-list .resource-menu > div { width: min(240px, 100%); margin-left: auto; }
+.reference-import-options { display: flex; gap: 12px; flex-wrap: wrap; }
+.reference-preview pre { background: var(--raised); border: 1px solid var(--border); border-radius: 8px; padding: 16px; min-height: 140px; }
+.reference-preview h3 { margin: 0; overflow-wrap: anywhere; }
+.reference-preview button:last-child { justify-self: start; }
+.resource-empty { padding: 28px 10px; text-align: center; }
+.reference-form details > label, .personal-optional > label { display: grid; gap: 8px; margin-block: 12px; }
+.personal-optional { margin-top: 16px; }
+.verification-rows { margin-block: 16px; border-top: 1px solid var(--border); }
+.verification-row { display: grid; grid-template-columns: minmax(100px, 1fr) minmax(90px, 1fr) auto; gap: 8px 12px; align-items: center; padding: 10px 0; border-bottom: 1px solid var(--border); }
+.verification-row > details { grid-column: 1 / -1; }
+.test-conditions { margin-block: 16px; }
+@media (max-width: 600px) {
+  .reference-dialog[open], .hardware-resource-dialog[open] { width: calc(100vw - 20px); max-height: calc(100dvh - 20px); }
+  .reference-dialog .dialog-body, .hardware-resource-dialog .dialog-body { padding: 16px; }
+  .resource-tabs { gap: 0; }
+  .resource-tabs button { flex: 1; padding: 10px 6px; }
+  .verification-row { grid-template-columns: minmax(0, 1fr) auto; }
+  .verification-row > button { grid-column: 1 / -1; justify-self: start; }
+  .resource-section-head > button { flex-shrink: 0; }
+}
+
+.reference-list .reference-name { justify-content: flex-start; }
+.reference-error > p { flex-basis: 100%; margin: 0; overflow-wrap: anywhere; color: var(--verification-fail); }
+
+.hardware-resource-dialog .sensor-table-scroll table { width: 100%; border-collapse: collapse; text-align: left; }
+.hardware-resource-dialog .sensor-table-scroll caption { text-align: left; padding-block: 12px 8px; color: var(--ink-3); }
+.hardware-resource-dialog .sensor-table-scroll th, .hardware-resource-dialog .sensor-table-scroll td { padding: 8px 10px; border-bottom: 1px solid var(--border); white-space: nowrap; }
+
+.hardware-resource-dialog .module-guide-wiring { display: grid; grid-template-columns: minmax(0, 1fr); gap: 0; margin: 8px 0; }
+.hardware-resource-dialog .module-guide-wiring > div { display: grid; grid-template-columns: minmax(90px, 0.3fr) minmax(0, 1fr); gap: 12px; padding: 8px 0; border-bottom: 1px solid var(--border); }
+.hardware-resource-dialog .module-guide-wiring dt, .hardware-resource-dialog .module-guide-wiring dd { margin: 0; }

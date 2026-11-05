@@ -1,0 +1,53 @@
+.classroom-details{margin:12px 0;border-top:1px solid var(--border);padding-top:10px;font-size:13px;line-height:1.65;color:var(--ink-2)}
+.classroom-details>summary{cursor:pointer;min-height:36px;display:list-item;align-content:center;color:var(--ink-2);font-weight:500}
+.classroom-details>summary:focus-visible{outline:2px solid var(--sw);outline-offset:3px;border-radius:3px}
+.classroom-details p,.classroom-details small,.classroom-details dd{overflow-wrap:anywhere}
+.classroom-details .field{margin-top:12px}
+.classroom-record-details{margin:8px 0;font-size:13px;line-height:1.65}
+.classroom-record-details dt{font-weight:600}.classroom-record-details dd{margin:2px 0 12px;white-space:pre-wrap;overflow-wrap:anywhere}
+.classroom-help-steps li{margin:12px 0;line-height:1.8}
+.classroom-next-step{margin:0 0 16px;padding:10px 12px;background:var(--sel);border-radius:6px;font-size:13px;line-height:1.7}
+.classroom-next-step strong{display:block;margin-bottom:3px}
+.structure-inspector>.classroom-details>button{margin:8px 0}
+.workflow-mobile-tabs{display:none}
+.workflow-hardware{padding:12px 0;border-bottom:1px solid var(--border)}
+.workflow-hardware h3{margin:0 0 10px;font-size:13px}
+.workflow-hardware .board-field-label{font-size:12px;color:var(--ink-3)}
+.workflow-board{display:flex;width:100%;align-items:center;gap:7px;min-height:52px;padding:7px 5px;border:1px solid var(--border);border-radius:6px;text-align:left;background:var(--sel);margin-top:6px}
+.workflow-board .board-artwork{width:34px;height:38px;object-fit:contain;flex-shrink:0}
+.workflow-board>span{flex:1;min-width:0;overflow-wrap:anywhere;font-size:12px;line-height:1.5}
+.workflow-board>svg:last-child{flex-shrink:0;color:var(--ink-3)}
+.workflow-hardware-reference{min-height:44px;text-align:left;color:var(--sw);font-size:12px}
+.workflow-add-modules{width:100%;min-height:44px;gap:6px;border:1px solid var(--border);border-radius:5px;margin:6px 0;font-size:13px}
+.workflow-hardware-module{display:flex;align-items:center;gap:4px;border-bottom:1px solid var(--border)}
+.workflow-module-detail{flex:1;min-width:0;text-align:left;display:flex;flex-direction:column;align-items:flex-start;padding:9px 0;gap:5px;min-height:52px}
+.workflow-module-detail>span{font-size:12px;line-height:1.6;overflow-wrap:anywhere}
+.workflow-module-detail>small,.workflow-hardware-note,.workflow-hardware p{font-size:12px;line-height:1.7;color:var(--ink-3)}
+.workflow-hardware-module>.icon-button{width:44px;min-height:44px;flex-shrink:0}
+.workflow-hardware-note{display:block;margin-top:10px}
+.workflow-hardware-save p{color:var(--ink-2);margin:10px 0 6px}
+.workflow-hardware-save>button{min-height:44px;width:100%;font-size:12px;gap:5px}
+.workflow-composer .workflow-hardware-prompt{padding-bottom:8px;align-items:flex-start;flex-wrap:wrap}
+.workflow-hardware-prompt>button{min-height:44px;color:var(--sw);font-size:12px;flex-shrink:0}
+.terminal-commands{font-size:12px;flex-shrink:0;border-top:1px solid var(--border)}
+.terminal-commands>summary{cursor:pointer;padding:7px 12px;color:var(--ink-3);min-height:30px}
+.terminal-commands>summary:focus-visible{outline:2px solid var(--sw);outline-offset:-2px}
+@media(max-width:1100px){
+  .app.final-workbench:has(.workflow-surface:not([hidden])){min-width:0}
+  .app.final-workbench:has(.workflow-surface:not([hidden])) .project-folder-panel{position:fixed;right:6px;top:136px;bottom:42px;z-index:70;width:min(300px,calc(100vw - 24px));box-shadow:0 8px 32px #0004;border:1px solid var(--border);border-radius:6px}
+  .workflow-mobile-tabs{display:flex;gap:6px;padding-top:8px;flex-shrink:0}
+  .workflow-mobile-tabs button{flex:1;min-height:44px;padding:7px 5px;font-size:13px;border-radius:5px;border:1px solid var(--border)}
+  .workflow-mobile-tabs button[aria-pressed=true]{background:var(--sel);color:var(--sw);border-color:var(--sw)}
+  .workflow-surface .learning-workbench,.workflow-surface.learning-collapsed .learning-workbench{display:flex;min-width:0;flex:1;padding-top:8px}
+  .workflow-surface .learning-workbench>.panel{display:none;flex:1;min-width:0}
+  .workflow-mobile-records .learning-workbench>.learning-materials,.workflow-mobile-chat .learning-workbench>.learning-chat,.workflow-mobile-navigation .learning-workbench>.learning-conditions{display:flex}
+  .workflow-surface .workflow-document{padding:14px;overflow-x:hidden}
+  .workflow-surface .field textarea,.workflow-surface .field input,.workflow-surface .field select{font-size:16px}
+  .workflow-surface .learning-filebar{flex-wrap:wrap;height:auto;min-height:44px;gap:5px}
+}
+@media(max-width:760px){
+  .app.final-workbench .project-folder-panel{position:fixed;right:6px;top:136px;bottom:42px;z-index:70;width:min(300px,calc(100vw - 24px));box-shadow:0 8px 32px #0004;border:1px solid var(--border);border-radius:6px}
+}
+@media(max-width:600px){.classroom-details{font-size:14px}.classroom-details>summary{min-height:44px}.classroom-help-steps{padding-left:22px}}
+.project-tools .zhangwen-tool{width:76px;flex-basis:76px}
+.project-tools .zhangwen-tool:last-child{width:88px;flex-basis:88px}

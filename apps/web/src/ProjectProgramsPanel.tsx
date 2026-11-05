@@ -67,7 +67,7 @@ export function ProjectPrograms({ folder, code, board, componentIds, versions, r
     </article>) : <p className="muted">还没有保存的程序。可将测试程序按名称保存到子文件夹。</p>}</div>}
     {issues.length > 0 && <p className="program-file-warning" role="status">{issues.slice(0, 3).join('；')}{issues.length > 3 && `；另有${issues.length - 3}项待核对`}</p>}
     {preview && <section className="project-program-preview" aria-label="程序预览"><h4>{preview.record.name}</h4><p>{preview.record.boardName} · {label(preview.record.verification.observed)}</p>
-      <p className="muted">{preview.record.sourceRevision ? `来源：已保存版本 v${preview.record.sourceRevision}` : '来源：编辑器草稿'} · 模块 {preview.record.componentIds.length} 个 · 代码摘要一致</p>
+      <p className="muted">{preview.record.sourceRevision ? `来源：已保存版本 v${preview.record.sourceRevision}` : '来源：编辑器草稿'} · 模块 {preview.record.componentIds.length} 个 · 代码内容已核对</p>
       <p className="muted">上传回读：{preview.record.verification.uploadVerifiedAt ? new Date(preview.record.verification.uploadVerifiedAt).toLocaleString() : '未记录'} · 运行提交：{preview.record.verification.runSubmittedAt ? new Date(preview.record.verification.runSubmittedAt).toLocaleString() : '未记录'}</p>
       {preview.record.verification.note && <p className="program-observation">{preview.record.verification.note}</p>}<pre>{preview.code}</pre>
       <div className="file-actions"><button disabled={locked} onClick={() => onLoad(preview.code, { id: preview.record.boardId, name: preview.record.boardName })}>载入此程序</button><button disabled={locked} onClick={() => onDownload('main.py', preview.code)}><Download size={16} />导出程序</button></div>

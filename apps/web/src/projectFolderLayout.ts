@@ -22,7 +22,7 @@ function assetParts(key: string): string[] {
   if (parts.length < 3 || parts.length > 4 || !/^[a-f0-9]{32}$/.test(parts[0]) ||
       !/^ZW-PRODUCT-\d{8}-\d{6}(?:-\d{2})?$/.test(parts[1]) ||
       parts.slice(2).some(p => !/^[a-zA-Z0-9_.-]+$/.test(p) || p === '.' || p === '..')) {
-    throw new Error('结构资产路径无效，未覆盖文件夹快照。');
+    throw new Error('结构资产路径无效，未覆盖文件夹项目备份。');
   }
   return parts;
 }
@@ -38,11 +38,14 @@ export function projectFolderFiles(snapshot: ProjectSnapshot): ProjectFolderFile
   for (const version of snapshot.versions) {
     if (revisions.has(version.revision)) throw new Error('代码历史版本重复，未写入文件夹。');
     revisions.add(version.revision);
-    files.push({ path: ['代码', version.source === 'ai' ? 'AI候选' : '已保存版本',
-      versionFolder(version.revision, version.name ?? '', 'MicroPython程序'), 'main.py'],
+    files.push({ path: ['代码', version.source === 'ai' ? 'AI生成稿' : '已保存版本',
+      versionFolder(version.revision, version.name ?? '', version.programmingMode === 'chat-coding' ? 'ChatCoding任务' : 'MicroPython程序'), version.programmingMode === 'chat-coding' ? 'chat-task.txt' : 'main.py'],
       sha256: version.checksum, data: { text: version.code } });
   }
   const structure = snapshot.structure;
+  for (const version of snapshot.luaCoding?.versions ?? []) {
+    files.push({path:['代码','Lua',version.source==='ai'?'AI生成稿':'已接受版本',versionFolder(version.revision,'','Lua程序'),'program.lua'],sha256:version.checksum,data:{text:version.code}});
+  }
   if (!structure) return files;
   Object.keys(structure.assets).forEach(assetParts);
   const used = new Set<string>(), structureRevisions = new Set<number>();
@@ -55,7 +58,7 @@ export function projectFolderFiles(snapshot: ProjectSnapshot): ProjectFolderFile
     const name = versionFolder(version.revision, version.name || version.result.title || version.prompt.slice(0, 32), '结构设计');
     for (const key of [...keys].sort()) {
       const asset = structure.assets[key];
-      if (!asset) throw new Error('结构版本缺少导出文件，未覆盖文件夹快照。');
+      if (!asset) throw new Error('结构版本缺少导出文件，未覆盖文件夹项目备份。');
       used.add(key);
       const parts = assetParts(key);
       files.push({ path: ['结构', version.designType === 'laser' ? '激光造物' : '3D造物', name,
@@ -63,7 +66,7 @@ export function projectFolderFiles(snapshot: ProjectSnapshot): ProjectFolderFile
         sha256: asset.sha256, data: { base64: asset.content } });
     }
   }
-  if (Object.keys(structure.assets).some(key => !used.has(key))) throw new Error('结构文件缺少版本关联，未覆盖文件夹快照。');
+  if (Object.keys(structure.assets).some(key => !used.has(key))) throw new Error('结构文件缺少版本关联，未覆盖文件夹项目备份。');
   return files;
 }
 
@@ -79,7 +82,7 @@ export function hardwareFolderFiles(bundle: HardwareResourceBundle): ProjectFold
         typeof part !== 'string' || !/^[\p{L}\p{N}_. -]{1,100}$/u.test(part) || /^[. ]|[. ]$/.test(part) ||
         /^(con|prn|aux|nul|com[0-9]|lpt[0-9])(?:\.|$)/i.test(part)) || !/^[a-f0-9]{64}$/.test(file.sha256) ||
         typeof file.content !== 'string' || !/^(?:[A-Za-z0-9+/]{4})*(?:[A-Za-z0-9+/]{2}==|[A-Za-z0-9+/]{3}=)?$/.test(file.content)) {
-        throw new Error('硬件资料路径或摘要无效，未覆盖文件夹快照。');
+        throw new Error('硬件资料路径或摘要无效，未覆盖文件夹项目备份。');
       }
       size += file.content.length;
       if (size > 17 * 1024 * 1024 || files.length >= 4000) throw new Error('硬件资料超过输出容量。');

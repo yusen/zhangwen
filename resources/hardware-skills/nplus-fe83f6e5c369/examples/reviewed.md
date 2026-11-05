@@ -588,6 +588,90 @@
         "https://docs.micropython.org/en/latest/esp32/quickref.html"
       ],
       "codeTemplate": "# N+ 灯带\n# ESP32_GENERIC_C3官方MicroPython\n# 功能示例，待实物测试。\nfrom machine import Pin\nfrom utime import sleep_ms, sleep_us\nfrom neopixel import NeoPixel\nstrip = NeoPixel(Pin({{sig}}, Pin.OUT), {{count}})\nstrip.fill((0, 0, 0))\nstrip[0] = (8, 0, 0)\nstrip.write()\nsleep_ms(1000)\nstrip.fill((0, 0, 0))\nstrip.write()\n"
+    },
+    {
+      "boardId": "hw_espressif_mosaico",
+      "kind": "functional",
+      "title": "N+ 灯带 · Mosaico Lua（12灯）",
+      "summary": "适用于带两侧双排扩展接口的 Mosaico。GPIO4、12颗灯，每次仅低亮度点亮一颗，循环两遍约6秒后熄灭；待接线实测。",
+      "fields": [
+        {
+          "key": "sig",
+          "label": "数据引脚",
+          "default": "4",
+          "options": [
+            {
+              "value": "4",
+              "label": "GPIO4（左H2连接器第12针）"
+            }
+          ]
+        },
+        {
+          "key": "count",
+          "label": "灯珠数量",
+          "default": "12",
+          "options": [
+            {
+              "value": "12",
+              "label": "12颗"
+            }
+          ]
+        },
+        {
+          "key": "supply",
+          "label": "模块供电",
+          "default": "3.3V",
+          "options": [
+            {
+              "value": "3.3V",
+              "label": "3.3V（左H2连接器第19针）"
+            }
+          ]
+        },
+        {
+          "key": "interface",
+          "label": "模块接口",
+          "default": "WS2812",
+          "options": [
+            {
+              "value": "WS2812",
+              "label": "WS2812 / Claw Lua led_strip"
+            }
+          ]
+        }
+      ],
+      "connections": [
+        {
+          "signal": "V（电源）",
+          "target": "3.3V_OUT / VCC_3V3（左H2第19针）"
+        },
+        {
+          "signal": "G（地）",
+          "target": "GND（左H2第20针）"
+        },
+        {
+          "signal": "D（输入信号）",
+          "target": "GPIO{{sig}}（左H2第12针）"
+        }
+      ],
+      "notes": [
+        "先断开板子和灯带电源，再按V/G/D标记接线；使用灯带输入端，不按线色猜极性。N+三针插头不能直接插入2×10接口，需要合适的三线转接线。",
+        "H2/H1接口属于BaseBoard；用户所说“只有主板”若已带两侧双排接口，可使用该接口。裸CoreBoard无此接线口，需底板或兼容转接。",
+        "针号是连接器编号，GPIO4不是第4针。以板上H2与Pin1丝印/官方图定位，勿按观看方向或从上往下自行计数；H1右口方向旋转180度，不套用左口位置。",
+        "N+官方资料供电为3.3V，V接H2第19针；第17/18针是5V，不接本例。GPIO只传数据，不作为灯带电源。",
+        "外扩3.3V受板载GPIO60供电控制；本例不改该电源开关。不亮时先确认实际接线和扩展口电压，不通过随机改GPIO或改接5V解决。",
+        "已核对官方esp-claw 519bd959的require(\"led_strip\")、led_strip.new(gpio, max_leds)、strip:set_pixel(index,r,g,b)、strip:refresh()、strip:clear()、strip:close()。索引从0开始；clear发送全灭，close释放句柄。",
+        "上述成员方法成功时不返回值，失败抛Lua错误，不能assert(strip:clear())。GPIO被占用或缺模块时保留错误，禁止绕过资源检查。",
+        "固件模块采用WS2812/GRB/RMT；官方N+例程使用3字节NeoPixel。API和协议是参考核对，未证明当前实物兼容或接线已完成。",
+        "固定12灯、亮度8/255、单颗红灯移动24步，每步250ms。正常及可捕获错误后尝试熄灭与释放；断电/硬超时不保证Lua清理执行，异常保持亮灯时断开灯带电源。",
+        "先载入Lua草稿，检查后保存，再显式点击WiFi上传并运行。无需板载模型API；代码载入/保存不表示灯带已点亮。"
+      ],
+      "sources": [
+        "https://nplus-doc.readthedocs.io/zh-cn/latest/electroics/sensor/light.html",
+        "https://docs.espressif.com/projects/esp-dev-kits/zh_CN/latest/esp32s31/esp-mosaico/user_guide.html",
+        "https://github.com/espressif/esp-claw/tree/519bd95900d29bfc9daf3619ff779753e3153f05"
+      ],
+      "codeTemplate": "-- N+ 12 LED test: one dim red pixel at a time, two passes, then off.\n-- D -> GPIO4 (BaseBoard left H2 pin12); V -> H2 pin19 3.3V; G -> H2 pin20 GND.\n-- Disconnect power before wiring. Verify connector pin1 and the strip input end.\nlocal led_strip = require(\"led_strip\")\nlocal delay = require(\"delay\")\nlocal GPIO = {{sig}}\nlocal LED_COUNT = {{count}}\nlocal BRIGHTNESS = 8\nlocal strip\n\nlocal ok, err = pcall(function()\n    strip = led_strip.new(GPIO, LED_COUNT)\n    strip:clear()\n    for step = 0, LED_COUNT * 2 - 1 do\n        if step > 0 then\n            strip:set_pixel((step - 1) % LED_COUNT, 0, 0, 0)\n        end\n        strip:set_pixel(step % LED_COUNT, BRIGHTNESS, 0, 0)\n        strip:refresh()\n        delay.delay_ms(250)\n    end\nend)\n\n-- These methods return no values on success. Always try both cleanup actions.\nlocal cleared, clear_err = true, nil\nlocal closed, close_err = true, nil\nif strip then\n    cleared, clear_err = pcall(strip.clear, strip)\n    closed, close_err = pcall(strip.close, strip)\nend\nif not ok then error(err) end\nif not cleared then error(clear_err) end\nif not closed then error(close_err) end\nprint(\"N+ test completed; strip cleared and released\")\n"
     }
   ]
 }

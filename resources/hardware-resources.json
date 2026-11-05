@@ -452,7 +452,9 @@
       "componentId": "hw_dfrobot_ser0006_k10",
       "files": {
         "examples/reviewed.md": "f1c43d4e78ac85130fdee599aeb3c4bc4b10a4218d2ebbe769838806d8d5862b",
-        "structure/README.md": "c794b33fdcdcf5126ae3f24de05c8809b52309e48439494ca465b92ac90e5133"
+        "structure/mg90s_servo.jpg": "f50087106100a4aebcf8daa804fe5518de0ca5814108256d56af03d92377385e",
+        "structure/profile.json": "86b89f4bf8e891840f521a685af34c630a8ddef592be1440b3b3d0bab6477653",
+        "structure/README.md": "0e6bbf4e4514ca229f408eb05b74a3aa5aed3dbcf813faabd1ed6df9351fdbc0"
       }
     },
     "dfrobot-ser0035-k10": {
@@ -473,6 +475,12 @@
       "componentId": "hw_esp32_generic_c3",
       "files": {
         "structure/README.md": "ba7ef78836382e36f4225d1962ad605f0c6c7b20463e57cb327569d878fa20d5"
+      }
+    },
+    "espressif-mosaico": {
+      "componentId": "hw_espressif_mosaico",
+      "files": {
+        "structure/README.md": "52321d08c7cd960985890b1aee7ce444863f0ffd0919cbdd2f9cdcb019beec6a"
       }
     },
     "k10": {
@@ -1043,7 +1051,7 @@
     "nplus-fe83f6e5c369": {
       "componentId": "hw_nplus_fe83f6e5c369",
       "files": {
-        "examples/reviewed.md": "b05bac7f2f4f19f19b8e2545b2d54dc86c39da136ffee8aa06f929b4acccfdbd",
+        "examples/reviewed.md": "73609b2f0d5f73697e3193cdee916310e43bf730f9b411ac3dddfe9895aec4c2",
         "structure/README.md": "1561ac61a74dc2d877e547a45d4d19b43fa4dcf353e5225ea1ae84c4b09a77cf"
       }
     },
@@ -2001,10 +2009,10 @@
       },
       {
         "id": "mg90s_servo",
-        "componentId": null,
-        "skillName": null,
-        "path": "structure-parts/mg90s_servo/profile.json",
-        "thumbnail": "structure-parts/mg90s_servo/mg90s_servo.jpg"
+        "componentId": "hw_dfrobot_ser0006_k10",
+        "skillName": "dfrobot-ser0006-k10",
+        "path": "hardware-skills/dfrobot-ser0006-k10/structure/profile.json",
+        "thumbnail": "hardware-skills/dfrobot-ser0006-k10/structure/mg90s_servo.jpg"
       },
       {
         "id": "pca9685_servo_controller",
@@ -2044,7 +2052,7 @@
     ]
   },
   "legacyMedia": {
-    "mg90s_servo.jpg": "structure-parts/mg90s_servo/mg90s_servo.jpg",
+    "mg90s_servo.jpg": "hardware-skills/dfrobot-ser0006-k10/structure/mg90s_servo.jpg",
     "pca9685_servo_controller.jpg": "structure-parts/pca9685_servo_controller/pca9685_servo_controller.jpg",
     "quadruped_dog_body.svg": "structure-parts/quadruped_dog_body/quadruped_dog_body.svg",
     "quadruped_dog_thigh.svg": "structure-parts/quadruped_dog_thigh/quadruped_dog_thigh.svg",
@@ -2052,6 +2060,8 @@
     "battery_18650_holder.png": "structure-parts/battery_18650_holder/battery_18650_holder.png"
   },
   "structureFiles": {
+    "hardware-skills/dfrobot-ser0006-k10/structure/mg90s_servo.jpg": "f50087106100a4aebcf8daa804fe5518de0ca5814108256d56af03d92377385e",
+    "hardware-skills/dfrobot-ser0006-k10/structure/profile.json": "86b89f4bf8e891840f521a685af34c630a8ddef592be1440b3b3d0bab6477653",
     "hardware-skills/seeed-studio-xiao-esp32s3-sense/structure/profile.json": "5f2ee9d406bc5a5df5a11bdee89c308b28daba1c40197cbb1df5dd71f00209d4",
     "hardware-skills/seeed-xiao-esp32s3-micropython/structure/profile.json": "d856c8253f16863191a1d8a5faf0db5fad445a57e75c9fce76fa625d4cc98ff7",
     "structure-parts/battery_18650_holder/battery_18650_holder.png": "489c5541fe1ff715187c25c64153f06a25e69246782c72916273caa8a8239338",
@@ -2064,8 +2074,6 @@
     "structure-parts/grove_passive_buzzer/profile.json": "e7d354f228d0acc7114e660290872cc09ff15590cbd2d61a4a785bfe3724331d",
     "structure-parts/grove_sht4x/profile.json": "2bd8e2f77fa1e0a8becd4a5458f1677c483fefca1a9dcc90abf59e0c06792ab5",
     "structure-parts/grove_ultrasonic_ranger/profile.json": "f662b2e1d4c5525f3a4e0a8eb1f524117cf608c066c367a83102a1fd0173f063",
-    "structure-parts/mg90s_servo/mg90s_servo.jpg": "f50087106100a4aebcf8daa804fe5518de0ca5814108256d56af03d92377385e",
-    "structure-parts/mg90s_servo/profile.json": "b90b4184f7c24e99a05876b0616dd26182e4117284c0df667dcddfe399c57c19",
     "structure-parts/pca9685_servo_controller/pca9685_servo_controller.jpg": "f44e1a927eaef936d007860735885dcee68db404fcbcac1a4e43dcd4c24677bb",
     "structure-parts/pca9685_servo_controller/profile.json": "9007be1dc500196adc7f34011fa83e2145330c0be6b854cd58dd6b1116725d9e",
     "structure-parts/quadruped_dog_body/profile.json": "b565fa73feb3c8310970de19710bdc9ab13f1ae624f303e4f1d8fc54341079f6",

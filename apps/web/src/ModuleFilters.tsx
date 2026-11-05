@@ -12,7 +12,7 @@ export function ModuleFilters({ items, brand, direction, type, onBrand, onType, 
   const trigger = useRef<HTMLButtonElement>(null);
   const panelId = useId();
   const activeCount = Number(brand !== 'all') + Number(direction !== 'all' || !!type);
-  const summary = `${brand === 'all' ? '全部品牌' : brand} · ${type || (direction === 'all' ? '全部模块' : direction === 'input' ? '输入模块' : '输出模块')}`;
+  const summary = `${brand === 'all' ? '全部品牌' : brand} · ${type || (direction === 'all' ? '全部模块' : direction === 'input' ? '输入模块' : direction === 'output' ? '输出模块' : '配套模块')}`;
   const close = () => { setExpanded(false); trigger.current?.focus(); };
   useEffect(() => {
     if (!expanded) return;
@@ -43,9 +43,9 @@ export function ModuleFilters({ items, brand, direction, type, onBrand, onType, 
         {brands.map(value => <button key={value} aria-pressed={brand === value} onClick={() => onBrand(value)}>{value}<span>{items.filter(item => moduleBrand(item) === value).length}</span></button>)}
       </div></div>
       <div className="catalog-filter-row" role="group" aria-label="模块类型"><strong>类型</strong><div className="filter-options">
-        {(['all', 'input', 'output'] as const).map(value => <button key={value} aria-pressed={direction === value && !type} onClick={() => selectType(value, '')}>{value === 'all' ? '全部模块' : value === 'input' ? '输入模块' : '输出模块'}<span>{branded.filter(item => value === 'all' || moduleDirection(item) === value).length}</span></button>)}
+        {(['all', 'input', 'output', 'support'] as const).map(value => <button key={value} aria-pressed={direction === value && !type} onClick={() => selectType(value, '')}>{value === 'all' ? '全部模块' : value === 'input' ? '输入模块' : value === 'output' ? '输出模块' : '配套模块'}<span>{branded.filter(item => value === 'all' || moduleDirection(item) === value).length}</span></button>)}
       </div></div>
-      {(['input', 'output'] as const).map(side => <div className="catalog-filter-row" role="group" aria-label={side === 'input' ? '传感器类型' : '执行器类型'} key={side}><strong>{side === 'input' ? '传感器类型' : '执行器类型'}</strong><div className="filter-options">
+      {(['input', 'output', 'support'] as const).map(side => <div className="catalog-filter-row" role="group" aria-label={side === 'input' ? '传感器类型' : side === 'output' ? '执行器类型' : '配套类型'} key={side}><strong>{side === 'input' ? '传感器类型' : side === 'output' ? '执行器类型' : '配套类型'}</strong><div className="filter-options">
         {types(side).map(value => <button key={value} aria-pressed={direction === side && type === value} disabled={!branded.some(item => moduleDirection(item) === side && moduleType(item) === value)} onClick={() => selectType(side, value)}>{value}</button>)}
       </div></div>)}
       </div>

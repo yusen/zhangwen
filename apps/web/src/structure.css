@@ -149,3 +149,13 @@
 @media (prefers-reduced-motion: reduce) { .structure-surface *, .structure-surface *::before, .structure-surface *::after { animation-duration: .01ms !important; transition-duration: .01ms !important; scroll-behavior: auto !important; } }
 .structure-param-grid .structure-param-toggle { display: flex; align-items: center; gap: 8px; min-height: 36px; }
 .structure-param-grid .structure-param-toggle input { width: 16px; height: 16px; margin: 0; }
+.structure-draft-note { padding:10px; margin-bottom:10px; border:1px solid var(--border); border-radius:8px; font-size:12px; }
+.structure-draft-note p { margin:0 0 8px; line-height:1.6; }
+.structure-draft-note button { min-height:40px; }
+.mechanical-form { margin: 16px 0; min-width: 0; }
+.mechanical-form fieldset, .hardware-installation-row { min-width: 0; margin: 12px 0; border: 1px solid var(--border); border-radius: 8px; padding: 12px; }
+.mechanical-form legend, .hardware-installation-row legend { white-space: normal; overflow-wrap: anywhere; }
+.mechanical-form input, .mechanical-form select, .hardware-installation-row input, .hardware-installation-row select { max-width: 100%; min-width: 0; }
+.mechanical-form button, .hardware-installation-row button, .structure-missing button { min-height: 44px; margin: 4px 0; }
+.hardware-installation-report article { border-bottom: 1px solid var(--border); padding: 12px 0; overflow-wrap: anywhere; }
+.hardware-installation-report pre { white-space: pre-wrap; overflow-wrap: anywhere; font: inherit; }

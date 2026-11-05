@@ -1,0 +1,23 @@
+.start-screen { display: flex; flex: 1; flex-direction: column; min-height: 0; }
+.start-screen .workspace-titlebar { border-radius: 12px; }
+.start-header-label { color: var(--ink-3); font-size: 13px; }
+.start-screen .theme-toggle { margin-left: auto; width: 44px; min-height: 44px; }
+.start-main { display: grid; flex: 1; min-height: 0; place-items: center; overflow: auto; padding: 48px 32px; }
+.start-content { width: min(100%, 760px); text-align: center; }
+.start-mark { display: block; margin: 0 auto 24px; background: var(--logo); border-radius: 18px; padding: 8px; }
+.start-content h1 { color: var(--ink-1); font-size: 30px; font-weight: 600; letter-spacing: 1px; line-height: 1.5; }
+.start-description { color: var(--ink-2); font-size: 15px; line-height: 1.8; margin: 12px 0 36px; }
+.start-actions { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 20px; }
+.start-project-action { display: flex; min-height: 124px; padding: 24px; gap: 16px; text-align: left; background: var(--raised); border: 1px solid var(--border2); border-radius: 14px; transition: background 150ms, border-color 150ms; }
+.start-project-action:hover:not(:disabled) { background: var(--panel); border-color: var(--brand); }
+.start-project-action:active:not(:disabled) { background: var(--sel); }
+.start-action-icon { display: grid; place-items: center; flex-shrink: 0; width: 48px; height: 48px; border-radius: 12px; background: var(--sel); color: var(--ink-1); }
+.start-action-copy { display: flex; flex: 1; flex-direction: column; gap: 8px; min-width: 0; }
+.start-action-copy strong { color: var(--ink-1); font-size: 18px; font-weight: 600; }
+.start-action-copy > span { color: var(--ink-2); font-size: 13px; line-height: 1.6; }
+.start-project-action > svg { flex-shrink: 0; color: var(--ink-3); }
+.start-feedback { min-height: 64px; margin-top: 24px; font-size: 13px; color: var(--ink-3); line-height: 1.7; }
+.start-feedback > p { display: flex; align-items: center; justify-content: center; gap: 8px; }
+.start-error { color: var(--dng); overflow-wrap: anywhere; }
+.start-error button { margin-top: 8px; border: 1px solid var(--border2); background: var(--raised); }
+.start-footer { display: flex; justify-content: center; align-items: center; gap: 18px; color: var(--ink-3); padding: 18px 24px; font-size: 13px; }

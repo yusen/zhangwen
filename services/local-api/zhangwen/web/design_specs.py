@@ -15,6 +15,7 @@ from pydantic import BaseModel, ConfigDict, Field, ValidationError, model_valida
 from .endpoints import configured, is_deepseek
 from .diagnostics import status_detail
 from . import laser_joinery, laser_text, laser_rounded_box
+from .hardware_installations import HardwarePlacement
 
 
 class Strict(BaseModel):
@@ -133,6 +134,7 @@ class DesignSpec(Strict):
     fingerBox: FingerBox | None = None
     roundedBox: RoundedBox | None = None
     panelTexts: list[PanelText] = Field(default_factory=list, max_length=16)
+    hardwarePlacements: list[HardwarePlacement] = Field(default_factory=list, max_length=33)
 
     @model_validator(mode='after')
     def joinery(self):
@@ -172,8 +174,12 @@ class DesignSpec(Strict):
         if design_type == 'laser':
             if not self.drawing or self.solid:
                 raise ValueError('激光图纸需要平面路径，不接受实体代码。')
+            if self.hardwarePlacements and not (self.fingerBox or self.roundedBox):
+                raise ValueError('电子件安装目前支持圆角盒和榫齿盒。')
         elif not self.solid or self.solid[0].operation != 'add' or self.drawing or self.fingerBox or self.roundedBox:
             raise ValueError('3D模型需要从一个实体开始，不接受图纸或可执行代码。')
+        elif self.hardwarePlacements:
+            raise ValueError('hardwarePlacements用于激光盒体，3D请使用原硬件外壳流程。')
         return self
 
 
@@ -240,7 +246,10 @@ def template_spec(template, params):
 def design_instructions(design_type):
     laser = design_type == 'laser'
     example = template_spec('plate' if laser else 'box', {}).model_dump(mode='json', exclude_defaults=True)
-    return ('你是掌问结构设计师，只返回一个完整JSON对象，不要代码块、说明文字、Python、HTML、SVG源码或系统命令。'
+    return ('你是掌问的结构工程师，负责外形、材料、安装与活动空间。用户是教师、学生或DIY爱好者，用容易理解的中文说明，不称老板或总办。'
+        '造物统筹师负责整体方案与成果检查，智能工程师负责智能控制，三位平级，只对用户负责。用户可以直接找你，不必通过造物统筹师。'
+        '共用已保存目标不代表给其他伙伴发送了任务。记录本次结构变化和待试装内容，不声称已通知或替其他伙伴修改。'
+        '只返回一个完整JSON对象，不要代码块、说明文字、Python、HTML、SVG源码或系统命令。'
         '下面提供真实JSON Schema和有效示例，必须遵守字段名、类型、数量和范围，不得添加schema以外的字段。'
         '单位毫米。缺少关键尺寸时questions只问一个问题，solid=[]、drawing=null，不要猜测答案。'
         'previousDesign.spec是所选版本的有效设计，history是截至该版本的同类需求记录；优先本次request，'
@@ -263,7 +272,14 @@ def design_instructions(design_type):
            'drawing省略，由平台确定性生成两圆角盖板与四个弯折区的连续围板，不用普通六面盒代替。宽深是外尺寸，板厚0.8至12、圆角至少2倍板厚，直边至少5倍板厚。'
            '榫齿盒文字用顶层panelTexts:[{panel:front,x:6,y:10,text:掌问,fontSize:10}]；panel选left/right/front/back/bottom/top。'
            '坐标相对该面板左上角，文字须完全处于四边各扣除一倍板厚后的矩形内，drawing仍省略。'
-           '不得用六个矩形或圆孔假称榫卯；不支持的开盖方式、额外孔、非矩形榫卯先用questions确认。'
+           '圆角盒/榫齿盒安装电子件使用顶层hardwarePlacements数组。每项componentId与skillRevision必须逐字取projectHardware的componentId/revision；'
+           'panel为top/bottom/front/back/left/right，x/y为该面板加工图左上角到器件包络中心的毫米坐标，rotation为顺时针0/90/180/270，不自动镜像。'
+           'method=screw需原档案hole_fastened与完整孔位；adhesive只雕刻轮廓并另配胶垫，须用户选择；opening_only只开口不固定。'
+           'includeOpenings明确是否按档案生成开口；启用时必须有档案XY平面(top/bottom)圆孔或直角矩形，缺项不得猜。'
+           '尺寸/孔位由平台读取原Skill生成，drawing仍省略。只支持包络中心原点；不能虚构垫柱、卡扣、侧向投影或替换圆角开口。'
+           '圆角盒顶底坐标按外宽深；侧面x按去掉两端圆角的直边长度，y按外高。前面中间有胶合接缝，不得跨缝；避开弯折区、榫齿与同面器件。'
+           '尺寸已在projectHardware提供时不要重复询问；只询问真正缺失的外形/孔位/开口或固定方式。保留未要求移除的hardwarePlacements。'
+           '不得用六个矩形或圆孔假称榫卯；不支持的开盖方式、非矩形榫卯先用questions确认。'
            if laser else
            '本次只做3D：drawing=null，solid从add开始，最多32项，只允许box/cylinder/sphere及add/cut。'
            'size是完整三轴尺寸，圆柱X=Y，球三轴相同；center是中心，圆柱轴沿Z，rotation依次绕世界XYZ旋转后平移。'
@@ -310,7 +326,7 @@ def parse_design_reply(choice, design_type):
 
 async def propose(message, design_type, settings, previous=None, *, instructions=None, parser=None):
     if not settings or not configured(settings):
-        return DesignSpec(title='需要配置模型', summary='可配置结构设计师 API 后描述任意需求，或使用左侧模板直接生成。', questions=['选择左侧模板，或先配置结构设计师模型 API。'])
+        return DesignSpec(title='需要配置模型', summary='可配置结构工程师的 AI 服务 后描述任意需求，或使用左侧模板直接生成。', questions=['选择左侧模板，或先配置结构工程师的 AI 服务。'])
     user = json.dumps({'designType': design_type, 'request': message, 'previousDesign': previous}, ensure_ascii=False)
     messages = [{'role': 'system', 'content': instructions or design_instructions(design_type)}, {'role': 'user', 'content': user}]
     try:

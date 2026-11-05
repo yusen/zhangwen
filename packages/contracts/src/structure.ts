@@ -4,9 +4,10 @@ export interface CadProfile {
   dimensions_mm: { length_x: number; width_y: number; height_z: number };
   thumbnail_url?: string;
   componentId?: string | null;
+  skillRevision?: string;
 }
 export interface CadExport { id: string; label: string; format: string; url?: string; status?: string; fidelity?: string }
-export type BuiltinTemplateId = 'mpython-shell' | 'photo-stand' | 'servo-side' | 'servo-horizontal' | 'servo-vertical';
+export type BuiltinTemplateId = 'auto-open-lid-box' | 'mpython-shell' | 'photo-stand' | 'servo-side' | 'servo-horizontal' | 'servo-vertical';
 export interface BuiltinTemplate { id: BuiltinTemplateId; revision: number; title: string; description: string; size: number[]; notes: string[]; image?: string; sourceSha256: string }
 export interface TemplatePart { id: string; label: string; printable: boolean; exportId: string; placement: number[]; size: number[] }
 export interface TextSolid { kind: 'text'; operation: 'add' | 'cut'; text: string; fontSize: number; depth: number; center: number[]; face: 'top' | 'bottom' | 'front' | 'back' | 'left' | 'right'; angle?: number }
@@ -35,6 +36,7 @@ export interface CadResult {
   templateEdit?: TemplateEditSpec;
   templateParts?: TemplatePart[];
   designSpec?: DesignSpec;
+  hardwareInstallations?: HardwareInstallation[];
   laserTextPaths?: Record<string, string>;
   [key: string]: unknown;
 }
@@ -51,6 +53,7 @@ export interface StructureWorkspace {
 export interface StructureAction {
   /** Current engineering selection, resolved to the canonical Hardware Skills server-side. */
   hardwareComponentIds?: string[];
+  hardwarePlacements?: HardwarePlacement[];
   action: 'analyze' | 'confirm' | 'build' | 'revise' | 'parameters' | 'validate' | 'selected';
   expectedRevision: number; sourceRevision?: number;
   message?: string; selectedIds?: string[]; customProfiles?: Record<string, unknown>[];
@@ -60,10 +63,21 @@ export interface StructureAction {
 }
 export interface StructureCatalog { profiles: CadProfile[]; cadqueryAvailable: boolean; templates?: BuiltinTemplate[] }
 /** Transient deterministic laser preview; never saves a version or exports files. */
-export interface LaserPreviewInput { expectedRevision: number; sourceRevision: number; parameters: Record<string, number> }
+export interface LaserPreviewInput { expectedRevision: number; sourceRevision: number; parameters: Record<string, number>; hardwarePlacements?: HardwarePlacement[] }
+/** Coordinates in the panel drawing: X right, Y down, no automatic mirroring. */
+export interface HardwarePlacement {
+  componentId: string; skillRevision: string;
+  panel: 'top' | 'bottom' | 'front' | 'back' | 'left' | 'right';
+  x: number; y: number; rotation: 0 | 90 | 180 | 270;
+  method: 'screw' | 'adhesive' | 'opening_only'; includeOpenings: boolean;
+}
+export interface HardwareInstallation {
+  placement: HardwarePlacement; name: string; source: Record<string, unknown>;
+  cutCount: number; note: string;
+}
 export interface SolidPart { kind: 'box' | 'cylinder' | 'sphere'; operation: 'add' | 'cut'; label: string; size: number[]; center: number[]; rotation: number[] }
 export interface LaserShape { kind: 'rect' | 'circle' | 'polyline' | 'line' | 'text'; operation: 'cut' | 'engrave'; x: number; y: number; width: number; height: number; radius: number; points: number[][]; closed: boolean; text?: string; fontSize?: number }
 export interface PanelText { panel: 'left' | 'right' | 'front' | 'back' | 'bottom' | 'top'; x: number; y: number; text: string; fontSize: number }
 export interface FingerBox { width: number; depth: number; height: number; thickness: number; material: string }
 export interface RoundedBox extends FingerBox { pattern_version?: 1 | 2; corner_radius: number; tab_width: number; slot_spacing: number; slot_bridge: number; slot_rows: number; top_lid: boolean; bottom_lid: boolean }
-export interface DesignSpec { title: string; summary: string; questions: string[]; solid: SolidPart[]; fingerBox?: FingerBox | null; roundedBox?: RoundedBox | null; panelTexts?: PanelText[]; drawing?: { width: number; height: number; thickness: number; material: string; kerf: number; shapes: LaserShape[] } | null }
+export interface DesignSpec { title: string; summary: string; questions: string[]; solid: SolidPart[]; fingerBox?: FingerBox | null; roundedBox?: RoundedBox | null; panelTexts?: PanelText[]; hardwarePlacements?: HardwarePlacement[]; drawing?: { width: number; height: number; thickness: number; material: string; kerf: number; shapes: LaserShape[] } | null }

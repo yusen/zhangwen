@@ -1,0 +1,60 @@
+.workspace-deck { display: flex; flex: 1; min-width: 0; min-height: 0; overflow: hidden; }
+.workspace-stage { display: flex; flex-direction: column; flex: 1; min-width: 0; min-height: 0; outline: none; }
+.project-folder-panel { display: flex; flex-direction: column; flex: 0 0 276px; width: 276px; min-height: 0; min-width: 0; background: var(--panel); color: var(--ink-2); border-left: 1px solid var(--border2); }
+.project-folder-panel[hidden] { display: none; }
+.folder-panel-head { display: flex; align-items: center; gap: 2px; min-height: 42px; padding: 6px 8px 6px 12px; border-bottom: 1px solid var(--border); }
+.folder-panel-head h2 { flex: 1; font-size: 13px; font-weight: 600; margin: 0; }
+.folder-panel-head button, .folder-project-root button, .folder-search button { display: inline-flex; align-items: center; justify-content: center; flex: 0 0 28px; width: 28px; height: 30px; min-height: 30px; padding: 0; border: 0; border-radius: 5px; color: var(--ink-3); background: transparent; }
+.folder-panel-head button:hover:not(:disabled), .folder-project-root button:hover:not(:disabled), .folder-search button:hover { color: var(--sw); background: var(--sel); }
+.folder-project-root { display: flex; align-items: center; gap: 7px; min-height: 40px; margin: 0 9px; border-bottom: 1px solid var(--border); }
+.folder-project-root > svg { flex: 0 0 auto; color: var(--ink-2); }
+.folder-project-root strong { flex: 1; min-width: 0; font-size: 12px; font-weight: 500; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.folder-search { display: flex; align-items: center; gap: 5px; margin: 9px 10px 6px; padding: 0 7px; border: 1px solid var(--border); border-radius: 6px; color: var(--ink-3); background: var(--raised); }
+.folder-search input { flex: 1; min-width: 0; width: 100%; min-height: 31px; padding: 4px 0; border: 0; outline: 0; background: transparent; color: var(--ink-1); font-size: 12px; }
+.folder-search input::-webkit-search-cancel-button { display: none; }
+.folder-search:focus-within { outline: 2px solid var(--sw); outline-offset: 1px; }
+.folder-search button { width: 22px; flex-basis: 22px; height: 26px; min-height: 26px; }
+.folder-panel-content { min-height: 0; overflow: auto; flex: 1; padding: 0 6px 10px; scrollbar-gutter: stable; }
+.folder-tree { list-style: none; margin: 0; padding: 0; }
+.folder-tree .folder-tree { margin-left: 13px; padding-left: 6px; border-left: 1px solid var(--border); }
+.folder-branch > summary, .folder-all-files > summary, .folder-file-row { display: flex; align-items: center; gap: 6px; min-height: 29px; padding: 4px 6px; border: 0; border-radius: 4px; cursor: pointer; font-size: 12px; color: var(--ink-2); background: transparent; white-space: nowrap; text-align: left; }
+.folder-branch > summary::-webkit-details-marker, .folder-all-files > summary::-webkit-details-marker { display: none; }
+.folder-branch > summary { list-style: none; }
+.folder-branch > summary > span, .folder-row-copy { overflow: hidden; text-overflow: ellipsis; min-width: 0; }
+.folder-branch > summary > svg, .folder-all-files > summary > svg, .folder-file-row > svg { flex: 0 0 auto; }
+.folder-branch > summary > svg:not(.folder-chevron) { color: var(--sw); }
+.folder-chevron { transition: transform 150ms ease; color: var(--ink-3); }
+details[open] > summary > .folder-chevron { transform: rotate(90deg); }
+.folder-file-row { width: 100%; padding-left: 25px; justify-content: flex-start; }
+.folder-file-row:hover, .folder-branch > summary:hover, .folder-all-files > summary:hover, .folder-file-row.selected { color: var(--sw); background: var(--sel); }
+.folder-file-row.selected { box-shadow: inset 2px 0 var(--sw); }
+.folder-row-copy { display: block; }
+.folder-row-copy > span { display: block; overflow: hidden; text-overflow: ellipsis; }
+.folder-row-copy small { display: block; overflow: hidden; text-overflow: ellipsis; color: var(--ink-3); font-size: 11px; margin-top: 1px; }
+.folder-file-icon { color: var(--ink-3); }
+.folder-file-icon.is-code { color: var(--sw); }
+.folder-file-icon.is-image, .folder-file-icon.is-model { color: var(--brand); }
+.folder-file-icon.is-json { color: var(--hw); }
+.folder-inline-note, .folder-result-count { font-size: 12px; line-height: 1.65; padding: 6px; margin: 4px 0; overflow-wrap: anywhere; color: var(--ink-3); }
+.folder-error { color: var(--wrn); }
+.folder-panel-foot { flex: 0 0 auto; padding: 8px 12px; border-top: 1px solid var(--border); color: var(--ink-3); font-size: 11px; line-height: 1.7; }
+.folder-panel-foot span, .folder-panel-foot small { display: block; font-size: inherit; overflow-wrap: anywhere; }
+.folder-panel-empty { padding: 25px 14px; color: var(--ink-3); font-size: 12px; }
+.folder-panel-empty button { margin-top: 12px; color: var(--sw); background: var(--sel); border-radius: 5px; }
+.project-folder-panel button:focus-visible, .project-folder-panel summary:focus-visible { outline: 2px solid var(--sw); outline-offset: -2px; }
+.folder-skip { position: absolute; left: -10000px; }
+.folder-skip:focus { position: static; margin: 0 10px 6px; padding: 5px; font-size: 12px; color: var(--sw); }
+.folder-location-dialog { width: min(580px, calc(100vw - 48px)); }
+.folder-location-actions { display: flex; flex-wrap: wrap; gap: 8px; justify-content: flex-end; }
+.project-file-preview { width: min(1050px, calc(100vw - 96px)); max-height: calc(100dvh - 64px); }
+.project-file-preview[open] { display: flex; flex-direction: column; }
+.project-file-preview .dialog-head, .project-file-preview .dialog-footer { flex: 0 0 auto; }
+.project-file-preview .dialog-body { flex: 1; min-height: 0; overflow: auto; }
+.project-file-preview .dialog-footer { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 12px 20px; border-top: 1px solid var(--border); font-size: 12px; color: var(--ink-3); }
+.folder-preview-path { margin: 0 0 14px; font-size: 13px; overflow-wrap: anywhere; }
+.folder-preview-path small { display: block; color: var(--ink-3); font-size: 12px; }
+.folder-preview-text { padding: 14px; border: 1px solid var(--border); border-radius: 6px; font: 12px/1.8 Consolas, monospace; white-space: pre-wrap; overflow-wrap: anywhere; color: var(--ink-1); background: var(--raised); }
+.folder-preview-image { display: block; max-width: 100%; max-height: 60vh; margin: auto; object-fit: contain; }
+.folder-preview-unsupported { text-align: center; padding: 35px; color: var(--ink-3); font-size: 13px; }
+.folder-preview-unsupported > svg { width: 32px; height: 32px; }
+@media (prefers-reduced-motion: reduce) { .folder-chevron { transition: none; } }

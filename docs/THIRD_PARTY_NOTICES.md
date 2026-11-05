@@ -1,5 +1,7 @@
 # 第三方与资料来源
 
+Mosaico Lua编程资料中的board_manager、delay、display、button与gpio模块说明摘录自Espressif ESP-Claw，当前固定提交 `519bd95900d29bfc9daf3619ff779753e3153f05`；此前USB方案使用 `f95614dca7b5b5230d1fadf518d87d0a4cda9ecb`。版权归Espressif及其贡献者，适用Apache-2.0；逐文件来源见 `resources/hardware-skills/espressif-mosaico/references/sources.md`，上游完整许可见 https://github.com/espressif/esp-claw/blob/519bd95900d29bfc9daf3619ff779753e3153f05/LICENSE ，本项目根LICENSE亦包含Apache-2.0完整文本。WiFi运行服务为本项目原创，依据上游公开API编写，不随包分发ESP-Claw固件或工具链。
+
 ## 项目许可证的适用范围
 
 根目录 LICENSE 为 Apache License 2.0，仅适用于项目有权按该协议授权的原创代码，版权与补充声明见根目录 NOTICE。第三方代码、依赖、固件、字体、图片、硬件资料及导入模板继续遵循其原有授权；它们不因出现在仓库中或被部署工具复制而自动改为 Apache-2.0。未明确许可证的来源素材不在本项目 Apache-2.0 授权范围内；仅保留来源或署名并不等于取得再分发许可。
@@ -27,3 +29,31 @@ Windows/macOS 安装入口在缺少运行环境时直接下载 Node.js（上游 
 结构设计师复用用户提供的 ZW-CAD-intent（2026-06-26）确定性需求/BOM/布局/CadQuery工具与Markdown技能契约，来源摘要见开发工作区docs/structure-source-manifest.json。仅迁入运行代码、32份几何profile和6张附带硬件图，未复制其.env、模型凭据、用户导出模型、node_modules或Python环境。几何资料是安装尺寸扩展，不替代现有Hardware Skill编程/电气库。
 
 3D预览使用Three.js 0.160.1（MIT）；真实建模使用CadQuery 2.8.0（Apache-2.0）、cadquery-ocp/OCCT绑定及trimesh 4.12.2（MIT）等锁定依赖。安装环境保留各上游发行包自带LICENSE和NOTICE；OCCT本身适用LGPL-2.1及OCCT例外。二进制环境与用户模型不随源码上传，模型不代表实物强度或加工验收。
+
+项目资料的文本 PDF 提取使用 pypdf 6.1.1（BSD-3-Clause，上游 https://github.com/py-pdf/pypdf ），版本由 Python 依赖锁定，安装环境保留上游许可证；不包含 OCR 或图像分析。DOCX 文字提取使用 Python 标准库 zipfile 与 ElementTree。
+
+Mosaico微信扫码的本地二维码绘制使用 lean-qr 2.6.1（MIT，上游 https://github.com/davidje13/lean-qr ），由 package-lock 固定，不加载外部二维码服务。许可原文：
+
+```text
+MIT License
+
+Copyright (c) 2021-2025 David Evans
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.
+```

@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import type { HardwareDetail, SaveHardwareMechanical } from '../../../packages/contracts/src/platform';
 import { api } from './api';
+import { MechanicalFields } from './MechanicalFields';
 
 export function HardwareMechanicalEditor({ detail, onSaved }: { detail: HardwareDetail; onSaved: (value: HardwareDetail) => void }) {
   const [editing, setEditing] = useState(false);
@@ -9,6 +10,13 @@ export function HardwareMechanicalEditor({ detail, onSaved }: { detail: Hardware
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState('');
   const doc = detail.files.find(f => f.path === 'references/mechanical.md')?.content ?? '';
+  const profile = detail.mechanicalProfile;
+  const dimensions = profile?.dimensions && typeof profile.dimensions === 'object' ? profile.dimensions as Record<string, unknown> : {};
+  const size = (key: string) => typeof dimensions[key] === 'number' && Number.isFinite(dimensions[key]) && Number(dimensions[key]) > 0 ? `${dimensions[key]} mm` : '待补充';
+  const mounting = profile?.mounting && typeof profile.mounting === 'object' ? profile.mounting as Record<string, unknown> : {};
+  const holes = Array.isArray(mounting.holes) ? mounting.holes.filter((value): value is Record<string, unknown> => !!value && typeof value === 'object') : [];
+  const coordinate = (value: unknown) => typeof value === 'number' && Number.isFinite(value) ? `${value} mm` : '待补充';
+
   const start = () => {
     const profile = {...(detail.mechanicalProfile ?? {
       profile_id: 'module_' + detail.componentId.replace(/[^a-zA-Z0-9_]/g, '_'), display_name: detail.displayName,
@@ -38,10 +46,18 @@ export function HardwareMechanicalEditor({ detail, onSaved }: { detail: Hardware
   };
   return <section className="sensor-section" aria-label="结构与加工资料"><h3>结构与加工资料 · 3D / 激光共用</h3>
     <p className="muted">{detail.mechanicalProfile ? '已关联本模块机械档案。' : '尚无模块机械档案。'}资料随原模块和修订保存；新设计读取最新资料，历史模型保留原版本。</p>
+    <dl className="sensor-facts" aria-label="模块外形尺寸"><div><dt>长度 X</dt><dd>{size('length_x')}</dd></div><div><dt>宽度 Y</dt><dd>{size('width_y')}</dd></div><div><dt>高度 Z</dt><dd>{size('height_z')}</dd></div></dl>
+    {holes.length > 0 ? <div className="sensor-table-scroll"><table><caption>已收录安装孔（坐标以档案原点为准）</caption><thead><tr><th>孔位</th><th>X</th><th>Y</th><th>孔径</th></tr></thead><tbody>{holes.map((hole,index) => {
+      const center = hole.center && typeof hole.center === 'object' ? hole.center as Record<string, unknown> : {};
+      return <tr key={index}><td>{typeof hole.hole_id === 'string' ? hole.hole_id : index+1}</td><td>{coordinate(center.x)}</td><td>{coordinate(center.y)}</td><td>{coordinate(hole.diameter)}</td></tr>;
+    })}</tbody></table></div> : <p className="muted">未收录安装孔；不能据此判定实物有孔或无孔。</p>}
+    <details><summary>尺寸填写说明</summary>
     <ul><li>准确型号、硬件修订、官方尺寸图或实测记录及日期。</li><li>外形长宽高、轮廓与坐标原点；安装孔的圆心坐标、孔径及固定方式。</li><li>屏幕、按钮、接口的开孔位置和尺寸；插头、线缆与元件的避让空间。</li></ul>
     <p className="muted">单位 mm，原点为板中心或外包络中心，X 为长、Y 为宽、Z 为高度。只有外形尺寸时不能保证安装孔和开孔适配。激光材料、板厚、刀缝与装配间隙在每个项目中另行确认。</p>
+    </details>
     {!editing ? <button onClick={start}>维护本模块机械资料</button> : <>
-      <label className="field">机械档案 JSON<textarea className="structure-profile-input" aria-label="模块机械档案 JSON" value={text} onChange={e => setText(e.target.value)} maxLength={60000} disabled={busy} spellCheck={false} /></label>
+      <MechanicalFields text={text} onChange={setText} disabled={busy} />
+      <details><summary>高级机械档案 JSON</summary><label className="field">机械档案 JSON<textarea className="structure-profile-input" aria-label="模块机械档案 JSON" value={text} onChange={e => setText(e.target.value)} maxLength={60000} disabled={busy} spellCheck={false} /></label></details>
       <details><summary>孔位、开口与避让填写示例（请替换为实测值）</summary><pre className="candidate-code">{`mounting.holes: [{"hole_id":"h1","center":{"x":-10,"y":5},"diameter":3,"fastener":"M3"}]
 有固定孔时 mounting.strategy 用 hole_fastened。
 openings: [{"kind":"rectangle","opening_id":"screen","center":{"x":0,"y":0},"size_u":20,"size_v":10,"preferred_face":"top"}]

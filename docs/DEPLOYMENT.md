@@ -30,7 +30,7 @@ curl -fsSL https://gitee.com/zmh1979/ask-with-your-palm/raw/master/install.sh | 
 
    Windows 覆盖重装会连同旧程序环境暂存，再在原路径准备新的 `.venv`、前端依赖及构建；共享 `runtime` 中的 Node/Python 和可用下载缓存仍可复用。日常启动、正常后台更新及 macOS 同版本重试沿用上述依赖复用逻辑。
 4. 安装与 strict 构建成功才原子切换 current.txt。失败保留原入口及数据；安装锁防止并发。下载中断留下的 download-* 目录仅供诊断，可在关闭安装器后手动清理。
-5. Windows 建立桌面 ZhangWen.lnk，图标是随包掌问 Logo；macOS 生成启动掌问.command及掌问.app。应用放入可写的`/Applications`，否则放入个人`~/Applications`，无需sudo。应用启动终端中的本地服务并打开浏览器，同数据目录再次启动时核对标记并打开已有平台。
+5. Windows 建立桌面 掌问.lnk，图标是随包掌问 Logo；安装/重装后仅移除指向同一启动器的旧 ZhangWen.lnk，不删除其他安装位置的入口。macOS 生成启动掌问.command及掌问.app。应用放入可写的`/Applications`，否则放入个人`~/Applications`，无需sudo。应用启动终端中的本地服务并打开浏览器，同数据目录再次启动时核对标记并打开已有平台。
 6. 默认端口30801或`--port`指定的首选端口不可用时，依次尝试其后最多99个端口，再由系统分配空闲端口。实际绑定的socket直接交给服务，浏览器、健康标记和精确Host/Origin使用实际端口；不终止占用进程，不允许同一数据目录启动第二份服务。
 
 结构设计使用 CadQuery/OCP/trimesh，首次安装需要下载几何库。Intel Mac 的 numpy/numba/llvmlite/nlopt 使用独立精确版本，依赖检测与 pip 均按同一平台条件选择；Intel Mac 复用 Python 3.12/3.13，其他解释器由启动入口切换至托管 3.13.7。Windows、Apple Silicon 继续使用对应平台的锁定版本。

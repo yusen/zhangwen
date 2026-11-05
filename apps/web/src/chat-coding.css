@@ -1,0 +1,76 @@
+.native-chat-panel .messages pre, .native-task-panel pre { white-space:pre-wrap; overflow-wrap:anywhere; font:inherit; line-height:1.8; }
+.native-chat-panel .conversation-board-context > svg { flex:none; color:var(--ink-2); }
+.native-chat-source { color:var(--ink-3); font-size:12px; margin-left:auto; }
+.native-chat-panel .chat-form .native-save-task { display:inline-flex; align-items:center; gap:5px; flex:none; font-size:12px; padding:6px 8px; min-height:36px; }
+.native-chat-panel .chat-form > div { gap:8px; }
+.native-chat-panel .chat-form > div > span { flex:1; min-width:0; }
+.native-chat-panel .chat-form textarea { min-height:100px; }
+.native-chat-panel .chat-hint { overflow-wrap:anywhere; }
+.native-task-content { flex:1; min-height:0; overflow:auto; padding:16px; color:var(--ink-1); font-size:13px; }
+.native-task-preview { min-height:140px; border-bottom:1px solid var(--border); padding-bottom:16px; }
+.native-task-preview pre { font-family:Consolas,ui-monospace,monospace; margin:12px 0 0; }
+.native-task-content > .chat-hint { margin:12px 0; }
+.native-task-content details { margin:14px 0; line-height:1.7; }
+.native-task-content summary { cursor:pointer; padding:8px 0; }
+.chat-coding-receipts article, .chat-coding-observations article { padding:12px; margin:10px 0; border:1px solid var(--border); border-radius:8px; }
+.native-task-content small { color:var(--ink-2); overflow-wrap:anywhere; }
+.chat-coding-observations { border-top:1px solid var(--border); padding-top:14px; }
+.chat-coding-observations h3 { margin:0 0 12px; font-size:14px; }
+.chat-coding-observations label { display:block; font-size:12px; color:var(--ink-2); margin-bottom:8px; }
+.chat-coding-observations textarea { display:block; width:100%; min-height:100px; box-sizing:border-box; resize:vertical; padding:10px; margin-bottom:8px; border:1px solid var(--border); border-radius:8px; background:var(--raised); color:var(--ink-1); font:inherit; line-height:1.7; }
+.chat-coding-observations button { min-height:36px; }
+.chat-coding-connection-dialog { width:min(520px,calc(100vw - 32px)); }
+.chat-coding-connection-dialog p { line-height:1.8; }
+.chat-coding-dialog-actions { display:flex; align-items:center; flex-wrap:wrap; gap:12px; margin:16px 0; }
+.chat-coding-dialog-actions > button, .chat-coding-panel-link { display:inline-flex; align-items:center; justify-content:center; gap:7px; min-height:44px; }
+.chat-coding-panel-link { color:var(--ink-1); }
+.chat-coding-connection-dialog details { border-top:1px solid var(--border); padding-top:12px; line-height:1.8; }
+.native-task-panel :is(button,summary,select,textarea):focus-visible, .native-chat-panel :is(button,textarea):focus-visible, .chat-coding-connection-dialog :is(button,input,a,summary):focus-visible { outline:2px solid var(--ink-1); outline-offset:2px; }
+@media(max-width:600px) { .native-task-content { min-height:440px; } }
+.native-chat-attachment { display:flex; flex-wrap:wrap; gap:6px; font-size:12px; color:var(--ink-2); margin:8px 0; }
+.native-chat-attachment input { max-width:100%; }
+.lua-source { padding:10px 16px; border-bottom:1px solid var(--border); color:var(--ink-2); font-size:12px; }
+.lua-source label,.lua-actions,.lua-board-check { display:flex; align-items:center; flex-wrap:wrap; gap:8px; }
+.lua-source select { max-width:100%; min-width:0; }
+.lua-actions { margin:10px 0; }
+.lua-actions button { display:inline-flex; align-items:center; justify-content:center; gap:6px; min-height:44px; }
+.lua-actions label { display:flex; align-items:center; flex-wrap:wrap; gap:8px; }
+.lua-actions select,.lua-source select { background:var(--raised); color:var(--ink-1); border:1px solid var(--border); border-radius:6px; padding:8px; min-height:40px; }
+.lua-board-check { margin:14px 0; line-height:1.7; }
+.lua-console { padding:12px; background:var(--raised); border:1px solid var(--border); border-radius:8px; min-height:90px; max-height:240px; overflow:auto; }
+.lua-observations { padding:10px 16px; border-top:1px solid var(--border); max-height:200px; overflow:auto; }
+.lua-observations textarea { display:block; width:100%; min-height:60px; background:var(--raised); color:var(--ink-1); border:1px solid var(--border); }
+.lua-source { margin:0; }
+.lua-source summary { cursor:pointer; padding:5px 0; }
+.lua-source label { margin-top:8px; }
+.lua-code-workspace { display:flex; flex:1; flex-direction:column; min-height:0; min-width:0; overflow:hidden; }
+.lua-code-workspace > .editor { flex:1; min-height:180px; }
+.lua-code-workspace > .lua-filebar { gap:6px; flex-wrap:nowrap; }
+.lua-filebar .code-version-select { min-width:70px; flex:1 1 120px; max-width:165px; }
+.lua-filebar .editor-view-controls { flex-shrink:0; }
+.lua-filebar .editor-view-controls button,.lua-filebar > button { min-width:36px; min-height:44px; padding:4px; }
+.lua-editor-status { display:flex; align-items:center; gap:8px; min-height:34px; padding:0 12px; border-bottom:1px solid var(--border); font-size:12px; color:var(--ink-2); flex-shrink:0; }
+.lua-editor-status > span { flex:1; min-width:0; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+.lua-editor-status button { flex-shrink:0; min-height:36px; font-size:12px; }
+.lua-editor-status .lua-status-summary { display:block; flex:1; min-width:0; text-align:left; overflow:hidden; white-space:nowrap; text-overflow:ellipsis; border:0; background:transparent; padding:4px 0; color:inherit; }
+.lua-candidate-bar { display:flex; align-items:center; flex-wrap:wrap; gap:6px; padding:8px 12px; border-bottom:1px solid var(--border); font-size:12px; }
+.lua-candidate-bar > span { flex:1; min-width:100px; }
+.lua-candidate-bar button { min-height:40px; }
+.lua-recovery { padding:12px; border:1px solid var(--border); border-radius:8px; }
+.lua-recovery button { margin:4px; min-height:44px; }
+.lua-dialog-content { line-height:1.7; }
+.lua-dialog-content pre { white-space:pre-wrap; overflow-wrap:anywhere; }
+.project-conflict-dialog .dialog-body { overflow-wrap:anywhere; }
+.project-conflict-dialog pre { white-space:pre-wrap; overflow-wrap:anywhere; max-height:32vh; overflow:auto; }
+.lua-dialog-content article { margin:12px 0; padding:10px; border:1px solid var(--border); border-radius:8px; }
+.lua-dialog-content summary { cursor:pointer; padding:8px 0; }
+.lua-code-fullscreen { position:fixed; inset:150px 12px 40px; z-index:40; background:var(--panel); border:1px solid var(--border); border-radius:8px; }
+@media(max-width:600px) {
+  .lua-code-workspace > .lua-filebar { padding:0 6px; gap:4px; }
+  .lua-filebar .editor-view-controls > :not(:last-child) { display:none; }
+  .lua-code-workspace .lua-filebar > button,.lua-code-workspace .editor-view-controls button { min-width:44px; width:44px; }
+  .lua-filebar > span:first-child { padding:0; gap:4px; }
+  .lua-filebar .code-version-select { width:72px; min-width:60px; }
+  .lua-code-workspace > .editor { min-height:400px; }
+  .lua-code-fullscreen { inset:215px 6px 36px; }
+}

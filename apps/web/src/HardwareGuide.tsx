@@ -23,17 +23,17 @@ export function HardwareGuide({ board, componentIds, hardware, disabled, onTest,
         return <li key={id}>{direction && <span>{direction === 'input' ? '输入' : '输出'}</span>}{item?.displayName ?? `资料不可用（${id}）`}</li>;
       })}</ul></dd>
     </dl>
-    <p className="hardware-guide-question">需要先做模块与主控的联调测试吗？</p>
+    <p className="hardware-guide-question">要先检查每个模块能否正常工作吗？</p>
     <div className="hardware-guide-actions" role="group" aria-label="选择开发方式">
-      <button type="button" className="primary" disabled={disabled} aria-pressed={path === 'test'} onClick={() => { setPath('test'); onTest(); }}><Cable size={17} aria-hidden="true" />联调测试</button>
-      <button type="button" disabled={disabled} aria-pressed={path === 'develop'} onClick={() => { setPath('develop'); onDevelop(); }}><FileCode2 size={17} aria-hidden="true" />直接开发</button>
+      <button type="button" className="primary" disabled={disabled} aria-pressed={path === 'test'} onClick={() => { setPath('test'); onTest(); }}><Cable size={17} aria-hidden="true" />逐个测试模块</button>
+      <button type="button" disabled={disabled} aria-pressed={path === 'develop'} onClick={() => { setPath('develop'); onDevelop(); }}><FileCode2 size={17} aria-hidden="true" />直接做作品</button>
     </div>
     <p className="hardware-guide-hint">一次确认一个步骤，代码在右侧预览，保存后再上传运行。</p>
-    {path && <p className="hardware-guide-response" role="status">{path === 'test' ? '已选择联调测试。请先核对接线、接口和供电，再根据方案逐个测试；实际测试结果需要你确认。' : '好的，直接开发。告诉我你想实现什么功能，我会结合当前主控和模块来协助你。'}</p>}
+    {path && <p className="hardware-guide-response" role="status">{path === 'test' ? '先逐个测试模块。请先核对接线、接口和供电，再根据方案逐个测试；实际测试结果需要你确认。' : '好的，直接做作品。告诉我你想实现什么功能，我会结合当前主控和模块来协助你。'}</p>}
   </>;
 }
 
-export function integrationPrompt(board: HardwareSummary | undefined, boardId: string, componentIds: string[], hardware: HardwareSummary[]): string {
+export function integrationPrompt(board: HardwareSummary | undefined, boardId: string, componentIds: string[], hardware: HardwareSummary[], targetId=componentIds[0]): string {
   const label = (id: string) => hardware.find(item => item.componentId === id)?.displayName ?? '资料不可用';
-  return `开始模块联调测试。\n当前主控：${board?.displayName ?? boardId}。\n已加入模块：${componentIds.map(label).join('、')}。`;
+  return `开始器件测试。\n当前主控：${board?.displayName ?? boardId}。\n已加入模块：${componentIds.map(label).join('、')}。\n本轮只测试：${targetId?label(targetId):'尚未加入模块'}。请按当前主控的案例核对接线、给出最小测试并等待实际反馈。切换模块不代表上一模块已经实测通过。`;
 }
