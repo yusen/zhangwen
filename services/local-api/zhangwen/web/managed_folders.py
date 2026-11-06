@@ -7,6 +7,7 @@ import os
 import re
 import sys
 import uuid
+import unicodedata
 from pathlib import Path
 
 from fastapi import APIRouter, HTTPException
@@ -95,12 +96,24 @@ def router(repo):
             data = mappings()
             if pid in data: return result(data[pid])
             base = checked(documents())
-            name = re.sub(r'[<>:"/\\|?*\x00-\x1f\x7f]', '_', project['name']).strip(' .')[:60] or '我的项目'
-            if not safe_part(name): name = '我的项目'
-            path = checked(base / (name + '_' + pid[-12:]))
-            # Repeating an unknown create must reuse the same empty target, never create another project.
-            path.mkdir(parents=True, exist_ok=True)
-            if any(path.iterdir()): raise HTTPException(409, '默认项目目录已有文件，未覆盖。请使用另存为。')
+            name = re.sub(r'[<>:"/\\|?*\x00-\x1f\x7f\u202a-\u202e\u2066-\u2069]', '_', project['name']).strip(' .')[:120].rstrip(' .') or '我的项目'
+            if not safe_part(name): name = '_' + name
+            base.mkdir(parents=True, exist_ok=True)
+            # Check even empty folders and case/Unicode variants. Never adopt a different project's directory.
+            normalize = lambda s: unicodedata.normalize('NFKC', s).casefold()
+            occupied = {normalize(p.name) for p in base.iterdir()}
+            for number in range(1, 10001):
+                candidate = name if number == 1 else f'{name}（{number}）'
+                if normalize(candidate) in occupied:
+                    continue
+                path = checked(base / candidate)
+                try:
+                    path.mkdir(exist_ok=False)
+                    break
+                except FileExistsError:
+                    occupied.add(normalize(candidate))
+            else:
+                raise HTTPException(409, '同名项目文件夹过多，请修改项目名称或使用另存为。')
             data[pid] = {'path': str(path), 'name': path.name, 'checkpointHash': None, 'mainHash': None}
             persist(data)
             return result(data[pid])

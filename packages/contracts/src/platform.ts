@@ -53,6 +53,8 @@ export interface HardwareSummary {
 export interface HardwareDetail extends HardwareSummary {
   /** Canonical Hardware Skill mechanical profile; dimensions and coordinates are mm. */
   mechanicalProfile?: Record<string, unknown> | null;
+  /** Read-only dimensions from the original bound structure resource; not a physical confirmation. */
+  structureReference?: HardwareStructureReference | null;
   files: { path: string; content: string; title: string }[];
   specification: { electrical: { voltage: number; logicLevel: number; communicationProtocol: string }; notes: string };
   localExamples?: HardwareExample[];
@@ -60,6 +62,14 @@ export interface HardwareDetail extends HardwareSummary {
   /** User-declared module scope, not physical verification. Empty means unmarked. */
   supportedBoardIds?: string[];
   i2c?: HardwareI2CInfo;
+}
+export interface HardwareStructureReference {
+  id: string; name: string; dimensions: Record<string, number>;
+  holes: { x: number; y: number; z?: number; diameter: number }[];
+  mounting: { face: string; clearance?: number };
+  openings: { id: string; diameter?: number; clearance?: number }[];
+  keepouts: { id: string; size: { length_x: number; width_y: number; height_z: number } }[];
+  notes: string;
 }
 export interface SaveHardwareMechanical { expectedRevision: string; profile: Record<string, unknown>; notes: string }
 /** 7-bit device addresses from the canonical skill, not a scan or verification. */

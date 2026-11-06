@@ -219,10 +219,10 @@ export function LearningWorkflow({active,project,board,modules,section,sectionSe
           <h3>项目器件</h3><div className="project-hardware-summary"><BoardArtwork board={board}/><strong>{board?.displayName??'未选择主控板'}</strong></div>
           <button className="project-hardware-manage" disabled={blocked} onClick={onManageHardware}><CircuitBoard size={17}/>管理项目器件</button>
           <details className="compact-disclosure workflow-hardware-details"><summary>器件资料 · {modules.length} 个模块</summary>{board&&<button className="workflow-hardware-reference" disabled={working} onClick={()=>onHardwareDetail(board)}>查看主控使用资料</button>}
-          {!board&&<p className="muted">可从“项目器件”选择主控，也可以先填写项目目标。</p>}
+          {!board&&<p className="muted">可在这里选择主控，也可以先讨论作品或切换角色。</p>}
           {!!board&&!modules.length&&<p className="muted">还没有添加模块。只用主控自带功能时，可以直接开始。</p>}
           {modules.map(m=><div className="workflow-hardware-module" key={m.componentId}><button className="workflow-module-detail" aria-label={`查看${m.displayName}资料`} disabled={working} onClick={()=>onHardwareDetail(m)}><span>{m.displayName}</span><small>{cases.filter(c=>c.componentId===m.componentId).length} 项测试 · 查看资料</small></button></div>)}
-          </details>{hardwareDirty&&<small className="workflow-hardware-note" role="status">器件选择有更改，请到项目器件保存。</small>}
+          </details>{hardwareDirty&&<small className="workflow-hardware-note" role="status">器件选择有更改，请点“管理项目器件”核对并保存。</small>}
         </section>
         <button className="workflow-side-button" disabled={working} onClick={()=>{onSection('outcomes');setMobileArea('records');}}><ClipboardCheck size={15}/>查看整体成果</button>
         <button className="workflow-side-button" onClick={()=>setShowConditions(true)}><FileText size={15}/>实际接线与条件</button><button className="workflow-side-button" onClick={()=>setPreview(true)}><BookOpen size={15}/>材料模板与案例<small>预览</small></button>
@@ -232,7 +232,7 @@ export function LearningWorkflow({active,project,board,modules,section,sectionSe
         <details className="workflow-shared-goal compact-disclosure"><summary><span role="status">{project?sharedDefinitionStatus(value?.definitions):'请先打开项目'}</span><small>目标说明</small></summary><p>对话会逐步整理目标、功能与完成条件。你确认后的作品说明会供三师共同参考；具体协作仍由你决定。</p></details>
         <div className="workflow-conversation" ref={chatScroll}>{project&&section!=='outcomes'&&<section className="conversation-hardware-confirm" aria-label="确认制作器件">
           <strong>{!board?'先一起选一块主控板':hardwareDirty?'器件选择尚未保存':hardwareConfirmed===hardwareSignature?'本轮器件已确认':'这些器件适合这次作品吗？'}</strong>
-          <p>{board?.displayName??'主控负责读取传感器、控制作品动作。'}{modules.length?' · '+modules.map(m=>m.displayName).join('、'):board?' · 可以先用主控自带功能，也可以添加模块。':''}</p>
+          <div className="project-hardware-summary"><BoardArtwork board={board}/><strong>{board?.displayName??'未选择主控板'}</strong></div><p>{!board?'主控负责读取传感器、控制作品动作。':''}{modules.length?' · '+modules.map(m=>m.displayName).join('、'):board?' · 可以先用主控自带功能，也可以添加模块。':''}</p>
           <div className="workflow-actions"><button disabled={blocked} onClick={onManageHardware}>{!board?'选择主控':'调整器件'}</button>{board&&!hardwareDirty&&hardwareConfirmed!==hardwareSignature&&<button disabled={working} onClick={()=>{setHardwareConfirmed(hardwareSignature);setNotice('已确认本轮器件。可继续讨论作品，或逐项检查读数与动作。');}}>确认这些器件</button>}{board&&!hardwareDirty&&hardwareConfirmed===hardwareSignature&&<button disabled={working} onClick={()=>void send('请为已选主控和每个模块分别整理简单测试，说明接线、操作和应观察到的结果。未知条件写待确认，测试不代表已经通过。',true)}>逐个模块测试</button>}</div>
           {board&&!hardwareDirty&&hardwareConfirmed===hardwareSignature&&modules.map(m=><button key={m.componentId} disabled={working} onClick={()=>discussStep('请单独指导测试'+m.displayName+'，先核对接线与供电，再给出操作步骤和观察方法。')}>测试 {m.displayName}</button>)}
         </section>}{!project?<div className="workflow-empty"><FolderOpen size={32}/><h3>从一个项目开始</h3><p>项目会保留需求、测试、版本和学习记录。</p><button onClick={onNew}>新建项目</button></div>:<>

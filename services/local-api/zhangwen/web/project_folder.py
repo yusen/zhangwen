@@ -15,7 +15,7 @@ from pydantic import Field, field_validator
 
 from .models import Boundary
 from .portable import SNAPSHOT_MAX_BYTES
-from . import folder_picker  # Include the fixed chooser in the deployment closure.
+from . import folder_picker, folder_reveal  # Fixed OS helpers in the deployment closure.
 
 
 class OpenFolderInput(Boundary):
@@ -80,13 +80,13 @@ def verified_directory(value, expected_hash, portable_id):
 def reveal_directory(path):
     try:
         if sys.platform == 'win32':
-            os.startfile(str(path), 'explore')
+            folder_reveal.reveal(path)
         elif sys.platform == 'darwin':
             subprocess.run(['/usr/bin/open', str(path)], check=True, timeout=10, capture_output=True)
         else:
             subprocess.run(['/usr/bin/xdg-open', str(path)], check=True, timeout=10, capture_output=True)
-    except (OSError, subprocess.SubprocessError) as exc:
-        raise HTTPException(503, '系统未完成打开请求。可复制下方路径，在文件管理器中打开。') from exc
+    except (OSError, ValueError, subprocess.SubprocessError) as exc:
+        raise HTTPException(503, '未能将项目文件夹显示到前台。可在任务栏查看文件夹，或复制路径手动打开。') from exc
 
 
 def router(repo):

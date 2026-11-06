@@ -11,10 +11,11 @@ export function HardwareMechanicalEditor({ detail, onSaved }: { detail: Hardware
   const [error, setError] = useState('');
   const doc = detail.files.find(f => f.path === 'references/mechanical.md')?.content ?? '';
   const profile = detail.mechanicalProfile;
-  const dimensions = profile?.dimensions && typeof profile.dimensions === 'object' ? profile.dimensions as Record<string, unknown> : {};
+  const reference = detail.structureReference;
+  const dimensions = profile?.dimensions && typeof profile.dimensions === 'object' ? profile.dimensions as Record<string, unknown> : reference?.dimensions ?? {};
   const size = (key: string) => typeof dimensions[key] === 'number' && Number.isFinite(dimensions[key]) && Number(dimensions[key]) > 0 ? `${dimensions[key]} mm` : '待补充';
   const mounting = profile?.mounting && typeof profile.mounting === 'object' ? profile.mounting as Record<string, unknown> : {};
-  const holes = Array.isArray(mounting.holes) ? mounting.holes.filter((value): value is Record<string, unknown> => !!value && typeof value === 'object') : [];
+  const holes = Array.isArray(mounting.holes) ? mounting.holes.filter((value): value is Record<string, unknown> => !!value && typeof value === 'object') : !profile ? reference?.holes.map((h,index)=>({hole_id:`安装孔 ${index+1}`,center:{x:h.x,y:h.y},diameter:h.diameter})) ?? [] : [];
   const coordinate = (value: unknown) => typeof value === 'number' && Number.isFinite(value) ? `${value} mm` : '待补充';
 
   const start = () => {
@@ -45,12 +46,20 @@ export function HardwareMechanicalEditor({ detail, onSaved }: { detail: Hardware
     finally { setBusy(false); }
   };
   return <section className="sensor-section" aria-label="结构与加工资料"><h3>结构与加工资料 · 3D / 激光共用</h3>
-    <p className="muted">{detail.mechanicalProfile ? '已关联本模块机械档案。' : '尚无模块机械档案。'}资料随原模块和修订保存；新设计读取最新资料，历史模型保留原版本。</p>
+    <p className="muted">{profile ? '已保存本模块的尺寸与安装资料。' : reference ? `已关联 ${reference.name} 结构参考。` : '还没有尺寸与安装资料。'}新设计读取最新资料，历史模型保留原版本。</p>
     <dl className="sensor-facts" aria-label="模块外形尺寸"><div><dt>长度 X</dt><dd>{size('length_x')}</dd></div><div><dt>宽度 Y</dt><dd>{size('width_y')}</dd></div><div><dt>高度 Z</dt><dd>{size('height_z')}</dd></div></dl>
     {holes.length > 0 ? <div className="sensor-table-scroll"><table><caption>已收录安装孔（坐标以档案原点为准）</caption><thead><tr><th>孔位</th><th>X</th><th>Y</th><th>孔径</th></tr></thead><tbody>{holes.map((hole,index) => {
       const center = hole.center && typeof hole.center === 'object' ? hole.center as Record<string, unknown> : {};
       return <tr key={index}><td>{typeof hole.hole_id === 'string' ? hole.hole_id : index+1}</td><td>{coordinate(center.x)}</td><td>{coordinate(center.y)}</td><td>{coordinate(hole.diameter)}</td></tr>;
     })}</tbody></table></div> : <p className="muted">未收录安装孔；不能据此判定实物有孔或无孔。</p>}
+    {reference&&<details className="compact-disclosure" open={!profile}><summary>{reference.name} · 尺寸与安装参考</summary>
+      <dl className="sensor-facts">{Object.entries({body_height_z:'主体高度',output_shaft_diameter:'输出轴直径',output_shaft_height:'输出轴高度',lug_extension_x:'安装耳外伸',lug_thickness_z:'安装耳厚度'}).map(([key,label])=>typeof reference.dimensions[key]==='number'?<div key={key}><dt>{label}</dt><dd>{reference.dimensions[key]} mm</dd></div>:null)}</dl>
+      {!!reference.holes.length&&<p>安装孔中心：{reference.holes.map(h=>`X ${h.x}、Y ${h.y}${h.z===undefined?'':`、Z ${h.z}`} mm，孔径 ${h.diameter} mm`).join('；')}。坐标以原结构资料的原点为准。</p>}
+      {reference.mounting.face&&<p>安装贴合面：{reference.mounting.face}{typeof reference.mounting.clearance==='number'?`；装配间隙参考 ${reference.mounting.clearance} mm`:''}。</p>}
+      {reference.openings.map(o=>typeof o.diameter==='number'?<p key={o.id}>开孔参考：直径 {o.diameter} mm{typeof o.clearance==='number'?`，间隙 ${o.clearance} mm`:''}。</p>:null)}
+      {reference.keepouts.map(k=><p key={k.id}>活动避让空间：{k.size.length_x} × {k.size.width_y} × {k.size.height_z} mm。</p>)}
+      <p>{reference.notes}</p>
+    </details>}
     <details><summary>尺寸填写说明</summary>
     <ul><li>准确型号、硬件修订、官方尺寸图或实测记录及日期。</li><li>外形长宽高、轮廓与坐标原点；安装孔的圆心坐标、孔径及固定方式。</li><li>屏幕、按钮、接口的开孔位置和尺寸；插头、线缆与元件的避让空间。</li></ul>
     <p className="muted">单位 mm，原点为板中心或外包络中心，X 为长、Y 为宽、Z 为高度。只有外形尺寸时不能保证安装孔和开孔适配。激光材料、板厚、刀缝与装配间隙在每个项目中另行确认。</p>

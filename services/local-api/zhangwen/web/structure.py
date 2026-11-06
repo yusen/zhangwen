@@ -328,6 +328,12 @@ class StructureService:
                 profile = mechanical.cad_profile(detail.mechanicalProfile, detail.componentId,
                     detail.media[0].url if detail.media else '')
                 profile['skillRevision'] = detail.revision
+                # Keep the original reference selectable by its stable ID, but
+                # match the project's component to its user's current facts.
+                for reference in profiles.values():
+                    if reference.get('componentId') == detail.componentId and reference['id'] != profile['id']:
+                        reference['componentId'] = None
+                        reference['name'] += '（原结构参考）'
                 profiles[profile['id']] = profile
         return list(profiles.values())
 

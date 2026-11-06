@@ -161,6 +161,7 @@ class WebHardwareRepository(HardwareSkillRepository):
     def web_detail(self, detail) -> dict:
         supported = self.supported_boards(detail)
         return {**detail.model_dump(mode='json'), 'programmingMode': mode_for_detail(detail), 'catalog': self.catalog_metadata(detail),
+                'structureReference': hardware_resources.linked_structure_reference(detail),
                 'verifiedBoardIds': self.verified_boards(detail),
                 'personal': detail.skillName.startswith('my-module-'),
                 'verificationRecords': module_verification.records(self, detail),

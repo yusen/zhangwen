@@ -88,12 +88,7 @@ export default function App() {
     const [learningDirty, setLearningDirty] = useState(false);
     const learningSaveRef = useRef<(() => Promise<void>) | null>(null);
     const modeInfo = workspaceModes.find(item => item.id === mode)!;
-    const selectMode = (value: WorkspaceMode) => { if (mode === 'learning' && value !== 'learning' && (!board || hardwareSelectionDirty)) {
-        setError('先在对话中确认主控和器件，再继续制作。');
-        setModeDialog(false);
-        setProjectHardwareOpen(true);
-        return false;
-    } if (value !== mode && !confirmDeviceDiscard())
+    const selectMode = (value: WorkspaceMode) => { if (value !== mode && !confirmDeviceDiscard())
         return false; setMode(value); store('zhangwen-workspace-mode', value); setCodeFullscreen(false); setModeDialog(false); return true; };
     const [hardware, setHardware] = useState<HardwareSummary[]>([]);
     const [projects, setProjects] = useState<ProjectSummary[]>([]);
@@ -1342,13 +1337,11 @@ export default function App() {
                 ...projects.slice(0, 5).map((item, index) => ({ label: item.name, group: index === 0 ? '最近项目' : undefined, icon: FolderOpen, onSelect: () => void chooseProject(item.id) })),
                 { label: '另存为…', icon: Save, group: '保存位置', disabled: !project, onSelect: () => { setUploadAfterSave(false); openSave(); } },
                 ...(project && stored('zhangwen-conflict-backup-' + project.id) ? [{ label: '导出同步前草稿', icon: Download, onSelect: () => download('掌问-同步前草稿.json', stored('zhangwen-conflict-backup-' + project.id)!) }] : []),
-            ]}/>
-        <ActionMenu label="项目资料" disabled={projectLocked || !project} items={[
-                { label: '查看与添加资料', icon: BookOpen, onSelect: () => setReferencesDialog(true) },
-                { label: '打开项目文件夹', icon: FolderOpen, disabled: !folder, onSelect: () => void action('打开项目文件夹', async () => { if (folder)
+                { label: '查看与添加资料', group: '项目资料', icon: BookOpen, disabled: !project, onSelect: () => setReferencesDialog(true) },
+                { label: '打开项目文件夹', icon: FolderOpen, disabled: !project || !folder, onSelect: () => void action('打开项目文件夹', async () => { if (folder)
                         await openProjectFolder(folder); }) },
-                { label: '查看文件列表', icon: Files, onSelect: () => { setFolderPanel(true); setCodeFullscreen(false); } },
-                { label: '三师共用资料', icon: BookOpen, onSelect: () => setSharedProjectOpen(true) },
+                { label: '查看文件列表', icon: Files, disabled: !project, onSelect: () => { setFolderPanel(true); setCodeFullscreen(false); } },
+                { label: '三师共用资料', icon: BookOpen, disabled: !project, onSelect: () => setSharedProjectOpen(true) },
             ]}/>
         <button className="title-save" aria-label="保存项目" title="保存项目（Ctrl / ⌘ + S）" disabled={projectLocked} onClick={() => void saveWorkspace()}>{busy.includes('保存') ? <LoaderCircle size={15} className="spin"/> : <Save size={15}/>}保存</button>
       </div>
@@ -1383,9 +1376,6 @@ export default function App() {
           {<ToolbarButton icon={Settings} label="设备设置" disabled={projectLocked} onClick={() => { ; nativeChat.device.chooseSection('status'); setMobileTab('code'); if (!nativeChat.device.state.connected)
                 nativeChat.setConnectionOpen(true); }} title="在右侧操作Mosaico状态、配置、日志与文件"/>}
         </div>}
-        {mode !== 'structure' && <div className="tool-group" role="group" aria-label="项目器件管理">
-          <ToolbarButton icon={CircuitBoard} label="项目器件" active={projectHardwareOpen} aria-haspopup="dialog" disabled={projectLocked} onClick={openProjectHardware} title={hardwareSelectionDirty ? '管理三师共用的主控与模块（有未保存更改）' : '管理三师共用的主控与模块'}/>
-        </div>}
         <div className="tool-group" role="group" aria-label="设置与帮助">
         <ToolbarButton icon={Settings} label="AI 设置" variant="muted" active={aiSettingsDialog} disabled={loading || !!busy || aiBusy || structureBusy || chatCodingBusy} onClick={openAiSettings} title="设置掌问 AI 模型服务"/>
         <UpdateCenter enabled={!loading} blocked={learningBusy || !!busy || aiBusy || structureBusy || chatCodingBusy || deviceBusy || running || flashing || deviceState === 'attention'} unsaved={workspaceDirty || !!folderError || folderPending.current > 0}/>
@@ -1394,7 +1384,7 @@ export default function App() {
 
       </div>
       {mode === 'engineer' && isChatCoding && <button className={`connection toolbar-status ${nativeChat.state.connected || nativeChat.device.state.connected ? 'is-connected' : ''}`} disabled={projectLocked} onClick={() => nativeChat.setConnectionOpen(true)}>{chatCodingBusy ? <LoaderCircle size={17} className="spin"/> : <Wifi size={17}/>}<span>{nativeChat.state.connected || nativeChat.device.state.connected ? '已连接 · 设置' : '连接设备'}</span></button>}
-      {mode === 'engineer' && !isChatCoding && <ToolbarButton icon={Files} label="板载文件" active={filesDialog === 'board'} disabled={loading || !!busy || deviceBusy} onClick={() => openFiles('board')} title="连接后读取、添加或导出板上的文件"/>}
+      {mode === 'engineer' && !isChatCoding && <button className={`connection toolbar-status ${filesDialog === 'board' ? 'is-connected' : ''}`} aria-haspopup="dialog" aria-pressed={filesDialog === 'board'} disabled={loading || !!busy || deviceBusy} onClick={() => openFiles('board')} title="连接后读取、添加或导出板上的文件"><Usb size={17}/><span>板载文件</span></button>}
       {((mode === 'engineer' && !isChatCoding) || deviceState !== 'disconnected') && <button className={`connection toolbar-status ${deviceState !== 'disconnected' ? 'is-connected' : ''}`} disabled={!!busy || deviceBusy} onClick={deviceState === 'disconnected' ? () => { setTerminalOpen(true); setMobileTab('code'); void connectDevice(); } : disconnect}>{deviceBusy ? <LoaderCircle size={17} className="spin"/> : deviceState === 'disconnected' ? <Usb size={17}/> : <Unplug size={17}/>}<span>{deviceState === 'disconnected' ? '连接设备' : deviceBusy ? (busy === '选择设备并检测固件' ? '正在检测固件' : '设备处理中') : deviceState === 'attention' ? '需要重连 · 断开' : '已连接 · 断开'}</span></button>}
     </header>
     {projectConflict && projectConflict.id === project?.id && <Dialog title="同步项目" className="project-conflict-dialog" onClose={() => setProjectConflict(null)}>
@@ -1489,7 +1479,7 @@ export default function App() {
                 ]}><MoreHorizontal size={18}/></ActionMenu></div>
         <input ref={importInput} className="sr-only" type="file" accept=".py,text/x-python" aria-label="导入 Python 程序" onChange={event => { const file = event.target.files?.[0]; event.target.value = ''; void importCode(file); }}/>
         <div className={`project-folder-status ${folderError ? 'has-error' : ''}`}>
-          <FolderOpen size={14}/><span>{folder ? `${folder.handle.name} · ${folderStatus}${workspaceDirty ? ' · 当前修改待保存' : ''}` : folderRestoring ? '正在恢复文件夹关联' : project ? '本机记录已打开 · 尚未关联文件夹' : '保存项目时选择本地文件夹'}</span>
+          <FolderOpen size={14}/><span>{folder ? `${folder.managed ? folder.nativePath?.split(/[\\/]/).at(-1) ?? name : folder.handle.name} · ${folderStatus}${workspaceDirty ? ' · 当前修改待保存' : ''}` : folderRestoring ? '正在恢复文件夹关联' : project ? '本机记录已打开 · 尚未关联文件夹' : '保存项目时选择本地文件夹'}</span>
           {!folder && project && !folderRestoring && <button disabled={projectLocked} onClick={() => setFolderPanel(true)}>打开文件夹说明</button>}
           {folderError && <button disabled={projectLocked} onClick={() => void action('重试文件夹同步', async () => { if (project && folderRef.current) {
                 await ensureFolderPermission(folderRef.current, true);
