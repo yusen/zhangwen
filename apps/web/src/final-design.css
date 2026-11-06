@@ -16,7 +16,7 @@
   --canvas: #17191c; --panel: #1e2125; --raised: #24272c;
   --border: #2e3238; --border2: #3a3f47;
   --ink-1: #e8ecf2; --ink-2: #b6c2d4; --ink-3: #a0aec0; --ink-4: #7e8ca0;
-  --sw: #4a79b4; --sw-hi: #5a8cc9; --hw: #d87a2e; --hw-hi: #e68a40;
+  --sw: #5a8cc9; --sw-hi: #5a8cc9; --hw: #d87a2e; --hw-hi: #e68a40;
   --brand: #d4ae5c; --brand-ink: #2e2412; --logo: #c9a96e;
   --suc: #4ade80; --suc-t: #14301f; --dng: #f87171; --dng-t: #3a1a1a; --wrn: #fbbf24; --wrn-t: #362a10;
   --code-bg: #1a1d21; --code-keyword: #6fa8e8; --code-string: #d9a34a; --code-builtin: #b48fe0; --code-comment: #7fa08a; --sel: #25324a;
@@ -735,3 +735,70 @@ dialog::backdrop { background: #0b182d70; backdrop-filter: blur(3px); }
 .selected-sensors-toolbar .board-control > .board-artwork:first-child { display: block; }
 
 .answer-run-hint { padding: 10px 12px; border-left: 3px solid var(--accent); background: var(--accent-soft); border-radius: 5px; font-size: 12px; line-height: 1.7; }
+
+/* Desktop tracks reserve readable hardware names and keep the editor stable on collapse. */
+@media (min-width: 1101px) {
+  .workbench { --hardware-width: 224px; --editor-width: max(320px, calc(50% - 112px)); }
+  .project-folder-panel { flex-basis: 240px; width: 240px; }
+  .learning-workbench, .workflow-surface .learning-workbench, .structure-workbench { grid-template-columns: 224px minmax(0, 1fr) minmax(0, 1.15fr); }
+  .workflow-surface.learning-collapsed .learning-workbench { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); }
+  .structure-collapsed .structure-workbench { grid-template-columns: 30px minmax(0, 1fr) 50%; }
+  .hardware-panel .panel-head { padding: 8px 12px; }
+  .hardware-panel .panel-head h2 { font-size: 14px; }
+  .selected-sensors-toolbar, .selected-sensor-list { padding: 10px; }
+  .selected-sensor-list .module-row .module-name { font-size: 14px; overflow-wrap: normal; }
+  .project-hardware-manage { white-space: nowrap; }
+}
+@media (min-width: 1101px) and (max-width: 1350px) {
+  .workbench { --hardware-width: 200px; --editor-width: max(300px, calc(50% - 100px)); }
+  .project-folder-panel { flex-basis: 220px; width: 220px; }
+  .workflow-surface .learning-workbench, .structure-workbench { grid-template-columns: 200px minmax(0, 1fr) minmax(0, 1.15fr); }
+}
+@media (min-width: 1700px) {
+  .workbench { --hardware-width: 240px; --editor-width: max(360px, calc(50% - 120px)); }
+  .project-folder-panel { flex-basis: 260px; width: 260px; }
+}
+.tool-disabled-explanation { position: relative; display: inline-flex; flex: 0 0 auto; border-radius: 6px; }
+.tool-disabled-explanation:focus-visible { outline: 2px solid var(--sw); outline-offset: 2px; }
+.tool-disabled-reason { display: none; position: fixed; top: 122px; z-index: 90; max-width: min(300px, 80vw); padding: 10px 12px; border: 1px solid var(--border2); border-radius: 8px; background: var(--raised); color: var(--ink-1); font-size: 13px; line-height: 1.6; box-shadow: 0 4px 16px #0003; }
+.tool-disabled-explanation:hover .tool-disabled-reason, .tool-disabled-explanation:focus .tool-disabled-reason { display: block; }
+.execution-feedback { flex: 0 0 auto; display: flex; flex-wrap: wrap; gap: 4px 10px; padding: 8px 12px; border-bottom: 1px solid var(--border); font-size: 12px; line-height: 1.6; color: var(--ink-2); }
+.execution-feedback strong { font-size: 12px; color: var(--ink-1); }
+.workflow-shared-goal { padding: 10px 14px; border-bottom: 1px solid var(--border); font-size: 13px; color: var(--ink-1); flex: 0 0 auto; }
+.workflow-shared-goal small { display: block; margin-top: 4px; color: var(--ink-3); line-height: 1.6; }
+.workflow-goal-recovery { padding: 12px; border: 1px solid var(--border2); border-radius: 8px; background: var(--sel); font-size: 13px; margin-bottom: 12px; }
+.workflow-goal-recovery p { margin: 6px 0; }
+.workflow-goal-recovery button { min-height: 40px; color: var(--sw); }
+:root[data-theme="dark"] .primary { background: #2f5f96; color: #fff; }
+:root[data-theme="dark"] .primary:hover:not(:disabled) { background: #3e73b0; }
+
+.structure-preview-empty details { max-width: 100%; text-align: left; font-size: 13px; line-height: 1.7; overflow-wrap: anywhere; }
+.structure-preview-empty details p { max-height: 180px; overflow-y: auto; }
+.structure-preview-empty[role="status"] { min-height: 0; overflow-y: auto; justify-content: flex-start; }
+.structure-preview-empty[role="status"] > svg { flex-shrink: 0; }
+
+/* Secondary information stays available without competing with the current task. */
+.compact-disclosure { min-width: 0; font-size: 13px; line-height: 1.6; color: var(--ink-2); }
+.compact-disclosure > summary { cursor: pointer; min-height: 32px; align-content: center; color: var(--ink-2); }
+.compact-disclosure > summary:focus-visible { outline: 2px solid var(--sw); outline-offset: 2px; border-radius: 3px; }
+.compact-disclosure > summary > small { margin-left: 10px; color: var(--ink-3); font-size: 12px; }
+.compact-disclosure p { margin: 8px 0; overflow-wrap: anywhere; }
+.compact-disclosure .disclosure-content { padding: 0 4px 6px; }
+.execution-feedback { display: block; padding: 2px 12px; }
+.execution-feedback > details { width: 100%; }
+.execution-feedback summary { font-size: 12px; }
+.execution-feedback .disclosure-content { max-height: 160px; overflow-y: auto; }
+.workflow-shared-goal { padding: 2px 14px; }
+.workflow-shared-goal small { display: inline; }
+.workflow-shared-goal > p { max-height: 120px; overflow-y: auto; }
+.workflow-hardware-details { margin-top: 8px; }
+.workflow-goal-recovery { padding: 8px 12px; display: flex; flex-wrap: wrap; gap: 4px 12px; align-items: center; }
+.workflow-goal-recovery strong { flex: 1 1 180px; }
+.workflow-goal-recovery button { flex: 0 0 auto; }
+.workflow-record-anchor { scroll-margin-top: 8px; }
+.structure-basic-templates { margin: 4px 0 12px; }
+.structure-basic-templates .structure-templates { margin-top: 8px; }
+.folder-panel-foot details { width: 100%; }
+.folder-panel-foot details p { max-height: 160px; overflow-y: auto; }
+.folder-panel-empty > details { text-align: left; width: 100%; margin-top: 8px; }
+.folder-panel-empty > details p { margin-top: 8px; }

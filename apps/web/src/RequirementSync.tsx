@@ -7,10 +7,10 @@ import { lastConfirmed } from './workflowUtils';
 import { CollaborationChoice } from './CollaborationChoice';
 import './requirement-sync.css';
 
-const roles = {engineer:'智能工程师',structure:'结构工程师',learning:'造物统筹师'};
+const roles = {engineer:'智能工程师',structure:'结构工程师',learning:'学习设计师'};
 const statuses = {pending:'待处理',working:'处理中',delivered:'已提交修改成果',not_needed:'已说明无需调整'};
 export function changeProgress(change:RequirementChange,view:WorkflowView):string {
-  if(change.status==='proposed')return change.baseDefinitionRevision===view.current.definitionRevision?'待造物统筹师整理':'需求已更新，待重新整理';
+  if(change.status==='proposed')return change.baseDefinitionRevision===view.current.definitionRevision?'待学习设计师整理':'需求已更新，待重新整理';
   if(change.status==='cancelled')return '已撤销';
   if(change.definitionRevision!==view.current.definitionRevision)return '历史需求变更';
   const artifactChanged=change.tasks.some(t=>t.code&&JSON.stringify(t.code)!==JSON.stringify(view.current.code)||t.structure&&JSON.stringify(t.structure)!==JSON.stringify(view.current.structure));
@@ -74,16 +74,16 @@ export function RequirementSync({projectId,sourceMode,initialText,onClose,onRevi
     </section>;
   });
   return <Dialog title="调整目标与分工" className="requirement-sync-dialog" onClose={()=>{if(!writing.current)onClose();}}>
-    <section className="requirement-current"><strong>当前已确认目标{current?` V${current.revision}`:'：尚未确认'}</strong><p>{current?.goal||'可先提出想法，再由造物统筹师整理。'}</p>{current&&<details><summary>查看动作规则与完成条件</summary><p>{current.behavior}</p><ul>{current.criteria.map((c,i)=><li key={i}>{c}</li>)}</ul></details>}</section>
-    <p className="muted">写下想改什么，请造物统筹师整理并由你确认，再选择请谁协作。三位伙伴共用已保存目标，具体任务由你发送。</p>
+    <section className="requirement-current">{!view ? <p role="status">{error ? '目标读取未完成，请刷新记录。' : '正在读取已保存目标与分工…'}</p> : <><strong>当前已确认目标{current?` V${current.revision}`:'：尚未确认'}</strong><p>{current?.goal||'可先提出想法，再由学习设计师整理。'}</p>{current&&<details><summary>查看动作规则与完成条件</summary><p>{current.behavior}</p><ul>{current.criteria.map((c,i)=><li key={i}>{c}</li>)}</ul></details>}</>}</section>
+    <p className="muted">写下想改什么，请学习设计师整理并由你确认，再选择请谁协作。三位伙伴共用已保存目标，具体任务由你发送。</p>
     <label className="field">这次想改什么<textarea aria-label="这次想改什么" rows={3} maxLength={2000} disabled={busy} value={summary} onChange={e=>setSummary(e.target.value)} placeholder="例如：离开后等待3秒关闭，等待期间再次靠近取消关闭"/></label>
-    <div className="requirement-actions"><button className="primary" disabled={disabled||!summary.trim()} onClick={async()=>{if(await write('/changes',{summary,sourceMode}))setSummary('');}}>提交给造物统筹师</button><button disabled={busy} onClick={()=>void refresh()}>刷新记录</button></div>
+    <div className="requirement-actions"><button className="primary" disabled={disabled||!summary.trim()} onClick={async()=>{if(await write('/changes',{summary,sourceMode}))setSummary('');}}>提交给学习设计师</button><button disabled={busy} onClick={()=>void refresh()}>刷新记录</button></div>
     <div aria-live="polite">{busy&&<p role="status">正在保存…</p>}{error&&<p role="alert" className="requirement-error">{error}</p>}{notice&&<p role="status">{notice}</p>}</div>
     <h3>接下来要做的事</h3>{!view&&<p>正在读取当前项目…</p>}{view&&!changes.length&&<p className="muted">还没有调整记录。确认作品目标后，可以选择请谁协作。</p>}
     {[...changes].reverse().map(change=><article key={change.id} className="requirement-change">
       <header><strong>{roles[change.sourceMode]}提出{change.definitionRevision?` · 需求 V${change.definitionRevision}`:''}</strong><span>{view&&changeProgress(change,view)}</span></header><p>{change.summary}</p>
       <details className="classroom-details"><summary>查看调整记录</summary><small>来源需求 {change.baseDefinitionRevision?`V${change.baseDefinitionRevision}`:'未确认'} · {new Date(change.createdAt).toLocaleString()}</small></details>
-      {change.status==='proposed'&&<div className="requirement-actions"><button disabled={disabled||change.baseDefinitionRevision!==view?.current.definitionRevision} onClick={()=>{if(onReview(change.id))onClose();}}>到造物统筹师整理</button>
+      {change.status==='proposed'&&<div className="requirement-actions"><button disabled={disabled||change.baseDefinitionRevision!==view?.current.definitionRevision} onClick={()=>{if(onReview(change.id))onClose();}}>到学习设计师整理</button>
         {change.baseDefinitionRevision!==view?.current.definitionRevision&&<button disabled={disabled} onClick={()=>void write(`/changes/${change.id}/rebase`)}>按最新需求重新整理</button>}<button disabled={disabled} onClick={()=>void write(`/changes/${change.id}/cancel`)}>撤销此提案</button></div>}
       {change.status==='confirmed'&&change.definitionRevision===view?.current.definitionRevision&&<CollaborationChoice projectId={projectId} change={change} disabled={disabled} onSave={roles=>write(`/changes/${change.id}/collaboration`,{roles},'PUT')}/>}
       {tasks(change)}{change.status==='confirmed'&&change.definitionRevision===view?.current.definitionRevision&&<button className="primary" disabled={disabled||!change.collaborationDecided&&!change.tasks.length||change.tasks.some(t=>t.status==='pending'||t.status==='working')} onClick={()=>void write(`/changes/${change.id}/complete`)}>核对观察，完成本次调整</button>}

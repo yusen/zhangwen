@@ -2003,8 +2003,8 @@
       },
       {
         "id": "grove_ultrasonic_ranger",
-        "componentId": null,
-        "skillName": null,
+        "componentId": "hw_seeed_375de9b47216",
+        "skillName": "seeed-375de9b47216",
         "path": "structure-parts/grove_ultrasonic_ranger/profile.json"
       },
       {

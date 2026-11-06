@@ -308,6 +308,27 @@ class RequirementChange(Boundary):
         return self
 
 
+class LearningDocument(Boundary):
+    id: str = Field(pattern='^[a-f0-9]{32}$')
+    revision: int = Field(ge=1, strict=True)
+    kind: Literal['teaching', 'poster', 'application', 'log']
+    title: str = Field(min_length=1, max_length=100)
+    content: str = Field(min_length=1, max_length=30000)
+    createdAt: str
+    source: Literal['blank', 'project']
+    sourceFingerprint: str | None = Field(default=None, pattern='^[a-f0-9]{64}$')
+    generated: bool = False
+
+
+class DocumentMessage(Boundary):
+    id: str = Field(pattern='^[a-f0-9]{32}$')
+    scope: Literal['teaching', 'archive']
+    source: Literal['blank', 'project'] = 'project'
+    role: Literal['user', 'assistant']
+    content: str = Field(min_length=1, max_length=5000)
+    createdAt: str
+
+
 class Checkpoint(Boundary):
     schemaVersion: Literal[1] = 1
     revision: int = Field(default=0, ge=0, strict=True)
@@ -319,9 +340,18 @@ class Checkpoint(Boundary):
     reflections: list[Reflection] = Field(default_factory=list, max_length=100)
     messages: list[Message] = Field(default_factory=list, max_length=100)
     changes: list[RequirementChange] = Field(default_factory=list, max_length=100)
+    documents: list[LearningDocument] = Field(default_factory=list, max_length=100)
+    documentMessages: list[DocumentMessage] = Field(default_factory=list, max_length=100)
 
     @model_validator(mode='after')
     def integrity(self):
+        if len({(d.id,d.revision) for d in self.documents}) != len(self.documents): raise ValueError('文档版本重复。')
+        for did in {d.id for d in self.documents}:
+            versions=[d for d in self.documents if d.id==did]
+            if [d.revision for d in versions] != list(range(1,len(versions)+1)) or len({d.kind for d in versions})!=1:
+                raise ValueError('文档历史版本不连续或类型不一致。')
+        if len({m.id for m in self.documentMessages}) != len(self.documentMessages): raise ValueError('文档讨论记录重复。')
+        for entry in [*self.documents,*self.documentMessages]: datetime.fromisoformat(entry.createdAt)
         for entries in [self.definitions, self.reflections]:
             if [v.revision for v in entries] != list(range(1, len(entries)+1)): raise ValueError('项目学习版本须连续。')
         for entries in [self.cases, self.runs, self.evidence, self.messages, self.changes]:

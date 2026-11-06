@@ -1,15 +1,16 @@
 import { BookOpen, ClipboardList, FileText, Flag, FolderArchive, FolderOpen, Image, Lightbulb, NotebookPen, Settings2, Sparkles, Target, Trophy, type LucideIcon } from 'lucide-react';
 import type { LearningRole, Material } from './LearningMaterials';
 
-export type LearningSection = 'guidance' | 'project' | 'outcomes';
+export type LearningSection = 'guidance' | 'teaching' | 'project' | 'outcomes';
 export type PreviewDialog = 'settings' | 'goals' | 'resources' | 'project';
 type LearningAction = {icon: LucideIcon; title: string; hint: string; material?: Material; dialog?: PreviewDialog; pending?: boolean};
 export const learningSections: {id: LearningSection; label: string; note?: string; icon: LucideIcon; description: string}[] = [
-  {id:'guidance', label:'问题引导', icon:Lightbulb, description:'从想法出发，想清楚要解决的问题'},
-  {id:'project', label:'项目学习', note:'动手实践与观察', icon:BookOpen, description:'围绕目标，组织任务、实践与评价'},
-  {id:'outcomes', label:'成果档案', icon:FolderArchive, description:'整理作品证据，准备展示与参赛材料'},
+  {id:'teaching', label:'教学设计', icon:Lightbulb, description:'从主题或已有作品出发，设计三阶六维学习活动'},
+  {id:'project', label:'造物指导', note:'当前任务、做法与实际反馈', icon:BookOpen, description:'围绕当前任务，一步步完成制作并记录实际反馈'},
+  {id:'outcomes', label:'成果档案', icon:FolderArchive, description:'核对作品效果，回看制作中的发现与下一步'},
 ];
 export const sectionMaterials: Record<LearningSection, Record<LearningRole, {id: Material; label: string}[]>> = {
+  teaching: {teacher:[{id:'plan',label:'教案大纲'}],student:[{id:'task',label:'学习任务'}]},
   guidance: {
     teacher:[{id:'definition', label:'作品目标卡'}, {id:'questions', label:'问题记录'}],
     student:[{id:'definition', label:'作品目标卡'}, {id:'questions', label:'我的问题记录'}],
@@ -30,6 +31,7 @@ const guidanceActions: LearningAction[] = [
   {icon:FileText, title:'作品目标卡', hint:'问题、方案与待确认事项', material:'definition'},
 ];
 export const sectionNavigation: Record<LearningSection, Record<LearningRole, LearningAction[]>> = {
+  teaching: {teacher:[],student:[]},
   guidance: {teacher:guidanceActions, student:guidanceActions},
   project: {
     teacher:[

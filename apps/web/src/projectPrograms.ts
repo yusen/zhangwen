@@ -1,5 +1,6 @@
-import type { ProjectProgramRecord, ProgramRunSubmission, UploadReceipt } from '../../../packages/contracts/src/platform';
-import { ensureFolderPermission, PROJECT_FILE, type FolderBinding, type ProjectDirectory } from './projectFolders';
+import type { ProjectSnapshot, ProjectProgramRecord, ProgramRunSubmission, UploadReceipt } from '../../../packages/contracts/src/platform';
+import { ensureFolderPermission, writeProjectDirectory, PROJECT_FILE, type FolderBinding, type ProjectDirectory } from './projectFolders';
+import { api } from './api';
 import { sha256 } from './serial';
 
 export const PROGRAMS_DIRECTORY = 'programs';
@@ -108,5 +109,6 @@ export async function saveProjectProgram(binding: FolderBinding, input: {
   if (await digest(await read(handle, 'main.py', 65_536)) !== checksum) throw new Error('程序写入回读不一致，未标记保存完成。');
   await write(handle, 'program.json', JSON.stringify(record, null, 2) + '\n');
   await readProjectProgram(binding, directory);
+  if(binding.managed)await writeProjectDirectory(binding,await api<ProjectSnapshot>(`/projects/${binding.projectId}/snapshot`));
   return { directory, record };
 }

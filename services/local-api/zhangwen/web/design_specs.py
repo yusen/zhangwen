@@ -125,10 +125,17 @@ class PanelText(Strict):
     fontSize: float = Field(default=10, ge=1, le=150)
 
 
+class CaseReference(Strict):
+    id: str = Field(min_length=1, max_length=80, pattern=r'^[a-z0-9-]+$')
+    parameterOverrides: dict[str, float] = Field(default_factory=dict, max_length=40)
+
+
 class DesignSpec(Strict):
     title: str = Field(min_length=1, max_length=80)
     summary: str = Field(default='', max_length=1200)
     questions: list[str] = Field(default_factory=list, max_length=3)
+    assumptions: list[str] = Field(default_factory=list, max_length=12)
+    referenceCase: CaseReference | None = None
     solid: list[SolidPart] = Field(default_factory=list, max_length=32)
     drawing: Drawing | None = None
     fingerBox: FingerBox | None = None
@@ -138,6 +145,10 @@ class DesignSpec(Strict):
 
     @model_validator(mode='after')
     def joinery(self):
+        if any(not text.strip() or len(text) > 300 for text in self.assumptions):
+            raise ValueError('预览假设须为不超过300字的非空说明。')
+        if self.referenceCase and (self.solid or self.drawing or self.fingerBox or self.roundedBox or self.hardwarePlacements or self.panelTexts):
+            raise ValueError('参考案例与自由建模不能混用，请选择一种完整方案。')
         if self.roundedBox:
             if self.fingerBox or self.panelTexts:
                 raise ValueError('圆角盒与六面榫齿盒不能混用；圆角盒文字雕刻另行设计。')
@@ -167,6 +178,10 @@ class DesignSpec(Strict):
         return self
 
     def check_kind(self, design_type):
+        if self.referenceCase:
+            if design_type != 'model':
+                raise ValueError('3D案例不能用于激光图纸。')
+            return self
         if self.questions:
             if any(len(question) > 300 for question in self.questions):
                 raise ValueError('问题过长。')
@@ -247,16 +262,26 @@ def design_instructions(design_type):
     laser = design_type == 'laser'
     example = template_spec('plate' if laser else 'box', {}).model_dump(mode='json', exclude_defaults=True)
     return ('你是掌问的结构工程师，负责外形、材料、安装与活动空间。用户是教师、学生或DIY爱好者，用容易理解的中文说明，不称老板或总办。'
-        '造物统筹师负责整体方案与成果检查，智能工程师负责智能控制，三位平级，只对用户负责。用户可以直接找你，不必通过造物统筹师。'
+        '学习设计师负责整体方案与成果检查，智能工程师负责智能控制，三位平级，只对用户负责。用户可以直接找你，不必通过学习设计师。'
         '共用已保存目标不代表给其他伙伴发送了任务。记录本次结构变化和待试装内容，不声称已通知或替其他伙伴修改。'
         '只返回一个完整JSON对象，不要代码块、说明文字、Python、HTML、SVG源码或系统命令。'
         '下面提供真实JSON Schema和有效示例，必须遵守字段名、类型、数量和范围，不得添加schema以外的字段。'
-        '单位毫米。缺少关键尺寸时questions只问一个问题，solid=[]、drawing=null，不要猜测答案。'
+        + ('单位毫米。激光加工缺少实际板厚、材料或关键尺寸时questions只问一个问题，solid=[]、drawing=null，不要猜测答案。' if laser else
+        '单位毫米。默认先出可供用户确认的模型预览：结合本次需求、已选模块和已保存目标，主动决定外形与布局。'
+        '外形长宽高、盖厚、壁厚、开盖角度未提供时，采用可调整的合理初稿值，在assumptions逐项说明数值与依据，不能仅因缺这些尺寸就追问。'
+        '未知硬件尺寸、孔位和连接方式不编造成实测事实：先保留安装空间、略去无依据的精密开孔，并在assumptions标明待核对。'
+        '只有需求方向无法判断、明确要求精确配合而资料不足、或当前几何能力无法表达核心需求时，questions最多问一个真正阻塞的问题。'
+        '先查previousDesign.referenceCases，存在相近结构时优先复用案例：referenceCase={id:目录原ID,parameterOverrides:{已有参数名:数值}}，solid=[]、drawing=null。'
+        '引用案例只可使用目录开放的参数和范围；未要求修改的值保持默认。summary说明参考案例与本次需求的关系，assumptions说明默认尺寸及尚未适配的硬件差异。'
+        '案例中的硬件参考件不代表本项目器件已匹配，不能声称舵机、主控或传动机构已适配；默认参考件允许先用于概念展示并明确差异。'
+        '没有相关案例时生成完整solid。禁止以无关案例或普通方盒冒充所需核心结构。')
+        +
         'previousDesign.spec是所选版本的有效设计，history是截至该版本的同类需求记录；优先本次request，'
         '保留未要求修改的内容，不要重新引入历史中已替换的方案。pendingQuestions可用于理解本次回答。'
         'previousDesign.projectHardware是当前项目原模块的机械资料、来源及修订，selectedStructureProfiles是选定结构硬件。'
         '按本次请求决定哪些硬件参与结构；参考其中尺寸、坐标原点、孔位、开口和避让，不能猜缺失的数据或把外包络冒充精细模型。'
-        '需要安装或开孔而相应资料缺失时必须用questions追问；未要求安装硬件的独立作品不受缺项阻止。'
+        + ('需要安装或开孔而相应资料缺失时必须用questions追问；未要求安装硬件的独立作品不受缺项阻止。' if laser else
+        '需安装但缺精密资料时先展示可逆的安装空间方案，避免无依据的固定孔；实测资料补齐后再细化。')
         + ('本次只做激光平面图纸：solid=[]，drawing包含完整图纸。rect的x/y为左上角，circle为圆心，'
            'polyline用points二维坐标，不要给不适用字段填null；不需要的字段可省略。'
            '全部路径必须在画布0..width/height内，最多512项，每条折线最多256点，画布最大1000mm。'
@@ -316,6 +341,9 @@ def parse_design_reply(choice, design_type):
         # Only new model replies are upgraded; saved checkpoints validate as-is.
         data['roundedBox']['pattern_version'] = 2
     spec = DesignSpec.model_validate(data).check_kind(design_type)
+    if spec.referenceCase:
+        from .builtin_templates import reference_edit
+        reference_edit(spec)
     # New responses must not repeat the old false label. Historical specs remain
     # readable: this semantic guard applies only at the model reply boundary.
     if (design_type == 'laser' and not spec.questions and not spec.fingerBox and not spec.roundedBox

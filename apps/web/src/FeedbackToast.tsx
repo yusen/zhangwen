@@ -9,8 +9,8 @@ export function FeedbackToast({ error, notice, sequence, busy, progress, onCance
   const text = error || (busy ? `${busy}中…` : notice);
   useEffect(() => { setVisible(true); setPaused(false); }, [text, busy, sequence]);
   useEffect(() => {
-    if (!text || busy || paused || !visible) return;
-    const timer = window.setTimeout(() => setVisible(false), error ? 8000 : 4000);
+    if (!text || error || busy || paused || !visible) return;
+    const timer = window.setTimeout(() => setVisible(false), 4000);
     return () => window.clearTimeout(timer);
   }, [text, error, busy, sequence, paused, visible]);
   if (!text || !visible) return null;

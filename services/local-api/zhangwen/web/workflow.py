@@ -306,7 +306,7 @@ def router(repo, settings):
                 state['reviewSources'] = workflow_review.sources(repo, pid, state)
             proposal = await propose(request.message, request.role, state, config) if configured(config) else workflow_review.record_review(state)
             if proposal.review is None:
-                raise HTTPException(502, '造物统筹师没有返回完整的成果检查，原记录保留。')
+                raise HTTPException(502, '学习设计师没有返回完整的成果检查，原记录保留。')
             proposal.question = None
             proposal.definition = None
             proposal.tests = []
@@ -323,6 +323,8 @@ def router(repo, settings):
         return mutate(repo, pid, request.expectedRevision, apply)
     from .workflow_changes import add_routes
     add_routes(router, repo)
+    from .learning_documents import add_routes as document_routes
+    document_routes(router, repo, settings)
     return router
 
 def validate_snapshot(checkpoint, snapshot):

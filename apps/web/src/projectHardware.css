@@ -1,0 +1,31 @@
+.project-hardware-dialog{width:min(640px,calc(100vw - 24px))}
+.project-hardware-dialog[open]{display:flex;flex-direction:column}
+.project-hardware-dialog .dialog-body{min-width:0;min-height:0;overflow-y:auto}
+.project-hardware-dialog .dialog-head{flex-shrink:0}
+.project-hardware-dialog .dialog-head>.icon-button{width:44px;min-height:44px}
+.project-hardware-intro,.project-hardware-note{font-size:13px;line-height:1.8;color:var(--ink-2);margin:0 0 18px}
+.project-hardware-board h3,.project-hardware-heading h3{font-size:14px;margin:0}
+.project-hardware-board .workflow-board{min-height:60px;padding:8px 12px}
+.project-hardware-board .workflow-board>span{font-size:14px}
+.project-hardware-reference{min-height:44px;gap:6px;font-size:13px;color:var(--ink-2);text-align:left}
+.project-hardware-modules{margin:18px 0}
+.project-hardware-heading{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:8px}
+.project-hardware-heading small{font-size:12px;color:var(--ink-3);font-weight:400;margin-left:6px}
+.project-hardware-heading>button,.project-hardware-dialog .dialog-footer>button{min-height:44px;gap:6px;flex-shrink:0}
+.project-hardware-list{border-top:1px solid var(--border)}
+.project-hardware-module{display:flex;align-items:center;gap:10px;padding:10px 0;border-bottom:1px solid var(--border)}
+.project-hardware-module>div{flex:1;min-width:0;display:flex;flex-direction:column;align-items:flex-start}
+.project-hardware-module strong{font-size:14px;line-height:1.6;overflow-wrap:anywhere}
+.project-hardware-module small{font-size:12px;line-height:1.8;color:var(--ink-3)}
+.project-hardware-module>.icon-button{width:44px;min-height:44px;flex-shrink:0}
+.project-hardware-note{margin:0}
+.project-hardware-dialog .dialog-footer{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;flex-shrink:0;padding:12px 24px;border-top:1px solid var(--border);background:var(--panel)}
+.project-hardware-dialog .dialog-footer>span{font-size:12px;line-height:1.7;color:var(--ink-2);flex:1;min-width:160px}
+.project-hardware-summary{display:flex;align-items:center;gap:8px;margin:8px 0;min-width:0}
+.project-hardware-summary .board-artwork{width:34px;height:38px;flex-shrink:0}
+.project-hardware-summary strong{font-size:13px;line-height:1.6;overflow-wrap:anywhere}
+.project-hardware-manage{width:100%;min-height:44px;gap:6px;border:1px solid var(--border);border-radius:5px;margin:8px 0;font-size:13px}
+.project-hardware-state{font-size:12px;line-height:1.7;color:var(--ink-3);margin:8px 0}
+.selected-sensors-toolbar .project-hardware-summary{margin:0}
+.project-hardware-dialog button:focus-visible{outline:2px solid var(--sw);outline-offset:2px}
+@media(max-width:600px){.project-hardware-dialog .dialog-body{padding:16px}.project-hardware-dialog .dialog-footer{padding:12px 16px}}

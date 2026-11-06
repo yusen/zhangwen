@@ -11,7 +11,7 @@ const providers = [
   { id: 'qwen', name: 'Qwen · 通义千问', url: 'https://dashscope.aliyuncs.com/compatible-mode/v1', models: ['qwen-plus', 'qwen3.5-flash', 'qwen-max'] },
   { id: 'kimi', name: 'Kimi · 月之暗面', url: 'https://api.moonshot.cn/v1', models: ['kimi-k3', 'kimi-k2.6', 'kimi-k2.7-code-highspeed'] },
 ];
-const modeNames: Record<WorkspaceMode, string> = {engineer: '智能工程师', structure: '结构工程师', learning: '造物统筹师'};
+const modeNames: Record<WorkspaceMode, string> = {engineer: '智能工程师', structure: '结构工程师', learning: '学习设计师'};
 
 export function AiSettingsDialog({ settings: initial, initialMode = 'engineer', onSaved, onClose }: {
   settings: AiSettings; initialMode?: WorkspaceMode; onSaved: (settings: AiSettings) => void; onClose: () => void;

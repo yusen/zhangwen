@@ -46,6 +46,6 @@ export function StartScreen({ loading, ready, busy, error, theme, onTheme, onNew
         </div>
       </section>
     </main>
-    <footer className="start-footer">智能工程师<span aria-hidden="true">·</span>结构工程师<span aria-hidden="true">·</span>造物统筹师</footer>
+    <footer className="start-footer">智能工程师<span aria-hidden="true">·</span>结构工程师<span aria-hidden="true">·</span>学习设计师</footer>
   </div>;
 }

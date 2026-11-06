@@ -8,11 +8,12 @@ export interface CadProfile {
 }
 export interface CadExport { id: string; label: string; format: string; url?: string; status?: string; fidelity?: string }
 export type BuiltinTemplateId = 'auto-open-lid-box' | 'mpython-shell' | 'photo-stand' | 'servo-side' | 'servo-horizontal' | 'servo-vertical';
-export interface BuiltinTemplate { id: BuiltinTemplateId; revision: number; title: string; description: string; size: number[]; notes: string[]; image?: string; sourceSha256: string }
+export interface TemplateParameterField { key: string; label: string; group: string; unit: 'mm' | '°'; min: number; max: number; step: number; default: number }
+export interface BuiltinTemplate { id: BuiltinTemplateId; revision: number; title: string; description: string; size: number[]; notes: string[]; image?: string; sourceSha256: string; parameterFields?: TemplateParameterField[] }
 export interface TemplatePart { id: string; label: string; printable: boolean; exportId: string; placement: number[]; size: number[] }
 export interface TextSolid { kind: 'text'; operation: 'add' | 'cut'; text: string; fontSize: number; depth: number; center: number[]; face: 'top' | 'bottom' | 'front' | 'back' | 'left' | 'right'; angle?: number }
 export interface TemplatePartOperations { partId: string; operations: (SolidPart | TextSolid)[] }
-export interface TemplateEditSpec { title: string; summary: string; questions: string[]; parameterOverrides: Record<string, number>; partOperations: TemplatePartOperations[] }
+export interface TemplateEditSpec { title: string; summary: string; questions: string[]; assumptions?: string[]; parameterOverrides: Record<string, number>; partOperations: TemplatePartOperations[] }
 export interface CadCheck { id: string; status: string; message: string; details?: unknown }
 export interface CadState {
   id: string; parameters: Record<string, number>;
@@ -25,6 +26,8 @@ export interface CadSize { length_x: number; width_y: number; height_z: number }
 export interface CadResult {
   status: 'requirement_analysis' | 'confirmation' | 'needs_input' | 'artifact';
   title?: string; message?: string; questions?: string[]; blocking_reason?: string;
+  /** Reversible preview choices, never measured hardware facts. */
+  previewAssumptions?: string[];
   design_state?: CadState; partial_bom?: CadState['bom']; bom?: CadState['bom'];
   parameters?: Record<string, Record<string, number>>; checks?: CadCheck[];
   exports?: CadExport[]; cadquery_code?: string;
@@ -80,4 +83,4 @@ export interface LaserShape { kind: 'rect' | 'circle' | 'polyline' | 'line' | 't
 export interface PanelText { panel: 'left' | 'right' | 'front' | 'back' | 'bottom' | 'top'; x: number; y: number; text: string; fontSize: number }
 export interface FingerBox { width: number; depth: number; height: number; thickness: number; material: string }
 export interface RoundedBox extends FingerBox { pattern_version?: 1 | 2; corner_radius: number; tab_width: number; slot_spacing: number; slot_bridge: number; slot_rows: number; top_lid: boolean; bottom_lid: boolean }
-export interface DesignSpec { title: string; summary: string; questions: string[]; solid: SolidPart[]; fingerBox?: FingerBox | null; roundedBox?: RoundedBox | null; panelTexts?: PanelText[]; hardwarePlacements?: HardwarePlacement[]; drawing?: { width: number; height: number; thickness: number; material: string; kerf: number; shapes: LaserShape[] } | null }
+export interface DesignSpec { title: string; summary: string; questions: string[]; assumptions?: string[]; referenceCase?: { id: BuiltinTemplateId; parameterOverrides: Record<string, number> } | null; solid: SolidPart[]; fingerBox?: FingerBox | null; roundedBox?: RoundedBox | null; panelTexts?: PanelText[]; hardwarePlacements?: HardwarePlacement[]; drawing?: { width: number; height: number; thickness: number; material: string; kerf: number; shapes: LaserShape[] } | null }

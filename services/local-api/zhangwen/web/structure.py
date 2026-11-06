@@ -121,6 +121,10 @@ class StructureCheckpoint(BaseModel):
             if len(version['selectedIds']) > 32 or not all(isinstance(x, str) for x in version['selectedIds']) or not all(isinstance(x, dict) and isinstance(x.get('id'), str) for x in version['customProfiles']):
                 raise ValueError('结构硬件格式无效。')
             result = version['result']
+            assumptions = result.get('previewAssumptions', [])
+            if (not isinstance(assumptions, list) or len(assumptions) > 12
+                    or any(not isinstance(text, str) or not text.strip() or len(text) > 300 for text in assumptions)):
+                raise ValueError('预览假设格式无效。')
             if result.get('designKind') == 'builtin':
                 template = result.get('builtinTemplate', {})
                 if not isinstance(template, dict) or not isinstance(template.get('id'), str) or template['id'] not in builtin_templates.TEMPLATES or type(template.get('revision')) is not int or template['revision'] < 1:
@@ -314,7 +318,7 @@ class StructureService:
             image = existing['media'][0]['url'] if existing and existing['media'] else ''
             if not image and profile.get('thumbnail_url', '').startswith('/assets/hardware/'):
                 image = '/api/structure/media/' + profile['thumbnail_url'].rsplit('/', 1)[1]
-            profiles[profile['id']] = {**profile, 'thumbnail_url': image, 'componentId': existing['componentId'] if existing else None}
+            profiles[profile['id']] = {**profile, 'name': (existing['displayName']+' · '+profile['name']) if existing else profile['name'], 'thumbnail_url': image, 'componentId': existing['componentId'] if existing else None}
         for item in hardware:
             manifest = self.repo.skills._read_manifest(self.repo.skills._root / item['skillName'])
             if 'references/mechanical.md' not in manifest.files:
@@ -491,7 +495,8 @@ class StructureService:
             job_id = uuid.uuid4().hex
             job_root = self.root / job_id
             job_root.mkdir(parents=True)
-            standalone = request.designType == 'laser' or request.template or previous.get('designKind') or (not ids and request.action in {'analyze', 'revise'})
+            standalone = request.designType == 'laser' or request.template or previous.get('designKind') or (
+                request.action in {'analyze', 'revise'} and not request.resolutionOptionId)
             if standalone:
                 if request.template and ((request.template in {'plate', 'round-tag', 'panel-box', 'finger-box', 'rounded-box'}) != (request.designType == 'laser')):
                     raise HTTPException(422, '设计模板与当前模式不一致。')
@@ -517,6 +522,8 @@ class StructureService:
                 from .workflow import context as project_definition_context
                 conversation['confirmedProjectDefinition'] = project_definition_context(self.repo, project_id)
                 conversation['selectedStructureProfiles'] = [p for p in [*live_profiles, *profiles] if p['id'] in ids]
+                if request.designType == 'model':
+                    conversation['referenceCases'] = builtin_templates.reference_cases()
                 if request.hardwarePlacements is not None:
                     conversation['pendingHardwarePlacements'] = [p.model_dump() for p in request.hardwarePlacements]
                 if valid:

@@ -17,8 +17,8 @@ export function LearningWorkspace({active, projectName, project, board, modules,
   section: LearningSection; onSection: (section: LearningSection) => void;
 }) {
   const [selectedMaterials, setSelectedMaterials] = useState<Record<LearningRole, Record<LearningSection, Material>>>({
-    teacher:{guidance:'definition', project:'plan', outcomes:'portfolio'},
-    student:{guidance:'definition', project:'task', outcomes:'work'},
+    teacher:{teaching:'plan',guidance:'definition', project:'plan', outcomes:'portfolio'},
+    student:{teaching:'task',guidance:'definition', project:'task', outcomes:'work'},
   });
   const [templateChoices, setTemplateChoices] = useState<Record<string, string>>({});
   const [caseOpen, setCaseOpen] = useState(false);
@@ -26,7 +26,7 @@ export function LearningWorkspace({active, projectName, project, board, modules,
   const [templatePage, setTemplatePage] = useState<CompetitionPage>('requirements');
   const [competitionPages, setCompetitionPages] = useState<Record<LearningRole, CompetitionPage>>({teacher:'requirements', student:'requirements'});
   const material=selectedMaterials[role][section], materials=sectionMaterials[section][role], teacher=role === 'teacher';
-  const sectionInfo=learningSections.find(item=>item.id === section)!;
+  const sectionInfo=learningSections.find(item=>item.id === section)??{description:'讨论作品目标与完成条件',label:'作品说明',icon:Lightbulb};
   const roleName=teacher ? '教师工作台' : '学生工作台';
   const sideTitle=section === 'guidance' ? '梳理想法' : section === 'outcomes' ? (teacher ? '成果整理' : '我的成果') : (teacher ? '教学准备' : '我的任务');
   const setMaterial = (id: Material) => setSelectedMaterials(value=>({...value, [role]:{...value[role], [section]:id}}));
@@ -77,7 +77,7 @@ export function LearningWorkspace({active, projectName, project, board, modules,
   const dialogTitles = {settings:'学习设置', goals:'目标与任务', resources:'添加教学资料', project:'关联项目成果'};
   return <div className={`learning-surface ${collapsed ? 'learning-collapsed' : ''} ${fullscreen ? 'learning-fullscreen' : ''}`} hidden={!active}>
     <p className="sr-only" id="learning-section-description">{sectionInfo.description}</p>
-    <main className="learning-workbench" id="learning-preview-content" aria-label="造物统筹师工作区" aria-describedby="learning-section-description">
+    <main className="learning-workbench" id="learning-preview-content" aria-label="学习设计师工作区" aria-describedby="learning-section-description">
       <aside className="panel learning-conditions">
         <div className="panel-head"><h2>{teacher ? <GraduationCap size={18}/> : <UserRound size={18}/>} {sideTitle}</h2><button className="icon-button" aria-label="收起学习侧栏" onClick={() => setCollapsed(true)}><PanelLeftClose size={17} /></button></div>
         <div className="learning-conditions-scroll" ref={conditionsPane}><div className="learning-project"><small>当前项目</small><strong>{projectName}</strong><span>{teacher ? '围绕作品设计学习与评价' : '围绕作品探索、记录与表达'}</span><button onClick={()=>setDialog('project')}><Link2 size={13}/>查看项目成果<ChevronRight size={12}/></button></div>
@@ -94,7 +94,7 @@ export function LearningWorkspace({active, projectName, project, board, modules,
           <section className="learning-next-step" aria-label="学习设计下一步"><span><Target size={14}/>{welcome.step}</span><h3>{welcome.question}</h3><p>{welcome.detail}</p><button onClick={() => section === 'guidance' ? showMaterial('definition') : section === 'outcomes' ? showMaterial(teacher ? 'portfolio' : 'work') : teacher ? setDialog('settings') : showMaterial('task')}>{welcome.button}<ChevronRight size={15}/></button></section>
           <div className="learning-example-links"><small>先看看材料的呈现方式</small><div>{section === 'guidance' ? <><button onClick={()=>showMaterial('questions')}><NotebookPen size={14}/>问题记录示例</button><button onClick={()=>changeSection('project')}><BookOpen size={14}/>查看项目学习</button></> : section === 'outcomes' ? <><button onClick={()=>showMaterial('poster')}><Image size={14}/>海报示例</button><button onClick={()=>showMaterial('competition')}><FileText size={14}/>赛事材料示例</button></> : <><button onClick={() => showMaterial(teacher ? 'plan' : 'record')}><NotebookPen size={14}/>{teacher ? '方案示例' : '记录一次尝试'}</button><button onClick={() => showMaterial(teacher ? 'rubric' : 'reflection')}><FileText size={14}/>{teacher ? '评价示例' : '反思示例'}</button></>}</div></div>
         </div>
-        <div className="chat-form learning-composer"><label className="sr-only" htmlFor="learning-message">发送给造物统筹师</label><textarea id="learning-message" disabled placeholder={`${sectionInfo.label}对话待接入，可先查看右侧材料示例…`}/><div><span>{welcome.flow}</span><button className="primary icon-button" aria-label="发送学习需求（待开发）" disabled title={pending}><ArrowUp size={19}/></button></div><button className="learning-generate" disabled title={pending}><Sparkles size={15}/>{welcome.generate}<span>待开发</span></button></div>
+        <div className="chat-form learning-composer"><label className="sr-only" htmlFor="learning-message">发送给学习设计师</label><textarea id="learning-message" disabled placeholder={`${sectionInfo.label}对话待接入，可先查看右侧材料示例…`}/><div><span>{welcome.flow}</span><button className="primary icon-button" aria-label="发送学习需求（待开发）" disabled title={pending}><ArrowUp size={19}/></button></div><button className="learning-generate" disabled title={pending}><Sparkles size={15}/>{welcome.generate}<span>待开发</span></button></div>
       </section>
       <section className="panel learning-materials">
         <div className="filebar learning-filebar"><span><BookOpen size={16} />学习材料</span><label className="sr-only" htmlFor="learning-version">学习材料版本</label><select id="learning-version" disabled title="版本管理待开发"><option>示例 · 未保存</option></select><span className="filebar-space" /><button className="learning-choose-template" onClick={()=>{setTemplatePage('requirements'); setTemplateDraft(selectedTemplate.id);}}><LayoutTemplate size={15}/>选择模板</button><button className="icon-button" aria-label={fullscreen ? '退出学习材料全屏' : '学习材料全屏'} title={fullscreen ? '退出全屏' : '全屏预览'} onClick={() => setFullscreen(v => !v)}>{fullscreen ? <Minimize size={16} /> : <Maximize size={16} />}</button><button disabled title={pending}><Download size={15} />导出</button></div>

@@ -17,7 +17,20 @@ TEMPLATES = {item['id']: item for item in MANIFEST['templates']}
 
 def public_template(item):
     return {**{key: item[key] for key in ['id', 'revision', 'title', 'description', 'size', 'notes']},
+            **({'parameterFields': parameter_fields(item)} if item.get('parameterFields') else {}),
             'image': '/api/structure/templates/media/' + item['image'], 'sourceSha256': item['sha256']}
+
+
+def parameter_fields(item, source=None):
+    """UI metadata is packaged; defaults come from the digest-checked original."""
+    source = source if source is not None else checked_source(item).read_text(encoding='utf-8-sig')
+    values = template_edits.numeric_parameters(source)
+    return [{**field, 'default': values[field['key']][0]} for field in item.get('parameterFields', [])]
+
+
+def parameter_values(item, source, edit):
+    return {field['key']: edit.parameterOverrides.get(field['key'], field['default'])
+            for field in parameter_fields(item, source)}
 
 
 def checked_source(item):
@@ -32,15 +45,35 @@ def asset_names():
             for part in item['parts'] for fmt in (['stl', 'step'] if part['printable'] else ['stl'])}
 
 
-async def act(request, previous, job_root, settings=None, conversation=None):
+def reference_cases():
+    """Digest-checked catalogue context, using the existing source of truth."""
+    return [{**{key: item[key] for key in ['id', 'title', 'description', 'notes']},
+             'parameterFields': parameter_fields(item, checked_source(item).read_text(encoding='utf-8-sig'))}
+            for item in TEMPLATES.values()]
+
+
+def reference_edit(spec):
+    item = TEMPLATES.get(spec.referenceCase.id)
+    if not item:
+        raise ValueError('参考案例不在当前案例目录中。')
+    source = checked_source(item).read_text(encoding='utf-8-sig')
+    fields = {field['key']: field for field in parameter_fields(item, source)}
+    overrides = spec.referenceCase.parameterOverrides
+    if set(overrides) - set(fields) or any(not fields[key]['min'] <= value <= fields[key]['max'] for key, value in overrides.items()):
+        raise ValueError('参考案例参数须使用目录开放的名称和范围。')
+    return template_edits.checked_spec({'title': spec.title, 'summary': spec.summary,
+        'assumptions': spec.assumptions, 'parameterOverrides': overrides}, item, source)
+
+
+async def act(request, previous, job_root, settings=None, conversation=None, *, initial_edit=None):
     ident = request.template or previous.get('builtinTemplate', {}).get('id')
     item = TEMPLATES.get(ident)
     if not item or request.designType != 'model':
         raise HTTPException(422, '内置模板与当前模式不一致。')
     if not request.template and previous.get('builtinTemplate', {}).get('revision') != item['revision']:
         raise HTTPException(422, '此历史模板修订暂不能重新生成，请选择当前模板创建新版本；旧文件仍可导出。')
-    if request.parameters or request.faces or request.rotations:
-        raise HTTPException(422, '模板改造请通过对话提交，不接受通用外壳尺寸或硬件布局参数。')
+    if request.faces or request.rotations or (request.template and request.parameters):
+        raise HTTPException(422, '案例不接受通用外壳或硬件布局参数；请使用当前案例的参数面板。')
     try:
         source = checked_source(item)
     except (OSError, ValueError) as exc:
@@ -48,7 +81,22 @@ async def act(request, previous, job_root, settings=None, conversation=None):
     original_source = source.read_text(encoding='utf-8-sig')
     local_edit = False
     try:
-        edit = template_edits.checked_spec(previous.get('templateEdit') or {'title': item['title']}, item, original_source) if not request.template else template_edits.TemplateEditSpec(title=item['title'])
+        edit = template_edits.checked_spec(initial_edit, item, original_source) if initial_edit is not None else (
+            template_edits.checked_spec(previous.get('templateEdit') or {'title': item['title']}, item, original_source) if not request.template else template_edits.TemplateEditSpec(title=item['title']))
+        if request.parameters:
+            fields = {field['key']: field for field in parameter_fields(item, original_source)}
+            if set(request.parameters) - set(fields):
+                raise ValueError('包含当前案例未开放的参数。')
+            # A field changed in the panel is applied explicitly; unchanged fields
+            # must not overwrite an existing conversational edit or part operation.
+            current_values = parameter_values(item, original_source, edit)
+            changed = {key: value for key, value in request.parameters.items() if value != current_values[key]}
+            if any(not fields[key]['min'] <= value <= fields[key]['max'] for key, value in changed.items()):
+                raise ValueError('参数超出当前案例的可调整范围。')
+            if changed:
+                edit = template_edits.checked_spec({**edit.model_dump(),
+                    'parameterOverrides': {**edit.parameterOverrides, **changed},
+                    'summary': '已应用案例参数：' + '、'.join(fields[key]['label'] for key in changed)}, item, original_source)
         if request.action in {'analyze', 'revise'} and not request.template:
             proposed = template_edits.local_text_edit(request.message, previous, item, original_source, conversation)
             local_edit = proposed is not None
@@ -72,9 +120,12 @@ async def act(request, previous, job_root, settings=None, conversation=None):
         # Keep immutable geometry/export references; do not treat metadata as a fresh geometry build.
         return {**previous, 'checks': checks + [check for check in previous.get('checks', []) if check['id'] in {'solid', 'physical'}]}
     size = dict(zip(['length_x', 'width_y', 'height_z'], item['size']))
+    values = parameter_values(item, original_source, edit)
     result = {'designKind': 'builtin', 'designTemplate': ident, 'builtinTemplate': public_template(item),
-              'title': edit.title, 'message': edit.summary or item['description'], 'questions': [], 'parameters': {},
+              'title': edit.title, 'message': edit.summary or item['description'], 'questions': [],
+              'parameters': {'template': values} if values else {},
               'templateEdit': edit.model_dump(mode='json'), 'requestText': request.message or previous.get('requestText', ''),
+              'previewAssumptions': edit.assumptions,
               'generationSource': 'local_text_intent' if local_edit else 'template',
               'cadquery_code': edited_source, 'checks': checks, 'exports': [],
               'design_state': {'id': '', 'parameters': {}, 'enclosure_parameters': {'outer_box_size': size}, 'bom': []}}

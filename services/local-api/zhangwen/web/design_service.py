@@ -62,6 +62,14 @@ async def act(request, previous, settings, job_root, conversation=None, *, previ
         if request.hardwarePlacements is not None and not request.template:
             spec.hardwarePlacements = request.hardwarePlacements
         spec.check_kind(request.designType)
+        if spec.referenceCase and not spec.questions:
+            # Model selects only bounded data. The existing allowlisted worker
+            # builds a digest-checked case; no model-provided code is executed.
+            edit = builtin_templates.reference_edit(spec)
+            case_request = request.model_copy(update={'template': spec.referenceCase.id, 'parameters': {}, 'faces': {}, 'rotations': {}})
+            built = await builtin_templates.act(case_request, {}, job_root, settings, conversation, initial_edit=edit.model_dump())
+            built['generationSource'] = 'model_case_reference'
+            return built
         if spec.fingerBox and not spec.questions:
             template = 'finger-box'
             params = {key: getattr(spec.fingerBox, key) for key in ['width', 'depth', 'height', 'thickness']}
@@ -72,6 +80,7 @@ async def act(request, previous, settings, job_root, conversation=None, *, previ
         raise HTTPException(422, str(exc)) from exc
     result = {'designKind': kind, 'designSpec': spec.model_dump(mode='json'), 'designTemplate': template,
               'title': spec.title, 'message': spec.summary, 'questions': spec.questions,
+              'previewAssumptions': spec.assumptions,
               'requestText': request.message or previous.get('requestText', ''), 'exports': [], 'checks': []}
     if spec.questions:
         retained = {key: previous[key] for key in ['build', 'exports', 'design_state', 'parameters', 'cadquery_code', 'laserDrawing', 'laserTextPaths', 'hardwareInstallations'] if key in previous}

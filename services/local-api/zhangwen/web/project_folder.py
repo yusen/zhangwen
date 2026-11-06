@@ -112,4 +112,6 @@ def router(repo):
         finally:
             lock.release()
 
+    from .managed_folders import router as managed_router
+    route.include_router(managed_router(repo))
     return route

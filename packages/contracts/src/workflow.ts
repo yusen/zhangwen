@@ -28,6 +28,9 @@ export interface ProjectTestRun {
 export interface ProjectEvidence { id: string; name: string; mime: 'image/png' | 'image/jpeg' | 'image/webp' | 'text/plain'; content: string; checksum: string; caption: string; createdAt: string }
 export interface ProjectReflection { revision: number; createdAt: string; role: 'teacher' | 'student'; author: string; summary: string; learned: string; nextStep: string }
 export interface ReviewSource { baseline: ProjectBaseline; records: string; checkedAt: string; facts: string[]; method: 'records' | 'ai' }
+export type LearningDocumentKind = 'teaching' | 'poster' | 'application' | 'log';
+export interface LearningDocument { id: string; revision: number; kind: LearningDocumentKind; title: string; content: string; createdAt: string; source: 'blank' | 'project'; sourceFingerprint: string | null; generated: boolean }
+export interface DocumentMessage { id:string; role:'user'|'assistant'; scope:'teaching'|'archive'; source:'blank'|'project'; content:string; createdAt:string }
 export interface ProjectReview { conclusion: string; gaps: string[]; nextSteps: string[]; decisions: string[]; comparison: string; source?: ReviewSource | null }
 export interface WorkflowProposal { summary: string; question: { text: string; options: string[] } | null; definition: ProjectDefinition | null; tests: Omit<ProjectTestCase, 'id' | 'revision' | 'active'>[]; review?: ProjectReview | null }
 export interface WorkflowMessage { id: string; role: 'user' | 'assistant'; content: string; createdAt: string }
@@ -44,6 +47,8 @@ export interface RequirementChange {
   collaborationDecided?: boolean;
 }
 export interface WorkflowCheckpoint {
+  documents?: LearningDocument[];
+  documentMessages?: DocumentMessage[];
   schemaVersion: 1; revision: number; definitions: DefinitionVersion[]; conditions: ProjectConditions;
   cases: ProjectTestCase[]; runs: ProjectTestRun[]; evidence: ProjectEvidence[];
   reflections: ProjectReflection[]; messages: WorkflowMessage[];

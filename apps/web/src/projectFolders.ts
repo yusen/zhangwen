@@ -4,6 +4,7 @@ import { sha256 } from './serial';
 import { projectFolderFiles, hardwareFolderFiles } from './projectFolderLayout';
 import { api } from './api';
 import { workflowFolderFiles } from './workflowUtils';
+import type { ManagedProjectFolder, ManagedFolderFile } from '../../../packages/contracts/src/projectFolder';
 
 export const PROJECT_FILE = 'zhangwen.project.json';
 const MAX_BYTES = 32 * 1024 * 1024;
@@ -15,6 +16,24 @@ export interface FolderBinding {
   projectId: string; handle: ProjectDirectory; checkpointHash: string | null; mainHash: string | null;
   /** Local-only convenience, never included in a portable snapshot. */
   nativePath?: string;
+  managed?: boolean;
+  nativeCheckpointHash?: string | null;
+}
+
+async function managedBinding(projectId:string,info:ManagedProjectFolder,previous?:FolderBinding):Promise<FolderBinding>{
+  const handle=previous?.handle??await(await navigator.storage.getDirectory()).getDirectoryHandle('zhangwen-'+projectId,{create:true});
+  return {projectId,handle,managed:true,nativePath:info.path,nativeCheckpointHash:info.checkpointHash,
+    checkpointHash:previous?.checkpointHash??null,mainHash:previous?.mainHash??null};
+}
+export async function createManagedFolder(projectId:string):Promise<FolderBinding>{
+  const info=await api<ManagedProjectFolder>(`/projects/${projectId}/folder/managed`,'POST',{});
+  const binding=await managedBinding(projectId,info);await rememberFolder(binding);return binding;
+}
+export async function openProjectFolder(binding:FolderBinding):Promise<void>{
+  if(binding.managed){await api(`/projects/${binding.projectId}/folder/managed/open`,'POST',{});return;}
+  if(!binding.checkpointHash)throw new Error('请先保存项目，再打开文件夹。');
+  const result=await api<{status:string;path?:string}>(`/projects/${binding.projectId}/folder/open`,'POST',{checkpointHash:binding.checkpointHash,...(binding.nativePath?{path:binding.nativePath}:{})});
+  if(result.path){binding.nativePath=result.path;await rememberFolder(binding);}
 }
 interface PickerWindow extends Window {
   showDirectoryPicker?: (options: { id: string; mode: 'readwrite' }) => Promise<ProjectDirectory>;
@@ -99,7 +118,9 @@ export async function writeProjectDirectory(binding: FolderBinding, snapshot: Pr
     await ensureFolderPermission(binding);
     const primaryFile = snapshot.project.programmingMode === 'chat-coding' ? 'chat-task.txt' : 'main.py';
     const raw = await read(binding.handle, PROJECT_FILE), main = await read(binding.handle, primaryFile, 65_536);
-    if ((raw === null ? null : await hash(raw)) !== binding.checkpointHash || (main === null ? null : await hash(main)) !== binding.mainHash) {
+    const previousPrimary=raw&&JSON.parse(raw).project?.programmingMode==='chat-coding'?'chat-task.txt':'main.py';
+    const previousMain=previousPrimary===primaryFile?main:await read(binding.handle,previousPrimary,65_536);
+    if ((raw === null ? null : await hash(raw)) !== binding.checkpointHash || (previousMain === null ? null : await hash(previousMain)) !== binding.mainHash || previousPrimary!==primaryFile&&main!==null) {
       throw new Error('项目文件夹已被其他页面或编辑器修改。未覆盖磁盘文件；请重新加载该文件夹，或选择另一个文件夹另存。');
     }
     const current = snapshot.versions.find(item => item.revision === snapshot.project.revision);
@@ -123,16 +144,35 @@ export async function writeProjectDirectory(binding: FolderBinding, snapshot: Pr
       if (checksum !== file.sha256) throw new Error('项目历史文件校验失败，未覆盖文件夹项目备份。');
       return { ...file, bytes };
     }));
-    const referenceFiles = await Promise.all((snapshot.references ?? []).map(async item => {
+    const referenceFiles = (await Promise.all((snapshot.references ?? []).map(async item => {
       if (!/^ref_[a-f0-9]{32}$/.test(item.id) || !Number.isSafeInteger(item.version) || item.version < 1 ||
           item.name.split('/').some(part => !part || part === '.' || part === '..' || /[\\<>:"|?*\x00-\x1f]/.test(part))) {
         throw new Error('项目资料路径无效，未写入文件夹。');
       }
       const bytes = item.encoding === 'text' ? new TextEncoder().encode(item.original) : Uint8Array.from(atob(item.original), c => c.charCodeAt(0));
-      return { path: ['资料归档', item.id, `V${item.version}`, ...item.name.split('/')], bytes, checksum: await sha256(bytes) };
-    }));
+      const checksum=await sha256(bytes);
+      return [{ path: ['资料归档', item.id, `V${item.version}`, ...item.name.split('/')], bytes, checksum },...(item.name.startsWith('成果档案/')?[{path:['成果档案','导入材料',item.id,`V${item.version}`,...item.name.split('/').slice(1)],bytes,checksum}]:[])];
+    }))).flat();
     for (const file of files) await writeImmutableFile(binding.handle, file.path, file.bytes, file.sha256);
     for (const file of referenceFiles) await writeImmutableFile(binding.handle, file.path, file.bytes, file.checksum);
+    if(binding.managed){
+      const programs:{path:string[];sha256:string;bytes:Uint8Array<ArrayBuffer>}[]=[];
+      try{
+        const root=await binding.handle.getDirectoryHandle('programs');
+        for await(const directory of (root as FileSystemDirectoryHandle&{values():AsyncIterableIterator<FileSystemHandle>}).values()){
+          if(directory.kind!=='directory')continue;
+          if(programs.length>=1000)throw new Error('单独程序超过保存数量限制，请另行备份。');
+          const handle=await root.getDirectoryHandle(directory.name);
+          for(const name of ['main.py','program.json']){const file=await(await handle.getFileHandle(name)).getFile();if(file.size>65536)throw new Error('单独程序文件过大。');const bytes=new Uint8Array(await file.arrayBuffer());programs.push({path:['programs',directory.name,name],bytes,sha256:await sha256(bytes)});}
+        }
+      }catch(e){if(!(e instanceof DOMException&&e.name==='NotFoundError'))throw e;}
+      const encoded:ManagedFolderFile[]=[...files.map(f=>({path:f.path,sha256:f.sha256,bytes:f.bytes})),...referenceFiles.map(f=>({path:f.path,sha256:f.checksum,bytes:f.bytes})),...programs].map(f=>{
+        let binary='';for(let i=0;i<f.bytes.length;i+=8192)binary+=String.fromCharCode(...f.bytes.subarray(i,i+8192));
+        return {path:f.path,sha256:f.sha256,content:btoa(binary)};
+      });
+      const result=await api<ManagedProjectFolder>(`/projects/${binding.projectId}/folder/managed/sync`,'POST',{snapshot:json,expectedCheckpointHash:binding.nativeCheckpointHash??null,files:encoded});
+      binding.nativeCheckpointHash=result.checkpointHash;binding.nativePath=result.path;
+    }
     if (main !== current.code) {
       await write(binding.handle, primaryFile, current.code);
       binding.mainHash = await hash(current.code);
@@ -160,10 +200,13 @@ export async function rememberFolder(binding: FolderBinding): Promise<void> {
 export async function recallFolder(projectId: string): Promise<FolderBinding | null> {
   const db = await database();
   try {
-    return await new Promise<FolderBinding | null>((resolve, reject) => {
+    const saved=await new Promise<FolderBinding | null>((resolve, reject) => {
       const request = db.transaction('folders').objectStore('folders').get(projectId);
       request.onsuccess = () => resolve((request.result as FolderBinding | undefined) ?? null);
       request.onerror = () => reject(new Error('无法读取项目文件夹关联，请重新加载项目文件夹。'));
     });
+    if(saved&&!saved.managed)return saved;
+    const native=await api<ManagedProjectFolder|null>(`/projects/${projectId}/folder/managed`);
+    return native?managedBinding(projectId,native,saved??undefined):saved;
   } finally { db.close(); }
 }

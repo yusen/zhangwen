@@ -78,11 +78,12 @@
 .structure-model .filebar button { min-height: 32px; font-size: 12px; }
 .structure-model .filebar select { max-width: 150px; min-height: 30px; font-size: 12px; }
 .structure-preview { flex: 1; min-height: 230px; display: flex; flex-direction: column; position: relative; background: var(--code-bg); overflow: hidden; }
-.structure-view-tabs { display: flex; gap: 3px; flex-wrap: wrap; padding: 8px 10px; z-index: 1; }
+.structure-view-tabs { display: flex; flex-shrink: 0; gap: 3px; flex-wrap: wrap; padding: 8px 10px; z-index: 1; }
 .structure-view-tabs button { padding: 5px 10px; background: var(--raised); border: 1px solid var(--border); font-size: 12px; min-height: 32px; }
 .structure-view-tabs button[aria-pressed="true"] { color: var(--ink-1); background: var(--sel); border-color: var(--sw); }
-.structure-canvas { position: relative; flex: 1; min-height: 170px; touch-action: none; }
-.structure-canvas canvas { display: block; width: 100%; height: 100%; outline: none; }
+.structure-canvas { position: relative; flex: 1; min-height: 0; overflow: hidden; touch-action: none; }
+/* Renderer pixel sizes must not determine the flex container's intrinsic height. */
+.structure-canvas canvas { position: absolute; inset: 0; display: block; width: 100%; height: 100%; outline: none; }
 .structure-view-status { position: absolute; bottom: 8px; left: 12px; right: 12px; font-size: 11px; color: var(--ink-3); margin: 0; pointer-events: none; background: var(--panel); width: fit-content; padding: 4px 7px; border-radius: 4px; }
 .structure-preview-empty { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; padding: 24px 14px; color: var(--ink-3); }
 .structure-preview-empty > svg { color: var(--brand); margin-bottom: 12px; }
@@ -109,6 +110,11 @@
 .structure-param-grid label { min-width: 0; display: flex; flex-direction: column; gap: 5px; font-size: 11px; overflow-wrap: anywhere; }
 .structure-param-grid input { width: 100%; min-width: 0; border-radius: 5px; min-height: 32px; padding: 5px 8px; font-size: 12px; }
 .structure-inspector button { font-size: 12px; min-height: 36px; }
+.structure-model.parameters-expanded .structure-preview { flex: 0 0 280px; min-height: 230px; }
+.structure-model.parameters-expanded .structure-inspector { flex: 1; max-height: none; }
+.structure-model .filebar button[aria-pressed="true"] { color: var(--sw); background: var(--sel); border-color: var(--sw); }
+.structure-inspector:focus-visible { outline: 2px solid var(--sw); outline-offset: -2px; }
+.structure-param-grid label small { color: var(--ink-3); font-size: 11px; }
 .structure-check { display: flex; align-items: baseline; gap: 9px; font-size: 12px; line-height: 1.65; overflow-wrap: anywhere; }
 .structure-check strong { flex-shrink: 0; color: var(--ink-3); font-size: 11px; }
 .structure-check.check-pass strong { color: var(--suc); }
@@ -144,7 +150,7 @@
 .structure-export-list strong, .structure-export-list small { display: block; font-size: 13px; }
 .structure-export-list small { color: var(--ink-3); font-size: 11px; margin-top: 4px; }
 @media (max-width: 1150px) and (min-width: 901px) { .structure-workbench { grid-template-columns: 160px minmax(0, 1fr) 48%; gap: 8px; }.structure-collapsed .structure-workbench { grid-template-columns: 30px minmax(0, 1fr) 48%; }.structure-param-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
-@media (max-width: 900px) { .structure-workbench, .structure-collapsed .structure-workbench { display: flex; flex-direction: column; }.structure-mobile-hide { display: none !important; }.structure-mobile-show { flex: 1; }.structure-model { min-height: 460px !important; }.structure-parts { flex: 1; }.structure-workbench .structure-restore { display: none; }.structure-inspector { max-height: 38%; }.structure-surface .mobile-tabs { display: flex; }.structure-param-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); }.structure-fullscreen .structure-model { display: flex !important; inset: 6px; } }
+@media (max-width: 900px) { .structure-workbench, .structure-collapsed .structure-workbench { display: flex; flex-direction: column; }.structure-mobile-hide { display: none !important; }.structure-mobile-show { flex: 1; }.structure-model { height: calc(100dvh - 236px); min-height: 460px !important; flex: 0 0 auto; }.structure-model.parameters-expanded { height: max(640px, calc(100dvh - 236px)); }.structure-model.parameters-expanded .structure-preview { flex-basis: 300px; }.structure-parts { flex: 1; }.structure-workbench .structure-restore { display: none; }.structure-inspector { max-height: 38%; }.structure-surface .mobile-tabs { display: flex; }.structure-param-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); }.structure-fullscreen .structure-model { display: flex !important; inset: 6px; height: auto; } }
 @media (max-width: 480px) { .structure-param-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }.structure-model .filebar > span:first-child { display: none; }.structure-model .filebar button { min-height: 40px; }.structure-model .filebar select { max-width: 132px; }.structure-view-tabs button { min-height: 40px; }.structure-profile-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }.structure-profile-grid > label { padding: 10px; }.structure-inspector { max-height: 36%; } }
 @media (prefers-reduced-motion: reduce) { .structure-surface *, .structure-surface *::before, .structure-surface *::after { animation-duration: .01ms !important; transition-duration: .01ms !important; scroll-behavior: auto !important; } }
 .structure-param-grid .structure-param-toggle { display: flex; align-items: center; gap: 8px; min-height: 36px; }
@@ -159,3 +165,6 @@
 .mechanical-form button, .hardware-installation-row button, .structure-missing button { min-height: 44px; margin: 4px 0; }
 .hardware-installation-report article { border-bottom: 1px solid var(--border); padding: 12px 0; overflow-wrap: anywhere; }
 .hardware-installation-report pre { white-space: pre-wrap; overflow-wrap: anywhere; font: inherit; }
+.structure-preview-basis { margin-top: 12px; padding-top: 10px; border-top: 1px solid var(--border); }
+.structure-preview-basis ul { margin: 6px 0 0; padding-left: 20px; }
+.structure-preview-basis li { margin: 4px 0; overflow-wrap: anywhere; }

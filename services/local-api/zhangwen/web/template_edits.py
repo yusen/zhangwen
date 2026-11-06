@@ -20,11 +20,14 @@ class TemplateEditSpec(Strict):
     title: str = Field(min_length=1, max_length=80)
     summary: str = Field(default='', max_length=1200)
     questions: list[str] = Field(default_factory=list, max_length=3)
+    assumptions: list[str] = Field(default_factory=list, max_length=12)
     parameterOverrides: dict[str, float] = Field(default_factory=dict, max_length=150)
     partOperations: list[PartOperations] = Field(default_factory=list, max_length=6)
 
     @model_validator(mode='after')
     def bounded(self):
+        if any(not text.strip() or len(text) > 300 for text in self.assumptions):
+            raise ValueError('预览假设须为不超过300字的非空说明。')
         if any(not math.isfinite(n) or abs(n) > 1000 for n in self.parameterOverrides.values()):
             raise ValueError('模板参数必须是-1000到1000内的有限数值。')
         if len({p.partId for p in self.partOperations}) != len(self.partOperations):
@@ -176,7 +179,7 @@ async def propose_edit(message, previous, item, source, settings, conversation):
             content = content.partition('\n')[2][:-3].strip()
         return checked_spec(json.loads(content), item, source)
     instructions = ('你是掌问的结构工程师。用户是教师、学生或DIY爱好者，使用容易理解的中文，不称老板或总办。'
-        '用户可以直接找你，是否协作由用户决定；记录本次变化，不声称已向造物统筹师或智能工程师发送任务。'
+        '用户可以直接找你，是否协作由用户决定；记录本次变化，不声称已向学习设计师或智能工程师发送任务。'
         '只能基于给定的原始CAD模板返回一个完整JSON改造方案，不能返回Python、文件、命令或重建为普通方盒。'
         'parameterOverrides仅能使用allowedParameters中的现有参数名，数值单位毫米，角度参数为度；保留未请求修改的配合和硬件尺寸。'
         'partOperations仅能作用于printable=true部件。每个操作为box/cylinder/sphere的add或cut；尺寸为XYZ全长，圆柱XY是直径、Z是高度，圆柱初始沿Z轴，'
@@ -186,7 +189,10 @@ async def propose_edit(message, previous, item, source, settings, conversation):
         '例如掌控板外壳背面（底壳外底面）居中凹刻掌问：partId=bottom，operations:[{kind:text,operation:cut,text:掌问,fontSize:8,depth:0.5,center:[0,-0.75,-1.5],face:bottom}]；深度必须小于底厚。'
         '完整方案每次从原始模板重新应用，必须保留currentEdit中此前要求的参数和操作，除非本轮明确撤销或重置。不要重复累计已有操作。'
         '不得假称已生成、已装配或实物兼容。无法明确表达的改动用questions询问，不得用无关近似模型假装完成。'
-        'conversation.projectHardware提供原模块机械档案与修订；安装和开孔必须参考实际尺寸、孔位和避让，缺失时questions追问，不猜测。'
+        '默认先更新模型预览再让用户确认。外观尺寸、厚度或角度未给出时保留原案例数值，或按需求采用可逆初稿值，'
+        '用assumptions说明数值与依据，不因缺这些尺寸要求用户先提供尺寸表。保留currentEdit中尚未核实的assumptions，明确解决后才移除。'
+        'conversation.projectHardware提供原模块机械档案与修订；未知孔位不能猜测，可先保留原案例参考件或预留空间并在assumptions说明待适配。'
+        '只有明确要求精确安装但缺必要资料，或无法表达核心改动时，questions最多问一个真正阻塞的问题。'
         'JSON Schema: ' + json.dumps(TemplateEditSpec.model_json_schema(), ensure_ascii=False))
     context = {'template': {key: item[key] for key in ['id', 'title', 'description', 'notes', 'parts']},
         'allowedParameters': {name: value for name, (value, _) in numeric_parameters(source).items()},

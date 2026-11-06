@@ -88,7 +88,7 @@ def record_review(state):
             label = {'stale': '条件有变化，需要重测', 'failed': '观察记录未通过', 'blocked': '暂时无法测试', 'unrecorded': '还没有观察记录'}[s['status']]
             gaps.append(c['title'] + '：' + label + ('（' + '、'.join(s['reasons']) + '）' if s['reasons'] else ''))
     review = ProjectReview(conclusion='已核对保存与测试记录；' + ('还有待补充或验证的内容。' if gaps else '当前测试均有用户填写的通过记录，展示前请再核对实物。'),
-        comparison='本次只核对已有记录。尚未使用 AI 比较程序逻辑与结构尺寸，也未验证实物；配置造物统筹师的 AI 后可再次检查。',
+        comparison='本次只核对已有记录。尚未使用 AI 比较程序逻辑与结构尺寸，也未验证实物；配置学习设计师的 AI 后可再次检查。',
         gaps=gaps[:10], nextSteps=['查看下方检查依据，按待完成项补充资料或动手测试。'],
         decisions=['决定是否需要结构设计，以及接下来请哪位伙伴协作。'])
     return Proposal(summary=review.conclusion, question=None, definition=None, tests=[], review=review)

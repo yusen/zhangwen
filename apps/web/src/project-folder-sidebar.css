@@ -41,6 +41,11 @@ details[open] > summary > .folder-chevron { transform: rotate(90deg); }
 .folder-panel-foot span, .folder-panel-foot small { display: block; font-size: inherit; overflow-wrap: anywhere; }
 .folder-panel-empty { padding: 25px 14px; color: var(--ink-3); font-size: 12px; }
 .folder-panel-empty button { margin-top: 12px; color: var(--sw); background: var(--sel); border-radius: 5px; }
+.folder-panel-empty { display: flex; flex-direction: column; align-items: flex-start; gap: 10px; line-height: 1.7; }
+.folder-panel-empty strong { color: var(--ink-1); font-size: 13px; }
+.folder-panel-empty p { margin: 0; }
+.folder-panel-empty button { min-height: 44px; width: 100%; margin: 0; }
+.folder-panel-empty button.primary { color: #fff; background: var(--sw); }
 .project-folder-panel button:focus-visible, .project-folder-panel summary:focus-visible { outline: 2px solid var(--sw); outline-offset: -2px; }
 .folder-skip { position: absolute; left: -10000px; }
 .folder-skip:focus { position: static; margin: 0 10px 6px; padding: 5px; font-size: 12px; color: var(--sw); }

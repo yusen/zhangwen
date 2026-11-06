@@ -14,9 +14,33 @@ export function definitionIssues(value: ProjectDefinition) {
 export function definitionProgress(saved: DefinitionVersion[], draft: ProjectDefinition | null) {
   const latest = saved.at(-1), confirmed = [...saved].reverse().find(d => d.confirmed);
   if (draft) return confirmed ? `V${confirmed.revision} 已确认 · 有修改待保存` : '编辑中 · 待确认';
-  if (!latest) return '尚未开始';
+  if (!latest) return '尚未保存目标';
   if (latest.confirmed) return `V${latest.revision} · 已确认`;
   return confirmed ? `V${confirmed.revision} 已确认 · V${latest.revision} 草稿` : `草稿 V${latest.revision} · 待确认`;
+}
+
+/** Confirmation comes from saved versions, never conversational claims. */
+export function sharedDefinitionStatus(saved: DefinitionVersion[] | undefined) {
+  if (!saved) return '正在读取目标记录';
+  const confirmed = [...saved].reverse().find(d => d.confirmed);
+  return confirmed ? `共用目标：V${confirmed.revision} 已确认` : '共用目标：尚未确认';
+}
+
+/** History recovery is explicit and only accepts a complete definition shape. */
+export function latestSuggestedDefinition(messages: WorkflowMessage[]): ProjectDefinition | null {
+  for (const message of [...messages].reverse()) {
+    if (message.role !== 'assistant') continue;
+    try {
+      const d = JSON.parse(message.content).definition;
+      if (d && ['problem', 'audience', 'goal', 'behavior', 'parameters', 'exceptionPolicy', 'constraints'].every(k => typeof d[k] === 'string')
+        && Array.isArray(d.criteria) && d.criteria.every((c: unknown) => typeof c === 'string')) return d;
+    } catch { /* An unreadable historical reply must not hide an older valid suggestion. */ }
+  }
+  return null;
+}
+
+export function asksDefinitionConfirmation(proposal: WorkflowProposal) {
+  return !!proposal.definition && !!proposal.question && /确认|确定|定稿|按这版|按此/.test([proposal.question.text, ...proposal.question.options].join(' '));
 }
 
 export function latestSuggestedTests(messages: WorkflowMessage[]): WorkflowProposal['tests'] {

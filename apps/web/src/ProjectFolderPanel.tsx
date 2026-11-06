@@ -4,7 +4,7 @@ import type { OpenProjectFolderInput, OpenProjectFolderResult } from '../../../p
 import { api } from './api';
 import { ActionMenu } from './ActionMenu';
 import { Dialog } from './Dialog';
-import { ensureFolderPermission, type FolderBinding } from './projectFolders';
+import { ensureFolderPermission, openProjectFolder, type FolderBinding } from './projectFolders';
 import { folderContents, folderPurposes, projectFilePreview, searchFolderFiles, type FolderContents, type FolderSearchResult, type ProjectFilePreview } from './projectFolderTree';
 import './project-folder-sidebar.css';
 
@@ -80,9 +80,9 @@ function FilePreview({ selection, onClose, onOpenFolder }: { selection: Selected
   </Dialog>;
 }
 
-export function ProjectFolderPanel({ binding, status, syncError, unsaved, hidden, onChooseFolder, onLocated, onClose }: {
-  binding: FolderBinding | null; status: string; syncError: string; unsaved: boolean; hidden?: boolean;
-  onChooseFolder: () => void; onLocated: (path: string) => Promise<void>; onClose: () => void;
+export function ProjectFolderPanel({ binding, restoring, status, syncError, unsaved, hidden, onLoadFolder, onChooseFolder, onLocated, onClose }: {
+  binding: FolderBinding | null; restoring: boolean; status: string; syncError: string; unsaved: boolean; hidden?: boolean;
+  onLoadFolder: () => void; onChooseFolder: () => void; onLocated: (path: string) => Promise<void>; onClose: () => void;
 }) {
   const [contents, setContents] = useState<FolderContents | null>(null);
   const [loading, setLoading] = useState(false);
@@ -139,6 +139,7 @@ export function ProjectFolderPanel({ binding, status, syncError, unsaved, hidden
     if (locate) input.chooseAgain = true;
     if (useManual || (!locate && binding.nativePath)) input.path = (useManual ? path : binding.nativePath)!.trim();
     try {
+      if(binding.managed&&!locate&&!useManual){await openProjectFolder(binding);setNotice('已请求系统打开文档目录中的项目文件夹。');return;}
       const result = await api<OpenProjectFolderResult>(`/projects/${binding.projectId}/folder/open`, 'POST', input);
       if (!alive.current) return;
       if (result.status === 'canceled') { setNotice('已取消定位。'); return; }
@@ -152,7 +153,7 @@ export function ProjectFolderPanel({ binding, status, syncError, unsaved, hidden
   return <aside className="project-folder-panel" aria-label="项目文件夹" id="project-folder-panel" hidden={hidden}>
     <header className="folder-panel-head"><h2>项目文件夹</h2><button aria-label="打开项目文件夹" title="在系统文件管理器中打开；首次需定位同一文件夹" disabled={opening || !binding?.checkpointHash} onClick={() => void open()}>{opening ? <LoaderCircle size={16} className="spin" /> : <FolderOpen size={16} />}</button><button aria-label="刷新目录 / 重新授权" title="刷新目录 / 重新授权" disabled={opening || loading || !binding} onClick={() => void refresh()}><RefreshCw size={15} /></button><button aria-label="收起项目文件夹" title="收起项目文件夹" onClick={onClose}><PanelRightClose size={16} /></button></header>
     {binding ? <>
-      <div className="folder-project-root"><FolderOpen size={16} aria-hidden="true" /><strong title={binding.nativePath ?? binding.handle.name}>{binding.handle.name}</strong><ActionMenu label="文件夹选项" align="right" disabled={opening} items={[
+      <div className="folder-project-root"><FolderOpen size={16} aria-hidden="true" /><strong title={binding.nativePath ?? binding.handle.name}>{binding.managed?binding.nativePath?.split(/[\\/]/).at(-1)??binding.handle.name:binding.handle.name}</strong><ActionMenu label="文件夹选项" align="right" disabled={opening} items={[
         { label: '手动定位与完整路径', icon: FolderOpen, onSelect: () => setLocation(true) },
         { label: '重新定位项目文件夹', icon: FolderOpen, disabled: !binding.checkpointHash, onSelect: () => void open(true) },
         { label: '复制完整路径', icon: Copy, disabled: !path, onSelect: () => void navigator.clipboard.writeText(path).then(() => setNotice('路径已复制。')).catch(() => setError('未能复制，可在完整路径中手动复制。')) },
@@ -169,8 +170,8 @@ export function ProjectFolderPanel({ binding, status, syncError, unsaved, hidden
         {syncError && <p role="alert" className="folder-inline-note folder-error">{syncError}</p>}
         {notice && <p role="status" className="folder-inline-note">{notice}</p>}
       </div>
-      <footer className="folder-panel-foot" title="目录展示实际保存的文件。对话与配置在 zhangwen.project.json 中，未保存的编辑不会出现在目录里。"><span>{status || '已关联'}{unsaved ? ' · 修改未保存' : ''}</span><small>磁盘已保存内容 · 点击文件预览</small></footer>
-    </> : <div className="folder-panel-empty"><FolderOpen size={27} /><p>尚未关联项目文件夹</p><button onClick={onChooseFolder}>选择保存位置</button></div>}
+      <footer className="folder-panel-foot"><span>{status || '已关联'}{unsaved ? ' · 修改未保存' : ''}</span><details className="compact-disclosure"><summary>存储说明</summary><p>目录展示已保存的文件，点击文件可预览。浏览器草稿尚未保存；本机记录是已保存的项目；文件夹是已同步的可携带副本。对话与配置保存在 zhangwen.project.json 中。</p></details></footer>
+    </> : <div className="folder-panel-empty">{restoring ? <><LoaderCircle size={27} className="spin" /><p role="status">正在恢复原文件夹关联…</p></> : <><FolderOpen size={27} /><strong>本机记录已打开</strong><p>尚未关联磁盘文件夹。</p>{syncError && <p role="alert">{syncError}</p>}<button className="primary" onClick={onLoadFolder}>打开已有项目文件夹</button><button onClick={onChooseFolder}>另存到新文件夹</button><details className="compact-disclosure"><summary>存储说明</summary><p>本机记录已经打开。选择原文件夹会加载其中的项目；保存当前项目到新位置请使用另存。未保存修改仍需保存。</p></details></>}</div>}
     {location && <Dialog title="文件夹位置" className="folder-location-dialog" onClose={() => { if (!opening) setLocation(false); }}><p>首次打开时，需选择同一个项目文件夹。也可粘贴完整路径。</p><label className="field">本机文件夹完整路径<input aria-label="本机文件夹完整路径" value={path} maxLength={2048} disabled={opening} onChange={e => setPath(e.target.value)} placeholder="Windows 或 macOS 的项目文件夹完整路径" /></label><div className="folder-location-actions"><button disabled={opening || !binding?.checkpointHash} onClick={() => void open(true)}>重新定位</button><button disabled={opening || !path} onClick={() => void navigator.clipboard.writeText(path).then(() => setNotice('路径已复制。')).catch(() => setError('未能复制，请手动复制路径。'))}>复制路径</button><button className="primary" disabled={opening || !path.trim() || !binding?.checkpointHash} onClick={() => void open(false, true)}>{opening ? '正在打开…' : '按此路径打开'}</button></div>{error && <p role="alert">{error}</p>}{notice && <p role="status">{notice}</p>}</Dialog>}
     {selection && <FilePreview key={selection.path} selection={selection} onClose={() => setSelection(null)} onOpenFolder={() => { setSelection(null); void open(); }} />}
   </aside>;
