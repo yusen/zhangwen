@@ -123,8 +123,7 @@ export class MicroPythonDevice {
       throw this.fault;
     }
   }
-  private async until(marker: string): Promise<string> {
-    const deadline = Date.now() + this.timeout;
+  private async waitFor(marker: string, deadline: number): Promise<string | null> {
     for (;;) {
       if (this.fault) throw this.fault;
       const index = this.buffer.indexOf(marker);
@@ -134,20 +133,50 @@ export class MicroPythonDevice {
         return result;
       }
       const remaining = deadline - Date.now();
-      if (remaining <= 0) {
-        this.fault = new DeviceResponseTimeout('设备响应超时。请重新连接并核对备份文件，当前协议状态不再可信。');
-        throw this.fault;
-      }
+      if (remaining <= 0) return null;
       await new Promise<void>(resolve => {
         const timer = setTimeout(() => { this.waiter = undefined; resolve(); }, remaining);
         this.waiter = () => { clearTimeout(timer); this.waiter = undefined; resolve(); };
       });
     }
   }
+  private responseTimeout(message: string): never {
+    this.receipt = null;
+    this.fault = new DeviceResponseTimeout(message);
+    throw this.fault;
+  }
+  private async until(marker: string): Promise<string> {
+    const output = await this.waitFor(marker, Date.now() + this.timeout);
+    return output ?? this.responseTimeout('设备响应超时，操作结果尚未确认。请断开后重新连接，再核对设备文件。');
+  }
+  private async interruptToFriendly(): Promise<void> {
+    this.buffer = '';
+    const deadline = Date.now() + this.timeout;
+    const settle = Math.min(100, Math.max(1, Math.floor(this.timeout / 6)));
+    // A timer callback may consume Ctrl-C while the main program keeps running.
+    // Send separate, bounded interrupts and require a prompt before any command.
+    for (let attempt = 0; attempt < 3; attempt++) {
+      await this.send(attempt === 0 ? '\r\x03' : '\x03');
+      let output = await this.waitFor('>>> ', Math.min(deadline, Date.now() + settle));
+      if (output === null && Date.now() < deadline) {
+        // Also support a device left at an idle raw prompt by a previous client.
+        await this.send('\x02');
+        output = await this.waitFor('>>> ', attempt === 2 ? deadline : Math.min(deadline, Date.now() + settle));
+      }
+      if (output !== null) {
+        if (output) this.log(output);
+        this.mode = 'friendly';
+        return;
+      }
+      if (Date.now() >= deadline) break;
+    }
+    this.responseTimeout('设备响应超时，未确认设备已停止。请断开后重新连接。');
+  }
   private async enterRaw(): Promise<void> {
     this.capture = true;
+    await this.interruptToFriendly();
     this.buffer = '';
-    await this.send('\r\x03\x03\x01');
+    await this.send('\x01');
     await this.until('raw REPL; CTRL-B to exit\r\n>');
     this.mode = 'raw';
   }
@@ -340,11 +369,7 @@ export class MicroPythonDevice {
   }
   async stop(): Promise<void> {
     await this.operation(async () => {
-      this.buffer = '';
-      await this.send('\x03\x03');
-      const output = await this.until('>>> ');
-      if (output) this.log(output);
-      this.mode = 'friendly';
+      await this.interruptToFriendly();
       this.log('\n[已中断] 设备返回 REPL 提示符。\n');
     });
   }
