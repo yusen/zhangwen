@@ -132,14 +132,21 @@ async def generate_reply(request: ChatInput, repo: WebRepository, history: list[
         raise HTTPException(504, detail + ' 输入已保留，代码未修改。') from exc
     except httpx.HTTPStatusError as exc:
         status = exc.response.status_code
+        logger.warning('AI provider HTTP status=%s stage=%s elapsed=%.1fs', status, stage, time.monotonic() - started)
         if status in {401, 403}:
             detail = 'API Key 无效或无访问权限，请在「API 设置」中核对。'
-        elif status in {402, 429}:
-            detail = f'{provider} 余额不足或请求受限，请核对账户余额并稍后重试。'
+        elif status == 402:
+            detail = f'{provider} 账户余额不足，请检查模型服务账户。'
+        elif status == 429:
+            detail = f'{provider} 请求频率受限，请稍后重试。'
         elif status == 404:
             detail = f'{provider} 模型或接口不存在，请重新选择当前模型。'
+        elif status in {400, 413, 422}:
+            detail = f'{provider} 未接受本次请求（HTTP {status}），请检查模型设置或缩短输入后重试。'
+        elif status >= 500:
+            detail = f'{provider} 服务暂时不可用（HTTP {status}），请稍后重试。'
         else:
-            detail = f'{provider} 拒绝请求或暂时不可用，请核对 API 设置并稍后重试。'
+            detail = f'{provider} 未接受本次请求（HTTP {status}），请在「API 设置」中测试连接。'
         raise HTTPException(502, detail + ' 输入已保留，代码未修改。') from exc
     except (httpx.HTTPError, KeyError, IndexError, ValueError, TypeError, AttributeError) as exc:
         logger.warning('AI failure stage=%s kind=%s elapsed=%.1fs', stage, type(exc).__name__, time.monotonic() - started)
