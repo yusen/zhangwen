@@ -169,6 +169,11 @@ export default function App() {
     const folderToggle = useRef<HTMLButtonElement>(null);
     const [folderError, setFolderError] = useState('');
     const folderPending = useRef(0);
+    const folderRuns = useRef(new Map<FolderBinding, {
+        requested: boolean;
+        promise: Promise<void>;
+    }>());
+    const [folderProgress, setFolderProgress] = useState('');
     const folderErrorRef = useRef(folderError);
     folderErrorRef.current = folderError;
     const [filesDialog, setFilesDialog] = useState<'programs' | 'board' | null>(null);
@@ -266,6 +271,8 @@ export default function App() {
         notice: string;
     } | null>(null);
     const [terminalOpen, setTerminalOpen] = useState(false);
+    const [executionDetailsOpen, setExecutionDetailsOpen] = useState(false);
+    useEffect(() => { setExecutionDetailsOpen(false); }, [project?.id, mode]);
     const serialLog = useRef<HTMLPreElement>(null);
     useEffect(() => {
         if (!terminalOpen || mode !== 'engineer')
@@ -345,20 +352,29 @@ export default function App() {
     };
     const openAiSettings = () => void action('读取 AI 设置', async () => { const settings = await api<AiSettings>('/settings/ai'); setAiConfigured(settings.aiConfigured); setAiModel(settings.aiModel); setAiBaseUrl(settings.aiBaseUrl ?? 'https://api.deepseek.com'); setAiSettingsDialog(true); });
     const bindFolder = (value: FolderBinding | null, status = '') => { setFolderRestoring(false); folderRef.current = value; folderErrorRef.current = ''; setFolder(value); setFolderStatus(status); setFolderError(''); };
+    const folderUpToDate = (id: string) => folderRef.current?.projectId === id && folderStatus === '已同步' && !folderErrorRef.current && folderPending.current === 0;
     const syncFolder = async (id: string) => {
         const binding = folderRef.current;
         if (!binding || binding.projectId !== id)
             return;
+        const existing = folderRuns.current.get(binding);
+        if (existing) {
+            existing.requested = true;
+            return existing.promise;
+        }
+        const entry = { requested: true, promise: Promise.resolve() };
         const run = async () => {
             try {
                 if (currentProject.current === id)
                     setFolderStatus('正在同步');
                 const snapshot = await api<ProjectSnapshot>(`/projects/${id}/snapshot`);
-                await writeProjectDirectory(binding, snapshot);
+                await writeProjectDirectory(binding, snapshot, message => { if (currentProject.current === id)
+                    setFolderProgress(message); });
                 if (currentProject.current === id) {
                     folderErrorRef.current = '';
                     setFolderStatus('已同步');
                     setFolderError('');
+                    setNotice('项目文件夹已同步。');
                 }
             }
             catch (err) {
@@ -373,14 +389,19 @@ export default function App() {
             }
         };
         folderPending.current++;
-        const pending = folderQueue.current.then(run, run);
-        folderQueue.current = pending;
-        try {
-            await pending;
-        }
-        finally {
+        const drain = async () => { while (entry.requested) {
+            entry.requested = false;
+            await run();
+        } };
+        entry.promise = folderQueue.current.then(drain, drain).finally(() => {
             folderPending.current--;
-        }
+            folderRuns.current.delete(binding);
+            if (currentProject.current === id)
+                setFolderProgress('');
+        });
+        folderRuns.current.set(binding, entry);
+        folderQueue.current = entry.promise;
+        return entry.promise;
     };
     async function saveProjectContent(request: ProjectContent): Promise<Project> {
         if (!project)
@@ -622,6 +643,10 @@ export default function App() {
             return;
         }
         if (!manualDirty && !hardwareDirty && (!includePreview || !codePreview || codePreview.code === project.code)) {
+            if (folderUpToDate(project.id)) {
+                setNotice('当前项目没有新修改，已保留上次保存内容。');
+                return project;
+            }
             await ensureFolderPermission(folderRef.current, true);
             await syncFolder(project.id);
             setNotice(folderErrorRef.current ? '本机记录已保留，文件夹未同步。可重试或另存。' : '项目文件夹已同步。');
@@ -709,7 +734,7 @@ export default function App() {
                 await saveHardwareSelection();
                 return;
             }
-            await action('保存结构草稿', async () => { structureSaveRef.current?.(); await syncFolder(project.id); setNotice('结构草稿已保留于本浏览器；未应用参数不会改变模型版本。可导出参数草稿。'); });
+            await action('保存结构草稿', async () => { structureSaveRef.current?.(); setNotice('需求与参数草稿已保留于本浏览器；尚未发送的需求或未应用的参数不会改变模型版本，无需重复同步整个项目。'); });
             return;
         }
         ;
@@ -727,7 +752,8 @@ export default function App() {
             if (nativeChat.lua.hasUnsaved && !nativeChat.lua.saved)
                 await nativeChat.lua.requestSave();
             else
-                await action('同步已保存代码', async () => { await syncFolder(project.id); setNotice(nativeChat.lua.hasUnsaved ? '当前查看的Lua已保存，手工草稿仍保留。' : 'Lua代码已保存到本机项目。'); });
+                await action('同步已保存代码', async () => { if (!folderUpToDate(project.id))
+                    await syncFolder(project.id); setNotice(folderErrorRef.current ? 'Lua代码已保存在本机项目，文件夹尚未同步，请按提示重试。' : nativeChat.lua.hasUnsaved ? '当前查看的Lua已保存，手工草稿仍保留。' : 'Lua代码已保存到本机项目。'); });
             return;
         }
         await action('保存项目', () => save());
@@ -1176,27 +1202,37 @@ export default function App() {
                     setMessage(value => value === prompt ? '' : value);
                 const reply = result.messages.filter(item => item.role === 'assistant' && item.status === 'COMPLETED').at(-1);
                 const suggestion = reply ? replyCode(reply.content) : null;
-                let history = { versions: codeVersions };
-                try {
-                    history = await api<{
-                        versions: Version[];
-                    }>(`/projects/${id}/versions`);
-                    setCodeVersions(history.versions);
-                }
-                catch {
-                    setNotice('回复已完成，暂时无法读取版本号；代码生成稿仍可预览，请稍后刷新历史。');
-                }
-                if (suggestion !== null) {
-                    const version = history.versions.find(item => item.messageId === reply?.id) ?? history.versions.find(item => item.source === 'ai' && item.code === suggestion && item.boardId === chatBoard);
-                    const next = { code: suggestion, revision: version?.revision, boardId: chatBoard };
+                const next = suggestion === null ? null : { code: suggestion, boardId: chatBoard };
+                if (next) {
                     setCandidate(next);
-                    if (currentCode.current === base && !manualCodeDirtyRef.current) {
+                    // Preview preserves the underlying draft, including edits made before
+                    // sending. Only edits made during this request keep the draft in view.
+                    if (currentCode.current === base) {
                         setCodePreview(next);
                         setCheck(null);
                     }
                 }
-                setHistoryRefresh(count => count + 1);
-                await syncFolder(id);
+                try {
+                    const history = await api<{
+                        versions: Version[];
+                    }>(`/projects/${id}/versions`);
+                    if (currentProject.current === id) {
+                        setCodeVersions(history.versions);
+                        const version = next && (history.versions.find(item => item.messageId === reply?.id) ?? history.versions.find(item => item.source === 'ai' && item.code === next.code && item.boardId === chatBoard));
+                        if (version) {
+                            setCandidate(value => value === next ? { ...value, revision: version.revision } : value);
+                            setCodePreview(value => value === next ? { ...value, revision: version.revision } : value);
+                        }
+                    }
+                }
+                catch {
+                    if (currentProject.current === id)
+                        setNotice('回复已完成，暂时无法读取版本号；代码生成稿仍可预览，请稍后刷新历史。');
+                }
+                if (currentProject.current === id) {
+                    setHistoryRefresh(count => count + 1);
+                    await syncFolder(id);
+                }
             }
         }
         catch (err) {
@@ -1292,12 +1328,10 @@ export default function App() {
             loadCode(value);
         });
     };
-    const saveState = mode === 'learning' ? learningBusy ? '项目记录处理中…' : learningDirty ? '项目草稿 · 本浏览器保留' : folderError ? '本机已记录 · 文件夹未同步' : '项目记录随项目保存' : mode === 'structure' && structureUnsaved ? '结构草稿在本浏览器保留 · 尚未应用' : busy.includes('保存') || folderStatus === '正在同步' ? '正在保存…'
+    const saveState = folderStatus === '正在同步' ? folderProgress || '正在整理项目文件…' : mode === 'learning' ? learningBusy ? '项目记录处理中…' : learningDirty ? '项目草稿 · 本浏览器保留' : folderError ? '本机已记录 · 文件夹未同步' : '项目记录随项目保存' : mode === 'structure' && structureUnsaved ? '参数草稿已保留 · 尚未应用到模型' : mode === 'structure' && !!structureDrafts[structureDesignType].trim() ? '需求草稿已保留 · 尚未发送' : busy.includes('保存') ? '正在保存…'
         : isChatCoding && nativeChat.source === 'local' && !!nativeChat.lua.editorCode.trim() && !nativeChat.lua.saved ? 'Lua修改未保存 · 点击「保存代码」'
             : manualDirty || hardwareDirty ? (folderError ? '未保存更改 · 文件夹未同步' : '未保存更改 · 本浏览器保留') : codePreview && codePreview.code !== project?.code ? '正在预览生成稿 · 尚未保存' : folderError ? '本机已记录 · 文件夹未同步'
                 : !project ? '尚未保存项目' : folderRestoring ? '正在恢复文件夹关联' : !folder ? '本机记录 · 未关联文件夹' : folderStatus === '已同步' ? '已保存到项目文件夹' : `项目文件夹 · ${folderStatus}`;
-    const checkLabel = !check ? '未检查 · 点击检查' : !check.valid ? `发现 ${check.diagnostics.filter(item => item.severity === 'FAIL').length} 项问题`
-        : check.diagnostics.some(item => item.severity === 'WARNING') ? '代码检查通过 · 有提示' : '代码检查通过';
     const canRun = connected && receipt && !dirty && receipt.projectId === project?.id && receipt.revision === project.revision && receipt.sha256 === project.checksum;
     const execution = currentExecution(project, dirty, receipt, runSubmission);
     const operationReason = running ? '请先停止正在运行的程序。' : deviceState === 'attention' ? '设备连接需核对，请先停止或重新连接。' : '当前操作进行中，请完成后再操作。';
@@ -1361,7 +1395,7 @@ export default function App() {
                 await device.current?.stop();
             else
                 await runProgram(); }); }}/>
-        <ToolbarButton icon={Terminal} label="运行输出" active={terminalOpen} aria-pressed={terminalOpen} onClick={() => { setTerminalOpen(value => !value); setMobileTab('code'); }}/>
+        <ToolbarButton icon={Terminal} label="REPL" active={terminalOpen} aria-pressed={terminalOpen} onClick={() => { setTerminalOpen(value => !value); setMobileTab('code'); }}/>
         <ToolbarButton icon={Cpu} label="固件刷入" variant="hardware" disabled={loading || !board || !!busy || aiBusy || flashing || deviceState !== 'disconnected'} title={board ? `刷入 ${boardInfo?.displayName ?? '当前主控'} 对应固件；请先断开设备` : '请先在左侧选择主控板'} onClick={() => setFirmwareDialog(true)}/>
         </div></>}
         {mode === 'structure' && <><div className="tool-group" role="group" aria-label="结构设计功能">
@@ -1475,28 +1509,23 @@ export default function App() {
                     { label: '导出当前程序', icon: Download, onSelect: () => download('main.py', visibleCode) },
                     { label: '整理缩进', icon: AlignLeft, group: '代码排版', disabled: !!codePreview || !code.length, onSelect: () => { editor.current?.formatIndentation(); setCheck(null); setNotice('已整理四空格缩进，不修复程序逻辑；可撤销。'); } },
                     { label: '撤销编辑', icon: Undo2, disabled: !!codePreview, shortcut: 'Ctrl / ⌘ + Z', onSelect: () => editor.current?.undo() },
+                    { label: '检查代码', icon: CheckCheck, group: '检查与记录', disabled: !board, onSelect: () => { if (check)
+                            setCheckExpanded(value => !value);
+                        else
+                            checkCode(); } },
+                    { label: '查看执行记录', icon: Terminal, onSelect: () => setExecutionDetailsOpen(true) },
                     { label: '管理版本', icon: History, group: '历史版本', disabled: !project, onSelect: openHistory },
                 ]}><MoreHorizontal size={18}/></ActionMenu></div>
         <input ref={importInput} className="sr-only" type="file" accept=".py,text/x-python" aria-label="导入 Python 程序" onChange={event => { const file = event.target.files?.[0]; event.target.value = ''; void importCode(file); }}/>
-        <div className={`project-folder-status ${folderError ? 'has-error' : ''}`}>
-          <FolderOpen size={14}/><span>{folder ? `${folder.managed ? folder.nativePath?.split(/[\\/]/).at(-1) ?? name : folder.handle.name} · ${folderStatus}${workspaceDirty ? ' · 当前修改待保存' : ''}` : folderRestoring ? '正在恢复文件夹关联' : project ? '本机记录已打开 · 尚未关联文件夹' : '保存项目时选择本地文件夹'}</span>
-          {!folder && project && !folderRestoring && <button disabled={projectLocked} onClick={() => setFolderPanel(true)}>打开文件夹说明</button>}
-          {folderError && <button disabled={projectLocked} onClick={() => void action('重试文件夹同步', async () => { if (project && folderRef.current) {
+        {folderError && <div className="project-folder-status has-error"><span role="alert">{folderError}</span><button disabled={projectLocked} onClick={() => void action('重试文件夹同步', async () => { if (project && folderRef.current) {
                 await ensureFolderPermission(folderRef.current, true);
                 await syncFolder(project.id);
-            } })}>重试同步</button>}
-          <button className={`code-check-status ${check && !check.valid ? 'has-error' : check ? 'is-valid' : ''}`} disabled={loading || !board || !!busy || deviceBusy} title="只检查代码和硬件配置，不代表实物验证通过；上传前仍会自动检查" onClick={() => { if (check)
-                setCheckExpanded(value => !value);
-            else
-                checkCode(); }}><CheckCheck size={14}/>{checkLabel}</button>
-          {folderError && <p role="alert">{folderError}</p>}
-        </div>
-        <section className="execution-feedback" aria-label="本次执行结果"><details className="compact-disclosure"><summary><span role="status">{deviceState === 'attention' ? '运行状态需核对，请查看输出' : execution.submitted ? `V${execution.upload!.revision} · 上传回读一致 · 运行命令已提交 · 实物结果待观察` : execution.upload ? `V${execution.upload.revision} · 上传回读一致 · 尚未提交运行` : dirty ? '当前修改尚未上传校验' : '当前版本尚未上传校验'}</span><small>执行详情</small></summary><div className="disclosure-content"><p>{execution.upload ? `V${execution.upload.revision} · 上传回读一致` : '当前版本尚无有效上传回读记录'}</p><p>{execution.submitted ? '运行命令已提交' : '尚无当前版本的运行提交记录'} · 实物结果待观察</p><p>检查代码、上传回读和运行提交分别记录；实际效果需观察作品。</p></div></details></section>
+            } })}>重试同步</button></div>}
         {latestReplyCode !== null && latestReply && <div className="code-source-note" role="note" aria-label="代码与回复对应">{matchesLatestReply ? `右侧代码与最新回复${latestReplyRevision ? ` V${latestReplyRevision}` : ''}一致。` : <><span>右侧{selectedVersion && !codePreview ? ` V${selectedVersion}` : '代码'}与最新回复{latestReplyRevision ? ` V${latestReplyRevision}` : ''}不同。</span><button disabled={!!busy || aiBusy || deviceBusy} onClick={() => showReplyCode(latestReply.content, latestReply.id, latestReply.boardId ?? project?.boardId)}>查看最新回复代码</button></>}</div>}
         {codePreview && <section className="code-preview-banner" aria-label="AI代码生成稿预览"><div><strong>{codePreview.source === 'repair' ? '屏幕修复预览' : codePreview.source === 'pin-repair' ? '引脚修复预览' : 'AI生成稿'}{codePreview.revision ? ` · v${codePreview.revision}` : ''} · 尚未保存</strong><small>{manualDirty ? '原手工草稿已保留，可随时返回。' : '原保存版本保留在历史中。'}{codePreview.boardId && codePreview.boardId !== board && ' 此代码来自其他主控，请核对兼容性。'}</small></div><button disabled={!!busy || aiBusy || deviceBusy} onClick={editPreview}>采用此代码</button><button disabled={!!busy || aiBusy || deviceBusy} onClick={() => { setCodePreview(null); setCheck(null); }}>返回原稿</button><button className="primary" disabled={!!busy || aiBusy || deviceBusy} onClick={() => void action('保存此版本', () => save(true))}>保存此版本</button></section>}
         <Editor ref={editor} zoom={zoom} readOnly={loading || !!busy || deviceBusy || codePreview !== null} value={visibleCode} onChange={value => { setCode(value); setSelectedVersion(null); setCheck(null); }}/>
         {check && checkExpanded && <section className="check-results" aria-label="检查结果"><div><strong>{check.valid ? '静态检查完成' : '检查发现问题'}</strong><button disabled={!!busy || deviceBusy} onClick={checkCode}>重新检查</button><button className="icon-button" aria-label="关闭检查" onClick={() => setCheckExpanded(false)}><X size={16}/></button></div>{check.diagnostics.some(item => item.repair === 'k10-screen') && <button disabled={!!busy || aiBusy || deviceBusy} onClick={previewScreenRepair}>预览屏幕修复</button>}{check.diagnostics.some(item => item.repair === 'mpython-pins') && <button disabled={!!busy || aiBusy || deviceBusy} onClick={previewPinRepair}>按P号预览修复</button>}{check.diagnostics.map((item, index) => <p className={`diagnostic ${item.severity.toLowerCase()}`} key={index}><span>{item.severity === 'PASS' ? '通过' : item.severity === 'FAIL' ? '错误' : '提示'}</span>{item.line ? `第 ${item.line} 行 · ` : ''}{item.message}</p>)}</section>}
-        <section className="terminal-panel" hidden={!terminalOpen}><div className="terminal-head"><h3><Terminal size={17}/>运行输出</h3><span>{running ? '正在执行 · 发送会先中断' : connected ? '设备已连接' : deviceState === 'attention' ? '连接需核对' : '未连接'}</span><button disabled={!!busy} onClick={() => setLogs('')}>清空</button><button onClick={() => void action('导出设备备份', async () => { const backup = await latestBackup(); if (!backup)
+        <section className="terminal-panel" hidden={!terminalOpen}><div className="terminal-head"><h3><Terminal size={17}/>REPL</h3><span>{running ? '正在执行 · 发送会先中断' : connected ? '设备已连接' : deviceState === 'attention' ? '连接需核对' : '未连接'}</span><button disabled={!!busy} onClick={() => setLogs('')}>清空</button><button onClick={() => void action('导出设备备份', async () => { const backup = await latestBackup(); if (!backup)
                 throw new Error('尚无设备备份。'); if (backup.bytes)
                 download('main-before-upload.py', backup.bytes);
             else
@@ -1510,7 +1539,8 @@ export default function App() {
     </div>
     {mode === 'engineer' && isChatCoding && nativeChat.connectionOpen && <ChatCodingConnection chat={nativeChat} onSave={() => void action('保存任务', () => save())}/>}
     <StructureWorkspace key={`${project?.id ?? 'new'}-${structureDesignType}`} designType={structureDesignType} draft={structureDrafts[structureDesignType]} onDraftChange={updateStructureInput} onDirtyChange={updateStructureDirty} saveDraftRef={structureSaveRef} projectId={project?.id} active={mode === 'structure'} board={boardInfo} modules={selectedSensors} onSaveProject={openSave} onSettings={openAiSettings} onBusy={setStructureBusy} onSaved={syncFolder} onHardwareDetail={item => openDetail(item, false, false, true)} onManageHardware={openProjectHardware} hardwareDirty={hardwareSelectionDirty} hardwareBlocked={projectLocked}/>
-    <LearningWorkflow key={project?.id ?? 'scratch'} active={mode === 'learning'} project={project} board={boardInfo} modules={selectedSensors} section={learningSection} sectionSelection={learningSectionSelection} onSection={setLearningSection} onSaved={syncFolder} onBusy={setLearningBusy} onDirty={setLearningDirty} onRegisterSave={fn => { learningSaveRef.current = fn; }} onNew={openNew} blocked={loading || !!busy || aiBusy || structureBusy || chatCodingBusy || deviceBusy || flashing} engineeringDirty={dirty || nativeChat.lua.hasUnsaved} hardwareDirty={hardwareSelectionDirty} onManageHardware={openProjectHardware} onHardwareDetail={openDetail} refreshKey={historyRefresh} reviewChange={reviewChange} onReviewConsumed={() => setReviewChange(null)} onCollaborate={() => setRequirementSync(true)} onTask={openLearningTask}/>
+    <LearningWorkflow key={project?.id ?? 'scratch'} active={mode === 'learning'} project={project} board={boardInfo} modules={selectedSensors} section={learningSection} sectionSelection={learningSectionSelection} onSection={setLearningSection} onSaved={syncFolder} onSyncRequested={async (id) => { if (!folderUpToDate(id))
+            await syncFolder(id); }} onBusy={setLearningBusy} onDirty={setLearningDirty} onRegisterSave={fn => { learningSaveRef.current = fn; }} onNew={openNew} blocked={loading || !!busy || aiBusy || structureBusy || chatCodingBusy || deviceBusy || flashing} engineeringDirty={dirty || nativeChat.lua.hasUnsaved} hardwareDirty={hardwareSelectionDirty} onManageHardware={openProjectHardware} onHardwareDetail={openDetail} refreshKey={historyRefresh} reviewChange={reviewChange} onReviewConsumed={() => setReviewChange(null)} onCollaborate={() => setRequirementSync(true)} onTask={openLearningTask}/>
     </div>
     {folderPanel && project && <ProjectFolderPanel key={project.id} hidden={codeFullscreen} binding={folder} restoring={folderRestoring} status={folderStatus} onLoadFolder={() => void loadFolder()} syncError={folderError} unsaved={workspaceDirty} onClose={() => { setFolderPanel(false); folderToggle.current?.focus(); }} onChooseFolder={() => { setUploadAfterSave(false); openSave(); }} onLocated={async (path) => {
                     const binding = folderRef.current;
@@ -1522,11 +1552,17 @@ export default function App() {
                     await rememberFolder(updated);
                 }}/>}
     </div>
-    <footer className="statusbar">{mode === 'engineer' && isChatCoding ? <><span>Mosaico · {'Chat Coding'}</span><span>{nativeChat.source === 'local' ? '掌问生成 · WiFi运行' : '任务保存与设备发送分开'}</span><span>实物结果由观察确认</span></> : mode === 'engineer' ? <><span><span className="status-dot"/>智能工程师 · 编程与测试</span><span>{boardInfo?.displayName ?? '先选择主控板'} · {components.length} 个模块</span><span>本机保存 · 设备操作需确认</span></> : <><span>{modeInfo.name}{mode === 'learning' ? learningSection === 'teaching' ? ' · 教学设计' : learningSection === 'outcomes' ? ' · 成果档案' : ' · 制作指导与学习' : ' · 设计与制作'}</span><span>{mode === 'learning' ? learningSection === 'teaching' ? '三阶六维 · 教案草稿请核对' : learningSection === 'outcomes' ? '保留制作发现与实际成果' : '当前任务 · 动手验证 · 制作发现' : '项目内容已保留'}</span></>}</footer>
+    <footer className="statusbar">{mode === 'engineer' && isChatCoding ? <><span>Mosaico · {'Chat Coding'}</span><span>{nativeChat.source === 'local' ? '掌问生成 · WiFi运行' : '任务保存与设备发送分开'}</span><span>实物结果由观察确认</span></> : mode === 'engineer' ? <><span><span className="status-dot"/>智能工程师 · 编程与测试</span><span>{boardInfo?.displayName ?? '先选择主控板'} · {components.length} 个模块</span><span>本机保存 · 设备操作需确认</span></> : <><span>{modeInfo.name}{mode === 'learning' ? learningSection === 'teaching' ? ' · 教学设计' : learningSection === 'outcomes' ? ' · 成果档案' : ' · 制作指导与学习' : ' · 设计与制作'}</span><span>{mode === 'learning' ? learningSection === 'teaching' ? '三阶六维 · 教案草稿请核对' : learningSection === 'outcomes' ? '保留制作发现与实际成果' : '当前任务 · 动手验证 · 制作发现' : saveState}</span></>}</footer>
     </> : <StartScreen loading={loading} ready={initialized} busy={busy} error={error} theme={theme} onTheme={() => setTheme(value => value === 'light' ? 'dark' : 'light')} onNew={openNew} onLoad={openLoad} onRetry={() => setBootstrapAttempt(value => value + 1)}/>}
     {requirementSync && project && <RequirementSync key={project.id + '-' + mode} projectId={project.id} sourceMode={mode} initialText={(mode === 'engineer' ? (isChatCoding ? nativeChat.source === 'local' ? nativeChat.lua.prompt : '' : message) : mode === 'structure' ? structureDrafts[structureDesignType] : '').slice(0, 2000)} onClose={() => setRequirementSync(false)} onBusy={setLearningBusy} engineeringDirty={dirty || nativeChat.lua.hasUnsaved} onSaved={async (id) => { setHistoryRefresh(v => v + 1); await syncFolder(id); }} onReview={id => { if (!selectMode('learning'))
         return false; setLearningSection('guidance'); setReviewChange({ projectId: project.id, id }); return true; }} onTask={openLearningTask}/>}
     {modeDialog && <ModePicker current={mode} onSelect={selectMode} onClose={() => setModeDialog(false)}/>}
+    {workspaceOpen && mode === 'engineer' && !isChatCoding && executionDetailsOpen && <Dialog title="本次执行结果" onClose={() => setExecutionDetailsOpen(false)}>
+      <p>{deviceState === 'attention' ? '运行状态需核对，请查看 REPL。' : dirty ? '当前修改尚未上传校验。' : '以下记录仅对应当前已保存版本。'}</p>
+      <p>{execution.upload ? `V${execution.upload.revision} · 上传回读一致` : '当前版本尚无有效上传回读记录'}</p>
+      <p>{execution.submitted ? '运行命令已提交' : '尚无当前版本的运行提交记录'} · 实物结果待观察</p>
+      <p className="muted">检查代码、上传回读和运行提交分别记录；实际效果需观察作品。</p>
+    </Dialog>}
     {workspaceOpen && projectHardwareOpen && <ProjectHardwareDialog boardId={board} board={boardInfo} componentIds={components} hardware={hardware} dirty={hardwareSelectionDirty} savedProject={!!project} blocked={projectLocked} error={error} busy={busy} onClose={() => setProjectHardwareOpen(false)} onChooseBoard={() => setBoardDialog(true)} onAdd={openSensorPicker} onRemove={removeSensor} onDetail={openDetail} onSave={() => { if (project)
         void saveHardwareSelection();
     else
@@ -1558,7 +1594,7 @@ export default function App() {
       <div className="sensor-picker-actions"><span>{pendingSensors.length ? `已选择 ${pendingSensors.length} 个` : '选择项目需要的模块'}{components.length + pendingSensors.length >= 32 && ' · 已达32项上限'}</span><button onClick={() => setSensorPicker(false)}>取消</button><button className="primary" aria-label="加入所选模块" disabled={!pendingSensors.length || !!busy || aiBusy || deviceBusy} onClick={() => { followConversation.current = false; setComponents(value => [...new Set([...value, ...pendingSensors])]); setCheck(null); setCandidate(null); setCodePreview(null); setSensorPicker(false); setMobileTab('ai'); setGuideReveal(value => value + 1); }}>{pendingSensors.length ? `加入 ${pendingSensors.length} 个模块` : '加入模块'}</button></div>
     </Dialog>}
 
-    {referencesDialog && project && <ProjectReferences projectId={project.id} folder={folder?.handle ?? null} onClose={() => setReferencesDialog(false)} onChanged={() => syncFolder(project.id)} onModule={text => { setReferencesDialog(false); setPersonalModule(text); }}/>}
+    {referencesDialog && project && <ProjectReferences projectId={project.id} folder={folder?.handle ?? null} folderPath={folder?.nativePath} folderStatus={folderStatus} folderError={folderError} onOpenFolder={folder ? () => openProjectFolder(folder) : undefined} onClose={() => setReferencesDialog(false)} onChanged={() => syncFolder(project.id)} onModule={text => { setReferencesDialog(false); setPersonalModule(text); }}/>}
     {personalModule !== null && <PersonalModuleDialog boardId={board} boards={hardware.filter(item => item.category === 'MCU')} source={personalModule} onClose={() => setPersonalModule(null)} onCreated={value => { setHardware(items => [...items, value]); if (board && components.length < 32)
         setComponents(items => [...items, value.componentId]); setCheck(null); setPersonalModule(null); setDetail(value); setNotice('我的模块已创建，资料可供后续对话参考；尚未上传或实测。'); }}/>}
     {detail && <HardwareDetails detail={detail} board={boardInfo} boards={hardware.filter(item => item.category === 'MCU')} editExample={editExample} initialTab={detailTab} onSaved={value => { setCheck(null); setDetail(value); setHardware(items => items.map(item => item.skillName === value.skillName ? value : item)); }} onClose={() => { setDetail(null); if (returnToPicker)

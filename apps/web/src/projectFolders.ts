@@ -83,9 +83,15 @@ async function write(handle: ProjectDirectory, name: string, data: string): Prom
   try { await stream.write(data); await stream.close(); }
   catch (error) { await stream.abort().catch(() => {}); throw error; }
 }
-async function writeImmutableFile(root: ProjectDirectory, path: string[], bytes: Uint8Array<ArrayBuffer>, checksum: string): Promise<void> {
+async function writeImmutableFile(root: ProjectDirectory, path: string[], bytes: Uint8Array<ArrayBuffer>, checksum: string, directories: Map<string, Promise<FileSystemDirectoryHandle>>): Promise<void> {
   let directory: FileSystemDirectoryHandle = root;
-  for (const part of path.slice(0, -1)) directory = await directory.getDirectoryHandle(part, { create: true });
+  let key = '';
+  for (const part of path.slice(0, -1)) {
+    key += '/' + part;
+    let pending = directories.get(key);
+    if (!pending) { pending = directory.getDirectoryHandle(part, { create: true }); directories.set(key, pending); }
+    directory = await pending;
+  }
   const name = path.at(-1)!, label = path.join('/');
   let existing: FileSystemFileHandle | null = null;
   try { existing = await directory.getFileHandle(name); }
@@ -95,6 +101,7 @@ async function writeImmutableFile(root: ProjectDirectory, path: string[], bytes:
     if (previous.size !== bytes.byteLength || await sha256(new Uint8Array(await previous.arrayBuffer())) !== checksum) {
       throw new Error(`文件 ${label} 已被外部修改，未覆盖。`);
     }
+    return;
   } else {
     const handle = await directory.getFileHandle(name, { create: true });
     let writer: FileSystemWritableFileStream | null = null;
@@ -113,8 +120,9 @@ async function writeImmutableFile(root: ProjectDirectory, path: string[], bytes:
   const check = new Uint8Array(await (await (await directory.getFileHandle(name)).getFile()).arrayBuffer());
   if (await sha256(check) !== checksum) throw new Error(`文件 ${label} 回读不一致，未覆盖项目项目备份。`);
 }
-export async function writeProjectDirectory(binding: FolderBinding, snapshot: ProjectSnapshot): Promise<void> {
+export async function writeProjectDirectory(binding: FolderBinding, snapshot: ProjectSnapshot, onProgress?: (message: string) => void): Promise<void> {
   const task = async () => {
+    onProgress?.('正在核对项目文件');
     await ensureFolderPermission(binding);
     const primaryFile = snapshot.project.programmingMode === 'chat-coding' ? 'chat-task.txt' : 'main.py';
     const raw = await read(binding.handle, PROJECT_FILE), main = await read(binding.handle, primaryFile, 65_536);
@@ -129,6 +137,7 @@ export async function writeProjectDirectory(binding: FolderBinding, snapshot: Pr
     if (new TextEncoder().encode(json).length > MAX_BYTES) throw new Error('项目项目备份超过32MiB，未截断或覆盖。');
     // Validate all source paths and bytes before changing the folder. Internal job IDs
     // stay in the checkpoint; visible copies are grouped by purpose and version.
+    onProgress?.('正在整理作品与硬件资料');
     const resources = await api<HardwareResourceBundle>(`/projects/${binding.projectId}/hardware-resources?expectedRevision=${snapshot.project.revision}`);
     const decoded = new Map<string, Promise<{ bytes: Uint8Array<ArrayBuffer>; checksum: string }>>();
     const learningFiles = await workflowFolderFiles(snapshot.project.name, snapshot.workflow);
@@ -153,8 +162,20 @@ export async function writeProjectDirectory(binding: FolderBinding, snapshot: Pr
       const checksum=await sha256(bytes);
       return [{ path: ['资料归档', item.id, `V${item.version}`, ...item.name.split('/')], bytes, checksum },...(item.name.startsWith('成果档案/')?[{path:['成果档案','导入材料',item.id,`V${item.version}`,...item.name.split('/').slice(1)],bytes,checksum}]:[])];
     }))).flat();
-    for (const file of files) await writeImmutableFile(binding.handle, file.path, file.bytes, file.sha256);
-    for (const file of referenceFiles) await writeImmutableFile(binding.handle, file.path, file.bytes, file.checksum);
+    const writes = [...files.map(file => ({...file, checksum:file.sha256})), ...referenceFiles];
+    const directories = new Map<string, Promise<FileSystemDirectoryHandle>>();
+    let next = 0, completed = 0;
+    // Bound file operations and wait for all workers before writing the checkpoint.
+    const results = await Promise.allSettled(Array.from({length:Math.min(4,writes.length)}, async () => {
+      while (next < writes.length) {
+        const file = writes[next++];
+        await writeImmutableFile(binding.handle, file.path, file.bytes, file.checksum, directories);
+        completed++;
+        if (completed % 32 === 0 || completed === writes.length) onProgress?.(`正在核对并保存文件（${completed}/${writes.length}）`);
+      }
+    }));
+    const failed = results.find((result): result is PromiseRejectedResult => result.status === 'rejected');
+    if (failed) throw failed.reason;
     if(binding.managed){
       const programs:{path:string[];sha256:string;bytes:Uint8Array<ArrayBuffer>}[]=[];
       try{
@@ -170,6 +191,7 @@ export async function writeProjectDirectory(binding: FolderBinding, snapshot: Pr
         let binary='';for(let i=0;i<f.bytes.length;i+=8192)binary+=String.fromCharCode(...f.bytes.subarray(i,i+8192));
         return {path:f.path,sha256:f.sha256,content:btoa(binary)};
       });
+      onProgress?.('正在保存到项目文件夹并校验');
       const result=await api<ManagedProjectFolder>(`/projects/${binding.projectId}/folder/managed/sync`,'POST',{snapshot:json,expectedCheckpointHash:binding.nativeCheckpointHash??null,files:encoded});
       binding.nativeCheckpointHash=result.checkpointHash;binding.nativePath=result.path;
     }
@@ -177,7 +199,7 @@ export async function writeProjectDirectory(binding: FolderBinding, snapshot: Pr
       await write(binding.handle, primaryFile, current.code);
       binding.mainHash = await hash(current.code);
     }
-    await write(binding.handle, PROJECT_FILE, json);
+    if (raw !== json) await write(binding.handle, PROJECT_FILE, json);
     binding.checkpointHash = await hash(json);
     await rememberFolder(binding);
   };

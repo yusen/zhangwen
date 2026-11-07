@@ -31,10 +31,10 @@ function Conditions({value}:{value:ProjectConditions}) {
 function Definition({value}:{value?:ProjectDefinition}) {
   return value?<dl className="classroom-record-details">{Object.entries({问题:value.problem,使用者:value.audience,项目目标:value.goal,动作规则:value.behavior,验收条件:value.criteria.join('\n'),关键参数:value.parameters,异常处理:value.exceptionPolicy,制作要求:value.constraints}).map(([label,text])=><div key={label}><dt>{label}</dt><dd>{text||'未填写'}</dd></div>)}</dl>:<p>尚未保存目标。</p>;
 }
-export function LearningWorkflow({active,project,board,modules,section,sectionSelection,onSection,onSaved,onBusy,onDirty,onRegisterSave,onNew,blocked,engineeringDirty,hardwareDirty,onManageHardware,onHardwareDetail,refreshKey,reviewChange,onReviewConsumed,onCollaborate,onTask}: {
+export function LearningWorkflow({active,project,board,modules,section,sectionSelection,onSection,onSaved,onSyncRequested,onBusy,onDirty,onRegisterSave,onNew,blocked,engineeringDirty,hardwareDirty,onManageHardware,onHardwareDetail,refreshKey,reviewChange,onReviewConsumed,onCollaborate,onTask}: {
   active:boolean;project:Project|null;board?:HardwareSummary;modules:HardwareSummary[];
   section:LearningSection;sectionSelection:number;onSection:(section:LearningSection)=>void;
-  onSaved:(id:string)=>Promise<void>;onBusy:(busy:boolean)=>void;onDirty:(dirty:boolean)=>void;onRegisterSave:(save:(()=>Promise<void>)|null)=>void;
+  onSaved:(id:string)=>Promise<void>;onSyncRequested:(id:string)=>Promise<void>;onBusy:(busy:boolean)=>void;onDirty:(dirty:boolean)=>void;onRegisterSave:(save:(()=>Promise<void>)|null)=>void;
   onNew:()=>void;blocked:boolean;engineeringDirty:boolean;refreshKey:number;
   hardwareDirty:boolean;onManageHardware:()=>void;onHardwareDetail:(item:HardwareSummary)=>void;
   reviewChange?:{projectId:string;id:string}|null;onReviewConsumed?:()=>void;onCollaborate:()=>void; onTask:(role:'engineer'|'structure',text:string)=>boolean;
@@ -148,7 +148,7 @@ export function LearningWorkflow({active,project,board,modules,section,sectionSe
     if(section==='project'&&draftRef.current.generatedTests.length){await saveGeneratedTests();return;}
     if(section==='project'&&selectedCase&&draftRef.current.observations[selectedCase.id]){await saveObservation();return;}
     if(section==='outcomes'&&draftRef.current.reflection){await saveReflection();return;}
-    if(project){await onSaved(pid);setNotice('项目记录已保存，文件夹状态见顶部提示。对话输入请点击发送，其他栏目的草稿仍保留。');}
+    if(project){await onSyncRequested(pid);setNotice('当前栏目没有新修改，沿用已保存记录。文件夹状态见顶部提示，尚未发送的需求仍保留。');}
   };
   useEffect(()=>{onRegisterSave(saveCurrent);});
   const send=async(answer?:string,testing=false)=>{

@@ -92,7 +92,9 @@ export interface CreatePersonalModule {
 export interface ProjectReference {
   id: string; version: number; name: string; text: string; original: string;
   encoding: 'text' | 'base64'; mode: 'auto' | 'pin' | 'off'; checksum: string;
+  archived?: boolean;
 }
+export interface ArchiveProjectReference { expectedVersion: number; archived: boolean }
 export interface ReferenceCitation { id: string; version: number; name: string; startLine: number; endLine: number; text: string }
 /** Source-reviewed recipe supplements, installed into the same Hardware Skill document.
  * Functional/diagnostic describes the example's scope, never physical verification.

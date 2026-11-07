@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
-import type { ProjectReference, ReferenceCitation } from '../../../packages/contracts/src/platform';
+import { Download, FolderOpen, RotateCcw, Trash2 } from 'lucide-react';
+import type { ArchiveProjectReference, ProjectReference, ReferenceCitation } from '../../../packages/contracts/src/platform';
 import { api } from './api';
 import { Dialog } from './Dialog';
 import type { ProjectDirectory } from './projectFolders';
@@ -28,8 +29,9 @@ export function ReferenceSources({ references, notice }: { references?: Referenc
 }
 const modeLabels = { auto: '可供 AI 参考', pin: '优先参考', off: '已停用' };
 type View = 'list' | 'add' | 'preview' | 'history';
-export function ProjectReferences({ projectId, folder, onClose, onChanged, onModule }: {
+export function ProjectReferences({ projectId, folder, folderPath, folderStatus, folderError, onOpenFolder, onClose, onChanged, onModule }: {
   projectId: string; folder: ProjectDirectory | null; onClose: () => void;
+  folderPath?: string; folderStatus?: string; folderError?: string; onOpenFolder?: () => Promise<void>;
   onChanged: () => Promise<void>; onModule: (text: string) => void;
 }) {
   const [items, setItems] = useState<ProjectReference[]>([]);
@@ -43,8 +45,28 @@ export function ProjectReferences({ projectId, folder, onClose, onChanged, onMod
   const [pasteName, setPasteName] = useState('说明.md'); const [paste, setPaste] = useState('');
   const [pasteOpen, setPasteOpen] = useState(false);
   const [preview, setPreview] = useState<ProjectReference | null>(null);
-  const refresh = async () => { const result = await api<{ references: ProjectReference[] }>(`/projects/${projectId}/references`); setItems(result.references); return result.references; };
-  useEffect(() => { let active = true; void api<{ references: ProjectReference[] }>(`/projects/${projectId}/references`).then(r => { if (active) setItems(r.references); }).catch(e => { if (active) setError(String(e)); }); return () => { active = false; }; }, [projectId]);
+  const [trash, setTrash] = useState(false);
+  const [removing, setRemoving] = useState<ProjectReference | null>(null);
+  const currentItems = items.filter(item => !!item.archived === trash);
+  const trashCount = items.filter(item => item.archived).length;
+  const refresh = async () => { const result = await api<{ references: ProjectReference[] }>(`/projects/${projectId}/references?includeArchived=true`); setItems(result.references); return result.references; };
+  useEffect(() => { let active = true; void api<{ references: ProjectReference[] }>(`/projects/${projectId}/references?includeArchived=true`).then(r => { if (active) setItems(r.references); }).catch(e => { if (active) setError(String(e)); }); return () => { active = false; }; }, [projectId]);
+  // A local reference commit is complete before the full project folder copy.
+  const syncLater = () => { void onChanged().catch(e => setError(String(e))); };
+  const download = (item: ProjectReference) => {
+    const content = item.encoding === 'text' ? item.original : Uint8Array.from(atob(item.original), c => c.charCodeAt(0));
+    const url = URL.createObjectURL(new Blob([content], {type:'application/octet-stream'}));
+    const anchor = document.createElement('a'); anchor.href=url; anchor.download=item.name.split('/').at(-1)!; anchor.click(); setTimeout(()=>URL.revokeObjectURL(url),1000);
+  };
+  const archivePath = (item: ProjectReference) => `${folderPath ?? folder?.name ?? '项目文件夹'}/资料归档/${item.id}/V${item.version}/${item.name}`;
+  const openFolder = () => { setError(''); void onOpenFolder?.().catch(e => setError(String(e))); };
+  const archive = async (item: ProjectReference, archived: boolean) => {
+    setBusy(true); setError('');
+    try {
+      await api(`/projects/${projectId}/references/${item.id}/archive`, 'POST', {expectedVersion:item.version,archived} satisfies ArchiveProjectReference);
+      await refresh(); setRemoving(null); setStatus(`${item.name}：${archived?'已移到回收站，不再提供给 AI；可在回收站恢复':'已恢复到项目资料'}。`); syncLater();
+    } catch(e) { setError(String(e)); } finally { setBusy(false); }
+  };
   const store = async (input: Pick<ProjectReference, 'name' | 'original' | 'encoding'>, previous?: ProjectReference, mode?: ProjectReference['mode']) => {
     const result = await api<ProjectReference>(`/projects/${projectId}/references`, 'POST', { name: input.name, original: input.original, encoding: input.encoding, mode: mode ?? previous?.mode ?? 'auto', expectedVersion: previous?.version ?? 0 });
     await refresh(); return result;
@@ -58,11 +80,12 @@ export function ProjectReferences({ projectId, folder, onClose, onChanged, onMod
       for (const { file, name } of files) {
         try {
           setStatus(`正在解析：${name}`);
-          if (current.some(item => item.name === name)) throw new Error('同名资料已保留，请在该文件菜单中选择“更新文件”。');
-          await store(await referenceFile(file, name)); count++; current = await refresh();
+          const duplicate = current.find(item => item.name === name);
+          if (duplicate) throw new Error(duplicate.archived ? '同名资料在回收站中，请先恢复再更新。' : '同名资料已保留，请在该文件菜单中选择“更新文件”。');
+          current.push(await store(await referenceFile(file, name))); count++;
         } catch (e) { failed.push({ name, message: e instanceof Error ? e.message : String(e) }); setIssues([...failed]); }
       }
-      setStatus(`已导入 ${count} 份资料${failed.length ? `，${failed.length} 份未导入` : '，可供当前项目 AI 参考'}。`); await onChanged();
+      setTrash(false); setStatus(`已导入 ${count} 份资料到本机项目${failed.length ? `，${failed.length} 份未导入` : ''}。文件夹在后台同步，可点击文件名查看或下载。`); syncLater();
     } catch (e) { setError(e instanceof Error ? e.message : String(e)); }
     finally { setBusy(false); }
   };
@@ -85,7 +108,7 @@ export function ProjectReferences({ projectId, folder, onClose, onChanged, onMod
     finally { setBusy(false); }
   };
   const change = async (item: ProjectReference, mode: ProjectReference['mode']) => {
-    setBusy(true); setError(''); try { await store(item, item, mode); setStatus(`${item.name}：${modeLabels[mode]}。`); await onChanged(); } catch (e) { setError(String(e)); } finally { setBusy(false); }
+    setBusy(true); setError(''); try { await store(item, item, mode); setStatus(`${item.name}：${modeLabels[mode]}。`); syncLater(); } catch (e) { setError(String(e)); } finally { setBusy(false); }
   };
   const versions = async (item: ProjectReference) => {
     setBusy(true); setError('');
@@ -94,31 +117,36 @@ export function ProjectReferences({ projectId, folder, onClose, onChanged, onMod
   };
   const openPreview = (item: ProjectReference, back: 'list' | 'history') => { setPreview(item); setPreviewBack(back); setView('preview'); };
   return <Dialog title="项目资料" onClose={onClose} className="reference-dialog">
-    {view === 'list' && <><div className="resource-section-head"><p className="muted">添加接口说明或成功案例，供当前项目对话参考。</p><button className="primary" disabled={busy} onClick={() => { setView('add'); setError(''); }}>＋ 添加资料</button></div>
-      <div className="reference-list">{items.map(item => <article key={item.id}>
+    {view === 'list' && <><div className="resource-section-head"><p className="muted">{trash?'已移除的资料保留历史，可恢复。':'导入的说明书、案例与文档都在这里，点击名称查看内容。'}</p><div className="reference-actions"><button disabled={busy} onClick={() => setTrash(value=>!value)}>{trash?'返回项目资料':`回收站（${trashCount}）`}</button>{!trash&&<button className="primary" disabled={busy} onClick={() => { setView('add'); setError(''); }}>＋ 添加资料</button>}</div></div>
+      <div className="reference-location"><span>{folderPath ? `项目文件夹：${folderPath}` : folder ? `项目文件夹：${folder.name}` : '资料已保存在本机项目记录中，可在这里查看和下载。'}{folder&&<small>{folderError?'文件夹尚未同步，资料仍在本机项目中':folderStatus==='正在同步'?'文件夹正在后台同步…':'原文件副本在“资料归档”中，按资料和版本分开保留。'}</small>}</span>{onOpenFolder&&<button disabled={busy} onClick={openFolder}><FolderOpen size={16}/>打开项目文件夹</button>}</div>
+      <div className="reference-list">{currentItems.map(item => <article key={item.id}>
         <button className="reference-name" disabled={busy} onClick={() => openPreview(item, 'list')}><strong>{item.name}</strong><small>V{item.version}</small></button>
-        <span className={`reference-mode ${item.mode}`}>{modeLabels[item.mode]}</span>
-        <details className="resource-menu"><summary aria-label={`${item.name}更多操作`}>⋯</summary><div>
+        <span className={`reference-mode ${item.mode}`}>{item.archived?'已移除':modeLabels[item.mode]}</span>
+        <button disabled={busy} aria-label={`下载资料：${item.name}`} title="下载原文件" onClick={()=>download(item)}><Download size={16}/><span>下载</span></button>
+        <button disabled={busy} aria-label={`${trash?'恢复':'移除'}资料：${item.name}`} onClick={()=>trash?void archive(item,false):setRemoving(item)}>{trash?<RotateCcw size={16}/>:<Trash2 size={16}/>}<span>{trash?'恢复':'移除'}</span></button>
+        {!trash&&<details className="resource-menu"><summary aria-label={`${item.name}更多操作`}>⋯</summary><div>
           {(['auto', 'pin', 'off'] as const).map(mode => <button key={mode} disabled={busy || item.mode === mode} onClick={event => { event.currentTarget.closest('details')?.removeAttribute('open'); void change(item, mode); }}>{mode === 'auto' ? '自动参考' : mode === 'pin' ? '优先参考' : '停用'}</button>)}
           <label className="reference-file-button">更新文件<input type="file" aria-label={`更新资料：${item.name}`} disabled={busy} onChange={event => {
             const file = event.target.files?.[0]; event.target.value = ''; if (!file) return; event.currentTarget.closest('details')?.removeAttribute('open'); setBusy(true); setError('');
-            void referenceFile(file, item.name).then(input => store(input, item)).then(async () => { setStatus(`${item.name}：已更新，旧版本已保留。`); await onChanged(); }).catch(e => setError(String(e))).finally(() => setBusy(false));
+            void referenceFile(file, item.name).then(input => store(input, item)).then(() => { setStatus(`${item.name}：已更新，旧版本已保留。`); syncLater(); }).catch(e => setError(String(e))).finally(() => setBusy(false));
           }} /></label>
           <button disabled={busy} onClick={event => { event.currentTarget.closest('details')?.removeAttribute('open'); void versions(item); }}>查看版本</button>
-        </div></details>
+        </div></details>}
       </article>)}{issues.map((issue,index) => <article className="reference-error" key={`issue-${index}`}><strong>{issue.name}</strong><span>未导入</span><p role="alert">{issue.message}</p></article>)}</div>
-      {!items.length && <div className="resource-empty"><p>还没有项目资料</p><small>先添加一份说明书、接口文档或跑通的程序。</small></div>}
+      {!currentItems.length && <div className="resource-empty"><p>{trash?'回收站为空':'还没有项目资料'}</p><small>{trash?'移除的资料会显示在这里。':'先添加一份说明书、接口文档或跑通的程序。'}</small></div>}
+      {trash&&<small className="muted">移除只停止当前项目使用这份资料。你选择的原文件、历史对话引用及项目文件夹中的归档副本保留。</small>}
     </>}
     {view === 'add' && <><button className="resource-back" disabled={busy} onClick={() => setView('list')}>← 返回资料列表</button><div className="reference-import-options">
       <label className="reference-file-button primary">选择文件<input aria-label="导入项目资料" type="file" multiple disabled={busy} accept=".txt,.md,.markdown,.py,.html,.js,.ts,.json,.csv,.css,.xml,.yaml,.yml,.ino,.c,.h,.pdf,.docx" onChange={event => { const files = [...(event.target.files ?? [])]; event.target.value = ''; void importFiles(files.map(file => ({ file, name: file.name }))); }} /></label>
       <button disabled={busy || !folder} onClick={() => void fromFolder()}>从项目文件夹导入</button><button disabled={busy} onClick={() => setPasteOpen(value => !value)}>粘贴文字</button>
     </div><p className="muted">支持 UTF-8 文本、代码、文本 PDF 和 DOCX，每份最多1MB。扫描件与图片需先转文字。</p>
       {!folder && <small className="muted">保存到项目文件夹后，可导入其中“参考资料”目录。</small>}
-      {pasteOpen && <div><label className="reference-field">文件名<input value={pasteName} onChange={e => setPasteName(e.target.value)} maxLength={200} /></label><label className="reference-field">说明内容<textarea value={paste} onChange={e => setPaste(e.target.value)} rows={6} maxLength={120000} /></label><button className="primary" disabled={busy || !paste.trim()} onClick={() => { setBusy(true); setError(''); void store({ name: pasteName, original: paste, encoding: 'text' }).then(async () => { setPaste(''); setView('list'); setStatus('说明已保存，可供当前项目 AI 参考。'); await onChanged(); }).catch(e => setError(String(e))).finally(() => setBusy(false)); }}>保存说明</button></div>}
+      {pasteOpen && <div><label className="reference-field">文件名<input value={pasteName} onChange={e => setPasteName(e.target.value)} maxLength={200} /></label><label className="reference-field">说明内容<textarea value={paste} onChange={e => setPaste(e.target.value)} rows={6} maxLength={120000} /></label><button className="primary" disabled={busy || !paste.trim()} onClick={() => { setBusy(true); setError(''); void store({ name: pasteName, original: paste, encoding: 'text' }).then(() => { setPaste(''); setTrash(false); setView('list'); setStatus('说明已保存到本机项目，文件夹在后台同步。'); syncLater(); }).catch(e => setError(String(e))).finally(() => setBusy(false)); }}>保存说明</button></div>}
     </>}
-    {view === 'preview' && preview && <section className="reference-preview"><button className="resource-back" onClick={() => setView(previewBack)}>← {previewBack === 'history' ? '返回版本列表' : '返回资料列表'}</button><h3>{preview.name} · V{preview.version}</h3><small className="muted">提取文字预览，图片未分析；请核对表格与参数。</small><pre>{preview.text}</pre><button onClick={() => onModule(preview.text)}>用这份资料创建我的模块</button></section>}
+    {view === 'preview' && preview && <section className="reference-preview"><button className="resource-back" onClick={() => setView(previewBack)}>← {previewBack === 'history' ? '返回版本列表' : '返回资料列表'}</button><h3>{preview.name} · V{preview.version}</h3><div className="reference-actions"><button onClick={()=>download(preview)}><Download size={16}/>下载原文件</button><details><summary>文件保存位置</summary><p className="reference-disk-path">{archivePath(preview)}</p><small>本机项目记录已保存。归档副本需等文件夹同步完成后查看。</small>{onOpenFolder&&<button onClick={openFolder}>打开项目文件夹</button>}</details></div><small className="muted">提取文字预览，图片未分析；请核对表格与参数。</small><pre>{preview.text}</pre>{!preview.archived&&<button onClick={() => onModule(preview.text)}>用这份资料创建我的模块</button>}</section>}
     {view === 'history' && preview && <section><button className="resource-back" onClick={() => setView('list')}>← 返回资料列表</button><h3>{preview.name} · 历史版本</h3><div className="reference-list">{history.map(item => <article key={item.version}><button className="reference-name" onClick={() => openPreview(item, 'history')}>V{item.version}{item.version === history[0]?.version ? ' · 当前版本' : ''}</button><span>{modeLabels[item.mode]}</span><small>{item.text.length} 字</small></article>)}</div></section>}
     {error && <p role="alert">{error}</p>}{status && <p role="status" className="reference-status">{status}</p>}
     <small className="muted">启用的相关片段会发送给你配置的 AI 服务，资料随项目保存。</small>
+    {removing&&<Dialog title="移到回收站" onClose={()=>{if(!busy)setRemoving(null);}} footer={<><button disabled={busy} onClick={()=>setRemoving(null)}>取消</button><button disabled={busy} onClick={()=>void archive(removing,true)}>确认移除</button></>}><p>将“{removing.name}”移到项目资料回收站？之后不会再提供给 AI，可随时恢复。</p><p className="muted">原文件、历史对话引用与项目文件夹中的归档副本保留。</p>{error&&<p role="alert">{error}</p>}</Dialog>}
   </Dialog>;
 }

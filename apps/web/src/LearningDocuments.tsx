@@ -43,6 +43,7 @@ export function LearningDocuments({projectId,teaching,active,disabled,onNew,onSa
   const update=(patch:Partial<Draft>)=>setDraft(p=>({...p,...patch,edited:true,baseRevision:p.baseRevision??viewRef.current?.checkpoint.revision??null}));
   const write=async(generating:boolean)=>{
     if(!projectId||!viewRef.current||busyRef.current||disabled||unknown||conflict)return;
+    if(!generating&&!draftRef.current.edited){setNotice('当前文档没有新修改，沿用已保存版本。');return;}
     const current=draftRef.current;if(generating?!current.prompt.trim():!current.title.trim()||!current.content.trim())return;
     const preserve=current.edited;busyRef.current=true;setBusy(true);onBusy(true);setError('');setNotice('');
     try{

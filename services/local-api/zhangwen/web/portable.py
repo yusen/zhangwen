@@ -214,6 +214,6 @@ def import_project(repo, snapshot: ProjectSnapshot) -> dict:
             insert_checkpoint(repo, conn, project_id, snapshot.chatCoding)
             insert_conversation_records(repo, conn, project_id, snapshot.chatCoding.records)
         for item in sorted(snapshot.references or [], key=lambda r: (r.id, r.version)):
-            insert_reference(conn, project_id, item.model_dump(), now)
+            insert_reference(conn, project_id, item.model_dump(exclude_none=True), now)
     workspace = repo.projects.create_project_from_idea(idea='从本地项目文件夹恢复' + ('Chat Coding项目' if snapshot.project.programmingMode == 'chat-coding' else 'MicroPython项目'), project_name=snapshot.project.name, initial_expert=None, participating_experts=[], after_create=after_create)
     return repo.get(workspace.project.id)

@@ -93,6 +93,11 @@
 }
 
 .reference-list .reference-name { justify-content: flex-start; }
+.reference-location { display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:12px; padding:12px; background:var(--raised); border:1px solid var(--border); border-radius:8px; }
+.reference-location > span { flex:1 1 220px; min-width:0; overflow-wrap:anywhere; font-size:14px; }
+.reference-location small { display:block; margin-top:6px; color:var(--ink-3); }
+.reference-disk-path { overflow-wrap:anywhere; font-size:13px; }
+.reference-list article > button:not(.reference-name) { min-height:44px; gap:6px; }
 .reference-error > p { flex-basis: 100%; margin: 0; overflow-wrap: anywhere; color: var(--verification-fail); }
 
 .hardware-resource-dialog .sensor-table-scroll table { width: 100%; border-collapse: collapse; text-align: left; }

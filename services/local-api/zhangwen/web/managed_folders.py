@@ -166,8 +166,9 @@ def router(repo):
                     if temp.exists(): temp.unlink()
             for target, content in targets:
                 if not target.exists(): write(target, content)
-            write(path / primary, main)
-            write(path / 'zhangwen.project.json', raw)
+            # Existing bytes were checked above. Avoid replacing unchanged files.
+            if primary != old_primary or item['mainHash'] != checksum(main): write(path / primary, main)
+            if item['checkpointHash'] != checksum(raw): write(path / 'zhangwen.project.json', raw)
             item['checkpointHash'], item['mainHash'] = checksum(raw), checksum(main)
             item['mainFile']=primary
             persist(data)

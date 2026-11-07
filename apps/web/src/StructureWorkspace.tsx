@@ -64,6 +64,11 @@ export function StructureWorkspace({ projectId, active, board, modules, designTy
   const busyRef = useRef(false);
   const [error, setError] = useState('');
   const [errorStatus, setErrorStatus] = useState(0);
+  const failureHint = error.includes('参考案例与自由建模不能混用')
+    ? '这次方案混用了两种建模方式，未生成模型。请说明先采用完整案例生成预览，再逐步调整。需求和原版本已保留。'
+    : error.includes('改造未能形成有效单实体')
+      ? '这次结构改动没有通过模型检查，未生成可用模型。可以先生成基础外形，再逐项添加孔位和连接。需求和原版本已保留。'
+      : '';
   const [picker, setPicker] = useState(false);
   const [casePicker, setCasePicker] = useState(false);
   const [pendingIds, setPendingIds] = useState<string[]>([]);
@@ -162,7 +167,7 @@ export function StructureWorkspace({ projectId, active, board, modules, designTy
     localStorage.setItem(structureDraftKey(projectId,designType),JSON.stringify({sourceRevision:parameterSourceRevision??current.revision,params,faces,rotations,selected,customProfiles,hardwarePlacements}));
   };
   saveDraftRef.current = preserveDraft;
-  useEffect(() => { onDirtyChange(draftDirty || !!input.trim()); }, [draftDirty,input,onDirtyChange]);
+  useEffect(() => { onDirtyChange(draftDirty); }, [draftDirty,onDirtyChange]);
   useEffect(() => {
     if (!current || draftLoadedFor!==current.revision) return;
     try { preserveDraft(); } catch { setError('浏览器无法保留结构草稿，请导出草稿以免丢失。'); }
@@ -234,7 +239,7 @@ export function StructureWorkspace({ projectId, active, board, modules, designTy
           </section>}
           {busy && <p className="ai-progress" role="status"><LoaderCircle size={16} className="spin" />{busy} · {elapsed} 秒</p>}
         </div>
-        {error && <p className="chat-error" role="alert">{error}{errorStatus === 409 ? <button disabled={!!busy} onClick={() => void api<Workspace>(`/projects/${projectId}/structure`).then(v => {setWorkspace(v); setSelectedVersion(null); setError('');}).catch(e => setError(errorText(e)))}>重新加载记录</button> : <>{input.trim() && <button disabled={!!busy} onClick={() => void act(current ? 'revise' : 'analyze', input)}>重试当前需求</button>}{errorStatus === 502 && <button disabled={!!busy} onClick={onSettings}>AI 设置</button>}</>}</p>}
+        {error && <div className="chat-error" role="alert">{failureHint || error}{failureHint&&<details><summary>查看具体原因</summary><p>{error}</p></details>}{errorStatus === 409 ? <button disabled={!!busy} onClick={() => void api<Workspace>(`/projects/${projectId}/structure`).then(v => {setWorkspace(v); setSelectedVersion(null); setError('');}).catch(e => setError(errorText(e)))}>重新加载记录</button> : <>{input.trim() && <button disabled={!!busy} onClick={() => void act(current ? 'revise' : 'analyze', input)}>重试当前需求</button>}{errorStatus === 502 && <button disabled={!!busy} onClick={onSettings}>AI 设置</button>}</>}</div>}
         <form className="chat-form" onSubmit={e => {e.preventDefault(); void act(current ? 'revise' : 'analyze', input);}}><label className="sr-only" htmlFor="structure-message">发送给结构工程师</label><textarea id="structure-message" placeholder={laser ? "描述材料、厚度、图案轮廓与毫米尺寸…" : result?.builtinTemplate ? `基于${result.builtinTemplate.title}，描述要调整的尺寸、孔位、凹字或结构…` : "描述想做什么，先看模型预览；也可说明要改哪里…"} value={input} maxLength={4000} disabled={!projectId || !!busy} onChange={e => setInput(e.target.value)} onKeyDown={e => {if ((e.ctrlKey || e.metaKey) && e.key === 'Enter' && !e.nativeEvent.isComposing && input.trim()) {e.preventDefault(); void act(current ? 'revise' : 'analyze', input);}}} /><div><span>{laser ? "描述作品 → 确认尺寸 → 导出图纸" : result?.builtinTemplate ? "基于当前案例对话 → 检查并更新3D" : "描述需求 → 生成预览 → 确认与调整"}</span><button className="primary icon-button" aria-label="发送结构需求" disabled={!projectId || !input.trim() || !!busy}>{busy ? <LoaderCircle size={19} className="spin" /> : <ArrowUp size={20} />}</button></div></form>
       </section>
       <section className={`panel structure-model ${parametersExpanded ? 'parameters-expanded' : ''} structure-mobile-${tab === 'model' ? 'show' : 'hide'}`}>

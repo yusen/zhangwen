@@ -61,7 +61,7 @@ export function UpdateCenter({ enabled, blocked, unsaved, hideTrigger = false, o
   const ready = info?.job?.state === 'ready';
   const available = info?.state === 'available' && !ready;
   async function install() {
-    if (!info?.canInstall || !info.checkToken || !info.latestRevision || !confirmed || blocked || unsaved) return;
+    if (!info?.canInstall || !info.checkToken || !info.latestRevision || !confirmed || blocked) return;
     setRequesting(true); setError('');
     try {
       const body: InstallUpdate = { revision: info.latestRevision, checkToken: info.checkToken, confirmed: true };
@@ -69,20 +69,20 @@ export function UpdateCenter({ enabled, blocked, unsaved, hideTrigger = false, o
     } catch (err) { setError(err instanceof Error ? err.message : '无法开始更新。'); }
     finally { setRequesting(false); }
   }
-  const actions = <div className="update-actions"><button onClick={() => setOpen(false)}>{unsaved ? '返回保存' : '稍后再说'}</button><button disabled={checking || installing || requesting} onClick={() => void check()}><RefreshCw size={16} />{checking ? '检查中…' : '重新检查'}</button>{info?.canInstall && !installing && !ready && <button className="primary" disabled={!confirmed || unsaved || blocked || checking || requesting} onClick={() => void install()}><Download size={16} />{requesting ? '正在提交…' : '确认更新'}</button>}</div>;
+  const actions = <div className="update-actions"><button onClick={() => setOpen(false)}>稍后再说</button><button disabled={checking || installing || requesting} onClick={() => void check()}><RefreshCw size={16} />{checking ? '检查中…' : '重新检查'}</button>{info?.canInstall && !installing && !ready && <button className="primary" disabled={!confirmed || blocked || checking || requesting} onClick={() => void install()}><Download size={16} />{requesting ? '正在提交…' : '确认更新'}</button>}</div>;
   return <>
     {!hideTrigger && <ToolbarButton icon={installing ? LoaderCircle : RefreshCw} label="检查更新" variant={available || ready ? 'brand' : 'muted'} active={open} disabled={!enabled} hint={installing ? '安装中' : ready ? '待重启' : available ? '有更新' : undefined} title={ready ? '新版本已安装，下次启动生效' : available ? '发现新版本，点击查看' : '检查平台更新'} onClick={() => { setOpen(true); if (!info || info.state === 'unchecked') void check(); }} />}
     {open && <Dialog title="平台更新" onClose={() => setOpen(false)} className="update-dialog" footer={actions}>
       <div className="update-summary"><span className="mode-mark">{installing || checking ? <LoaderCircle className="spin" size={25} /> : ready || info?.state === 'current' ? <Check size={25} /> : <RefreshCw size={25} />}</span><div><h3 data-dialog-autofocus tabIndex={-1}>{installing ? '正在安装更新' : ready ? '下次启动使用新版本' : checking ? '正在检查更新' : available ? '发现新版本' : '掌问本地平台'}</h3><p>{info?.deployment === 'managed' ? '一键部署版本 · Windows / macOS' : '本地开发工作区'}</p></div></div>
       <dl className="update-versions"><dt>当前版本</dt><dd>{info?.currentVersion ?? (info?.deployment === 'managed' ? '旧版（未标注版本号）' : '开发版本')}</dd><dt>线上版本</dt><dd>{info?.latestVersion ?? (info?.latestRevision ? '旧版（未标注版本号）' : '尚未检测')}</dd>{info?.checkedAt && <><dt>上次检查</dt><dd>{new Date(info.checkedAt).toLocaleString()}</dd></>}</dl>
-      <p role="status" className="update-message">{checking ? '正在获取版本信息…' : info?.job?.message ?? info?.message ?? '点击下方按钮检查最新版本。'}</p>
+      <p role="status" className="update-message">{checking ? '正在获取版本信息…' : ready ? '新版本已准备好，下次启动生效。当前工作台继续运行。' : info?.job?.message ?? info?.message ?? '点击下方按钮检查最新版本。'}</p>
       {error && <p className="settings-error" role="alert">{error}</p>}
       {info && <>
         {info.latestRevision && info.latestVersion !== info.currentVersion && <ReleaseNotes title="线上版本更新说明" version={info.latestVersion} notes={info.latestReleaseNotes ?? []} />}
         <ReleaseNotes title="当前版本更新说明" version={info.currentVersion} notes={info.currentReleaseNotes ?? []} />
       </>}
-      {info?.deployment === 'managed' && !ready && !installing && available && <><p className="muted">确认后下载并校验新版本，环境准备成功才切换启动版本。项目与 AI 设置保留；当前服务继续运行，下次启动生效。</p>{(unsaved || blocked) && <p className="update-save-hint">{unsaved ? '请先返回工作台保存项目和代码。' : '请等待当前任务完成，并停止设备程序后再更新。'}</p>}<label className="confirm"><input type="checkbox" checked={confirmed} onChange={event => setConfirmed(event.target.checked)} disabled={unsaved || blocked || requesting} />我已保存项目，确认安装新版本。</label></>}
-      {ready && <p className="update-save-hint">保存项目后，关闭原服务窗口，再从 Windows 桌面图标或 macOS「启动掌问.command」打开。仅刷新网页不会重启服务。</p>}
+      {info?.deployment === 'managed' && !ready && !installing && available && <><p className="muted">更新可直接下载准备，无需先保存项目。项目与 AI 设置保留，当前工作台继续使用，下次启动生效。</p>{unsaved && <p className="update-save-hint">当前有草稿或文件夹待同步，可以先准备更新。关闭工作台前请核对保存状态；未应用的结构参数无需为了更新生成模型。</p>}{blocked && <p className="update-save-hint">请等待当前任务完成，并停止设备程序后再更新。</p>}<label className="confirm"><input type="checkbox" checked={confirmed} onChange={event => setConfirmed(event.target.checked)} disabled={blocked || requesting} />确认下载并安装新版本，下次启动生效。</label></>}
+      {ready && <p className="update-save-hint">{unsaved ? '当前还有草稿或文件夹待同步，请先返回工作台核对并保留需要的内容。' : '已保存的项目无需重复保存。'}准备好后关闭原服务窗口，再从 Windows 桌面图标或 macOS「启动掌问.command」打开。仅刷新网页不会重启服务。</p>}
     </Dialog>}
   </>;
 }

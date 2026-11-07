@@ -631,9 +631,6 @@ dialog::backdrop { background: #0b182d70; backdrop-filter: blur(3px); }
 .action-menu-trigger:focus-visible, .title-save:focus-visible, .workbench-action-menu button:focus-visible { outline: 2px solid var(--brand); outline-offset: 1px; }
 .filebar > .action-menu-trigger { min-width: 30px; padding: 5px; }
 .project-folder-status > span { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-.project-folder-status > .code-check-status { display: inline-flex; align-items: center; gap: 5px; flex: 0 0 auto; margin-left: auto; font-size: 11px; white-space: nowrap; }
-.code-check-status.is-valid { color: var(--suc); }
-.code-check-status.has-error { color: var(--dng); }
 .current-project strong { overflow: hidden; white-space: nowrap; text-overflow: ellipsis; max-width: 100%; font-weight: 500; color: var(--ink-2); }
 .current-project > .dirty-dot { display: block; flex-shrink: 0; }
 .mode-picker-dialog { width: min(640px, calc(100vw - 32px)); }
@@ -762,8 +759,6 @@ dialog::backdrop { background: #0b182d70; backdrop-filter: blur(3px); }
 .tool-disabled-explanation:focus-visible { outline: 2px solid var(--sw); outline-offset: 2px; }
 .tool-disabled-reason { display: none; position: fixed; top: 122px; z-index: 90; max-width: min(300px, 80vw); padding: 10px 12px; border: 1px solid var(--border2); border-radius: 8px; background: var(--raised); color: var(--ink-1); font-size: 13px; line-height: 1.6; box-shadow: 0 4px 16px #0003; }
 .tool-disabled-explanation:hover .tool-disabled-reason, .tool-disabled-explanation:focus .tool-disabled-reason { display: block; }
-.execution-feedback { flex: 0 0 auto; display: flex; flex-wrap: wrap; gap: 4px 10px; padding: 8px 12px; border-bottom: 1px solid var(--border); font-size: 12px; line-height: 1.6; color: var(--ink-2); }
-.execution-feedback strong { font-size: 12px; color: var(--ink-1); }
 .workflow-shared-goal { padding: 10px 14px; border-bottom: 1px solid var(--border); font-size: 13px; color: var(--ink-1); flex: 0 0 auto; }
 .workflow-shared-goal small { display: block; margin-top: 4px; color: var(--ink-3); line-height: 1.6; }
 .workflow-goal-recovery { padding: 12px; border: 1px solid var(--border2); border-radius: 8px; background: var(--sel); font-size: 13px; margin-bottom: 12px; }
@@ -784,10 +779,6 @@ dialog::backdrop { background: #0b182d70; backdrop-filter: blur(3px); }
 .compact-disclosure > summary > small { margin-left: 10px; color: var(--ink-3); font-size: 12px; }
 .compact-disclosure p { margin: 8px 0; overflow-wrap: anywhere; }
 .compact-disclosure .disclosure-content { padding: 0 4px 6px; }
-.execution-feedback { display: block; padding: 2px 12px; }
-.execution-feedback > details { width: 100%; }
-.execution-feedback summary { font-size: 12px; }
-.execution-feedback .disclosure-content { max-height: 160px; overflow-y: auto; }
 .workflow-shared-goal { padding: 2px 14px; }
 .workflow-shared-goal small { display: inline; }
 .workflow-shared-goal > p { max-height: 120px; overflow-y: auto; }

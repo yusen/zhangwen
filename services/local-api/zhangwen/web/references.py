@@ -88,6 +88,7 @@ class ReferenceVersion(Boundary):
     encoding: str
     mode: str
     checksum: str = Field(pattern=r'^[a-f0-9]{64}$')
+    archived: bool | None = None
 
     @model_validator(mode='after')
     def integrity(self):
@@ -110,16 +111,19 @@ def digest(text):
     return hashlib.sha256(text.encode('utf-8')).hexdigest()
 
 
-def list_references(repo, project_id, *, history=False):
+def list_references(repo, project_id, *, history=False, include_archived=False):
     repo.get(project_id)
     with repo.connect() as conn:
         rows = conn.execute('''SELECT v.preview_json FROM artifacts a JOIN artifact_versions v ON v.artifact_id=a.id
             WHERE a.project_id=? AND a.source_agent_id='zhangwen-reference'
             AND (? OR a.current_version_id=v.id) ORDER BY a.id, v.version''', (project_id, history)).fetchall()
-    return [json.loads(json.loads(row[0])['code']) for row in rows]
+    items = [json.loads(json.loads(row[0])['code']) for row in rows]
+    return items if history or include_archived else [item for item in items if not item.get('archived')]
 
 
 def insert_reference(conn, project_id, value, now):
+    if value.get('archived') is None:
+        value = {key: content for key, content in value.items() if key != 'archived'}
     artifact = f'project_reference_{project_id}_{value["id"]}'
     version_id = f'{artifact}_v{value["version"]}'
     conn.execute('''INSERT INTO artifacts(id,project_id,title,kind,status,source_agent_id,current_version_id,created_at,updated_at)
@@ -136,8 +140,10 @@ def insert_reference(conn, project_id, value, now):
 def save_reference(repo, project_id, request):
     text = extract(request)
     with repo.lock:
-        current = list_references(repo, project_id)
+        current = list_references(repo, project_id, include_archived=True)
         previous = next((r for r in current if r['name'] == request.name), None)
+        if previous and previous.get('archived'):
+            raise HTTPException(409, '同名资料在回收站中，请先恢复再更新。')
         if request.expectedVersion != (previous['version'] if previous else 0):
             raise HTTPException(409, '同名资料已存在或已变更，请刷新后明确更新，未覆盖。')
         if not previous and len(current) >= 20:
@@ -166,7 +172,7 @@ def select_references(items, query, budget=12000):
     candidates = []
     query_terms = terms(query)
     for item in items:
-        if item['mode'] == 'off':
+        if item['mode'] == 'off' or item.get('archived'):
             continue
         lines = item['text'].splitlines()
         # Preserve line coordinates even for long minified code lines.
@@ -197,6 +203,31 @@ def context_text(citations):
     return '\n\n'.join(f'[{i+1}] {r["name"]} V{r["version"]} 第{r["startLine"]}–{r["endLine"]}行\n{r["text"]}' for i, r in enumerate(citations))
 
 
+class ArchiveReferenceInput(Boundary):
+    expectedVersion: int = Field(ge=1, le=1000)
+    archived: bool
+
+
+def archive_reference(repo, project_id, reference_id, request):
+    with repo.lock:
+        current = list_references(repo, project_id, include_archived=True)
+        previous = next((r for r in current if r['id'] == reference_id), None)
+        if not previous:
+            raise HTTPException(404, '此项目中没有这份资料。')
+        if previous['version'] != request.expectedVersion:
+            raise HTTPException(409, '资料已更新，请刷新列表后重试，未改变资料。')
+        if bool(previous.get('archived')) == request.archived:
+            return previous
+        history = list_references(repo, project_id, history=True)
+        item = {**previous, 'version': previous['version'] + 1, 'archived': request.archived}
+        if len(history) >= 200 or sum(len(json.dumps(r, ensure_ascii=False).encode()) for r in history + [item]) > 12_000_000:
+            raise HTTPException(413, '资料历史已达容量上限，请先导出项目备份。')
+        ReferenceVersion.model_validate(item)
+        with repo.connect() as conn:
+            insert_reference(conn, project_id, item, datetime.now(UTC).isoformat())
+        return item
+
+
 def router(repo):
     routes = APIRouter()
 
@@ -205,11 +236,15 @@ def router(repo):
         return {'text': extract(request)}
 
     @routes.get('/api/projects/{project_id}/references')
-    def listing(project_id: str, history: bool = False):
-        return {'references': list_references(repo, project_id, history=history)}
+    def listing(project_id: str, history: bool = False, includeArchived: bool = False):
+        return {'references': list_references(repo, project_id, history=history, include_archived=includeArchived)}
 
     @routes.post('/api/projects/{project_id}/references')
     def save(project_id: str, request: ReferenceInput):
         return save_reference(repo, project_id, request)
+
+    @routes.post('/api/projects/{project_id}/references/{reference_id}/archive')
+    def archive(project_id: str, reference_id: str, request: ArchiveReferenceInput):
+        return archive_reference(repo, project_id, reference_id, request)
 
     return routes
