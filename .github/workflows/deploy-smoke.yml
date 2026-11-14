@@ -160,7 +160,12 @@ jobs:
                       context = app.state.repo.skills.render_context(labplus['componentId'], board_id='hw_labplus_mpython_v2', max_chars=20000)
                       assert guide['codeTemplate'] in context
                       for board in PROFILES:
-                          image = firmware_profile(board)['image']
+                          profile = firmware_profile(board)
+                          image = profile.get('image')
+                          if image is None:
+                              assert profile.get('unavailable'), profile
+                              assert client.get(f'/api/firmware/{board}/image').status_code == 404
+                              continue
                           assert hashlib.sha256(firmware_image(board).read_bytes()).hexdigest() == image['sha256']
                           response = client.get(image['url'])
                           assert response.status_code == 200 and hashlib.sha256(response.content).hexdigest() == image['sha256']
