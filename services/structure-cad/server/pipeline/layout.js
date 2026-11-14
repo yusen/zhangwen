@@ -486,7 +486,7 @@ export function openingMarginDelta(opening = {}, parameters = DEFAULT_PARAMETERS
 }
 
 export function buildMountingTransforms(transform, parameters = DEFAULT_PARAMETERS) {
-  if (transform.mounting_strategy === 'shell_through_screw_holes') return [];
+  if (['shell_through_screw_holes', 'reference_only'].includes(transform.mounting_strategy)) return [];
   const bb = transform.bounding_box;
   const mounting = transform.mounting || {};
   const fixedStructure = isPlainObject(mounting.fixed_structure) ? mounting.fixed_structure : {};

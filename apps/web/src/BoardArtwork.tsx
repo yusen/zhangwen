@@ -10,6 +10,13 @@ export function BoardArtwork({ board, className = '' }: { board?: HardwareSummar
   const source = [{src: photo?.url, alt: photo?.alt ?? board?.displayName}, bundled].find(item => item?.src && !failed.includes(item.src));
   if (source?.src) return <img className={`board-artwork ${className}`} src={source.src} alt={source.alt} onError={() => setFailed(previous => [...previous, source.src!])} />;
   const id = board?.componentId ?? '';
+  if (id === 'hw_bbc_microbit') return <svg className={`board-artwork board-diagram ${className}`} viewBox="0 0 80 64" role="img" aria-label="micro:bit 主控示意图">
+    <rect x="2" y="7" width="76" height="51" rx="5" fill="#27313c" stroke="#a8b8cb"/>
+    <rect x="33" y="3" width="14" height="8" rx="2" fill="#bac5d0"/>
+    {[0,1,2,3,4].flatMap(row=>[0,1,2,3,4].map(col=><rect key={`${row}:${col}`} x={28+col*5} y={17+row*5} width="3" height="3" rx=".5" fill="#f06b57"/>))}
+    <circle cx="14" cy="28" r="6" fill="#b9bfc7"/><circle cx="66" cy="28" r="6" fill="#b9bfc7"/>
+    {[0,1,2,3,4].map(pin=><circle key={pin} cx={9+pin*15.5} cy="52" r="5" fill="#d7ba72"/>)}
+  </svg>;
   const mpython = id.includes('mpython');
   const label = id.includes('v2') ? '2.0' : id.includes('v3') ? '3.0' : id.includes('c3') ? 'C3' : id.includes('xiao') ? 'S3' : 'MCU';
   return <svg className={`board-artwork board-diagram ${className}`} viewBox="0 0 80 64" role="img" aria-label={`${board?.displayName ?? '主控板'}示意图`}>

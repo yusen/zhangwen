@@ -141,11 +141,12 @@ input, textarea, select { background: var(--raised); border-color: var(--border2
 .hardware-guide-actions button[aria-pressed="true"] { outline: 2px solid var(--brand); outline-offset: 2px; }
 .hardware-guide-hint { margin: 10px 0 0; color: var(--ink-3); font-size: 12px; line-height: 1.7; }
 .hardware-guide-response { margin: 12px 0 0; padding-top: 12px; border-top: 1px solid var(--border); font-size: 13px; line-height: 1.8; }
-.integration-progress { margin: 0 14px 8px; padding: 10px 12px; border: 1px solid var(--border); border-radius: 7px; background: var(--raised); flex-shrink: 0; font-size: 12px; }
+.integration-progress { margin: 0 14px 6px; padding: 4px 8px; border: 1px solid var(--border); border-radius: 7px; background: var(--raised); flex-shrink: 0; font-size: 12px; }
 .integration-progress-current { display: flex; align-items: center; gap: 10px; min-width: 0; }
 .integration-progress-current strong { white-space: nowrap; color: var(--ink-2); font-weight: 500; }
 .integration-progress-current select { min-width: 0; flex: 1; width: 100%; font-size: 12px; }
-.integration-progress > p { color: var(--ink-3); margin: 6px 0; line-height: 1.6; overflow-wrap: anywhere; }
+.integration-progress-current button { flex-shrink: 0; min-height: 32px; padding: 4px 6px; gap: 4px; font-size: 12px; white-space: nowrap; }
+.integration-progress-details p { color: var(--ink-3); margin: 6px 0; line-height: 1.6; overflow-wrap: anywhere; }
 .integration-progress-actions { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
 .integration-progress-actions button { min-height: 34px; font-size: 12px; gap: 6px; }
 .integration-progress-actions small { font-size: 11px; color: var(--ink-3); }
@@ -503,17 +504,17 @@ dialog::backdrop { background: #0b182d70; backdrop-filter: blur(3px); }
 .hardware-panel .panel-head { padding: 5px 6px; gap: 0; }
 /* Align all three engineering headers, including the editor's 44px controls. */
 .workbench > .hardware-panel > .panel-head,
-.workbench > .ai-panel > .panel-head,
-.workbench > .code-panel > .filebar {
+.workbench .ai-panel > .panel-head,
+.workbench .code-panel > .filebar {
   height: 60px; min-height: 60px; flex: 0 0 60px;
   padding-top: 7px; padding-bottom: 7px; box-sizing: border-box;
 }
-.workbench > .code-panel > .filebar { flex-wrap: nowrap; padding-top: 0; padding-bottom: 0; }
+.workbench .code-panel > .filebar { flex-wrap: nowrap; padding-top: 0; padding-bottom: 0; }
 @media (min-width: 768px) and (max-width: 1500px) {
-  .workbench > .code-panel > .filebar { gap: 6px; padding-left: 8px; padding-right: 8px; font-size: 12px; }
-  .workbench > .code-panel > .filebar .code-version-select { min-width: 80px; flex: 1 1 160px; }
-  .workbench > .code-panel > .filebar .editor-view-controls > button { min-width: 32px; padding: 4px; }
-  .workbench > .code-panel > .filebar > button { padding-left: 6px; padding-right: 6px; gap: 4px; }
+  .workbench .code-panel > .filebar { gap: 6px; padding-left: 8px; padding-right: 8px; font-size: 12px; }
+  .workbench .code-panel > .filebar .code-version-select { min-width: 80px; flex: 1 1 160px; }
+  .workbench .code-panel > .filebar .editor-view-controls > button { min-width: 32px; padding: 4px; }
+  .workbench .code-panel > .filebar > button { padding-left: 6px; padding-right: 6px; gap: 4px; }
 }
 .board-field-label { color: var(--ink-3); font-size: 12px; font-weight: 500; }
 .board-select-hint { color: var(--ink-3); font-size: 12px; line-height: 1.5; }
@@ -577,9 +578,12 @@ dialog::backdrop { background: #0b182d70; backdrop-filter: blur(3px); }
 .answer-summary { margin: 8px 0; line-height: 1.7; font-size: 14px; color: var(--ink-1); }
 .answer-points { margin: 8px 0; padding-left: 20px; font-size: 13px; line-height: 1.8; }
 .answer-code-link { display: inline-flex; gap: 6px; align-items: center; min-height: 44px; padding: 6px 8px; border: 1px solid var(--border2); color: var(--ink-2); font-size: 12px; }
-.answer-details, .answer-original { margin-top: 8px; font-size: 12px; }
-.answer-details summary, .answer-original summary { cursor: pointer; padding: 8px 0; color: var(--ink-3); }
-.answer-original pre { max-height: 300px; overflow: auto; }
+.answer-details { margin-top: 4px; font-size: 12px; }
+.answer-details summary { cursor: pointer; padding: 6px 0; color: var(--ink-2); }
+.answer-details summary:focus-visible { outline: 2px solid var(--sw); outline-offset: 2px; }
+@media (pointer: coarse) {
+  .integration-progress-current button, .integration-progress-current select, .answer-details summary { min-height: 44px; }
+}
 .answer-question { border-top: 1px solid var(--border); padding-top: 12px; margin-top: 12px; }
 .answer-question > strong { color: var(--sw); }
 .answer-question p { font-size: 14px; line-height: 1.7; }

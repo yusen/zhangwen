@@ -61,8 +61,8 @@ class ContourPen(BasePen):
 @lru_cache(maxsize=128)
 def outlines(text, height):
     """Ink bounds start at (0,0), Y down; height is the actual ink height in mm."""
-    if not text.strip() or len(text) > 40 or any(ord(c) < 32 or ord(c) == 127 for c in text):
-        raise ValueError('文字应为1至40个可显示字符，暂不支持换行和控制字符。')
+    if not text.strip() or len(text) > 200 or any(ord(c) < 32 or ord(c) == 127 for c in text):
+        raise ValueError('文字应为1至200个可显示字符，暂不支持换行和控制字符。')
     face = font()
     cmap = face.getBestCmap()
     if any(ord(c) not in cmap for c in text):

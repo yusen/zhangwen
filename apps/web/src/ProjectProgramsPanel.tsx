@@ -4,7 +4,8 @@ import type { HardwareSummary, ProjectProgramRecord, ProgramRunSubmission, Uploa
 import { ensureFolderPermission, type FolderBinding } from './projectFolders';
 import { listProjectPrograms, readProjectProgram, saveProjectProgram, type ProjectProgram } from './projectPrograms';
 
-export function ProjectPrograms({ folder, code, board, componentIds, versions, receipt, run, disabled, onBusy, onChooseFolder, onLoad, onDownload }: {
+export function ProjectPrograms({ folder, code, board, componentIds, versions, receipt, run, disabled, onBusy, onChooseFolder, onLoad, onDownload, controller }: {
+  controller?: {id:string;name:string;revision:number};
   folder: FolderBinding | null; code: string; board: HardwareSummary | undefined; componentIds: string[]; versions: Version[] | null;
   receipt: UploadReceipt | null; run: ProgramRunSubmission | null; disabled: boolean;
   onBusy: (value: boolean) => void; onChooseFolder: () => void;
@@ -52,7 +53,7 @@ export function ProjectPrograms({ folder, code, board, componentIds, versions, r
     {creating && <form className="program-save-form" onSubmit={event => { event.preventDefault(); void task('保存项目程序', async () => {
       if (!folder || !board) return;
       const version = versions?.filter(item => item.source !== 'ai' && item.code === code && item.boardId === board.componentId).sort((a, b) => b.revision - a.revision)[0];
-      const saved = await saveProjectProgram(folder, { name, code, boardId: board.componentId, boardName: board.displayName, componentIds, sourceRevision: version?.revision ?? null, observed, note, receipt, run });
+      const saved = await saveProjectProgram(folder, { name, code, boardId: board.componentId, boardName: board.displayName, componentIds, sourceRevision: version?.revision ?? null, observed, note, receipt, run, controller });
       await refresh(); setPreview(await readProjectProgram(folder, saved.directory)); setCreating(false); setName(''); setNote(''); setObserved('unconfirmed'); setNotice('程序副本已保存并回读校验，可在下方查看。');
     }); }}>
       <label className="field">程序名称<input autoFocus aria-label="程序名称" value={name} maxLength={80} required disabled={locked} placeholder="例如：OLED 空心圆测试" onChange={event => setName(event.target.value)} /></label>
@@ -61,8 +62,8 @@ export function ProjectPrograms({ folder, code, board, componentIds, versions, r
       <p className="muted">测试结果由你确认；平台单独记录本次会话中与代码一致的上传回读、运行提交信息。</p>
       <div className="file-actions"><button type="button" disabled={locked} onClick={() => setCreating(false)}>取消保存程序</button><button className="primary" disabled={locked || !name.trim()}>保存到程序子文件夹</button></div>
     </form>}
-    {folder && <div className="project-program-list">{programs.length ? programs.map(program => <article className="project-program-row" key={program.directory}>
-      <FileCode2 size={18} /><div><strong>{program.record.name}</strong><small>{program.record.boardName} · {label(program.record.verification.observed)}</small><small>{new Date(program.record.createdAt).toLocaleString()}</small><code title={`programs/${program.directory}/main.py`}>programs/{program.directory}/main.py</code></div>
+    {folder && <div className="project-program-list">{programs.filter(program=>(program.record.controllerId??'main')===(controller?.id??'main')).length ? programs.filter(program=>(program.record.controllerId??'main')===(controller?.id??'main')).map(program => <article className="project-program-row" key={program.directory}>
+      <FileCode2 size={18} /><div><strong>{program.record.name}</strong><small>{program.record.controllerName&&`${program.record.controllerName} · `}{program.record.boardName} · {label(program.record.verification.observed)}</small><small>{new Date(program.record.createdAt).toLocaleString()}</small><code title={`programs/${program.directory}/main.py`}>programs/{program.directory}/main.py</code></div>
       <button disabled={locked} aria-label={`查看程序：${program.record.name}`} onClick={() => void task('读取程序', async () => { setPreview(null); if (folder) setPreview(await readProjectProgram(folder, program.directory)); })}>查看</button>
     </article>) : <p className="muted">还没有保存的程序。可将测试程序按名称保存到子文件夹。</p>}</div>}
     {issues.length > 0 && <p className="program-file-warning" role="status">{issues.slice(0, 3).join('；')}{issues.length > 3 && `；另有${issues.length - 3}项待核对`}</p>}

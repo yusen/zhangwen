@@ -19,7 +19,7 @@ from .legacy_names import workspace_message
 from .references import ReferenceVersion, Citation, list_references, insert_reference
 from .chat_coding import Checkpoint as ChatCodingCheckpoint, load_checkpoint, insert_checkpoint, insert_conversation_records
 from .programming_modes import board_mode, task_file
-from . import lua_coding, workflow
+from . import lua_coding, workflow, channels
 from .workflow_models import Checkpoint as WorkflowCheckpoint
 from .workflow_portable import checkpoint as portable_workflow
 SNAPSHOT_MAX_BYTES = 32 * 1024 * 1024
@@ -84,6 +84,7 @@ class SnapshotMessage(Boundary):
         return value
 
 class ProjectSnapshot(Boundary):
+    developmentChannels: channels.Checkpoint | None = None
     workflow: WorkflowCheckpoint | None = None
     luaCoding: lua_coding.Checkpoint | None = None
     chatCoding: ChatCodingCheckpoint | None = None
@@ -148,7 +149,7 @@ def export_project(repo, project_id: str) -> dict:
     versions = repo.versions(project_id)
     if len(versions) > 1000 or len(project['messages']) > 10000:
         raise HTTPException(413, '项目超过1000个代码版本或10000条对话的文件夹容量，未截断或覆盖。请保留本机数据并另行备份。')
-    result = normalized({'format': 'zhangwen-project', 'schemaVersion': 1, 'portableId': portable_id, 'project': {key: project[key] for key in ('name', 'boardId', 'componentIds', 'revision', 'programmingMode') if key in project}, 'versions': [{**item, **({'messageId': portable_messages.get(item['messageId'], item['messageId'])} if item.get('messageId') else {})} for item in versions], 'messages': [{**item, 'id': portable_messages[item['id']]} for item in project['messages']], **({'structure': structure} if (structure := export_structure(repo, project_id)) else {}), **({'references': refs} if (refs := list_references(repo, project_id, history=True)) else {}), **({'chatCoding': checkpoint.model_dump(exclude_none=True)} if (checkpoint := load_checkpoint(repo, project_id)[1]).records else {}), **({'luaCoding': lua.model_dump(exclude_none=True)} if (lua := lua_coding.load(repo, project_id)).versions or lua.wifiSetups else {}), **({'workflow': portable_workflow(learning.model_dump(), structure)} if (learning := workflow.load(repo, project_id)).revision else {})})
+    result = normalized({'format': 'zhangwen-project', 'schemaVersion': 1, 'portableId': portable_id, **({'developmentChannels': channel_state.model_dump()} if (channel_state := channels.load(repo, project_id)).channels else {}), 'project': {key: project[key] for key in ('name', 'boardId', 'componentIds', 'revision', 'programmingMode') if key in project}, 'versions': [{**item, **({'messageId': portable_messages.get(item['messageId'], item['messageId'])} if item.get('messageId') else {})} for item in versions], 'messages': [{**item, 'id': portable_messages[item['id']]} for item in project['messages']], **({'structure': structure} if (structure := export_structure(repo, project_id)) else {}), **({'references': refs} if (refs := list_references(repo, project_id, history=True)) else {}), **({'chatCoding': checkpoint.model_dump(exclude_none=True)} if (checkpoint := load_checkpoint(repo, project_id)[1]).records else {}), **({'luaCoding': lua.model_dump(exclude_none=True)} if (lua := lua_coding.load(repo, project_id)).versions or lua.wifiSetups else {}), **({'workflow': portable_workflow(learning.model_dump(), structure)} if (learning := workflow.load(repo, project_id)).revision else {})})
     if len(json.dumps(result, ensure_ascii=False).encode('utf-8')) > SNAPSHOT_MAX_BYTES:
         raise HTTPException(413, '项目快照超过32MiB，未截断或覆盖文件夹。请保留本机数据并另行备份。')
     return result
@@ -158,6 +159,8 @@ def import_project(repo, snapshot: ProjectSnapshot) -> dict:
     if len(json.dumps(value, ensure_ascii=False).encode('utf-8')) > SNAPSHOT_MAX_BYTES:
         raise HTTPException(413, '项目快照超过32MiB。')
     hardware = repo.hardware_revisions(snapshot.project.boardId, snapshot.project.componentIds)
+    if snapshot.developmentChannels:
+        channels.validate_hardware(repo, snapshot.developmentChannels)
     if snapshot.luaCoding and board_mode(repo, snapshot.project.boardId) != 'chat-coding':
         raise HTTPException(422, 'Lua历史只能导入Mosaico项目。')
     if (snapshot.project.programmingMode or 'micropython') != board_mode(repo, snapshot.project.boardId):
@@ -176,6 +179,8 @@ def import_project(repo, snapshot: ProjectSnapshot) -> dict:
             continue
 
     def after_create(conn, project_id, now):
+        if snapshot.developmentChannels:
+            channels.insert(repo, conn, project_id, snapshot.developmentChannels)
         artifact_id = f'zhangwen_code_{project_id}'
         message_ids = {item.id: 'msg_' + uuid.uuid4().hex for item in snapshot.messages}
         version_ids = {item.revision: f'artifact_version_{artifact_id}_{uuid.uuid4().hex}' for item in snapshot.versions}

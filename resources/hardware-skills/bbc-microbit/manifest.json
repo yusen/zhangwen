@@ -1,0 +1,24 @@
+{
+  "schema": "zhangwen.hardware-skill-manifest/v1",
+  "schemaVersion": 1,
+  "skillName": "bbc-microbit",
+  "componentId": "hw_bbc_microbit",
+  "displayName": "BBC micro:bit（V1 / V2）",
+  "description": "BBC micro:bit V1/V2；官方 MicroPython、板载自检与浏览器串口 main.py 上传，首次固件须自行准备。",
+  "status": "ACTIVE",
+  "sourceKind": "MANUAL",
+  "files": [
+    "SKILL.md",
+    "references/specifications.md",
+    "references/compatibility-rules.md",
+    "references/integration.md",
+    "references/safety.md",
+    "references/sources.md",
+    "examples/usage.md",
+    "tests/validation-cases.md"
+  ],
+  "media": [],
+  "revision": "9cdb713aa3a759e47dcc708f",
+  "createdAt": "2026-11-13T16:18:20.912774+00:00",
+  "updatedAt": "2026-11-13T16:18:20.912774+00:00"
+}

@@ -42,6 +42,10 @@ FILES.update(builtin_templates.asset_names())
 FILES.add('template-edit.json')
 
 
+def allowed_asset_name(filename):
+    return filename in FILES or builtin_templates.added_asset_name(filename)
+
+
 class StructureInput(BaseModel):
     model_config = ConfigDict(extra='forbid')
     action: Literal['analyze', 'confirm', 'build', 'revise', 'parameters', 'validate', 'selected']
@@ -58,7 +62,7 @@ class StructureInput(BaseModel):
     resolutionOptionId: str = Field(default='', max_length=150)
     designType: Literal['model', 'laser'] = 'model'
     template: Literal['box', 'cup', 'bracket', 'plate', 'round-tag', 'panel-box', 'finger-box', 'rounded-box',
-                      'auto-open-lid-box', 'mpython-shell', 'photo-stand', 'servo-side', 'servo-horizontal', 'servo-vertical'] | None = None
+                      'auto-open-lid-box', 'auto-open-lid-box-c3', 'mpython-shell', 'photo-stand', 'servo-side', 'servo-horizontal', 'servo-vertical'] | None = None
 
     @field_validator('parameters')
     @classmethod
@@ -130,10 +134,11 @@ class StructureCheckpoint(BaseModel):
                 if not isinstance(template, dict) or not isinstance(template.get('id'), str) or template['id'] not in builtin_templates.TEMPLATES or type(template.get('revision')) is not int or template['revision'] < 1:
                     raise ValueError('固定模板修订无效。')
                 expected = builtin_templates.TEMPLATES[template['id']]
+                edit = builtin_templates.template_edits.TemplateEditSpec(title=template.get('title') or expected['title'])
                 if result.get('templateEdit') is not None:
                     # Imported code is display-only; only bounded data can drive regeneration.
                     source = builtin_templates.checked_source(expected).read_text(encoding='utf-8-sig')
-                    builtin_templates.template_edits.checked_spec(result['templateEdit'], expected, source)
+                    edit = builtin_templates.template_edits.checked_spec(result['templateEdit'], expected, source)
                 if (not all(isinstance(template.get(k), str) for k in ['title', 'description', 'sourceSha256'])
                         or not re.fullmatch('[a-f0-9]{64}', template['sourceSha256'])
                         or not isinstance(template.get('notes'), list) or len(template['notes']) > 20
@@ -141,9 +146,9 @@ class StructureCheckpoint(BaseModel):
                         or (template.get('image') and template['image'] != '/api/structure/templates/media/' + expected['image'])):
                     raise ValueError('固定模板说明无效。')
                 parts = result.get('templateParts', [])
-                if not isinstance(parts, list) or len(parts) > len(expected['parts']):
+                expected_parts = {part['id']: part for part in builtin_templates.template_edits.part_definitions(expected, edit)}
+                if not isinstance(parts, list) or len(parts) > len(expected_parts):
                     raise ValueError('固定模板部件清单无效。')
-                expected_parts = {part['id']: part for part in expected['parts']}
                 seen = set()
                 for part in parts:
                     if not isinstance(part, dict) or not isinstance(part.get('id'), str) or part['id'] not in expected_parts or part['id'] in seen:
@@ -152,6 +157,8 @@ class StructureCheckpoint(BaseModel):
                     if (part.get('exportId') != f'template_{part["id"]}_stl' or not isinstance(part.get('label'), str)
                             or type(part.get('printable')) is not bool or part['printable'] != expected_parts[part['id']]['printable']):
                         raise ValueError('固定模板打印属性无效。')
+                    if part['id'].startswith('added-') and part['label'] != expected_parts[part['id']]['label']:
+                        raise ValueError('独立零件名称与改造方案不一致。')
                     for key in ['placement', 'size']:
                         values = part.get(key)
                         if not isinstance(values, list) or len(values) != 3 or not all(type(n) in (int, float) and math.isfinite(n) and (-2000 <= n <= 2000 if key == 'placement' else 0 < n <= 2000) for n in values):
@@ -232,7 +239,7 @@ class StructureCheckpoint(BaseModel):
                 raise ValueError('结构对话无效。')
             datetime.fromisoformat(message['createdAt'])
         for key, asset in self.assets.items():
-            if not re.fullmatch(r'[a-f0-9]{32}/ZW-PRODUCT-\d{8}-\d{6}(?:-\d{2})?/.+', key) or key.split('/', 2)[2] not in FILES:
+            if not re.fullmatch(r'[a-f0-9]{32}/ZW-PRODUCT-\d{8}-\d{6}(?:-\d{2})?/.+', key) or not allowed_asset_name(key.split('/', 2)[2]):
                 raise ValueError('结构资产路径不在允许清单。')
             try:
                 data = base64.b64decode(asset['content'], validate=True)
@@ -326,7 +333,8 @@ class StructureService:
             detail = self.repo.skills.get_skill(item['skillName'])
             if detail.mechanicalProfile:
                 profile = mechanical.cad_profile(detail.mechanicalProfile, detail.componentId,
-                    detail.media[0].url if detail.media else '')
+                    detail.media[0].url if detail.media else '',
+                    next((f.content for f in detail.files if f.path == 'references/mechanical.md'), ''))
                 profile['skillRevision'] = detail.revision
                 # Keep the original reference selectable by its stable ID, but
                 # match the project's component to its user's current facts.
@@ -580,7 +588,7 @@ class StructureService:
         return result
 
     def asset(self, project_id: str, job_id: str, result_id: str, filename: str) -> Path:
-        if not re.fullmatch('[a-f0-9]{32}', job_id) or not re.fullmatch(r'ZW-PRODUCT-\d{8}-\d{6}(?:-\d{2})?', result_id) or filename not in FILES:
+        if not re.fullmatch('[a-f0-9]{32}', job_id) or not re.fullmatch(r'ZW-PRODUCT-\d{8}-\d{6}(?:-\d{2})?', result_id) or not allowed_asset_name(filename):
             raise HTTPException(404, '结构文件不存在。')
         # Only files explicitly referenced by this project's immutable artifact are exposed.
         workspace = self.get(project_id)

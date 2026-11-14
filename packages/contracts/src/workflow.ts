@@ -63,6 +63,10 @@ export interface WorkflowView {
 
 /** Read-only projection of the existing Project/Artifact records, never a second store. */
 export interface SharedProjectInfo {
+  controllers?: { id: string; name: string; boardId: string; boardName: string;
+    modules: { id: string; name: string; revision: string }[]; codeRevision: number | null; checksum: string;
+    program: { text: string; truncated: boolean; characters: number } }[];
+  developmentChannels?: { id: string; name: string; boardId: string; componentIds: string[]; revision: number; codeRevision: number; checksum: string }[];
   projectId: string; projectName: string; projectRevision: number; workflowRevision: number;
   current: ProjectBaseline; confirmedDefinition: DefinitionVersion | null;
   actualConditions: ProjectConditions;

@@ -35,7 +35,7 @@ from zhangwen.web.structure import StructureService, structure_router
 from zhangwen.web import mechanical
 from zhangwen.web.mode_settings import load as load_mode_settings, for_mode
 from .legacy_names import settings_path as compatible_settings_path, environment_model, session_header
-from . import references, personal_modules, workflow, project_folder
+from . import references, personal_modules, workflow, project_folder, channels
 from . import chat_coding, mosaico_device, lua_coding
 from .programming_modes import board_mode
 from typing import Literal
@@ -172,6 +172,12 @@ def create_app(data_dir: Path | None=None, *, port: int=30801, dev: bool=False) 
     app.state.chat_locks = {}
     app.state.ai_test_lock = asyncio.Lock()
     app.state.ai_settings = ai_settings
+
+    async def generate_channel_reply(request, history, pid, cid):
+        citations, _ = references.select_references(references.list_references(repo, pid), request.message)
+        context = (references.context_text(citations) if citations else '') + workflow.context(repo, pid)
+        return await generate_reply(request, repo, history, api_key=app.state.ai_settings['apiKey'], model=app.state.ai_settings['model'], base_url=app.state.ai_settings['baseUrl'], reference_context=context + '\n本轮指定主控ID：' + cid + '。仅此主控的历史对话供本轮续聊；各主控平等共享上述已保存资料。只修改此主控；通信协议需用户确认，不宣称替其他主控上传或运行。')
+    app.include_router(channels.router(repo, generate_channel_reply))
     app.state.ai_mode_settings = mode_overrides
     app.state.structure = StructureService(repo, data_dir)
     app.include_router(references.router(repo))

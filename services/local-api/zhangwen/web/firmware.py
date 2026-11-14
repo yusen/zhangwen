@@ -11,6 +11,7 @@ PROFILES = {
     "hw_seed_unihiker_k10": ("ESP32-S3", 0, "https://www.unihiker.com/wiki/K10/GettingStarted/gettingstarted_mpy/"),
     "hw_seeed_xiao_esp32s3_sense": ("ESP32-S3", 0, "https://wiki.seeedstudio.com/xiao_esp32s3_micropython/"),
     "hw_esp32_generic_c3": ("ESP32-C3", 0, "https://micropython.org/download/ESP32_GENERIC_C3/"),
+    "hw_luatos_esp32c3_core": ("ESP32-C3", 0, "https://wiki-zh.luatos.org/chips/esp32c3/board.html"),
 }
 
 

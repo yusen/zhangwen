@@ -28,6 +28,7 @@ function parseRecord(raw: string): ProjectProgramRecord {
     !Array.isArray(value.componentIds) || value.componentIds.length > 32 || value.componentIds.some(id => typeof id !== 'string' || id.length > 150) ||
     typeof value.checksum !== 'string' || !/^[a-f0-9]{64}$/.test(value.checksum) ||
     !(value.sourceRevision === null || (Number.isSafeInteger(value.sourceRevision) && Number(value.sourceRevision) > 0)) ||
+    (value.controllerId !== undefined && (typeof value.controllerId !== 'string' || !/^[a-f0-9]{32}$/.test(value.controllerId) || typeof value.controllerName !== 'string' || !value.controllerName.trim() || value.controllerName.length > 80 || !Number.isSafeInteger(value.controllerRevision) || Number(value.controllerRevision) < 1)) ||
     !object(value.verification) || typeof value.verification.observed !== 'string' || !['unconfirmed', 'passed', 'failed'].includes(value.verification.observed) ||
     typeof value.verification.note !== 'string' || value.verification.note.length > 2000 ||
     !nullableDate(value.verification.uploadVerifiedAt) || !nullableDate(value.verification.runSubmittedAt)) throw new Error('程序资料格式无效，未载入。');
@@ -89,16 +90,18 @@ export async function saveProjectProgram(binding: FolderBinding, input: {
   name: string; code: string; boardId: string; boardName: string; componentIds: string[]; sourceRevision: number | null;
   observed: ProjectProgramRecord['verification']['observed']; note: string;
   receipt: UploadReceipt | null; run: ProgramRunSubmission | null;
+  controller?: {id:string;name:string;revision:number};
 }): Promise<ProjectProgram> {
   await ensureFolderPermission(binding, true);
   const code = input.code, checksum = await digest(code);
   if (!code.trim() || new TextEncoder().encode(code).length > 65_536 || code.includes('\0')) throw new Error('程序须为非空 UTF-8 文本，且不超过64 KiB。');
   if (!binding.checkpointHash || await digest(await read(binding.handle, PROJECT_FILE, 32 * 1024 * 1024)) !== binding.checkpointHash) throw new Error('项目文件夹尚未完成同步，或已被外部修改。请保存或重新加载后再保存程序。');
-  const receipt = input.receipt?.projectId === binding.projectId && input.receipt.sha256 === checksum && input.receipt.revision === input.sourceRevision ? input.receipt : null;
+  const receipt = input.receipt?.projectId === binding.projectId && input.receipt.sha256 === checksum && input.receipt.revision === (input.controller?.revision ?? input.sourceRevision) ? input.receipt : null;
   const run = receipt && input.run?.projectId === binding.projectId && input.run.sha256 === checksum && input.run.boardId === input.boardId && input.run.revision === receipt.revision && input.run.submittedAt >= receipt.verifiedAt ? input.run : null;
   const createdAt = new Date().toISOString();
   const record = parseRecord(JSON.stringify({ format: 'zhangwen-program', schemaVersion: 1, name: input.name.trim(), createdAt,
     boardId: input.boardId, boardName: input.boardName, componentIds: [...input.componentIds], checksum, sourceRevision: input.sourceRevision,
+    ...(input.controller?{controllerId:input.controller.id,controllerName:input.controller.name,controllerRevision:input.controller.revision}:{}),
     verification: { observed: input.observed, note: input.note.trim(), uploadVerifiedAt: receipt?.verifiedAt ?? null, runSubmittedAt: run?.submittedAt ?? null } }));
   const shortName = record.name.replace(/[<>:"/\\|?*\x00-\x1f]/g, '_').replace(/[. ]+$/g, '').slice(0, 32) || 'program';
   const directory = `${createdAt.replace(/[-:]/g, '').slice(0, 15)}-${shortName}-${crypto.randomUUID()}`;

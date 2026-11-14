@@ -5,7 +5,7 @@ import { ProjectFolderPanel } from './ProjectFolderPanel';
 import { readStructureDraft } from './structureDraft';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import palmMark from './assets/palm-mark.png';
-import { ArrowUp, BookOpen, Check, CheckCheck, ChevronRight, MoreHorizontal, Upload, Undo2, History, CircuitBoard, Download, FileCode2, Files, FolderOpen, HelpCircle, LoaderCircle, Plus, Save, Search, Sparkles, Square, Terminal, Unplug, Usb, Wifi, RefreshCw, Send, X, Play, ZoomIn, ZoomOut, AlignLeft, Moon, Sun, Settings, PanelLeftClose, PanelLeftOpen, Maximize, Minimize, Cpu, Layers3, Box, ScanLine } from 'lucide-react';
+import { ArrowUp, BookOpen, Check, CheckCheck, ChevronRight, MoreHorizontal, Upload, Undo2, History, CircuitBoard, Download, FileCode2, Files, FolderOpen, HelpCircle, LoaderCircle, Plus, Save, Search, Sparkles, Terminal, Unplug, Wifi, RefreshCw, Send, X, AlignLeft, Moon, Sun, Settings, PanelLeftClose, PanelLeftOpen, Layers3, Box, ScanLine } from 'lucide-react';
 import type { AiSettings, ChatMessage, CheckResult, CodeRepair, CreateProject, HardwareDetail, HardwareSummary, Project, ProjectSnapshot, ProjectSummary, ProgramRunSubmission, UploadManifest, Version, WorkspaceMode } from '../../../packages/contracts/src/platform';
 import { DEFAULT_AI_MODEL } from '../../../packages/contracts/src/platform';
 import { api, ApiError, bootstrap, chat } from './api';
@@ -45,6 +45,11 @@ import { learningSections, type LearningSection } from './LearningSections';
 import { StructureWorkspace } from './StructureWorkspace';
 import { UpdateCenter } from './UpdateCenter';
 import { FirmwareDialog } from './FirmwareDialog';
+import { DevelopmentChannels } from './DevelopmentChannels';
+import { EngineeringActions, EngineeringChatHeader, EngineeringComposer, EngineeringConnection, EngineeringFilebar, EngineeringModuleList } from './EngineeringUi';
+import type { DevelopmentChannel } from '../../../packages/contracts/src/channels';
+import { ControllerSelfTest } from './ControllerSelfTest';
+import { MICROBIT_BOARD } from './controllerDiagnostics';
 import { ProjectReferences, ReferenceSources } from './ProjectReferences';
 import { PersonalModuleDialog } from './PersonalModuleDialog';
 import type { ReferenceCitation } from '../../../packages/contracts/src/platform';
@@ -96,6 +101,23 @@ export default function App() {
     const [projectHardwareOpen, setProjectHardwareOpen] = useState(false);
     const openProjectHardware = () => { setError(''); setProjectHardwareOpen(true); };
     const [project, setProject] = useState<Project | null>(null);
+    const [selectedController, setSelectedController] = useState<DevelopmentChannel | null>(null);
+    const [controllerActionsHost, setControllerActionsHost] = useState<HTMLDivElement | null>(null);
+    const [controllerConnectionHost, setControllerConnectionHost] = useState<HTMLDivElement | null>(null);
+    const [controllerModulesHost, setControllerModulesHost] = useState<HTMLDivElement | null>(null);
+    const [controllerSelectorHost, setControllerSelectorHost] = useState<HTMLDivElement | null>(null);
+    const [controllerWorkspaceHost, setControllerWorkspaceHost] = useState<HTMLDivElement | null>(null);
+    const controllerSave = useRef<(() => Promise<void>) | null>(null);
+    const controllerPrograms = useRef<(() => void) | null>(null);
+    const [controllerState, setControllerState] = useState<{
+        id: string;
+        dirty: boolean;
+        locked: boolean;
+        status: string;
+    } | null>(null);
+    useEffect(() => { setSelectedController(null); }, [project?.id]);
+    const [channelsActive, setChannelsActive] = useState(false);
+    const [controllerCheckOpen, setControllerCheckOpen] = useState(false);
     // This is a session entry decision, not a persisted project preference.
     // A null project can still be an active workbench when changing programming modes.
     const [workspaceOpen, setWorkspaceOpen] = useState(false);
@@ -551,6 +573,10 @@ export default function App() {
     const openSave = (includePreview = false) => { if (!project && !confirmDeviceDiscard())
         return; setSaveIncludesPreview(includePreview); setError(''); setCreationMode('save'); setNewFolder(null); setNewName(name === '未命名项目' ? '我的项目' : name); setNewDialog(true); };
     const openNew = () => {
+        if (channelsActive) {
+            setError('请先在项目主控中断开各主控设备并等待操作完成，再新建项目。');
+            return;
+        }
         if (!confirmDeviceDiscard())
             return;
         if (workspaceDirty && !window.confirm('当前项目有未保存更改。确定开始一个新项目吗？建议先保存当前项目。'))
@@ -563,16 +589,18 @@ export default function App() {
     };
     useEffect(() => {
         let active = true;
+        const controller = new AbortController();
+        const timer = window.setTimeout(() => controller.abort(), 20000);
         setLoading(true);
         setError('');
         void (async () => {
             try {
-                const session = await bootstrap();
+                const session = await bootstrap(controller.signal);
                 const [catalog, list] = await Promise.all([api<{
                         skills: HardwareSummary[];
-                    }>('/hardware'), api<{
+                    }>('/hardware', 'GET', undefined, controller.signal), api<{
                         projects: ProjectSummary[];
-                    }>('/projects')]);
+                    }>('/projects', 'GET', undefined, controller.signal)]);
                 if (!active)
                     return;
                 setAiConfigured(session.aiConfigured);
@@ -584,14 +612,16 @@ export default function App() {
             }
             catch (err) {
                 if (active)
-                    setError(errorText(err));
+                    setError(controller.signal.aborted ? '准备工作台超时，请确认本机服务已启动，再点击重新连接。项目资料仍保留。' : errorText(err));
             }
             finally {
+                window.clearTimeout(timer);
+                controller.abort();
                 if (active)
                     setLoading(false);
             }
         })();
-        return () => { active = false; };
+        return () => { active = false; window.clearTimeout(timer); controller.abort(); };
     }, [bootstrapAttempt]);
     useEffect(() => {
         if (loading || !workspaceOpen)
@@ -713,6 +743,10 @@ export default function App() {
                 await saveHardwareSelection();
             return;
         }
+        if (mode === 'engineer' && selectedController) {
+            await controllerSave.current?.();
+            return;
+        }
         if (mode === 'learning') {
             if (!project) {
                 openNew();
@@ -761,7 +795,7 @@ export default function App() {
     const saveRef = useRef(saveWorkspace);
     saveRef.current = saveWorkspace;
     const savingAllowed = useRef(false);
-    savingAllowed.current = workspaceOpen && !loading && !learningBusy && !aiBusy && !deviceBusy && !flashing && !chatCodingBusy;
+    savingAllowed.current = workspaceOpen && !loading && !learningBusy && !aiBusy && !deviceBusy && !flashing && !chatCodingBusy && !selectedController;
     useEffect(() => {
         const key = (event: KeyboardEvent) => { if ((event.ctrlKey || event.metaKey) && event.key.toLowerCase() === 's') {
             event.preventDefault();
@@ -774,6 +808,10 @@ export default function App() {
     const chooseProject = async (id: string) => {
         if (id === project?.id)
             return true;
+        if (channelsActive) {
+            setError('请先在项目主控中断开各主控设备并等待操作完成，再切换项目。');
+            return false;
+        }
         if (!confirmDeviceDiscard())
             return false;
         if (workspaceDirty && !window.confirm('当前修改尚未保存。草稿保留在本浏览器；仍要切换项目吗？'))
@@ -855,6 +893,10 @@ export default function App() {
         }
     };
     const loadFolder = async () => {
+        if (channelsActive) {
+            setError('请先断开各主控设备，再加载其他项目。');
+            return;
+        }
         if (!confirmDeviceDiscard())
             return;
         if (workspaceDirty && !window.confirm('当前修改尚未保存，仍要加载另一个项目文件夹吗？本浏览器草稿会保留。'))
@@ -893,6 +935,10 @@ export default function App() {
     const switchBoard = (id: string) => {
         if (id === board)
             return;
+        if (deviceState !== 'disconnected') {
+            setError('请先断开当前设备，再更换此主控型号；可在项目主控中添加其他主控。');
+            return;
+        }
         if (!confirmDeviceDiscard())
             return;
         const nextChat = hardware.find(item => item.componentId === id)?.programmingMode === 'chat-coding';
@@ -997,7 +1043,7 @@ export default function App() {
     });
     const connectDevice = async () => {
         const serial = serialApi();
-        if (!serial || !window.isSecureContext || !navigator.locks) {
+        if (!serial || !window.isSecureContext) {
             setError('请使用电脑上的 Chrome 或 Edge 打开本机掌问，再连接设备。');
             return;
         }
@@ -1006,28 +1052,17 @@ export default function App() {
         try {
             // requestPort runs directly in the click gesture before awaiting anything.
             const port = await serial.requestPort();
-            await new Promise<void>((resolve, reject) => {
-                void navigator.locks.request('zhangwen-web-serial', { ifAvailable: true }, async (lock) => {
-                    if (!lock) {
-                        reject(new Error('另一个掌问标签正在使用串口，请先在那里断开。'));
-                        return;
-                    }
-                    const held = new Promise<void>(done => { releasePort.current = done; });
-                    const next = new MicroPythonDevice(port, addLog, () => redraw(value => value + 1));
-                    device.current = next;
-                    try {
-                        await next.connect();
-                        setNotice('MicroPython 固件检测通过，设备已连接。');
-                        resolve();
-                        await held;
-                    }
-                    catch (err) {
-                        releasePort.current?.();
-                        device.current = null;
-                        reject(err);
-                    }
-                }).catch(reject);
-            });
+            // SerialPort.open holds the physical port; the transport also reserves the object.
+            const next = new MicroPythonDevice(port, addLog, () => redraw(value => value + 1), 8000, board);
+            device.current = next;
+            try {
+                await next.connect();
+                setNotice('MicroPython 固件检测通过，设备已连接；可先进行主控自检。');
+            }
+            catch (err) {
+                device.current = null;
+                throw err;
+            }
         }
         catch (err) {
             if (!(err instanceof DOMException && err.name === 'NotFoundError'))
@@ -1085,7 +1120,7 @@ export default function App() {
         setRunSubmission(null);
         setProgress(0);
         try {
-            await targetDevice.upload(plan, persistBackup, (done, total) => setProgress(total ? Math.round(done / total * 100) : 100));
+            await targetDevice.upload(plan, data => persistBackup({ ...data, projectId: saved.id, channelId: 'main' }), (done, total) => setProgress(total ? Math.round(done / total * 100) : 100));
             try {
                 await runProgram(targetDevice);
             }
@@ -1359,7 +1394,7 @@ export default function App() {
     };
     return <div className={`app final-workbench ${hardwareCollapsed ? 'hardware-collapsed' : ''} ${codeFullscreen ? 'code-fullscreen' : ''}`}>
     <FeedbackToast error={workspaceOpen ? error || folderError : ''} notice={notice} sequence={noticeSequence} busy={workspaceOpen ? busy : ''} progress={progress} onCancel={() => device.current?.cancel()}/>
-    {workspaceOpen && sharedProjectOpen && project && <SharedProjectDialog key={project.id} projectId={project.id} unsaved={workspaceDirty} onClose={() => setSharedProjectOpen(false)}/>}
+    {workspaceOpen && sharedProjectOpen && project && <SharedProjectDialog key={`shared:${project.id}`} projectId={project.id} unsaved={workspaceDirty} onClose={() => setSharedProjectOpen(false)}/>}
     {workspaceOpen ? <>
     <header className="workspace-titlebar">
       <a className="title-brand" href="/" aria-label="掌问：智能体造物工作台"><span><img src={palmMark} alt="" width={24} height={24}/></span><strong>掌问：智能体造物工作台</strong></a>
@@ -1367,7 +1402,10 @@ export default function App() {
         <ActionMenu label="项目" disabled={projectLocked} items={[
                 { label: '新建项目', icon: Plus, onSelect: openNew },
                 { label: '打开项目…', icon: FolderOpen, onSelect: openLoad },
-                { label: '项目程序', icon: FileCode2, disabled: isChatCoding, onSelect: () => openFiles('programs') },
+                { label: '项目程序', icon: FileCode2, disabled: !selectedController && isChatCoding, onSelect: () => { if (mode === 'engineer' && selectedController)
+                        controllerPrograms.current?.();
+                    else
+                        openFiles('programs'); } },
                 ...projects.slice(0, 5).map((item, index) => ({ label: item.name, group: index === 0 ? '最近项目' : undefined, icon: FolderOpen, onSelect: () => void chooseProject(item.id) })),
                 { label: '另存为…', icon: Save, group: '保存位置', disabled: !project, onSelect: () => { setUploadAfterSave(false); openSave(); } },
                 ...(project && stored('zhangwen-conflict-backup-' + project.id) ? [{ label: '导出同步前草稿', icon: Download, onSelect: () => download('掌问-同步前草稿.json', stored('zhangwen-conflict-backup-' + project.id)!) }] : []),
@@ -1377,10 +1415,10 @@ export default function App() {
                 { label: '查看文件列表', icon: Files, disabled: !project, onSelect: () => { setFolderPanel(true); setCodeFullscreen(false); } },
                 { label: '三师共用资料', icon: BookOpen, disabled: !project, onSelect: () => setSharedProjectOpen(true) },
             ]}/>
-        <button className="title-save" aria-label="保存项目" title="保存项目（Ctrl / ⌘ + S）" disabled={projectLocked} onClick={() => void saveWorkspace()}>{busy.includes('保存') ? <LoaderCircle size={15} className="spin"/> : <Save size={15}/>}保存</button>
+        <button className="title-save" aria-label="保存项目" title="保存项目（Ctrl / ⌘ + S）" disabled={mode === 'engineer' && selectedController ? loading || folderRestoring || controllerState?.locked : projectLocked} onClick={() => void saveWorkspace()}>{busy.includes('保存') ? <LoaderCircle size={15} className="spin"/> : <Save size={15}/>}保存</button>
       </div>
-      <div className="current-project" aria-label="当前项目" title={name}><strong>{name}</strong>{workspaceDirty && <span className="dirty-dot" aria-label="项目存在未保存内容"/>}</div>
-      <span className={`document-info ${folderError ? 'has-error' : ''}`} role="status" aria-label="项目保存状态" title="浏览器草稿：当前尚未保存的修改；本机记录：已保存的项目内容；项目文件夹：已同步的可携带副本。文件夹中不包含未保存的草稿。">{saveState}</span>
+      <div className="current-project" aria-label="当前项目" title={name}><strong>{name}</strong>{(workspaceDirty || !!selectedController && controllerState?.id === selectedController.id && controllerState.dirty) && <span className="dirty-dot" aria-label="项目存在未保存内容"/>}</div>
+      <span className={`document-info ${folderError ? 'has-error' : ''}`} role="status" aria-label="项目保存状态" title="浏览器草稿：当前尚未保存的修改；本机记录：已保存的项目内容；项目文件夹：已同步的可携带副本。文件夹中不包含未保存的草稿。">{mode === 'engineer' && selectedController ? (controllerState?.id === selectedController.id ? (controllerState.dirty ? '当前主控有未保存草稿' : controllerState.status || '当前主控已保存') : '正在读取主控状态') : saveState}</span>
       <button className="theme-toggle" aria-label={theme === 'light' ? '切换深色主题' : '切换浅色主题'} title={theme === 'light' ? '深色主题' : '浅色主题'} onClick={() => setTheme(value => value === 'light' ? 'dark' : 'light')}>{theme === 'light' ? <Moon size={17}/> : <Sun size={17}/>}</button>
     </header>
     <header className="zhangwen-toolbar" aria-label="掌问工具栏">
@@ -1388,16 +1426,12 @@ export default function App() {
         <div className="tool-group" role="group" aria-label="工作角色">
         <ToolbarButton icon={Layers3} label={modeInfo.name} aria-label="模式切换" variant="brand" active={modeDialog} disabled={learningBusy || loading || !!busy || aiBusy || structureBusy || chatCodingBusy || deviceBusy || running || flashing || deviceState === 'attention'} onClick={() => setModeDialog(true)} disabledReason={operationReason} title={`切换角色 · ${modeInfo.name}`}/>
         </div>
-        {mode === 'engineer' && !isChatCoding && <>
-        <div className="tool-group" role="group" aria-label="设备操作">
-        <ToolbarButton icon={ArrowUp} label="上传并运行" variant="hardware" disabled={loading || !board || !!busy || aiBusy || deviceBusy || running || deviceState === 'attention'} disabledReason={!board ? '请先在项目器件中选择主控板。' : operationReason} onClick={() => void prepareUpload()} title="上传并运行 main.py：保存、备份、回读校验，通过后自动运行"/>
-        <ToolbarButton icon={running || deviceState === 'attention' ? Square : Play} label={running || deviceState === 'attention' ? '停止' : '运行'} emphasis active={running} disabled={!!busy || deviceBusy || deviceState === 'attention' || !(running || canRun)} disabledReason={deviceState === 'attention' ? '连接已中断，请先点击右侧「需要重连 · 断开」，再重新连接设备。' : busy || deviceBusy ? operationReason : !connected ? '请先连接设备，再上传并校验当前程序。' : dirty ? '当前代码或器件已修改，请先上传并运行以校验新版本。' : '请先上传并校验当前程序，再单独运行。'} onClick={() => { setTerminalOpen(true); setMobileTab('code'); void action(running ? '停止' : '运行', async () => { if (running)
+        {mode === 'engineer' && !selectedController && !isChatCoding && <>
+        <EngineeringActions boardId={board} uploadDisabled={loading || !board || !!busy || aiBusy || deviceBusy || running || deviceState === 'attention'} runDisabled={!!busy || deviceBusy || deviceState === 'attention' || !(running || canRun)} checkDisabled={loading || !board || !!busy || aiBusy || deviceBusy || running} firmwareDisabled={loading || !board || !!busy || aiBusy || flashing || deviceState !== 'disconnected'} running={running} attention={deviceState === 'attention'} terminalOpen={terminalOpen} reason={operationReason} onUpload={() => void prepareUpload()} onRun={() => { setTerminalOpen(true); setMobileTab('code'); void action(running ? '停止' : '运行', async () => { if (running)
                 await device.current?.stop();
             else
-                await runProgram(); }); }}/>
-        <ToolbarButton icon={Terminal} label="REPL" active={terminalOpen} aria-pressed={terminalOpen} onClick={() => { setTerminalOpen(value => !value); setMobileTab('code'); }}/>
-        <ToolbarButton icon={Cpu} label="固件刷入" variant="hardware" disabled={loading || !board || !!busy || aiBusy || flashing || deviceState !== 'disconnected'} title={board ? `刷入 ${boardInfo?.displayName ?? '当前主控'} 对应固件；请先断开设备` : '请先在左侧选择主控板'} onClick={() => setFirmwareDialog(true)}/>
-        </div></>}
+                await runProgram(); }); }} onTerminal={() => { setTerminalOpen(value => !value); setMobileTab('code'); }} onSelfTest={() => setControllerCheckOpen(true)} onFirmware={() => setFirmwareDialog(true)}/></>}
+        <div ref={setControllerActionsHost} className="controller-toolbar-host" hidden={mode !== 'engineer' || !selectedController}/>
         {mode === 'structure' && <><div className="tool-group" role="group" aria-label="结构设计功能">
           <ToolbarButton icon={Box} label="3D打印" active={structureDesignType === 'model'} aria-pressed={structureDesignType === 'model'} disabled={structureBusy} onClick={() => setStructureDesignType('model')}/>
           <ToolbarButton icon={ScanLine} label="激光切割" active={structureDesignType === 'laser'} aria-pressed={structureDesignType === 'laser'} disabled={structureBusy} onClick={() => setStructureDesignType('laser')}/>
@@ -1405,7 +1439,7 @@ export default function App() {
         {mode === 'learning' && <><div className="tool-group" role="group" aria-label="学习栏目切换">
           {learningSections.map(({ id, label, note, icon }) => <ToolbarButton key={id} icon={icon} label={label} active={learningSection === id || id === 'project' && learningSection === 'guidance'} variant={learningSection === id ? 'software' : 'muted'} aria-pressed={learningSection === id || id === 'project' && learningSection === 'guidance'} aria-controls="learning-section-content" onClick={() => { setLearningSectionSelection(v => v + 1); setLearningSection(id); }} title={`${label}${note ? ` · ${note}` : ''}`}/>)}
         </div></>}
-        {mode === 'engineer' && isChatCoding && <div className="tool-group" role="group" aria-label="设备操作">
+        {mode === 'engineer' && !selectedController && isChatCoding && <div className="tool-group" role="group" aria-label="设备操作">
           {nativeChat.source === 'local' ? <><ToolbarButton icon={Save} label="保存代码" title="保存手工修改（生成代码自动保存）" disabled={nativeChat.lua.locked || !nativeChat.lua.editorCode.trim() || nativeChat.lua.saved} onClick={() => void nativeChat.lua.save()}/><ToolbarButton icon={Sparkles} label="生成代码" disabled={nativeChat.lua.generateLocked || !nativeChat.lua.prompt.trim()} onClick={() => void nativeChat.lua.generate()}/><ToolbarButton icon={Upload} label="上传运行" aria-label="上传并运行" title="上传并运行已保存的代码" disabled={!!nativeChat.lua.uploadAndRunBlockedReason} onClick={() => void nativeChat.lua.uploadAndRun()}/></> : <><ToolbarButton icon={Send} label="发送任务" variant="hardware" disabled={!nativeChat.canSend} onClick={nativeChat.send} title="发送已保存任务到设备原生 Claw"/><ToolbarButton icon={RefreshCw} label="刷新回复" disabled={!nativeChat.state.connected || nativeChat.locked} onClick={() => void nativeChat.perform('读取设备回复', '/sync')}/></>}
           {<ToolbarButton icon={Settings} label="设备设置" disabled={projectLocked} onClick={() => { ; nativeChat.device.chooseSection('status'); setMobileTab('code'); if (!nativeChat.device.state.connected)
                 nativeChat.setConnectionOpen(true); }} title="在右侧操作Mosaico状态、配置、日志与文件"/>}
@@ -1417,9 +1451,11 @@ export default function App() {
         </div>
 
       </div>
-      {mode === 'engineer' && isChatCoding && <button className={`connection toolbar-status ${nativeChat.state.connected || nativeChat.device.state.connected ? 'is-connected' : ''}`} disabled={projectLocked} onClick={() => nativeChat.setConnectionOpen(true)}>{chatCodingBusy ? <LoaderCircle size={17} className="spin"/> : <Wifi size={17}/>}<span>{nativeChat.state.connected || nativeChat.device.state.connected ? '已连接 · 设置' : '连接设备'}</span></button>}
-      {mode === 'engineer' && !isChatCoding && <button className={`connection toolbar-status ${filesDialog === 'board' ? 'is-connected' : ''}`} aria-haspopup="dialog" aria-pressed={filesDialog === 'board'} disabled={loading || !!busy || deviceBusy} onClick={() => openFiles('board')} title="连接后读取、添加或导出板上的文件"><Usb size={17}/><span>板载文件</span></button>}
-      {((mode === 'engineer' && !isChatCoding) || deviceState !== 'disconnected') && <button className={`connection toolbar-status ${deviceState !== 'disconnected' ? 'is-connected' : ''}`} disabled={!!busy || deviceBusy} onClick={deviceState === 'disconnected' ? () => { setTerminalOpen(true); setMobileTab('code'); void connectDevice(); } : disconnect}>{deviceBusy ? <LoaderCircle size={17} className="spin"/> : deviceState === 'disconnected' ? <Usb size={17}/> : <Unplug size={17}/>}<span>{deviceState === 'disconnected' ? '连接设备' : deviceBusy ? (busy === '选择设备并检测固件' ? '正在检测固件' : '设备处理中') : deviceState === 'attention' ? '需要重连 · 断开' : '已连接 · 断开'}</span></button>}
+      {mode === 'engineer' && !selectedController && isChatCoding && <button className={`connection toolbar-status ${nativeChat.state.connected || nativeChat.device.state.connected ? 'is-connected' : ''}`} disabled={projectLocked} onClick={() => nativeChat.setConnectionOpen(true)}>{chatCodingBusy ? <LoaderCircle size={17} className="spin"/> : <Wifi size={17}/>}<span>{nativeChat.state.connected || nativeChat.device.state.connected ? '已连接 · 设置' : '连接设备'}</span></button>}
+      {mode === 'engineer' && !selectedController && !isChatCoding && <EngineeringConnection state={deviceState} disabled={loading || !!busy || deviceBusy} filesActive={filesDialog === 'board'} onFiles={() => openFiles('board')} onConnect={deviceState === 'disconnected' ? () => { setTerminalOpen(true); setMobileTab('code'); void connectDevice(); } : disconnect}/>}
+      <div ref={setControllerConnectionHost} className="controller-toolbar-host" hidden={mode !== 'engineer' || !selectedController}/>
+      {mode !== 'engineer' && !selectedController && deviceState !== 'disconnected' && <button className="connection toolbar-status is-connected" disabled={!!busy || deviceBusy} onClick={disconnect}><Unplug size={17}/><span>{deviceState === 'attention' ? '需要重连 · 断开' : '已连接 · 断开'}</span></button>}
+
     </header>
     {projectConflict && projectConflict.id === project?.id && <Dialog title="同步项目" className="project-conflict-dialog" onClose={() => setProjectConflict(null)}>
       <p>本机项目与当前草稿有不同内容。先备份草稿并同步，再继续生成。</p>
@@ -1453,17 +1489,17 @@ export default function App() {
     <div className="engineering-surface" hidden={mode !== 'engineer'}>
     <nav className="mobile-tabs" aria-label="工作区切换">{[['hardware', '硬件库'], ['ai', isChatCoding ? (nativeChat.source === 'local' ? '编程对话' : 'Chat Coding') : '掌问 AI'], ['code', isChatCoding ? (nativeChat.source === 'local' ? '程序' : '任务与记录') : '代码']].map(([key, label]) => <button key={key} className={mobileTab === key ? 'active' : ''} onClick={() => { setMobileTab(key); if (key === 'hardware')
             setHardwareCollapsed(false); }}>{label}</button>)}</nav>
-    <main className="workbench">
+    <main className={`workbench ${selectedController ? 'has-controller-channel' : ''}`}>
       <aside className={`hardware-panel panel mobile-${mobileTab === 'hardware' ? 'show' : 'hide'}`}>
         <div className="panel-head"><h2><CircuitBoard size={18}/>已加入的模块</h2><button className="icon-button hardware-collapse" aria-label="收起硬件模块" title="向左收起硬件模块" onClick={() => setHardwareCollapsed(true)}><PanelLeftClose size={17}/></button></div>
-        <div className="selected-sensors-toolbar"><span className="board-field-label">项目主控</span><div className="project-hardware-summary"><BoardArtwork board={boardInfo}/><strong>{boardInfo?.displayName ?? '未选择主控板'}</strong></div><button className="project-hardware-manage" disabled={projectLocked} onClick={openProjectHardware}><CircuitBoard size={17}/>管理项目器件</button>{hardwareSelectionDirty && <p className="project-hardware-state" role="status">器件选择有更改，请到项目器件保存。</p>}</div>
-        <div className="catalog-list selected-sensor-list">{loading ? <p className="muted">正在读取项目…</p> : (['input', 'output', 'support'] as const).map(direction => {
-                const items = selectedSensors.filter(item => moduleDirection(item) === direction);
-                return items.length > 0 && <section className="module-group" key={direction} aria-label={direction === 'input' ? '已加入的输入模块' : direction === 'output' ? '已加入的输出模块' : '已加入的配套模块'}><h3>{direction === 'input' ? '输入模块' : direction === 'output' ? '输出模块' : '配套模块'}<span>{items.length}</span></h3><div className="module-grid">{items.map(item => <ModuleCard key={item.componentId} item={item} boardId={board} boards={hardware.filter(board => board.category === 'MCU')} disabled={projectLocked} outside={!boardSensors.some(module => module.componentId === item.componentId)} onDetail={() => openDetail(item)} onEditExample={() => openDetail(item, false, true)} onLoad={() => loadModuleSample(item)}/>)}</div></section>;
-            })}{!loading && board && !selectedSensors.length && <div className="selected-sensors-empty"><CircuitBoard size={42}/><strong>{isChatCoding ? '查看板载能力' : '为项目添加模块'}</strong>{isChatCoding ? <><p>板载器件无需另加模块。固件接口与实测状态请查看主控资料。</p><button onClick={() => boardInfo && openDetail(boardInfo)}>查看Mosaico使用资料</button><p>需要外接器件时，点击“管理项目器件”。</p></> : <p>点击「管理项目器件」，添加传感器、执行器或显示模块。</p>}</div>}</div>
+        <div className="selected-sensors-toolbar"><div ref={setControllerSelectorHost}/>{!project && <><span className="board-field-label">项目主控</span><div className="project-hardware-summary"><BoardArtwork board={boardInfo}/><strong>{boardInfo?.displayName ?? '未选择主控板'}</strong></div><button className="project-hardware-manage" disabled={projectLocked} onClick={openProjectHardware}><CircuitBoard size={17}/>管理项目器件</button></>}{hardwareSelectionDirty && <p className="project-hardware-state" role="status">器件选择有更改，请到项目器件保存。</p>}</div>
+        <div className="controller-module-host" hidden={!!selectedController}><EngineeringModuleList boardId={board} hardware={hardware} componentIds={components} loading={loading} disabled={projectLocked} chatCoding={isChatCoding} onDetail={openDetail} onEditExample={item => openDetail(item, false, true)} onLoad={loadModuleSample}/></div>
+        <div ref={setControllerModulesHost} className="controller-module-host" hidden={!selectedController}/>
+
         {outsideLibrary.length > 0 && <p className="library-notice">有 {outsideLibrary.length} 个项目元件的资料缺失或未激活，已保留；请查看资料并核对。</p>}
       </aside>
       <button className="hardware-restore" aria-label="展开硬件模块" title="展开硬件模块" onClick={() => { setHardwareCollapsed(false); setMobileTab('hardware'); }}><PanelLeftOpen size={18}/><span>硬件模块</span><small>{selectedSensors.length}</small></button>
+      <div className="controller-original" hidden={!!selectedController}>
       {isChatCoding ? <>
         <ChatCodingConversation chat={nativeChat} task={code} onTask={value => { setCode(value); setSelectedVersion(null); }} onSave={() => void action('保存项目', () => save())} mobileTab={mobileTab} onSettings={openAiSettings}/>
         <ChatCodingTask chat={nativeChat} task={code} versions={codeVersions.filter(v => v.programmingMode === 'chat-coding')} selectedVersion={selectedVersion} onVersion={selectCodeVersion} mobileTab={mobileTab} saveState={saveState} folderError={folderError} onRetryFolder={() => void action('重新保存项目文件夹', async () => { if (project && folderRef.current) {
@@ -1472,7 +1508,7 @@ export default function App() {
             } })}/>
       </> : <>
       <section className={`ai-panel panel mobile-${mobileTab === 'ai' ? 'show' : 'hide'}`}>
-        <div className="panel-head"><h2><Sparkles size={18}/>智能工程师</h2><button className="api-settings-entry" disabled={loading || !!busy || aiBusy} onClick={openAiSettings} aria-label="掌问 AI 设置"><Settings size={14}/><span>{aiConfigured ? '已配置' : '未配置'}</span> · 设置</button></div>
+        <EngineeringChatHeader configured={aiConfigured} disabled={loading || !!busy || aiBusy} onSettings={openAiSettings}/>
         <div ref={conversationPane} className="messages" role="log" aria-label="掌问对话记录" onWheel={event => { if (event.deltaY < 0)
                 followConversation.current = false; }} onPointerDown={event => { if (event.target === event.currentTarget)
                 followConversation.current = false; }} onKeyDown={event => { if (['ArrowUp', 'PageUp', 'Home'].includes(event.key))
@@ -1495,27 +1531,24 @@ export default function App() {
         {integration && <IntegrationProgress state={integration} componentIds={components} hardware={hardware} disabled={loading || !!busy || aiBusy || deviceBusy || !board} onSelect={id => void sendMessage(integrationPrompt(boardInfo, board, components, hardware, id), 'integration', id)} onDevelop={leaveIntegration}/>}
         {chatError && <p className="chat-error" role="alert">{chatError}</p>}
         {!project && <p className="chat-hint">首次发送会自动保存当前项目、代码和已加入模块。</p>}
-        <form className="chat-form" onSubmit={event => { event.preventDefault(); void sendMessage(); }}><label className="sr-only" htmlFor="chat-message">发送给掌问 AI</label><textarea ref={chatInput} id="chat-message" value={message} onChange={event => setMessage(event.target.value)} onKeyDown={event => { if ((event.ctrlKey || event.metaKey) && event.key === 'Enter' && !event.nativeEvent.isComposing && !loading && !busy && !aiBusy && message.trim()) {
-                event.preventDefault();
-                void sendMessage();
-            } }} placeholder="告诉智能工程师，你想让作品怎样工作…" maxLength={4000}/><div><span>{!board ? "请先选择项目使用的主控板" : !aiConfigured ? "先打开 AI 设置" : "核对生成代码并保存，再点击上传并运行"}</span><button className="primary icon-button" aria-label="发送" disabled={loading || !!busy || !board || !message.trim() || aiBusy}>{aiBusy ? <LoaderCircle size={19} className="spin"/> : <ArrowUp size={20}/>}</button></div></form>
+        <EngineeringComposer inputRef={chatInput} value={message} onChange={setMessage} onSend={() => void sendMessage()} disabled={loading || !!busy || !board || aiBusy} generating={aiBusy}/>
       </section>
       <section className={`code-panel panel mobile-${mobileTab === 'code' ? 'show' : 'hide'}`}>
-        <div className="filebar"><span><FileCode2 size={16}/>main.py</span><span className="filebar-space"/><select className="code-version-select" aria-label="代码历史版本" disabled={!project || !codeVersions.length || !!busy || aiBusy || deviceBusy} value={codePreview ? codePreview.revision ?? 'preview' : selectedVersion ?? 'draft'} onChange={event => { if (event.target.value === 'draft')
+        <EngineeringFilebar versions={<select className="code-version-select" aria-label="代码历史版本" disabled={!project || !codeVersions.length || !!busy || aiBusy || deviceBusy} value={codePreview ? codePreview.revision ?? 'preview' : selectedVersion ?? 'draft'} onChange={event => { if (event.target.value === 'draft')
                 setCodePreview(null);
             else
-                selectCodeVersion(Number(event.target.value)); }}><option value="draft" disabled={!codePreview}>{project ? '未保存草稿' : '尚无版本'}</option>{codePreview && !codePreview.revision && <option value="preview">AI生成稿 · 未保存</option>}{codeVersions.map(version => <option key={version.revision} value={version.revision}>V{version.revision} · {version.name || "MicroPython 程序"} · {version.source === 'ai' ? 'AI生成稿 · 未保存' : '已保存'}{version.boardId && version.boardId !== board ? ' · 其他主控' : ''}</option>)}</select><div className="editor-view-controls"><button aria-label="缩小代码" title="缩小代码" disabled={zoom <= 80} onClick={() => setZoom(value => Math.max(80, value - 10))}><ZoomOut size={16}/></button><span aria-label="代码字号比例">{zoom}%</span><button aria-label="放大代码" title="放大代码" disabled={zoom >= 160} onClick={() => setZoom(value => Math.min(160, value + 10))}><ZoomIn size={16}/></button><button aria-label={codeFullscreen ? '退出代码全屏' : '代码全屏'} title={codeFullscreen ? '退出全屏（Esc）' : '代码全屏'} onClick={() => setCodeFullscreen(value => !value)}>{codeFullscreen ? <Minimize size={16}/> : <Maximize size={16}/>}</button></div><ActionMenu label="代码工具" align="right" disabled={loading || !!busy || deviceBusy} items={[
-                    { label: '导入程序…', icon: Upload, disabled: aiBusy, onSelect: () => importInput.current?.click() },
-                    { label: '导出当前程序', icon: Download, onSelect: () => download('main.py', visibleCode) },
-                    { label: '整理缩进', icon: AlignLeft, group: '代码排版', disabled: !!codePreview || !code.length, onSelect: () => { editor.current?.formatIndentation(); setCheck(null); setNotice('已整理四空格缩进，不修复程序逻辑；可撤销。'); } },
-                    { label: '撤销编辑', icon: Undo2, disabled: !!codePreview, shortcut: 'Ctrl / ⌘ + Z', onSelect: () => editor.current?.undo() },
-                    { label: '检查代码', icon: CheckCheck, group: '检查与记录', disabled: !board, onSelect: () => { if (check)
-                            setCheckExpanded(value => !value);
-                        else
-                            checkCode(); } },
-                    { label: '查看执行记录', icon: Terminal, onSelect: () => setExecutionDetailsOpen(true) },
-                    { label: '管理版本', icon: History, group: '历史版本', disabled: !project, onSelect: openHistory },
-                ]}><MoreHorizontal size={18}/></ActionMenu></div>
+                selectCodeVersion(Number(event.target.value)); }}><option value="draft" disabled={!codePreview}>{project ? '未保存草稿' : '尚无版本'}</option>{codePreview && !codePreview.revision && <option value="preview">AI生成稿 · 未保存</option>}{codeVersions.map(version => <option key={version.revision} value={version.revision}>V{version.revision} · {version.name || "MicroPython 程序"} · {version.source === 'ai' ? 'AI生成稿 · 未保存' : '已保存'}{version.boardId && version.boardId !== board ? ' · 其他主控' : ''}</option>)}</select>} zoom={zoom} fullscreen={codeFullscreen} onZoom={setZoom} onFullscreen={() => setCodeFullscreen(value => !value)} tools={<ActionMenu label="代码工具" align="right" disabled={loading || !!busy || deviceBusy} items={[
+                        { label: '导入程序…', icon: Upload, disabled: aiBusy, onSelect: () => importInput.current?.click() },
+                        { label: '导出当前程序', icon: Download, onSelect: () => download('main.py', visibleCode) },
+                        { label: '整理缩进', icon: AlignLeft, group: '代码排版', disabled: !!codePreview || !code.length, onSelect: () => { editor.current?.formatIndentation(); setCheck(null); setNotice('已整理四空格缩进，不修复程序逻辑；可撤销。'); } },
+                        { label: '撤销编辑', icon: Undo2, disabled: !!codePreview, shortcut: 'Ctrl / ⌘ + Z', onSelect: () => editor.current?.undo() },
+                        { label: '检查代码', icon: CheckCheck, group: '检查与记录', disabled: !board, onSelect: () => { if (check)
+                                setCheckExpanded(value => !value);
+                            else
+                                checkCode(); } },
+                        { label: '查看执行记录', icon: Terminal, onSelect: () => setExecutionDetailsOpen(true) },
+                        { label: '管理版本', icon: History, group: '历史版本', disabled: !project, onSelect: openHistory },
+                    ]}><MoreHorizontal size={18}/></ActionMenu>}/>
         <input ref={importInput} className="sr-only" type="file" accept=".py,text/x-python" aria-label="导入 Python 程序" onChange={event => { const file = event.target.files?.[0]; event.target.value = ''; void importCode(file); }}/>
         {folderError && <div className="project-folder-status has-error"><span role="alert">{folderError}</span><button disabled={projectLocked} onClick={() => void action('重试文件夹同步', async () => { if (project && folderRef.current) {
                 await ensureFolderPermission(folderRef.current, true);
@@ -1525,7 +1558,7 @@ export default function App() {
         {codePreview && <section className="code-preview-banner" aria-label="AI代码生成稿预览"><div><strong>{codePreview.source === 'repair' ? '屏幕修复预览' : codePreview.source === 'pin-repair' ? '引脚修复预览' : 'AI生成稿'}{codePreview.revision ? ` · v${codePreview.revision}` : ''} · 尚未保存</strong><small>{manualDirty ? '原手工草稿已保留，可随时返回。' : '原保存版本保留在历史中。'}{codePreview.boardId && codePreview.boardId !== board && ' 此代码来自其他主控，请核对兼容性。'}</small></div><button disabled={!!busy || aiBusy || deviceBusy} onClick={editPreview}>采用此代码</button><button disabled={!!busy || aiBusy || deviceBusy} onClick={() => { setCodePreview(null); setCheck(null); }}>返回原稿</button><button className="primary" disabled={!!busy || aiBusy || deviceBusy} onClick={() => void action('保存此版本', () => save(true))}>保存此版本</button></section>}
         <Editor ref={editor} zoom={zoom} readOnly={loading || !!busy || deviceBusy || codePreview !== null} value={visibleCode} onChange={value => { setCode(value); setSelectedVersion(null); setCheck(null); }}/>
         {check && checkExpanded && <section className="check-results" aria-label="检查结果"><div><strong>{check.valid ? '静态检查完成' : '检查发现问题'}</strong><button disabled={!!busy || deviceBusy} onClick={checkCode}>重新检查</button><button className="icon-button" aria-label="关闭检查" onClick={() => setCheckExpanded(false)}><X size={16}/></button></div>{check.diagnostics.some(item => item.repair === 'k10-screen') && <button disabled={!!busy || aiBusy || deviceBusy} onClick={previewScreenRepair}>预览屏幕修复</button>}{check.diagnostics.some(item => item.repair === 'mpython-pins') && <button disabled={!!busy || aiBusy || deviceBusy} onClick={previewPinRepair}>按P号预览修复</button>}{check.diagnostics.map((item, index) => <p className={`diagnostic ${item.severity.toLowerCase()}`} key={index}><span>{item.severity === 'PASS' ? '通过' : item.severity === 'FAIL' ? '错误' : '提示'}</span>{item.line ? `第 ${item.line} 行 · ` : ''}{item.message}</p>)}</section>}
-        <section className="terminal-panel" hidden={!terminalOpen}><div className="terminal-head"><h3><Terminal size={17}/>REPL</h3><span>{running ? '正在执行 · 发送会先中断' : connected ? '设备已连接' : deviceState === 'attention' ? '连接需核对' : '未连接'}</span><button disabled={!!busy} onClick={() => setLogs('')}>清空</button><button onClick={() => void action('导出设备备份', async () => { const backup = await latestBackup(); if (!backup)
+        <section className="terminal-panel" hidden={!terminalOpen}><div className="terminal-head"><h3><Terminal size={17}/>REPL</h3><span>{running ? '正在执行 · 发送会先中断' : connected ? '设备已连接' : deviceState === 'attention' ? '连接需核对' : '未连接'}</span><button disabled={!!busy} onClick={() => setLogs('')}>清空</button><button onClick={() => void action('导出设备备份', async () => { const backup = await latestBackup({ projectId: project?.id ?? '', channelId: 'main' }, true); if (!backup)
                 throw new Error('尚无设备备份。'); if (backup.bytes)
                 download('main-before-upload.py', backup.bytes);
             else
@@ -1535,6 +1568,7 @@ export default function App() {
             } }} disabled={!!busy || deviceBusy}/><button disabled={!repl.trim() || !!busy || deviceBusy || deviceState === 'attention'} title={running ? '中断当前程序并发送' : connected ? '发送命令' : '连接设备并发送'} aria-label="发送 REPL 命令"><ArrowUp size={17}/></button></form></details></section>
       </section>
       </>}
+      </div><div ref={setControllerWorkspaceHost} className={`controller-workspaces mobile-${mobileTab === 'hardware' ? 'hide' : 'show'}`} hidden={!selectedController}/>
     </main>
     </div>
     {mode === 'engineer' && isChatCoding && nativeChat.connectionOpen && <ChatCodingConnection chat={nativeChat} onSave={() => void action('保存任务', () => save())}/>}
@@ -1542,7 +1576,7 @@ export default function App() {
     <LearningWorkflow key={project?.id ?? 'scratch'} active={mode === 'learning'} project={project} board={boardInfo} modules={selectedSensors} section={learningSection} sectionSelection={learningSectionSelection} onSection={setLearningSection} onSaved={syncFolder} onSyncRequested={async (id) => { if (!folderUpToDate(id))
             await syncFolder(id); }} onBusy={setLearningBusy} onDirty={setLearningDirty} onRegisterSave={fn => { learningSaveRef.current = fn; }} onNew={openNew} blocked={loading || !!busy || aiBusy || structureBusy || chatCodingBusy || deviceBusy || flashing} engineeringDirty={dirty || nativeChat.lua.hasUnsaved} hardwareDirty={hardwareSelectionDirty} onManageHardware={openProjectHardware} onHardwareDetail={openDetail} refreshKey={historyRefresh} reviewChange={reviewChange} onReviewConsumed={() => setReviewChange(null)} onCollaborate={() => setRequirementSync(true)} onTask={openLearningTask}/>
     </div>
-    {folderPanel && project && <ProjectFolderPanel key={project.id} hidden={codeFullscreen} binding={folder} restoring={folderRestoring} status={folderStatus} onLoadFolder={() => void loadFolder()} syncError={folderError} unsaved={workspaceDirty} onClose={() => { setFolderPanel(false); folderToggle.current?.focus(); }} onChooseFolder={() => { setUploadAfterSave(false); openSave(); }} onLocated={async (path) => {
+    {folderPanel && project && <ProjectFolderPanel key={`folder:${project.id}`} hidden={codeFullscreen} binding={folder} restoring={folderRestoring} status={folderStatus} onLoadFolder={() => void loadFolder()} syncError={folderError} unsaved={workspaceDirty} onClose={() => { setFolderPanel(false); folderToggle.current?.focus(); }} onChooseFolder={() => { setUploadAfterSave(false); openSave(); }} onLocated={async (path) => {
                     const binding = folderRef.current;
                     if (!binding || binding.projectId !== project.id)
                         return;
@@ -1552,7 +1586,7 @@ export default function App() {
                     await rememberFolder(updated);
                 }}/>}
     </div>
-    <footer className="statusbar">{mode === 'engineer' && isChatCoding ? <><span>Mosaico · {'Chat Coding'}</span><span>{nativeChat.source === 'local' ? '掌问生成 · WiFi运行' : '任务保存与设备发送分开'}</span><span>实物结果由观察确认</span></> : mode === 'engineer' ? <><span><span className="status-dot"/>智能工程师 · 编程与测试</span><span>{boardInfo?.displayName ?? '先选择主控板'} · {components.length} 个模块</span><span>本机保存 · 设备操作需确认</span></> : <><span>{modeInfo.name}{mode === 'learning' ? learningSection === 'teaching' ? ' · 教学设计' : learningSection === 'outcomes' ? ' · 成果档案' : ' · 制作指导与学习' : ' · 设计与制作'}</span><span>{mode === 'learning' ? learningSection === 'teaching' ? '三阶六维 · 教案草稿请核对' : learningSection === 'outcomes' ? '保留制作发现与实际成果' : '当前任务 · 动手验证 · 制作发现' : saveState}</span></>}</footer>
+    <footer className="statusbar">{mode === 'engineer' && selectedController ? <><span>智能工程师 · {selectedController.name}</span><span>{hardware.find(item => item.componentId === selectedController.boardId)?.displayName} · {selectedController.componentIds.length} 个模块</span><span>本机保存 · 设备操作需确认</span></> : mode === 'engineer' && isChatCoding ? <><span>Mosaico · {'Chat Coding'}</span><span>{nativeChat.source === 'local' ? '掌问生成 · WiFi运行' : '任务保存与设备发送分开'}</span><span>实物结果由观察确认</span></> : mode === 'engineer' ? <><span><span className="status-dot"/>智能工程师 · 编程与测试</span><span>{boardInfo?.displayName ?? '先选择主控板'} · {components.length} 个模块</span><span>本机保存 · 设备操作需确认</span></> : <><span>{modeInfo.name}{mode === 'learning' ? learningSection === 'teaching' ? ' · 教学设计' : learningSection === 'outcomes' ? ' · 成果档案' : ' · 制作指导与学习' : ' · 设计与制作'}</span><span>{mode === 'learning' ? learningSection === 'teaching' ? '三阶六维 · 教案草稿请核对' : learningSection === 'outcomes' ? '保留制作发现与实际成果' : '当前任务 · 动手验证 · 制作发现' : saveState}</span></>}</footer>
     </> : <StartScreen loading={loading} ready={initialized} busy={busy} error={error} theme={theme} onTheme={() => setTheme(value => value === 'light' ? 'dark' : 'light')} onNew={openNew} onLoad={openLoad} onRetry={() => setBootstrapAttempt(value => value + 1)}/>}
     {requirementSync && project && <RequirementSync key={project.id + '-' + mode} projectId={project.id} sourceMode={mode} initialText={(mode === 'engineer' ? (isChatCoding ? nativeChat.source === 'local' ? nativeChat.lua.prompt : '' : message) : mode === 'structure' ? structureDrafts[structureDesignType] : '').slice(0, 2000)} onClose={() => setRequirementSync(false)} onBusy={setLearningBusy} engineeringDirty={dirty || nativeChat.lua.hasUnsaved} onSaved={async (id) => { setHistoryRefresh(v => v + 1); await syncFolder(id); }} onReview={id => { if (!selectMode('learning'))
         return false; setLearningSection('guidance'); setReviewChange({ projectId: project.id, id }); return true; }} onTask={openLearningTask}/>}
@@ -1571,7 +1605,14 @@ export default function App() {
     {loadDialog && <Dialog title="打开项目" onClose={() => setLoadDialog(false)}>{busy === '读取项目' && <p className="muted" role="status">正在读取项目列表…</p>}<p className="muted">从原项目文件夹打开，会恢复文件夹关联、主控、模块、对话与版本。</p><button className="primary choose-project-folder" disabled={!!busy} onClick={() => void loadFolder()}><FolderOpen size={19}/>选择项目文件夹</button>{error && <p className="settings-error" role="alert">{error}</p>}<h3 className="recent-projects-title">最近本机项目</h3><p className="muted">也可继续本机记录。浏览器会恢复记住的文件夹；旧记录未关联目录时，可在右侧打开原文件夹，或另存新位置。</p>{projects.length ? projects.map(item => <button className="load-project-row" data-project-id={item.id} disabled={!!busy} key={item.id} onClick={async () => { if (await chooseProject(item.id))
         setLoadDialog(false); }}><FolderOpen size={22}/><span><strong>{item.name}</strong><small>版本 {item.revision} · {new Date(item.updatedAt).toLocaleString()}</small></span>{item.id === project?.id ? <Check size={18}/> : <ChevronRight size={18}/>}</button>) : <p>还没有最近项目，可从文件夹加载。</p>}</Dialog>}
     {helpDialog && <WorkbenchHelp mode={mode} mosaico={!!isChatCoding} source={nativeChat.source} onClose={() => setHelpDialog(false)}/>}
-    {firmwareDialog && boardInfo && <FirmwareDialog board={boardInfo} onClose={() => setFirmwareDialog(false)} onBusy={setFlashing}/>}
+    {project && <DevelopmentChannels folder={folder} key={`controllers:${project.id}`} projectId={project.id} mainBoard={board} hardware={hardware} engineeringActive={mode === 'engineer'} programsSelected={controllerPrograms} onState={setControllerState} selectorHost={controllerSelectorHost} workspaceHost={controllerWorkspaceHost} actionsHost={controllerActionsHost} connectionHost={controllerConnectionHost} modulesHost={controllerModulesHost} configured={aiConfigured} onSettings={openAiSettings} fullscreen={codeFullscreen} onFullscreen={setCodeFullscreen} onMobileTab={setMobileTab} onHardwareSaved={value => setHardware(items => items.some(item => item.skillName === value.skillName) ? items.map(item => item.skillName === value.skillName ? value : item) : [...items, value])} mobileTab={mobileTab} onSaved={syncFolder} onActivity={setChannelsActive} onSelection={value => { if (selectedController?.id !== value?.id)
+        setCodeFullscreen(false); setSelectedController(value); }} onShared={() => setSharedProjectOpen(true)} onManageMain={openProjectHardware} saveSelected={controllerSave}/>}
+    {controllerCheckOpen && <ControllerSelfTest boardId={board} scope={`${project?.id ?? 'new'}:main`} device={device.current} onClose={() => setControllerCheckOpen(false)} onLoadCode={value => { if (!manualDirty || window.confirm('载入自检程序会替换未保存手工稿，继续吗？')) {
+        setCode(value);
+        setCodePreview(null);
+        setCheck(null);
+    } }}/>}
+    {firmwareDialog && boardInfo && (board === MICROBIT_BOARD ? <Dialog title="micro:bit 固件准备" onClose={() => setFirmwareDialog(false)}><p>先备份设备上的旧程序，再使用官方 Python 编辑器为实际 V1/V2 主控准备 MicroPython。完成后回到掌问连接串口，运行主控自检，再上传 main.py。</p><a href="https://python.microbit.org/v/3" target="_blank" rel="noreferrer">打开官方 micro:bit Python 编辑器</a><p className="muted">掌问不会自动刷写 HEX。main.py 上传前备份并完整回读；写入中断后须重连核对，不自动重发。</p></Dialog> : <FirmwareDialog board={boardInfo} onClose={() => setFirmwareDialog(false)} onBusy={setFlashing}/>)}
     {aiSettingsDialog && <AiSettingsDialog settings={{ aiConfigured, aiModel, aiBaseUrl }} initialMode={mode} onClose={() => setAiSettingsDialog(false)} onSaved={result => { if (!result.mode || result.mode === 'engineer') {
         setAiConfigured(result.aiConfigured);
         setAiModel(result.aiModel);

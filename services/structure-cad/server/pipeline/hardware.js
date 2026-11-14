@@ -119,6 +119,10 @@ export function hardwareProfileTool(bom, { hardwareResolver = createHardwareReso
         message: `${profile.name} 存在暂定数据，可以预览，但制造前需要用户确认。`,
       });
     }
+    if (isReferenceOnlyMounting(profile)) {
+      warnings.push({id: `reference_only_${profile.id}`, status: 'pending', hardware_id: profile.id,
+        message: `${profile.name} 仅作布局参考，未提供固定结构与加工开口；不能把电气焊孔作为螺钉孔。`});
+    }
     hardwareProfiles.push(profile);
     profileReports.push(profileSummary);
   }
@@ -612,10 +616,38 @@ export function validateProfileContract(profile) {
     }
   }
   if (!isPlainObject(profile.cad_reference)) addProfileIssue(report, 'missing_required', 'cad_reference');
+  if (profile.cad_reference?.shape === 'declarative') {
+    for (const issue of validateReferenceGeometry(profile.cad_reference.geometry)) {
+      addProfileIssue(report, 'invalid_dimensions', issue);
+    }
+  }
   if (isPendingHardwareProfile(profile)) {
     addProfileIssue(report, 'manufacturing_pending', 'source_status');
   }
   return report;
+}
+
+// The worker accepts bounded CSG data, never source code or paths. Validate
+// custom/portable profiles too, independently of the Python Skill schema.
+export function validateReferenceGeometry(geometry) {
+  const rows = geometry?.primitives;
+  if (!Array.isArray(rows) || rows.length < 1 || rows.length > 32) return ['cad_reference.geometry.primitives'];
+  const issues = [], ids = new Set();
+  rows.forEach((p, index) => {
+    const fail = () => issues.push(`cad_reference.geometry.primitives[${index}]`);
+    if (!isPlainObject(p) || !/^[a-z][a-z0-9_-]{0,63}$/.test(p.primitive_id) || ids.has(p.primitive_id)
+        || !['add', 'cut'].includes(p.operation) || (index === 0 && p.operation !== 'add')
+        || !['box', 'rounded_box', 'cylinder'].includes(p.kind)
+        || ![0, 90, 180, 270].includes(p.rotation_z_deg ?? 0)) { fail(); return; }
+    ids.add(p.primitive_id);
+    const sizes = p.kind === 'cylinder' ? [p.diameter, p.diameter, p.height]
+      : ['length_x', 'width_y', 'height_z'].map(key => p.size?.[key]);
+    if (!sizes.every(n => isPositiveNumber(n) && n <= 800)
+        || !['x', 'y', 'z'].every((key, i) => isFiniteNumber(p.center?.[key]) && Math.abs(p.center[key]) + sizes[i] / 2 <= 800)
+        || (p.kind === 'rounded_box' && (!isNonNegativeNumber(p.corner_radius ?? 0) || (p.corner_radius ?? 0) >= Math.min(sizes[0], sizes[1]) / 2))
+        || (p.kind === 'cylinder' && (p.rotation_z_deg ?? 0) !== 0)) fail();
+  });
+  return issues;
 }
 
 export function createProfileIssueReport() {
@@ -783,6 +815,7 @@ export function buildProfileValidationSummary(profile, issues = []) {
 }
 
 export function resolveMountingStrategy(profile = {}, mountingHoles = normalizeMountingHoles(profile)) {
+  if (isReferenceOnlyMounting(profile)) return 'reference_only';
   if (isEspRetainerProfile(profile)) return 'edge_retainer';
   if (mountingHoles.length) return 'shell_through_screw_holes';
   if (requiresMountingHoles(profile)) return 'missing_mounting_holes';
@@ -794,8 +827,15 @@ export function isEspRetainerProfile(profile = {}) {
 }
 
 export function requiresMountingHoles(profile = {}) {
-  if (!profile || isEspRetainerProfile(profile)) return false;
+  if (!profile || isEspRetainerProfile(profile) || isReferenceOnlyMounting(profile)) return false;
   return shouldRequireMountingHolesForCategory(profile.category);
+}
+
+export function isReferenceOnlyMounting(profile = {}) {
+  return profile.canonical_mounting?.strategy === 'none'
+    && profile.canonical_mounting?.mode === 'envelope_only'
+    && profile.cad_reference?.shape === 'declarative'
+    && Array.isArray(profile.canonical_mounting?.holes) && profile.canonical_mounting.holes.length === 0;
 }
 
 export function shouldRequireMountingHolesForCategory(category = '') {

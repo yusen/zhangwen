@@ -53,10 +53,28 @@ def context(skills, component_ids):
     return result
 
 
-def cad_profile(profile, component, image=''):
+def cad_profile(profile, component, image='', documentation=''):
     """Data-only adapter to the existing enclosure worker's profile contract."""
     mounting = profile['mounting']
     issues = []
+    reference = {'shape': 'box'}
+    description_reference = '<!-- zhangwen:structure-reference:description-cache:v1 -->' in documentation
+    if description_reference and profile.get('preview_geometry'):
+        # Only bounded schema-validated data is forwarded. The reference Python
+        # is never executed by this adapter or the worker.
+        from zhangwen.cad_engine.models import PreviewDeclarativeGeometry
+        from zhangwen.hardware.mechanical_preview import (
+            extract_mechanical_natural_description, mechanical_description_sha256,
+        )
+        geometry = PreviewDeclarativeGeometry.model_validate(profile['preview_geometry'])
+        try:
+            current_hash = mechanical_description_sha256(extract_mechanical_natural_description(documentation))
+        except ValueError:
+            current_hash = None
+        if geometry.source_sha256 != current_hash or profile['coordinate_system']['origin'] != 'envelope_center':
+            issues.append('声明式预览与自然语言描述或包络原点不一致，请刷新机械资料后核对')
+        else:
+            reference = {'shape': 'declarative', 'geometry': geometry.model_dump(mode='json', exclude_none=True)}
     if mounting.get('mating_hardware_face') in {'+X', '-X', '+Y', '-Y'}:
         issues.append('侧向安装面的孔位投影尚未支持，请提供适用于底板或上盖的安装方案')
     if mounting.get('strategy') == 'edge_retainer':
@@ -86,4 +104,4 @@ def cad_profile(profile, component, image=''):
                              center_mm={**o['center'], 'z': o['center_z']},
                              **({'diameter_mm': o['diameter']} if o['kind'] == 'circle' else {'size_mm': {'width': o['size_u'], 'height': o['size_v']}})) for o in profile['openings']],
             'keepouts': [{'id': k['keepout_id'], 'shape': 'box', 'center_mm': k['center'], 'size_mm': k['size']} for k in profile['keepouts']],
-            'cad_reference': {'shape': 'box'}, 'source_status': '模块机械档案声明；实物适配待核对'}
+            'cad_reference': reference, 'source_status': '模块机械档案声明；实物适配待核对' + ('；预览暂定参数见原模块机械说明' if description_reference else '')}

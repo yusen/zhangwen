@@ -3,7 +3,8 @@ import ast
 from pathlib import Path
 from . import hardware_resources
 
-SKILLS = {"hw_labplus_mpython_v2": "labplus-mpython-v2", "hw_labplus_mpython_esp32s3_v3": "labplus-mpython-esp32s3-v3"}
+SKILLS = {"hw_labplus_mpython_v2": "labplus-mpython-v2", "hw_labplus_mpython_esp32s3_v3": "labplus-mpython-esp32s3-v3",
+          "hw_luatos_esp32c3_core": "luatos-esp32c3-core", "hw_bbc_microbit": "bbc-microbit"}
 
 
 def programming_context(board_id: str) -> str:

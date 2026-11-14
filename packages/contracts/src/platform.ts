@@ -151,6 +151,7 @@ export interface Version { revision: number; code: string; checksum: string; cre
  * Structure asset keys are internal identities, not user-facing directory names.
  * Folder mirrors may use readable categories without changing this import contract. */
 export interface ProjectSnapshot {
+  developmentChannels?: import('./channels').ChannelsCheckpoint;
   workflow?: import('./workflow').WorkflowCheckpoint;
   luaCoding?: LuaCodingCheckpoint;
   format: 'zhangwen-project'; schemaVersion: 1; portableId: string;
@@ -170,6 +171,7 @@ export interface HardwareResourceBundle {
 export interface ProjectProgramRecord {
   format: 'zhangwen-program'; schemaVersion: 1; name: string; createdAt: string;
   boardId: string; boardName: string; componentIds: string[]; checksum: string; sourceRevision: number | null;
+  controllerId?: string; controllerName?: string; controllerRevision?: number;
   verification: { observed: 'unconfirmed' | 'passed' | 'failed'; note: string; uploadVerifiedAt: string | null; runSubmittedAt: string | null };
 }
 export interface ProgramRunSubmission {

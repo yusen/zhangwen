@@ -4,7 +4,8 @@ import { BoardArtwork } from './BoardArtwork';
 import { Dialog } from './Dialog';
 import './projectHardware.css';
 
-export function ProjectHardwareDialog({ boardId, board, componentIds, hardware, dirty, savedProject, blocked, error, busy, onClose, onChooseBoard, onAdd, onRemove, onDetail, onSave }: {
+export function ProjectHardwareDialog({ boardId, board, componentIds, hardware, dirty, savedProject, blocked, error, busy, onClose, onChooseBoard, onAdd, onRemove, onDetail, onSave, controllerName, onControllerName }: {
+  controllerName?: string; onControllerName?: (value:string)=>void;
   boardId: string; board?: HardwareSummary; componentIds: string[]; hardware: HardwareSummary[];
   dirty: boolean; savedProject: boolean; blocked: boolean; error: string; busy: string;
   onClose: () => void; onChooseBoard: () => void; onAdd: () => void; onRemove: (id: string) => void;
@@ -16,6 +17,7 @@ export function ProjectHardwareDialog({ boardId, board, componentIds, hardware, 
   </>}>
     <p className="project-hardware-intro">主控和模块由整个项目统一管理，学习设计师、结构工程师、智能工程师共用。修改会同步显示，保存后用于后续建议与测试。</p>
     {error && <p className="settings-error" role="alert">{error}</p>}
+    {onControllerName&&<label className="field">主控名称<input value={controllerName??''} disabled={blocked} maxLength={80} onChange={event=>onControllerName(event.target.value)}/></label>}
     <section aria-label="项目主控" className="project-hardware-board">
       <h3>主控板</h3>
       <button data-dialog-autofocus className="workflow-board" aria-label="主控板" disabled={blocked} onClick={onChooseBoard}><BoardArtwork board={board}/><span>{board?.displayName || (boardId ? `资料不可用：${boardId}` : '选择主控板')}</span><ChevronRight size={17}/></button>

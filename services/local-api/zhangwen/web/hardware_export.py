@@ -2,9 +2,12 @@
 import base64
 import hashlib
 import json
+from io import BytesIO
+from zipfile import ZipFile, ZipInfo, ZIP_DEFLATED
 
 from fastapi import HTTPException
 from . import hardware_resources
+from . import channels
 
 
 def project_resources(repo, structure, project_id):
@@ -27,6 +30,7 @@ def project_resources(repo, structure, project_id):
         modules.append(dict(id=identity, name=name, revision=revision, files=records, **metadata))
 
     components = list(dict.fromkeys(filter(None, [project['boardId'], *project['componentIds'],
+        *(identity for channel in channels.load(repo, project_id).channels for identity in [channel.boardId, *channel.componentIds]),
         *(p['componentId'] for p in live.values() if p['id'] in selected and p.get('componentId'))])))
     for component in components:
         detail = repo.skills.get_active_by_component_id(component)
@@ -50,12 +54,24 @@ def project_resources(repo, structure, project_id):
                 if hashlib.sha256(raw).hexdigest() != digest:
                     raise HTTPException(422, '模块资源摘要不一致，未导出。')
                 path = relative.replace('programming/', '编程/主控API/', 1).replace('structure/', '结构/参考外形/', 1)
+                # Large, exact STEP references remain lossless. Keep the existing
+                # aggregate bound while archiving the original bytes in a stable
+                # ZIP; geometry is never simplified or silently omitted.
+                if relative.endswith('.step') and len(raw) > 4 * 1024 * 1024:
+                    buffer = BytesIO()
+                    info = ZipInfo(relative.rsplit('/', 1)[-1], date_time=(1980, 1, 1, 0, 0, 0))
+                    info.compress_type = ZIP_DEFLATED
+                    with ZipFile(buffer, 'w', compression=ZIP_DEFLATED, compresslevel=9) as archive:
+                        archive.writestr(info, raw, compresslevel=9)
+                    raw = buffer.getvalue()
+                    path += '.zip'
                 files[path] = raw
         if detail.mechanicalProfile:
             files['结构/机械档案.json'] = (json.dumps(detail.mechanicalProfile, ensure_ascii=False, indent=2) + '\n').encode('utf-8')
         notes = ('本目录是保存时当前模块资料的只读副本，不会自动安装、上传或运行。\n'
                  '修改副本不会改变平台约束。历史加工文件保留在项目的结构版本目录。\n'
                  '参考模型不是经过加工验收的结构件；尺寸、孔位与接线应核对准确型号和实物。\n')
+        notes += '超过4MiB的STEP以ZIP无损归档；解压后得到原始STEP，未简化几何。\n'
         if not detail.mechanicalProfile:
             notes += '尚无结构化机械档案，请补充外形、安装孔、接口开口与避让数据，不得从图片推断。\n'
         files['结构/资料说明.md'] = notes.encode('utf-8')

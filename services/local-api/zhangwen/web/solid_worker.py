@@ -11,17 +11,8 @@ from .design_specs import DesignSpec
 def build(spec, output, scale):
     result = None
     for part in spec.solid:
-        sx, sy, sz = [n * scale for n in part.size]
-        if part.kind == 'box':
-            piece = cq.Workplane('XY').box(sx, sy, sz)
-        elif part.kind == 'cylinder':
-            piece = cq.Workplane('XY').cylinder(sz, sx / 2)
-        else:
-            piece = cq.Workplane('XY').sphere(sx / 2)
-        for axis, angle in zip([(1, 0, 0), (0, 1, 0), (0, 0, 1)], part.rotation):
-            if angle:
-                piece = piece.rotate((0, 0, 0), axis, angle)
-        piece = piece.translate(tuple(n * scale for n in part.center))
+        from .solid_geometry import build_piece
+        piece = build_piece(part, scale)
         result = piece if result is None else result.union(piece) if part.operation == 'add' else result.cut(piece)
     result = result.clean()
     if not result.solids().size() or not result.val().isValid() or result.val().Volume() <= 0:

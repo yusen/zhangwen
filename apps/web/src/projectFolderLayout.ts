@@ -43,6 +43,9 @@ export function projectFolderFiles(snapshot: ProjectSnapshot): ProjectFolderFile
       sha256: version.checksum, data: { text: version.code } });
   }
   const structure = snapshot.structure;
+  for (const channel of snapshot.developmentChannels?.channels ?? []) {
+    for (const version of channel.versions) files.push({ path: ['代码', '主控通道', `${channel.id}_${folderName(channel.name, '主控')}`, '已保存版本', versionFolder(version.revision, '', 'MicroPython程序'), 'main.py'], sha256: version.checksum, data: { text: version.code } });
+  }
   for (const version of snapshot.luaCoding?.versions ?? []) {
     files.push({path:['代码','Lua',version.source==='ai'?'AI生成稿':'已接受版本',versionFolder(version.revision,'','Lua程序'),'program.lua'],sha256:version.checksum,data:{text:version.code}});
   }

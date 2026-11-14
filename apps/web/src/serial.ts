@@ -1,4 +1,6 @@
 import type { DeviceFile, DeviceFileContent, DeviceIdentity, DeviceState, UploadManifest, UploadReceipt } from '../../../packages/contracts/src/platform';
+import type { ControllerSelfTest } from '../../../packages/contracts/src/channels';
+import { MICROBIT_BOARD, parseSelfTestResult, selfTestPrograms } from './controllerDiagnostics';
 
 export interface SerialPortLike {
   readable: ReadableStream<Uint8Array> | null;
@@ -21,9 +23,11 @@ const JSON_IMPORT = 'try:\n import json\nexcept ImportError:\n import ujson as j
 const HASH_IMPORT = 'try:\n import hashlib\nexcept ImportError:\n import uhashlib as hashlib';
 
 class DeviceResponseTimeout extends Error {}
+const ownedPorts = new WeakSet<SerialPortLike>();
 
 /** One reader, one writer, a bounded buffer and one operation per browser port. */
 export class MicroPythonDevice {
+  connectionId = crypto.randomUUID();
   state: DeviceState = 'disconnected';
   identity: DeviceIdentity | null = null;
   receipt: UploadReceipt | null = null;
@@ -40,10 +44,15 @@ export class MicroPythonDevice {
   private mode: 'friendly' | 'raw' = 'friendly';
   private outputTail = '';
   private runTraceback = false;
-  constructor(private port: SerialPortLike, private log: (text: string) => void, private changed: () => void = () => {}, private timeout = 8000) {}
+  private ownsPort = false;
+  constructor(private port: SerialPortLike, private log: (text: string) => void, private changed: () => void = () => {}, private timeout = 8000, private boardId = '') {}
+  private get microbit() { return this.boardId === MICROBIT_BOARD; }
   private setState(state: DeviceState) { this.state = state; this.changed(); }
 
   async connect(): Promise<DeviceIdentity> {
+    if (ownedPorts.has(this.port)) throw new Error('此串口已被另一个开发通道使用，请选择另一块主控。');
+    ownedPorts.add(this.port); this.ownsPort = true;
+    this.connectionId = crypto.randomUUID();
     this.setState('connecting');
     try {
       await this.port.open({ baudRate: 115200 });
@@ -57,8 +66,16 @@ export class MicroPythonDevice {
         try {
           await this.enterRaw();
           // Check the runtime before importing MicroPython-only board modules.
-          const result = await this.execute('import sys\n' + JSON_IMPORT + '\nif sys.implementation.name != "micropython":\n print(json.dumps({"implementation":sys.implementation.name}))\nelse:\n import os, machine, binascii\n print(json.dumps({"implementation":sys.implementation.name,"platform":sys.platform,"machine":os.uname().machine,"uniqueId":binascii.hexlify(machine.unique_id()).decode()}))');
-          parsed = JSON.parse(result.trim());
+          if (this.microbit) {
+            const result = await this.execute('import sys\nfrom microbit import display\nprint("ZW_MICROBIT|" + sys.implementation[0] + "|" + sys.platform + "|" + sys.version.replace("\\n", " "))');
+            const fields = result.trim().split('|');
+            if (fields.length !== 4 || fields[0] !== 'ZW_MICROBIT' || !/microbit/i.test(fields[2])) throw new Error('当前串口未确认是 micro:bit MicroPython。请从官方 Python 编辑器准备固件后再连接。');
+            // micro:bit V1 has no portable hardware unique-id API. Never invent a hardware serial.
+            parsed = { implementation: fields[1], platform: fields[2], machine: fields[3], uniqueId: 'session:' + crypto.randomUUID() };
+          } else {
+            const result = await this.execute('import sys\n' + JSON_IMPORT + '\nif sys.implementation.name != "micropython":\n print(json.dumps({"implementation":sys.implementation.name}))\nelse:\n import os, machine, binascii\n print(json.dumps({"implementation":sys.implementation.name,"platform":sys.platform,"machine":os.uname().machine,"uniqueId":binascii.hexlify(machine.unique_id()).decode()}))');
+            parsed = JSON.parse(result.trim());
+          }
         } catch (error) {
           if (error instanceof DeviceResponseTimeout) throw new Error('未检测到有效的 MicroPython 响应，可能是固件版本不对，请重刷固件。若已刷入 MicroPython，请确认串口、数据线及主控已退出 BOOT 下载模式后重试连接。');
           if (error instanceof SyntaxError || (error instanceof Error && error.message.startsWith('MicroPython:'))) throw new Error('MicroPython 固件检测未通过，请重刷当前主控对应的固件后重新连接。');
@@ -223,12 +240,92 @@ export class MicroPythonDevice {
 
   cancel() { this.cancelled = true; }
 
+  async selfTest(boardId: string): Promise<ControllerSelfTest> {
+    if (!this.identity || this.state !== 'connected') throw new Error('请先连接当前主控并停止程序，再执行自检。');
+    if ((boardId === MICROBIT_BOARD) !== this.microbit || (this.boardId && this.boardId !== boardId)) throw new Error('主控选择与当前连接不一致，请重新连接。');
+    this.cancelled = false;
+    return this.operation(async () => {
+      await this.enterRaw();
+      const checks: ControllerSelfTest['checks'] = [];
+      for (const program of selfTestPrograms(boardId)) {
+        if (this.cancelled) throw new Error('自检已取消。');
+        try { checks.push(parseSelfTestResult(program.id, program.label, await this.execute(program.code))); }
+        catch (error) {
+          if (this.fault) throw error;
+          checks.push({ id: program.id, label: program.label, status: 'unavailable', detail: error instanceof Error ? error.message.slice(0, 1000) : String(error) });
+        }
+      }
+      await this.friendly();
+      return { boardId, identity: this.identity!, connectionId: this.connectionId, checkedAt: new Date().toISOString(), checks, observed: 'unconfirmed', note: '' };
+    });
+  }
+
+  /** Minimal micro:bit filesystem API. Read twice, compare on the host; no hashlib/stat/rename. */
+  private async microbitRead(path: string): Promise<Uint8Array> {
+    await this.execute(`_zw_read=open(${quote(path)},"rb")`);
+    const bytes: number[] = [];
+    try {
+      for (let offset = 0; offset <= 65536; offset += 32) {
+        const data = (await this.execute('_zw_b=_zw_read.read(32)\nprint("".join("%02x" % n for n in _zw_b))')).trim();
+        if (!/^(?:[a-f0-9]{2})*$/.test(data) || data.length > 64) throw new Error('micro:bit 文件读取响应无效。');
+        for (let i = 0; i < data.length; i += 2) bytes.push(parseInt(data.slice(i, i + 2), 16));
+        if (bytes.length > 65536) throw new Error('设备文件超过64 KiB读取上限。');
+        if (data.length < 64) return new Uint8Array(bytes);
+      }
+      throw new Error('文件读取未结束。');
+    } finally { if (!this.fault) await this.execute('_zw_read.close()'); }
+  }
+
+  private async microbitUpload(manifest: UploadManifest, persistBackup: (data: { path: string; bytes: Uint8Array | null; identity: DeviceIdentity }) => Promise<void>, progress: (done: number, total: number) => void): Promise<UploadReceipt> {
+    const file = manifest.files[0], bytes = encoder.encode(file.content);
+    const backup = `microbit-main-${crypto.randomUUID()}.py`;
+    this.receipt = null; this.cancelled = false;
+    return this.operation(async () => {
+      let targetStarted = false;
+      try {
+        await this.enterRaw();
+        const exists = (await this.execute('import os\nprint("ZW_EXISTS|" + str("main.py" in os.listdir()))')).trim();
+        if (!['ZW_EXISTS|True', 'ZW_EXISTS|False'].includes(exists)) throw new Error('无法确认原 main.py，未开始写入。');
+        const original = exists.endsWith('True') ? await this.microbitRead('main.py') : null;
+        if (original && await sha256(original) !== await sha256(await this.microbitRead('main.py'))) throw new Error('原文件两次回读不一致，未开始写入。');
+        await persistBackup({ path: backup, bytes: original, identity: this.identity! });
+        if (this.cancelled) throw new Error('上传已取消，未开始写入。');
+        targetStarted = true;
+        await this.execute('_zw_f=open("main.py","wb")');
+        for (let offset = 0; offset < bytes.length; offset += 32) {
+          if (this.cancelled) throw new Error('上传已取消；目标文件可能不完整，请核对浏览器备份。');
+          const literal = 'b"' + Array.from(bytes.slice(offset, offset + 32), b => '\\x' + b.toString(16).padStart(2, '0')).join('') + '"';
+          await this.execute(`_zw_f.write(${literal})`);
+          progress(Math.min(offset + 32, bytes.length), bytes.length);
+        }
+        await this.execute('_zw_f.close()');
+        if (await sha256(await this.microbitRead('main.py')) !== file.sha256) throw new Error('micro:bit main.py 回读摘要不一致。');
+        await this.friendly();
+        const receipt: UploadReceipt = { projectId: manifest.projectId, revision: manifest.revision, sha256: file.sha256, identity: this.identity!, backupPath: original ? backup : null, verifiedAt: new Date().toISOString() };
+        this.receipt = receipt;
+        this.log('\n[上传回读一致] micro:bit main.py；旧文件已备份到浏览器。尚未运行。\n');
+        return receipt;
+      } catch (error) {
+        this.receipt = null;
+        if (targetStarted) {
+          if (!this.fault) { try { await this.execute('_zw_f.close()'); } catch { /* preserve original error */ } }
+          this.log(`\n[上传未确认] 请断开重连核对 main.py；浏览器备份 ${backup} 保留，不自动重发。\n`);
+          // Fail closed after any interrupted direct replacement. Reconnect must precede recovery.
+          this.fault ??= new Error('micro:bit 写入未确认，请断开重连并核对文件及备份。');
+        }
+        throw error;
+      }
+    });
+  }
+
   async upload(manifest: UploadManifest, persistBackup: (data: { path: string; bytes: Uint8Array | null; identity: DeviceIdentity }) => Promise<void>, progress: (done: number, total: number) => void): Promise<UploadReceipt> {
     if (!this.identity) throw new Error('先连接并识别 MicroPython 设备。');
     if (manifest.files.length !== 1 || manifest.files[0].path !== 'main.py') throw new Error('首版只允许清单中的 main.py。');
     const file = manifest.files[0];
     const bytes = encoder.encode(file.content);
     if (bytes.length > 65536 || bytes.length !== file.size || await sha256(bytes) !== file.sha256) throw new Error('上传清单内容、大小或摘要不一致。');
+    if (this.boardId && manifest.boardId !== this.boardId) throw new Error('上传清单与连接主控不一致，请重新连接。');
+    if (this.microbit) return this.microbitUpload(manifest, persistBackup, progress);
     this.receipt = null;
     this.cancelled = false;
     return this.operation(async () => {
@@ -307,6 +404,7 @@ export class MicroPythonDevice {
   }
 
   private async fileHash(path: string): Promise<string> {
+    if (this.microbit) return sha256(await this.microbitRead(path));
     const result = (await this.execute(`_zw_h=hashlib.sha256()\n_zw_r=open(${quote(path)},"rb")\nwhile True:\n _zw_b=_zw_r.read(256)\n if not _zw_b: break\n _zw_h.update(_zw_b)\n_zw_r.close()\nprint(binascii.hexlify(_zw_h.digest()).decode())`)).trim();
     if (!/^[a-f0-9]{64}$/.test(result)) throw new Error('设备未返回有效 SHA-256。');
     return result;
@@ -316,6 +414,15 @@ export class MicroPythonDevice {
     if (this.state !== 'connected') throw new Error('先连接设备并停止正在运行的程序。');
     return this.operation(async () => {
       await this.enterRaw();
+      if (this.microbit) {
+        const response = await this.execute('import os\nprint("ZW_FILES|" + "|".join(os.listdir()))');
+        if (!response.trim().startsWith('ZW_FILES|')) throw new Error('micro:bit 文件列表响应无效。');
+        const names = response.trim().slice(9).split('|').filter(Boolean);
+        if (names.length > 256 || names.some(path => !path || /[|/\\\x00-\x1f]/.test(path))) throw new Error('micro:bit 文件名格式不支持，未读取。');
+        const result: DeviceFile[] = [];
+        for (const path of names) result.push({ path, size: (await this.microbitRead(path)).length, directory: false });
+        await this.friendly(); return result;
+      }
       const response = await this.execute('import os\n' + JSON_IMPORT + '\n_zw_names=os.listdir()\nif len(_zw_names)>256: raise ValueError("Too many root files")\nprint(json.dumps([{"path":n,"size":os.stat(n)[6],"directory":bool(os.stat(n)[0]&0x4000)} for n in _zw_names]))');
       const files: unknown = JSON.parse(response.trim());
       if (!Array.isArray(files) || files.length > 256 || files.some(item => !item || typeof item.path !== 'string' || !Number.isSafeInteger(item.size) || item.size < 0 || typeof item.directory !== 'boolean')) throw new Error('设备文件列表响应无效。');
@@ -329,6 +436,11 @@ export class MicroPythonDevice {
     if (!path || path.length > 128 || path === '.' || path === '..' || /[/\\\x00-\x1f\x7f]/.test(path)) throw new Error('仅允许读取设备根目录中的单个文件。');
     return this.operation(async () => {
       await this.enterRaw();
+      if (this.microbit) {
+        const bytes = await this.microbitRead(path), digest = await sha256(bytes);
+        if (await sha256(await this.microbitRead(path)) !== digest) throw new Error('micro:bit 文件两次回读不一致。');
+        await this.friendly(); return { path, bytes, sha256: digest };
+      }
       await this.execute('import os, binascii\n' + HASH_IMPORT);
       const size = Number((await this.execute(`_zw_s=os.stat(${quote(path)})\nif _zw_s[0]&0x4000: raise ValueError("Not a file")\nprint(_zw_s[6])`)).trim());
       if (!Number.isSafeInteger(size) || size < 0 || size > 65536) throw new Error('设备文件超过64 KiB读取上限或大小无效。');
@@ -357,13 +469,13 @@ export class MicroPythonDevice {
     await this.operation(async () => {
       await this.enterRaw();
       // Refuse a stale receipt if main.py was changed by another tool.
-      await this.execute('import binascii\n' + HASH_IMPORT);
+      if (!this.microbit) await this.execute('import binascii\n' + HASH_IMPORT);
       if (await this.fileHash('main.py') !== this.receipt!.sha256) { this.receipt = null; throw new Error('设备 main.py 已变更，请重新上传。'); }
       await this.friendly();
       this.outputTail = ''; this.runTraceback = false;
       this.setState('running');
       this.capture = false;
-      await this.send('exec(compile(open("main.py").read(),"main.py","exec"))\r');
+      await this.send(this.microbit ? 'exec(open("main.py").read())\r' : 'exec(compile(open("main.py").read(),"main.py","exec"))\r');
       this.log('\n[运行命令已提交] 请根据串口输出和实物观察判断结果。\n');
     }, 'running');
   }
@@ -383,6 +495,7 @@ export class MicroPythonDevice {
     catch (err) { this.setState('attention'); throw err; }
   }
   async disconnect(): Promise<void> {
+    if (!this.ownsPort) return;
     this.closing = true;
     this.cancelled = true;
     this.receipt = null;
@@ -390,6 +503,7 @@ export class MicroPythonDevice {
     this.reader?.releaseLock(); this.reader = undefined;
     try { this.writer?.releaseLock(); this.writer = undefined; await this.port.close(); } catch { /* already closed */ }
     this.identity = null;
+    ownedPorts.delete(this.port); this.ownsPort = false;
     this.setState('disconnected');
   }
 }

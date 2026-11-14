@@ -21,7 +21,16 @@ def solid_bounds(spec, scale):
         cx, cy, cz, sx, sy, sz = math.cos(rx), math.cos(ry), math.cos(rz), math.sin(rx), math.sin(ry), math.sin(rz)
         matrix = [[cz*cy, cz*sy*sx-sz*cx, cz*sy*cx+sz*sx], [sz*cy, sz*sy*sx+cz*cx, sz*sy*cx-cz*sx], [-sy, cy*sx, cy*cx]]
         half = [sum(abs(matrix[i][j]) * part.size[j] / 2 for j in range(3)) for i in range(3)]
-        bounds.append([(part.center[i] - half[i], part.center[i] + half[i]) for i in range(3)])
+        offset = [0.,0.,0.]
+        if part.kind == 'extrude':
+            offset[:2] = [(min(p[i] for p in part.profile)+max(p[i] for p in part.profile))/2 for i in (0,1)]
+        elif part.kind == 'revolve':
+            offset[2] = (min(p[1] for p in part.profile)+max(p[1] for p in part.profile))/2
+        elif part.kind == 'loft':
+            points = [p for s in part.sections for p in s.points]
+            offset = [(min(p[i] for p in points)+max(p[i] for p in points))/2 for i in (0,1)] + [(part.sections[0].z+part.sections[-1].z)/2]
+        center = [part.center[i]+sum(matrix[i][j]*offset[j] for j in range(3)) for i in range(3)]
+        bounds.append([(center[i] - half[i], center[i] + half[i]) for i in range(3)])
     return [round((max(b[i][1] for b in bounds) - min(b[i][0] for b in bounds)) * scale, 3) for i in range(3)]
 
 
@@ -59,6 +68,11 @@ async def act(request, previous, settings, job_root, conversation=None, *, previ
             # explicitly empty selection. Historical files keep their sources.
             spec.hardwarePlacements = [hardware_installations.HardwarePlacement.model_validate(p)
                 for p in previous['designSpec'].get('hardwarePlacements', [])]
+        if not editing and template in {'finger-box', 'rounded-box'} and previous.get('designSpec', {}).get('additionalShapes'):
+            data = spec.model_dump()
+            data['drawing'] = None
+            data['additionalShapes'] = previous['designSpec']['additionalShapes']
+            spec = DesignSpec.model_validate(data)
         if request.hardwarePlacements is not None and not request.template:
             spec.hardwarePlacements = request.hardwarePlacements
         spec.check_kind(request.designType)
@@ -124,8 +138,10 @@ async def act(request, previous, settings, job_root, conversation=None, *, previ
             drawing = installation_drawing
         result['laserDrawing'] = drawing.model_dump(mode='json')
         result['laserTextPaths'] = {str(i):laser_text.svg_path(shape) for i,shape in enumerate(drawing.shapes) if shape.kind == 'text'}
-        result['checks'] = [{'id': 'paths', 'status': 'pass', 'message': f'{len(drawing.shapes)}条路径；坐标范围、闭合要求与完全重复路径检查通过。'},
+        result['checks'] = [{'id': 'paths', 'status': 'pass', 'message': f'{len(drawing.shapes)}条路径；坐标范围、路径格式与完全重复路径检查通过，开放切缝按设计保留。'},
                             {'id': 'fabrication', 'status': 'warning', 'message': '名义尺寸，未补偿刀缝；材料、孔间距、交叉路径与装配需加工前复核。'}]
+        if spec.additionalShapes:
+            result['checks'].append({'id':'custom-paths','status':'warning','message':'附加开孔与图案使用整张展开图坐标，改尺寸后不会自动随面板移动；须核对位置、榫齿、弯折区和硬件之间的关系。'})
         if installation_report:
             result['checks'].append({'id': 'hardware-installation', 'status': 'pass',
                 'message': f'{len(installation_report)}个器件按原模块资料生成安装轮廓及{sum(i["cutCount"] for i in installation_report)}个切口；完整板面、同面器件/避让/文字与切口间距检查通过。'})
@@ -140,7 +156,9 @@ async def act(request, previous, settings, job_root, conversation=None, *, previ
                     if spec.roundedBox.pattern_version == 2 else '旧版切缝未接通上下边缘；应用参数重新生成可保留历史并创建修正版。'})
             result['checks'].append({'id':'bend-material','status':'warning','message':'切缝为切穿线段；仅适用于经试切可弯折的材料，不能保证普通亚克力或任意木板可弯折。围板中间接缝需胶合，实际装配、桥宽与刀缝须试切确认。'})
         if result['laserTextPaths']:
-            result['checks'].append({'id':'text', 'status':'pass', 'message':'文字已使用随包中文字体转为矢量轮廓，SVG填充雕刻区域、DXF为ENGRAVE层闭合轮廓；加工填充方式需在加工软件中选择。'})
+            result['checks'].append({'id':'text', 'status':'pass', 'message':'文字已使用随包中文字体转为矢量轮廓，按切割/雕刻分层；加工填充方式需在加工软件中选择。'})
+            if any(s.kind == 'text' and s.operation == 'cut' for s in drawing.shapes):
+                result['checks'].append({'id':'text-islands','status':'warning','message':'文字切穿可能使字腔或内部小块掉落；连接桥、最小笔画和材料强度需制作前确认。'})
     else:
         size = solid_bounds(spec, scale)
         result['design_state'] = {'id': '', 'parameters': {}, 'enclosure_parameters': {'outer_box_size': dict(zip(['length_x', 'width_y', 'height_z'], size))}, 'bom': []}

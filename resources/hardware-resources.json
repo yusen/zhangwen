@@ -1,6 +1,14 @@
 {
   "schema": "zhangwen.hardware-resources/v1",
   "modules": {
+    "bbc-microbit": {
+      "componentId": "hw_bbc_microbit",
+      "files": {
+        "programming/references/api.md": "05e59d3f3ecf4e0059b6014c555f08b1c05de6b0bfff2fb63b12f9a8381e49fe",
+        "programming/SKILL.md": "5da44e50f18415db20e9a9961777a947ba3f895ba0d2099dd44976daf523facb",
+        "structure/README.md": "1db6a0e9cab16b4928113f7646dc1f868cde730ad51bd453920af64fb95136e1"
+      }
+    },
     "d-robotics-rdk-x5": {
       "componentId": "hw_drobotics_rdk_x5",
       "files": {
@@ -906,6 +914,23 @@
         "programming/references/sources.json": "dd994af3bce4d00e0d4d3276746d533ff5c2fe4384951b7b0d21a1d4ca632139",
         "programming/SKILL.md": "e52792dc50814c291f233a7147fab67a43c83de0e950e2603d5fde70e5c462ea",
         "structure/README.md": "9ff76eb0aa11df009d035863f13a337ef0bc8ce2a64bd13326d01ba64d5dda9f"
+      }
+    },
+    "luatos-esp32c3-core": {
+      "componentId": "hw_luatos_esp32c3_core",
+      "files": {
+        "programming/references/api.md": "317135034ecc9d3db44598507a61c4496fe7ae66b208dfeb658ff816ad80506b",
+        "programming/SKILL.md": "43b88b123d6bc164565f4aeb7256e64609b50763e8067460a6204af242cdbd41",
+        "structure/dimensions-v1.2.pdf": "413345519cba7fbceabd1ba79dc91848a797f1e60b9519892f3a60e4dd340e14",
+        "structure/esp32c3-core.step": "541a78f57610880364717c8ea42b6e95c693ccbc295925595b236759fcd1680c",
+        "structure/esp32c3-core.stl": "f75a760f5eba1bfb995033bf81511b5f0a802cdbe851fa91c3f45eb2f4fa73b0",
+        "structure/expansion-board.md": "0875f41555232f27f2d05ec6aaa57e3dc7b3862cebc19c6d74d399070871ff1e",
+        "structure/expansion-board.step": "0a088e5f32dbe64a8ea28ba24f8aefce9d6e1cea4be4285b2befa8a7a89be179",
+        "structure/preview.png": "5d2f6d9f5b2ff28b9b3aa1aad8c0f078ba971ca0c983470a71dc44568c055961",
+        "structure/README.md": "2aae0643aa898648a5100895824f885728dbb06db11edb5686e1e5840423c860",
+        "structure/schematic-v1.2.pdf": "1c0f1abff87b45e77779dcea2f28c33a337d59b8c735b29f58d03aec8acbc0c3",
+        "structure/user-pinout.png": "8f6c90abc4107d5fab1584dc290a01f5c5b2afc51e1a0ccbb44c24fec60b0aaf",
+        "structure/user-product.png": "6ae35a723831e4b5dffdbf3a886cee5efc342045fdfad67f754b729bd6cf9fb4"
       }
     },
     "nplus-06196a60bde7": {

@@ -3,11 +3,263 @@
   "source": "User-provided ZW-CAD-intent, 2026-07 archive",
   "templates": [
     {
+      "id": "auto-open-lid-box-c3",
+      "revision": 3,
+      "title": "自动感应开盖盒（C3扩展板）",
+      "description": "C3核心板位于扩展板中央，后侧三孔托座与盒体一体打印，USB朝右；15×10出线孔位于后壁中央，保留超声波、舵机和70°开盖预览。",
+      "size": [
+        100,
+        155.353,
+        124.236
+      ],
+      "notes": [
+        "盒体与扩展板托座为一个打印实体；三根支柱对应STEP的3个Ø3.20孔，Ø2.5底孔拟用M3自攻螺钉，需试装。",
+        "C3、扩展板、舵机、超声波与舵机臂仅供装配参考，不打印。PCB抬高7mm避让焊针；USB端开放。",
+        "核心板高度暂定，插入深度、电气供电与引脚映射未验证，不自动修改接线或程序。",
+        "基础案例尚未包含活动连杆及铰链轴；已有项目保留原连杆销轴。未完成实物开盖、配合或强度验收。"
+      ],
+      "source": "Original lid case + user EasyEDA STEP, 2026-11-11",
+      "file": "auto-open-lid-box-c3.py",
+      "sha256": "73787b28dce833a037818bde4b2271e933213835909356b587e4fcd4525d5a22",
+      "image": "auto-open-lid-box-c3.png",
+      "parameterFields": [
+        {
+          "key": "box_length_x",
+          "label": "盒体长度",
+          "group": "盒体与上盖",
+          "unit": "mm",
+          "min": 70,
+          "max": 300,
+          "step": 0.1
+        },
+        {
+          "key": "box_width_y",
+          "label": "盒体宽度",
+          "group": "盒体与上盖",
+          "unit": "mm",
+          "min": 60,
+          "max": 300,
+          "step": 0.1
+        },
+        {
+          "key": "base_height_z",
+          "label": "底盒高度",
+          "group": "盒体与上盖",
+          "unit": "mm",
+          "min": 40,
+          "max": 200,
+          "step": 0.1
+        },
+        {
+          "key": "lid_height_z",
+          "label": "上盖高度",
+          "group": "盒体与上盖",
+          "unit": "mm",
+          "min": 16,
+          "max": 100,
+          "step": 0.1
+        },
+        {
+          "key": "wall_thickness",
+          "label": "盒体壁厚",
+          "group": "盒体与上盖",
+          "unit": "mm",
+          "min": 1,
+          "max": 5,
+          "step": 0.1
+        },
+        {
+          "key": "floor_thickness",
+          "label": "盒底厚度",
+          "group": "盒体与上盖",
+          "unit": "mm",
+          "min": 1,
+          "max": 5,
+          "step": 0.1
+        },
+        {
+          "key": "lid_wall_thickness",
+          "label": "上盖壁厚",
+          "group": "盒体与上盖",
+          "unit": "mm",
+          "min": 1,
+          "max": 5,
+          "step": 0.1
+        },
+        {
+          "key": "corner_radius",
+          "label": "盒体圆角",
+          "group": "盒体与上盖",
+          "unit": "mm",
+          "min": 1,
+          "max": 12,
+          "step": 0.1
+        },
+        {
+          "key": "lid_clearance",
+          "label": "上盖配合间隙",
+          "group": "开盖与铰链",
+          "unit": "mm",
+          "min": 0.1,
+          "max": 1.5,
+          "step": 0.1
+        },
+        {
+          "key": "lid_closed_gap_z",
+          "label": "闭合上下间隙",
+          "group": "开盖与铰链",
+          "unit": "mm",
+          "min": 0.5,
+          "max": 3,
+          "step": 0.1
+        },
+        {
+          "key": "lid_preview_angle_deg",
+          "label": "开盖预览角度",
+          "group": "开盖与铰链",
+          "unit": "°",
+          "min": 0,
+          "max": 110,
+          "step": 1
+        },
+        {
+          "key": "hinge_hole_diameter",
+          "label": "铰链轴孔直径",
+          "group": "开盖与铰链",
+          "unit": "mm",
+          "min": 2,
+          "max": 4,
+          "step": 0.1
+        },
+        {
+          "key": "ultrasonic_shell_mount_pitch_x",
+          "label": "超声波横向孔距",
+          "group": "传感器安装孔",
+          "unit": "mm",
+          "min": 25,
+          "max": 50,
+          "step": 0.1
+        },
+        {
+          "key": "ultrasonic_shell_mount_pitch_z",
+          "label": "超声波竖向孔距",
+          "group": "传感器安装孔",
+          "unit": "mm",
+          "min": 8,
+          "max": 22,
+          "step": 0.1
+        },
+        {
+          "key": "ultrasonic_shell_mount_hole_diameter",
+          "label": "超声波固定孔直径",
+          "group": "传感器安装孔",
+          "unit": "mm",
+          "min": 2,
+          "max": 4,
+          "step": 0.1
+        },
+        {
+          "key": "ultrasonic_shell_mount_center_z",
+          "label": "超声波固定孔中心高度",
+          "group": "传感器安装孔",
+          "unit": "mm",
+          "min": 15,
+          "max": 25,
+          "step": 0.1
+        },
+        {
+          "key": "c3_wall_gap_x",
+          "label": "扩展板距后壁",
+          "group": "C3一体托座",
+          "unit": "mm",
+          "min": 6,
+          "max": 20,
+          "step": 0.1
+        },
+        {
+          "key": "c3_pcb_z",
+          "label": "扩展板PCB底面高度",
+          "group": "C3一体托座",
+          "unit": "mm",
+          "min": 6,
+          "max": 20,
+          "step": 0.1
+        },
+        {
+          "key": "c3_tray_thickness",
+          "label": "扩展板托板厚度",
+          "group": "C3一体托座",
+          "unit": "mm",
+          "min": 2,
+          "max": 5,
+          "step": 0.1
+        }
+      ],
+      "parts": [
+        {
+          "id": "base",
+          "label": "盒体与扩展板托座",
+          "object": "base_part",
+          "printable": true
+        },
+        {
+          "id": "lid",
+          "label": "上盖",
+          "object": "lid_part",
+          "printable": true
+        },
+        {
+          "id": "c3",
+          "label": "C3核心板参考件",
+          "object": "hardware_reference_parts:0",
+          "printable": false
+        },
+        {
+          "id": "expansion",
+          "label": "C3扩展板参考件",
+          "object": "hardware_reference_parts:1",
+          "printable": false
+        },
+        {
+          "id": "servo",
+          "label": "舵机参考件",
+          "object": "hardware_reference_parts:2",
+          "printable": false
+        },
+        {
+          "id": "ultrasonic",
+          "label": "超声波参考件",
+          "object": "hardware_reference_parts:3",
+          "printable": false
+        },
+        {
+          "id": "horn",
+          "label": "舵机臂参考件",
+          "object": "hardware_reference_parts:4",
+          "printable": false
+        }
+      ],
+      "dependencies": {
+        "expansion": {
+          "path": "resources/hardware-skills/luatos-esp32c3-core/structure/expansion-board.step",
+          "sha256": "0a088e5f32dbe64a8ea28ba24f8aefce9d6e1cea4be4285b2befa8a7a89be179"
+        },
+        "core": {
+          "path": "resources/hardware-skills/luatos-esp32c3-core/structure/esp32c3-core.step",
+          "sha256": "541a78f57610880364717c8ea42b6e95c693ccbc295925595b236759fcd1680c"
+        }
+      }
+    },
+    {
       "id": "auto-open-lid-box",
       "revision": 1,
       "title": "自动感应开盖盒",
       "description": "100 × 80 × 60 mm 感应盒，带超声波探头开孔、舵机托台和外置铰链；上盖以打开 70° 的姿态预览。",
-      "size": [100, 108.834, 124.236],
+      "size": [
+        100,
+        108.834,
+        124.236
+      ],
       "notes": [
         "盒体、上盖为两个打印件；K10、IO 扩展板、舵机、超声波与舵机臂仅为装配参考。",
         "标称盒体 100 × 80 × 60 mm、壁厚 2 mm；初始尺寸为含铰链的开盖预览外廓，不含外置硬件。",
@@ -18,31 +270,194 @@
       "sha256": "8608f82b54577cea5837cb34f8651b6525dfb8883e09b1985f84e6db7544312f",
       "image": "auto-open-lid-box.png",
       "parameterFields": [
-        {"key":"box_length_x","label":"盒体长度","group":"盒体与上盖","unit":"mm","min":70,"max":300,"step":0.1},
-        {"key":"box_width_y","label":"盒体宽度","group":"盒体与上盖","unit":"mm","min":60,"max":300,"step":0.1},
-        {"key":"base_height_z","label":"底盒高度","group":"盒体与上盖","unit":"mm","min":40,"max":200,"step":0.1},
-        {"key":"lid_height_z","label":"上盖高度","group":"盒体与上盖","unit":"mm","min":16,"max":100,"step":0.1},
-        {"key":"wall_thickness","label":"盒体壁厚","group":"盒体与上盖","unit":"mm","min":1,"max":5,"step":0.1},
-        {"key":"floor_thickness","label":"盒底厚度","group":"盒体与上盖","unit":"mm","min":1,"max":5,"step":0.1},
-        {"key":"lid_wall_thickness","label":"上盖壁厚","group":"盒体与上盖","unit":"mm","min":1,"max":5,"step":0.1},
-        {"key":"corner_radius","label":"盒体圆角","group":"盒体与上盖","unit":"mm","min":1,"max":12,"step":0.1},
-        {"key":"lid_clearance","label":"上盖配合间隙","group":"开盖与铰链","unit":"mm","min":0.1,"max":1.5,"step":0.1},
-        {"key":"lid_closed_gap_z","label":"闭合上下间隙","group":"开盖与铰链","unit":"mm","min":0.5,"max":3,"step":0.1},
-        {"key":"lid_preview_angle_deg","label":"开盖预览角度","group":"开盖与铰链","unit":"°","min":0,"max":110,"step":1},
-        {"key":"hinge_hole_diameter","label":"铰链轴孔直径","group":"开盖与铰链","unit":"mm","min":2,"max":4,"step":0.1},
-        {"key":"ultrasonic_shell_mount_pitch_x","label":"超声波横向孔距","group":"传感器安装孔","unit":"mm","min":25,"max":50,"step":0.1},
-        {"key":"ultrasonic_shell_mount_pitch_z","label":"超声波竖向孔距","group":"传感器安装孔","unit":"mm","min":8,"max":22,"step":0.1},
-        {"key":"ultrasonic_shell_mount_hole_diameter","label":"超声波固定孔直径","group":"传感器安装孔","unit":"mm","min":2,"max":4,"step":0.1},
-        {"key":"ultrasonic_shell_mount_center_z","label":"超声波固定孔中心高度","group":"传感器安装孔","unit":"mm","min":15,"max":25,"step":0.1}
+        {
+          "key": "box_length_x",
+          "label": "盒体长度",
+          "group": "盒体与上盖",
+          "unit": "mm",
+          "min": 70,
+          "max": 300,
+          "step": 0.1
+        },
+        {
+          "key": "box_width_y",
+          "label": "盒体宽度",
+          "group": "盒体与上盖",
+          "unit": "mm",
+          "min": 60,
+          "max": 300,
+          "step": 0.1
+        },
+        {
+          "key": "base_height_z",
+          "label": "底盒高度",
+          "group": "盒体与上盖",
+          "unit": "mm",
+          "min": 40,
+          "max": 200,
+          "step": 0.1
+        },
+        {
+          "key": "lid_height_z",
+          "label": "上盖高度",
+          "group": "盒体与上盖",
+          "unit": "mm",
+          "min": 16,
+          "max": 100,
+          "step": 0.1
+        },
+        {
+          "key": "wall_thickness",
+          "label": "盒体壁厚",
+          "group": "盒体与上盖",
+          "unit": "mm",
+          "min": 1,
+          "max": 5,
+          "step": 0.1
+        },
+        {
+          "key": "floor_thickness",
+          "label": "盒底厚度",
+          "group": "盒体与上盖",
+          "unit": "mm",
+          "min": 1,
+          "max": 5,
+          "step": 0.1
+        },
+        {
+          "key": "lid_wall_thickness",
+          "label": "上盖壁厚",
+          "group": "盒体与上盖",
+          "unit": "mm",
+          "min": 1,
+          "max": 5,
+          "step": 0.1
+        },
+        {
+          "key": "corner_radius",
+          "label": "盒体圆角",
+          "group": "盒体与上盖",
+          "unit": "mm",
+          "min": 1,
+          "max": 12,
+          "step": 0.1
+        },
+        {
+          "key": "lid_clearance",
+          "label": "上盖配合间隙",
+          "group": "开盖与铰链",
+          "unit": "mm",
+          "min": 0.1,
+          "max": 1.5,
+          "step": 0.1
+        },
+        {
+          "key": "lid_closed_gap_z",
+          "label": "闭合上下间隙",
+          "group": "开盖与铰链",
+          "unit": "mm",
+          "min": 0.5,
+          "max": 3,
+          "step": 0.1
+        },
+        {
+          "key": "lid_preview_angle_deg",
+          "label": "开盖预览角度",
+          "group": "开盖与铰链",
+          "unit": "°",
+          "min": 0,
+          "max": 110,
+          "step": 1
+        },
+        {
+          "key": "hinge_hole_diameter",
+          "label": "铰链轴孔直径",
+          "group": "开盖与铰链",
+          "unit": "mm",
+          "min": 2,
+          "max": 4,
+          "step": 0.1
+        },
+        {
+          "key": "ultrasonic_shell_mount_pitch_x",
+          "label": "超声波横向孔距",
+          "group": "传感器安装孔",
+          "unit": "mm",
+          "min": 25,
+          "max": 50,
+          "step": 0.1
+        },
+        {
+          "key": "ultrasonic_shell_mount_pitch_z",
+          "label": "超声波竖向孔距",
+          "group": "传感器安装孔",
+          "unit": "mm",
+          "min": 8,
+          "max": 22,
+          "step": 0.1
+        },
+        {
+          "key": "ultrasonic_shell_mount_hole_diameter",
+          "label": "超声波固定孔直径",
+          "group": "传感器安装孔",
+          "unit": "mm",
+          "min": 2,
+          "max": 4,
+          "step": 0.1
+        },
+        {
+          "key": "ultrasonic_shell_mount_center_z",
+          "label": "超声波固定孔中心高度",
+          "group": "传感器安装孔",
+          "unit": "mm",
+          "min": 15,
+          "max": 25,
+          "step": 0.1
+        }
       ],
       "parts": [
-        {"id": "base", "label": "盒体", "object": "base_part", "printable": true},
-        {"id": "lid", "label": "上盖", "object": "lid_part", "printable": true},
-        {"id": "k10", "label": "K10 参考件", "object": "hardware_reference_parts:0", "printable": false},
-        {"id": "expansion", "label": "IO 扩展板参考件", "object": "hardware_reference_parts:1", "printable": false},
-        {"id": "servo", "label": "舵机参考件", "object": "hardware_reference_parts:2", "printable": false},
-        {"id": "ultrasonic", "label": "超声波参考件", "object": "hardware_reference_parts:3", "printable": false},
-        {"id": "horn", "label": "舵机臂参考件", "object": "hardware_reference_parts:4", "printable": false}
+        {
+          "id": "base",
+          "label": "盒体",
+          "object": "base_part",
+          "printable": true
+        },
+        {
+          "id": "lid",
+          "label": "上盖",
+          "object": "lid_part",
+          "printable": true
+        },
+        {
+          "id": "k10",
+          "label": "K10 参考件",
+          "object": "hardware_reference_parts:0",
+          "printable": false
+        },
+        {
+          "id": "expansion",
+          "label": "IO 扩展板参考件",
+          "object": "hardware_reference_parts:1",
+          "printable": false
+        },
+        {
+          "id": "servo",
+          "label": "舵机参考件",
+          "object": "hardware_reference_parts:2",
+          "printable": false
+        },
+        {
+          "id": "ultrasonic",
+          "label": "超声波参考件",
+          "object": "hardware_reference_parts:3",
+          "printable": false
+        },
+        {
+          "id": "horn",
+          "label": "舵机臂参考件",
+          "object": "hardware_reference_parts:4",
+          "printable": false
+        }
       ]
     },
     {

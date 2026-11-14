@@ -4,6 +4,7 @@ import { Dialog } from './Dialog';
 export function WorkbenchHelp({mode,mosaico,source,onClose}:{mode:WorkspaceMode;mosaico:boolean;source:'idea'|'local'|'device';onClose:()=>void}) {
   return <Dialog title="掌问工作台使用说明" onClose={onClose}>
     <p>先完成当前任务，需要时展开说明或切换角色。</p>
+    <details className="classroom-details"><summary>主控自检、micro:bit 与多主控开发</summary><p>先连接当前主控，点击“主控自检”执行固定读取程序，再逐项测试模块。接口读取通过与实物观察分别记录。micro:bit V1/V2 首次使用前在官方 Python 编辑器准备 MicroPython，回到掌问通过串口上传 main.py；上传会先备份再回读。</p><p>在左侧“项目主控”选择“多主控”，点击“添加主控”，可在同一作品增加最多7块 MicroPython 主控。同型号的两块板也分别命名并选择不同串口。所有主控平等切换，各自保留代码、对话、模块、草稿、版本和连接，并共享“三师共用资料”中的作品目标、参考资料、结构与已保存程序。切换主控不会发送消息、上传或中断另一块板；切换项目须先断开设备。Mosaico Lua/Claw 的既有编程方式保持。生成候选需审阅载入并保存，上传运行逐板点击；主控间通信与整机验收仍需实测。</p></details>
     <details className="classroom-details"><summary>三位伙伴与项目器件</summary><ol className="classroom-help-steps">
       <li><strong>学习设计师：设计学习，也陪你完成作品。</strong>教学设计生成可修改的三阶六维教案；造物指导通过对话整理作品说明、逐步制作；成果档案保存展示材料与过程记录。</li>
       <li><strong>智能工程师：让作品动起来。</strong>核对器件和接线，编写程序并运行。</li>

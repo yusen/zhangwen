@@ -3,6 +3,7 @@ import asyncio
 import hashlib
 import json
 import os
+import re
 from pathlib import Path
 import sys
 from datetime import datetime
@@ -24,8 +25,15 @@ def public_template(item):
 def parameter_fields(item, source=None):
     """UI metadata is packaged; defaults come from the digest-checked original."""
     source = source if source is not None else checked_source(item).read_text(encoding='utf-8-sig')
+    source = template_edits.prepare_source(source, item)
     values = template_edits.numeric_parameters(source)
-    return [{**field, 'default': values[field['key']][0]} for field in item.get('parameterFields', [])]
+    fields = [dict(field) for field in item.get('parameterFields', [])]
+    if item['id'] in {'auto-open-lid-box', 'auto-open-lid-box-c3'}:
+        fields.append({'key': 'ultrasonic_offset_x', 'label': '超声波整体左右位置', 'group': '传感器位置（孔位同步）', 'unit': 'mm', 'min': -30, 'max': 30, 'step': 0.1})
+        for field in fields:
+            if field['key'] == 'ultrasonic_shell_mount_center_z':
+                field.update(label='超声波整体中心高度', group='传感器位置（孔位同步）')
+    return [{**field, 'default': values[field['key']][0]} for field in fields]
 
 
 def parameter_values(item, source, edit):
@@ -37,12 +45,33 @@ def checked_source(item):
     source = DIRECTORY / item['file']
     if source.is_symlink() or hashlib.sha256(source.read_bytes()).hexdigest() != item['sha256']:
         raise ValueError('内置模板源码摘要不符，请修复安装后重试。')
+    for key in item.get('dependencies', {}):
+        checked_dependency(item, key)
     return source
 
 
 def asset_names():
     return {f'template-{part["id"]}.{fmt}' for item in TEMPLATES.values()
             for part in item['parts'] for fmt in (['stl', 'step'] if part['printable'] else ['stl'])}
+
+
+def checked_dependency(item, key):
+    """Resolve a digest-bound bundled dependency, never a user supplied path."""
+    dependency = item.get('dependencies', {}).get(key)
+    if not isinstance(dependency, dict):
+        raise ValueError('案例参考资源未登记。')
+    root = DIRECTORY.parents[2].resolve()
+    path = root / dependency['path']
+    if not path.resolve().is_relative_to(root / 'resources') or any(p.is_symlink() for p in [path, *path.parents]):
+        raise ValueError('案例参考资源路径无效。')
+    if hashlib.sha256(path.read_bytes()).hexdigest() != dependency['sha256']:
+        raise ValueError('案例参考资源摘要不符。')
+    return path
+
+
+def added_asset_name(filename):
+    # One flat, bounded filename; neither paths nor code assets are accepted.
+    return bool(re.fullmatch(r'template-added-[a-z][a-z0-9-]{0,39}\.(?:step|stl)', filename))
 
 
 def reference_cases():
@@ -78,7 +107,19 @@ async def act(request, previous, job_root, settings=None, conversation=None, *, 
         source = checked_source(item)
     except (OSError, ValueError) as exc:
         raise HTTPException(422, '模板来源校验失败，未执行建模；原版本保留。') from exc
-    original_source = source.read_text(encoding='utf-8-sig')
+    original_source = template_edits.prepare_source(source.read_text(encoding='utf-8-sig'), item)
+    # An explicit K10 -> C3 case selection carries forward the user's mechanics.
+    # Hardware placement is replaced by the fixed socket/tray assembly; the
+    # former board's transforms cannot be applied to physically different parts.
+    previous_template = previous.get('builtinTemplate', {})
+    c3_upgrade = (previous_template.get('id') == 'auto-open-lid-box-c3'
+                  and previous_template.get('revision', 0) < item['revision'])
+    if initial_edit is None and request.template == 'auto-open-lid-box-c3' and (previous_template.get('id') == 'auto-open-lid-box' or c3_upgrade):
+        initial_edit = {**previous.get('templateEdit', {}), 'title': item['title'],
+                        'summary': 'C3核心板与用户扩展板位于盒体后侧，托座与盒体一体连接，15×10出线孔位于后壁中央；保留已有参数、盒盖改造与独立零件（'
+                                   + str(len(previous.get('templateEdit', {}).get('addedParts', []))) + '件）。原主控和扩展板位置改用新托座的固定装配位置。',
+                        'partTransforms': [p for p in previous.get('templateEdit', {}).get('partTransforms', [])
+                                           if p.get('partId') not in {'k10', 'c3', 'expansion'}]}
     local_edit = False
     try:
         edit = template_edits.checked_spec(initial_edit, item, original_source) if initial_edit is not None else (

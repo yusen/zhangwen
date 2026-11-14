@@ -16,7 +16,7 @@ from zhangwen.hardware.models import HardwareCategory, HardwareSkillStatus, Hard
 WEB_CONTROLLERS = frozenset({
     "hw_seed_unihiker_k10", "hw_seeed_xiao_esp32s3_sense",
     "hw_labplus_mpython_esp32s3_v3", "hw_labplus_mpython_v2", "hw_esp32_generic_c3",
-    "hw_espressif_mosaico",
+    "hw_espressif_mosaico", "hw_luatos_esp32c3_core", "hw_bbc_microbit",
 })
 RELEASE_CATALOG = Path(__file__).resolve().parents[4] / "resources/hardware-skills"
 EXAMPLES_START = '<!-- zhangwen:local-examples:v1 -->'

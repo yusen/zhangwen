@@ -7,7 +7,7 @@ import sys
 import cadquery as cq
 
 from .builtin_templates import TEMPLATES, checked_source
-from .template_edits import checked_spec, render_source
+from .template_edits import checked_spec, render_source, part_definitions
 
 
 def build(ident, output):
@@ -18,9 +18,13 @@ def build(ident, output):
     ns = {'show_object': lambda *args, **kwargs: None, '__name__': '__main__'}
     exec(compile(render_source(source, spec, item), str(checked_source(item)), 'exec'), ns)
     parts, shapes = [], []
-    for part in item['parts']:
-        name, _, index = part['object'].partition(':')
-        obj = ns[name] if not index else ns[name][int(index)]
+    added = {'added-' + p.id: p for p in spec.addedParts}
+    for part in part_definitions(item, spec):
+        if part['id'] in added:
+            obj = ns['_zw_added_parts'][added[part['id']].id]
+        else:
+            name, _, index = part['object'].partition(':')
+            obj = ns[name] if not index else ns[name][int(index)]
         shape = obj.val() if isinstance(obj, cq.Workplane) else obj
         if not shape.isValid() or not shape.Solids() or (part['printable'] and len(shape.Solids()) != 1) or shape.Volume() <= 0:
             raise ValueError('Template part is not a valid single solid')
