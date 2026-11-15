@@ -29,6 +29,7 @@ from zhangwen.web.replies import reply_code
 from zhangwen.web.version_names import code_name
 from .legacy_names import migrate_tables, workspace_message, artifact_id, AI_SOURCES
 from .programming import programming_diagnostics
+from .programming_modes import board_mode, task_file
 
 
 def checksum(code: str) -> str:
@@ -115,17 +116,22 @@ class WebRepository:
             messages = conn.execute(f'''SELECT id, role, content, status, created_at AS createdAt,
                 COALESCE(json_extract(metadata_json, '$.boardId'), ?) AS boardId,
                 json_extract(metadata_json, '$.componentIds') AS componentIds,
-                json_extract(metadata_json, '$.intent') AS intent FROM messages
+                json_extract(metadata_json, '$.intent') AS intent,
+                json_extract(metadata_json, '$.integrationModuleId') AS integrationModuleId,
+                json_extract(metadata_json, '$.references') AS "references",
+                json_extract(metadata_json, '$.referenceNotice') AS referenceNotice FROM messages
                 WHERE project_id=? AND {workspace_message()}
                 ORDER BY rowid''', (row['board_id'], project_id)).fetchall()
-        return {**self.summary(row), "code": json.loads(row["preview_json"])["code"] if row["preview_json"] else DEFAULT_CODE,
+        return {**self.summary(row), **({'programmingMode': 'chat-coding'} if board_mode(self, row['board_id']) == 'chat-coding' else {}), "code": json.loads(row["preview_json"])["code"] if row["preview_json"] else DEFAULT_CODE,
                 "checksum": row["checksum"] or checksum(DEFAULT_CODE),
                 "hardwareRevisions": json.loads(row['hardware_revisions']),
-                "messages": [{key: json.loads(value) if key == 'componentIds' else value
+                "messages": [{key: json.loads(value) if key in {'componentIds', 'references'} else value
                               for key, value in dict(item).items() if value is not None} for item in messages]}
 
     def create(self, request: CreateInput) -> dict[str, Any]:
         revisions = self.hardware_revisions(request.boardId, request.componentIds)
+        if board_mode(self, request.boardId) == 'chat-coding' and 'code' not in request.model_fields_set:
+            request = request.model_copy(update={'code': ''})
         now = datetime.now(UTC).isoformat()
 
         def after_create(conn: sqlite3.Connection, project_id: str, _: str) -> None:
@@ -135,7 +141,7 @@ class WebRepository:
 
         with self.lock:
             workspace = self.projects.create_project_from_idea(
-                idea="独立 MicroPython 编程", project_name=request.name,
+                idea="独立 Chat Coding" if board_mode(self, request.boardId) == 'chat-coding' else "独立 MicroPython 编程", project_name=request.name,
                 initial_expert=None, participating_experts=[], after_create=after_create,
             )
             project_id = workspace.project.id
@@ -152,17 +158,20 @@ class WebRepository:
         if not initial and request.expectedRevision != current["revision"]:
             raise HTTPException(409, "项目已被另一个页面修改。请先导出当前代码，再重新打开项目。")
         revisions = self.hardware_revisions(request.boardId, request.componentIds)
+        native_chat = board_mode(self, request.boardId) == 'chat-coding'
+        if not initial and current['boardId'] and board_mode(self, current['boardId']) != board_mode(self, request.boardId):
+            raise HTTPException(409, '不同编程方式请新建项目；原项目、任务和代码保持。')
         artifact_id = self.artifact_id(project_id)
         with self.connect() as conn:
             version = conn.execute("SELECT COALESCE(MAX(version),0)+1 FROM artifact_versions WHERE artifact_id=?", (artifact_id,)).fetchone()[0]
         # Persist immutable candidate first. A crash can leave an unreferenced
         # candidate, but cannot point the workspace at a partially saved version.
         saved = self.artifacts.upsert_text_artifact(
-            artifact_id=artifact_id, project_id=project_id, title="main.py", kind=ArtifactKind.CODE,
+            artifact_id=artifact_id, project_id=project_id, title=task_file(self, request.boardId), kind=ArtifactKind.CODE,
             status=ArtifactStatus.DRAFT, source_agent_id="zhangwen-manual", source_entity_type="zhangwen_code",
             source_entity_id=uuid.uuid4().hex, source_version=version, content=request.code,
-            summary="手工确认的 MicroPython 文件；尚未证明实物运行。",
-            mime_type="text/x-python", language="python",
+            summary="手工保存的任务文本；尚未发送设备。" if native_chat else "手工确认的 MicroPython 文件；尚未证明实物运行。",
+            mime_type="text/plain" if native_chat else "text/x-python", language="text" if native_chat else "python",
         )
         now = datetime.now(UTC).isoformat()
         with self.connect() as conn:
@@ -184,14 +193,22 @@ class WebRepository:
                 LEFT JOIN zhangwen_code_metadata m ON m.version_id=v.id
                 LEFT JOIN messages s ON s.id=v.source_entity_id AND s.project_id=v.project_id
                 WHERE v.artifact_id=? ORDER BY v.version DESC''', (self.artifact_id(project_id),)).fetchall()
+        def version_name(row):
+            preview=json.loads(row['preview_json'])
+            imported=next((s['content'] for s in preview.get('sections') or [] if s.get('id')=='zhangwen-version-name'),None)
+            if imported is not None: return imported
+            return (preview['code'].strip().split('\n')[0][:40] or 'Chat Coding任务') if board_mode(self,row['board_id'])=='chat-coding' else code_name(preview['code'],row['reply'])
         return [{"revision": row["version"], "code": json.loads(row["preview_json"])["code"],
                  "checksum": row["checksum"], "createdAt": row["created_at"],
                  "source": "ai" if row["source_entity_type"] in AI_SOURCES else "saved",
-                 "name": code_name(json.loads(row['preview_json'])['code'], row['reply']),
+                 "name": version_name(row),
+                 **({'programmingMode':'chat-coding'} if board_mode(self, row['board_id']) == 'chat-coding' else {}),
                  **({"messageId": row['message_id']} if row['source_entity_type'] in AI_SOURCES and row['message_id'] else {}),
                  **({"boardId": row["board_id"]} if row["board_id"] else {})} for row in rows]
 
     def record_ai_code(self, project_id: str, board_id: str, message_id: str, reply: str) -> None:
+        if board_mode(self,board_id) == 'chat-coding':
+            return  # Lua candidates belong to lua_coding; task history stays text-only.
         code = reply_code(reply)
         if code is None:
             return
@@ -250,6 +267,11 @@ class WebRepository:
 
     def check(self, request: CodeInput) -> dict[str, Any]:
         self.hardware_revisions(request.boardId, request.componentIds)
+        if board_mode(self, request.boardId) == 'chat-coding':
+            valid = bool(request.code.strip()) and len(request.code.strip().encode()) <= 4000
+            return {'valid':valid,'checksum':checksum(request.code),'diagnostics':[
+                {'severity':'PASS' if valid else 'FAIL','message':'任务文本格式检查通过，未发送设备。' if valid else '任务须为1到4000字节文本。'},
+                {'severity':'WARNING','message':'Chat Coding使用设备原生Agent；此检查不验证Lua语法、固件能力或实际动作。'}]}
         diagnostics: list[dict[str, Any]] = []
         try:
             compile(request.code, "main.py", "exec")
@@ -265,6 +287,8 @@ class WebRepository:
     def manifest(self, project_id: str, revision: int) -> dict[str, Any]:
         with self.lock:
             project = self.get(project_id)
+            if board_mode(self, project['boardId']) == 'chat-coding':
+                raise HTTPException(422, 'Chat Coding不上传main.py；请显式发送已保存任务到设备。')
             if not project['boardId']:
                 raise HTTPException(422, '请先在主界面选择主控板，再上传程序。')
             if project["revision"] != revision:

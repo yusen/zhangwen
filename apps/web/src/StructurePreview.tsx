@@ -4,6 +4,7 @@ import * as THREE from 'three';
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js';
 import { STLLoader } from 'three/examples/jsm/loaders/STLLoader.js';
 import type { CadResult, CadSize } from '../../../packages/contracts/src/structure';
+import { modelFrameDistance } from './modelFraming';
 
 type View = string;
 const names: [View, string][] = [['assembly', '整体'], ['exploded', '爆炸'], ['base', '底壳'], ['lid', '上盖'], ['hardware', '硬件']];
@@ -51,7 +52,14 @@ export function StructurePreview({ result }: { result?: CadResult }) {
     let disposed = false, frame = 0;
     const controller = new AbortController();
     const materials: THREE.Material[] = [], geometries: THREE.BufferGeometry[] = [];
-    const resize = () => { const w = Math.max(container.clientWidth, 1), h = Math.max(container.clientHeight, 1); renderer.setSize(w, h); camera.aspect = w / h; camera.updateProjectionMatrix(); };
+    let framedSize: THREE.Vector3 | null = null, framedCenter: THREE.Vector3 | null = null;
+    const refit = () => {
+      if (!framedSize || !framedCenter) return;
+      const direction = camera.position.clone().sub(controls.target).normalize();
+      const distance = modelFrameDistance(framedSize.toArray() as [number, number, number], direction.toArray() as [number, number, number], camera.up.toArray() as [number, number, number], camera.aspect, camera.fov);
+      camera.position.copy(framedCenter).addScaledVector(direction, distance); controls.target.copy(framedCenter); controls.update();
+    };
+    const resize = () => { const w = Math.max(container.clientWidth, 1), h = Math.max(container.clientHeight, 1); renderer.setSize(w, h); camera.aspect = w / h; camera.updateProjectionMatrix(); refit(); };
     const observer = new ResizeObserver(resize); observer.observe(container); resize();
     const render = () => { if (disposed) return; controls.update(); renderer.render(scene, camera); frame = requestAnimationFrame(render); }; render();
     const parts = activeView === 'text' && textPart ? [textPart] : templateParts ? (activeView === 'assembly' || activeView === 'exploded' ? templateParts.map(p => p.id) : [activeView]) : standalone ? ['base'] : activeView === 'assembly' || activeView === 'exploded' ? ['base', 'lid', 'hardware'] : [activeView];
@@ -87,6 +95,7 @@ export function StructurePreview({ result }: { result?: CadResult }) {
         const bounds = new THREE.Box3().setFromObject(group);
         if (bounds.isEmpty()) throw new Error('此版本没有可显示的模型。');
         const center = bounds.getCenter(new THREE.Vector3()), size = bounds.getSize(new THREE.Vector3());
+        framedSize = size; framedCenter = center;
         const distance = Math.max(size.length(), 60) * 1.5;
         reset.current = () => {
           let direction = new THREE.Vector3(distance, -distance, distance * .8); camera.up.set(0, 0, 1);
@@ -96,7 +105,7 @@ export function StructurePreview({ result }: { result?: CadResult }) {
             if (textFace === 'top' || textFace === 'bottom') camera.up.set(0, textFace === 'bottom' ? -1 : 1, 0);
             light.position.copy(center).add(direction).add(new THREE.Vector3(-distance * .4, -distance * .3, 0));
           }
-          camera.position.copy(center).add(direction); controls.target.copy(center); controls.update();
+          camera.position.copy(center).add(direction); controls.target.copy(center); controls.update(); refit();
         };
         reset.current(); setStatus('真实模型 · 拖动旋转，滚轮缩放');
       } catch (error) { if (!disposed) { group.visible = false; setStatus(error instanceof Error ? error.message : '模型载入失败'); } }
@@ -111,6 +120,7 @@ export function StructurePreview({ result }: { result?: CadResult }) {
         {(() => { const s = state.enclosure_parameters.outer_box_size; const k = 145 / Math.max(s.length_x, s.width_y); return <g transform={`scale(${k})`}><rect className="draft-shell" x={-s.length_x / 2} y={-s.width_y / 2} width={s.length_x} height={s.width_y} rx={3} />{state.layout_plan?.hardware_transforms.map((h, i) => <g key={`${h.hardware_id}-${i}`}><rect className={`draft-part ${h.mount_surface === 'lid_inner' ? 'on-lid' : ''}`} x={h.center.x - h.bounding_box.length_x / 2} y={-h.center.y - h.bounding_box.width_y / 2} width={h.bounding_box.length_x} height={h.bounding_box.width_y} rx={1} /><text x={h.center.x} y={-h.center.y} fontSize={4 / k} textAnchor="middle">{i + 1}</text></g>)}</g>; })()}
       </svg><strong>{sizeText(state.enclosure_parameters.outer_box_size)}</strong><span>2D 布局草案 · 尚非真实模型</span></div>
       {result?.build && <p className="structure-build-warning" role="status">{result.build.message || '真实模型暂不可用，请检查后重新生成。'}</p>}
-    </> : <div className="structure-preview-empty"><Box size={48} strokeWidth={1.3} /><h3>从想法到可装配的结构</h3><p>描述作品、选择硬件，再确认尺寸与布局。</p><span>矩形带盖外壳 · FDM 3D 打印</span></div>}
+    </> : result ? <div className="structure-preview-empty" role="status" aria-label="模型生成状态"><Box size={48} strokeWidth={1.3}/><h3>当前尚未生成可调模型</h3><p>{result.title}</p><span>先处理结构对话中的待补充事项，再生成模型和尺寸参数。</span>{result.message&&<details><summary>查看当前原因</summary><p>{result.message}</p></details>}</div>
+      : <div className="structure-preview-empty"><Box size={48} strokeWidth={1.3} /><h3>从想法到可装配的结构</h3><p>描述作品、选择硬件，再确认尺寸与布局。</p><span>矩形带盖外壳 · FDM 3D 打印</span></div>}
   </div>;
 }

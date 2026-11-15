@@ -241,7 +241,7 @@ class UpdateManager:
                 result = subprocess.run(command, cwd=self.root, env=env, stdin=subprocess.DEVNULL, stdout=log, stderr=subprocess.STDOUT, shell=False, **options)
             selected = (self.install_root / "current.txt").read_text().strip()
             if selected == revision:
-                state, message = "ready", "新版本已安装。请先保存项目，关闭原服务窗口，再用启动图标打开平台。"
+                state, message = "ready", "新版本已准备好，下次启动生效。当前工作台继续运行；关闭前请核对需要保留的内容。"
             elif result.returncode:
                 message = "下载、校验或环境准备失败，原启动版本保留。详情见安装目录 updates 下的日志。"
         except (OSError, ValueError, subprocess.SubprocessError):

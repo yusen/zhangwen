@@ -718,6 +718,27 @@ def add_ultrasonic_reference(parts, item, profile, features):
 
 
 def add_category_reference_parts(parts, item, profile):
+    reference = profile.get("cad_reference") or {}
+    if reference.get("shape") == "declarative":
+        result = None
+        for primitive in reference["geometry"]["primitives"]:
+            kind = primitive["kind"]
+            center = primitive["center"]
+            if kind == "cylinder":
+                part = cq.Workplane("XY").cylinder(float(primitive["height"]), float(primitive["diameter"]) / 2)
+            else:
+                size = primitive["size"]
+                sx, sy, sz = [float(size[k]) for k in ("length_x", "width_y", "height_z")]
+                part = (rounded_box(sx, sy, sz, float(primitive.get("corner_radius") or 0)).translate((0, 0, -sz/2))
+                        if kind == "rounded_box" else cq.Workplane("XY").box(sx, sy, sz))
+            angle = float(primitive.get("rotation_z_deg") or 0)
+            if angle:
+                part = part.rotate((0, 0, 0), (0, 0, 1), angle)
+            part = part.translate((float(center["x"]), float(center["y"]), float(center["z"])))
+            result = part if result is None else (result.cut(part) if primitive["operation"] == "cut" else result.union(part))
+        # Coordinates are relative to the envelope, not an inferred PCB plane.
+        parts.append(rotate_part_for_item(result.translate(tuple(item["center"])), item))
+        return
     size = [float(item["size"][0]), float(item["size"][1]), float(item["size"][2])]
     dims = profile.get("dimensions") or item.get("dimensions") or {}
     category = str(profile.get("category") or item.get("category") or "").lower()

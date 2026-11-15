@@ -43,7 +43,7 @@ def inspect(requirements: Path, environment: dict | None = None) -> dict:
             installed = None
         if installed != expected:
             problems.append({"package": name, "expected": expected, "installed": installed})
-    for module in ("fastapi", "uvicorn", "httpx", "yaml", "pydantic_core", "cadquery", "OCP", "trimesh"):
+    for module in ("fastapi", "uvicorn", "httpx", "yaml", "pydantic_core", "cadquery", "OCP", "trimesh", "pypdf"):
         try:
             importlib.import_module(module)
         except Exception:

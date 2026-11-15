@@ -4,14 +4,20 @@ export interface CadProfile {
   dimensions_mm: { length_x: number; width_y: number; height_z: number };
   thumbnail_url?: string;
   componentId?: string | null;
+  skillRevision?: string;
 }
 export interface CadExport { id: string; label: string; format: string; url?: string; status?: string; fidelity?: string }
-export type BuiltinTemplateId = 'mpython-shell' | 'photo-stand' | 'servo-side' | 'servo-horizontal' | 'servo-vertical';
-export interface BuiltinTemplate { id: BuiltinTemplateId; revision: number; title: string; description: string; size: number[]; notes: string[]; image?: string; sourceSha256: string }
+export type BuiltinTemplateId = 'auto-open-lid-box' | 'auto-open-lid-box-c3' | 'mpython-shell' | 'photo-stand' | 'servo-side' | 'servo-horizontal' | 'servo-vertical';
+export interface TemplateParameterField { key: string; label: string; group: string; unit: 'mm' | '°'; min: number; max: number; step: number; default: number }
+export interface BuiltinTemplate { id: BuiltinTemplateId; revision: number; title: string; description: string; size: number[]; notes: string[]; image?: string; sourceSha256: string; parameterFields?: TemplateParameterField[] }
 export interface TemplatePart { id: string; label: string; printable: boolean; exportId: string; placement: number[]; size: number[] }
 export interface TextSolid { kind: 'text'; operation: 'add' | 'cut'; text: string; fontSize: number; depth: number; center: number[]; face: 'top' | 'bottom' | 'front' | 'back' | 'left' | 'right'; angle?: number }
 export interface TemplatePartOperations { partId: string; operations: (SolidPart | TextSolid)[] }
-export interface TemplateEditSpec { title: string; summary: string; questions: string[]; parameterOverrides: Record<string, number>; partOperations: TemplatePartOperations[] }
+export interface TemplatePartTransform { partId: string; translation: number[]; rotation: number[] }
+/** Independent printable solid; operations use the case assembly coordinates.
+ * Runtime part ID is `added-${id}`; cuts affect this part only. */
+export interface TemplateAddedPart { id: string; label: string; operations: SolidPart[] }
+export interface TemplateEditSpec { title: string; summary: string; questions: string[]; assumptions?: string[]; parameterOverrides: Record<string, number>; partOperations: TemplatePartOperations[]; partTransforms?: TemplatePartTransform[]; addedParts?: TemplateAddedPart[] }
 export interface CadCheck { id: string; status: string; message: string; details?: unknown }
 export interface CadState {
   id: string; parameters: Record<string, number>;
@@ -24,6 +30,8 @@ export interface CadSize { length_x: number; width_y: number; height_z: number }
 export interface CadResult {
   status: 'requirement_analysis' | 'confirmation' | 'needs_input' | 'artifact';
   title?: string; message?: string; questions?: string[]; blocking_reason?: string;
+  /** Reversible preview choices, never measured hardware facts. */
+  previewAssumptions?: string[];
   design_state?: CadState; partial_bom?: CadState['bom']; bom?: CadState['bom'];
   parameters?: Record<string, Record<string, number>>; checks?: CadCheck[];
   exports?: CadExport[]; cadquery_code?: string;
@@ -35,6 +43,8 @@ export interface CadResult {
   templateEdit?: TemplateEditSpec;
   templateParts?: TemplatePart[];
   designSpec?: DesignSpec;
+  hardwareInstallations?: HardwareInstallation[];
+  projectControllers?: StructureController[];
   laserTextPaths?: Record<string, string>;
   [key: string]: unknown;
 }
@@ -51,6 +61,7 @@ export interface StructureWorkspace {
 export interface StructureAction {
   /** Current engineering selection, resolved to the canonical Hardware Skills server-side. */
   hardwareComponentIds?: string[];
+  hardwarePlacements?: HardwarePlacement[];
   action: 'analyze' | 'confirm' | 'build' | 'revise' | 'parameters' | 'validate' | 'selected';
   expectedRevision: number; sourceRevision?: number;
   message?: string; selectedIds?: string[]; customProfiles?: Record<string, unknown>[];
@@ -60,10 +71,25 @@ export interface StructureAction {
 }
 export interface StructureCatalog { profiles: CadProfile[]; cadqueryAvailable: boolean; templates?: BuiltinTemplate[] }
 /** Transient deterministic laser preview; never saves a version or exports files. */
-export interface LaserPreviewInput { expectedRevision: number; sourceRevision: number; parameters: Record<string, number> }
-export interface SolidPart { kind: 'box' | 'cylinder' | 'sphere'; operation: 'add' | 'cut'; label: string; size: number[]; center: number[]; rotation: number[] }
+export interface LaserPreviewInput { expectedRevision: number; sourceRevision: number; parameters: Record<string, number>; hardwarePlacements?: HardwarePlacement[] }
+/** Coordinates in the panel drawing: X right, Y down, no automatic mirroring. */
+export interface HardwarePlacement {
+  componentId: string; skillRevision: string;
+  /** Omitted in legacy single-controller layouts; identifies a physical copy. */
+  controllerId?: string;
+  panel: 'top' | 'bottom' | 'front' | 'back' | 'left' | 'right';
+  x: number; y: number; rotation: 0 | 90 | 180 | 270;
+  method: 'screw' | 'adhesive' | 'opening_only'; includeOpenings: boolean;
+}
+export interface StructureController { id: string; name: string; boardId: string; componentIds: string[] }
+export interface StructureHardwareInstance { controllerId: string; controllerName: string; componentId: string }
+export interface HardwareInstallation {
+  placement: HardwarePlacement; name: string; source: Record<string, unknown>;
+  cutCount: number; note: string;
+}
+export interface SolidPart { kind: 'box' | 'cylinder' | 'sphere' | 'cone' | 'torus' | 'extrude' | 'revolve' | 'loft'; operation: 'add' | 'cut'; label: string; size: number[]; center: number[]; rotation: number[]; profile?: number[][]; sections?: { z: number; points: number[][] }[]; topDiameter?: number; angle?: number; ruled?: boolean; fillet?: number; chamfer?: number }
 export interface LaserShape { kind: 'rect' | 'circle' | 'polyline' | 'line' | 'text'; operation: 'cut' | 'engrave'; x: number; y: number; width: number; height: number; radius: number; points: number[][]; closed: boolean; text?: string; fontSize?: number }
 export interface PanelText { panel: 'left' | 'right' | 'front' | 'back' | 'bottom' | 'top'; x: number; y: number; text: string; fontSize: number }
 export interface FingerBox { width: number; depth: number; height: number; thickness: number; material: string }
 export interface RoundedBox extends FingerBox { pattern_version?: 1 | 2; corner_radius: number; tab_width: number; slot_spacing: number; slot_bridge: number; slot_rows: number; top_lid: boolean; bottom_lid: boolean }
-export interface DesignSpec { title: string; summary: string; questions: string[]; solid: SolidPart[]; fingerBox?: FingerBox | null; roundedBox?: RoundedBox | null; panelTexts?: PanelText[]; drawing?: { width: number; height: number; thickness: number; material: string; kerf: number; shapes: LaserShape[] } | null }
+export interface DesignSpec { title: string; summary: string; questions: string[]; assumptions?: string[]; referenceCase?: { id: BuiltinTemplateId; parameterOverrides: Record<string, number> } | null; solid: SolidPart[]; fingerBox?: FingerBox | null; roundedBox?: RoundedBox | null; panelTexts?: PanelText[]; hardwarePlacements?: HardwarePlacement[]; additionalShapes?: LaserShape[]; drawing?: { width: number; height: number; thickness: number; material: string; kerf: number; shapes: LaserShape[] } | null }

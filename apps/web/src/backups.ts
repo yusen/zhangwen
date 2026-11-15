@@ -1,7 +1,7 @@
 import type { DeviceIdentity } from '../../../packages/contracts/src/platform';
 
 /** Browser-local backups survive tab refresh. Never upload device identities to API. */
-export interface DeviceBackup { id: string; path: string; bytes: Uint8Array | null; identity: DeviceIdentity; createdAt: string }
+export interface DeviceBackup { id: string; path: string; bytes: Uint8Array | null; identity: DeviceIdentity; createdAt: string; projectId?: string; channelId?: string }
 function database(): Promise<IDBDatabase> {
   return new Promise((resolve, reject) => {
     const request = indexedDB.open('zhangwen-device-backups', 1);
@@ -22,12 +22,12 @@ export async function persistBackup(data: Omit<DeviceBackup, 'id' | 'createdAt'>
     });
   } finally { db.close(); }
 }
-export async function latestBackup(): Promise<DeviceBackup | undefined> {
+export async function latestBackup(scope?: { projectId: string; channelId: string }, includeLegacy = false): Promise<DeviceBackup | undefined> {
   const db = await database();
   try {
     return await new Promise((resolve, reject) => {
       const request = db.transaction('backups', 'readonly').objectStore('backups').getAll();
-      request.onsuccess = () => resolve((request.result as DeviceBackup[]).sort((a, b) => b.createdAt.localeCompare(a.createdAt))[0]);
+      request.onsuccess = () => resolve((request.result as DeviceBackup[]).filter(item => !scope || (item.projectId === scope.projectId && item.channelId === scope.channelId) || (includeLegacy && !item.projectId && !item.channelId)).sort((a, b) => b.createdAt.localeCompare(a.createdAt))[0]);
       request.onerror = () => reject(new Error('无法读取设备备份。'));
     });
   } finally { db.close(); }

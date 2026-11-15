@@ -1,0 +1,24 @@
+{
+  "schema": "zhangwen.hardware-skill-manifest/v1",
+  "schemaVersion": 1,
+  "skillName": "espressif-mosaico",
+  "componentId": "hw_espressif_mosaico",
+  "displayName": "ESP-Mosaico（Chat Coding）",
+  "description": "ESP32-S31；板载BMI270六轴IMU、双BMM150、触摸显示、音频与电池/NAND；收录全部24个官方BSP案例及Claw Lua API边界，掌问生成后WiFi上传运行。",
+  "status": "ACTIVE",
+  "sourceKind": "MANUAL",
+  "files": [
+    "SKILL.md",
+    "references/specifications.md",
+    "references/compatibility-rules.md",
+    "references/integration.md",
+    "references/safety.md",
+    "references/sources.md",
+    "examples/usage.md",
+    "tests/validation-cases.md"
+  ],
+  "media": [],
+  "revision": "bba7587317797482e27cbaa1",
+  "createdAt": "2026-10-30T00:00:00+08:00",
+  "updatedAt": "2026-11-01T12:00:00+08:00"
+}

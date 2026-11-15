@@ -16,7 +16,7 @@
   --canvas: #17191c; --panel: #1e2125; --raised: #24272c;
   --border: #2e3238; --border2: #3a3f47;
   --ink-1: #e8ecf2; --ink-2: #b6c2d4; --ink-3: #a0aec0; --ink-4: #7e8ca0;
-  --sw: #4a79b4; --sw-hi: #5a8cc9; --hw: #d87a2e; --hw-hi: #e68a40;
+  --sw: #5a8cc9; --sw-hi: #5a8cc9; --hw: #d87a2e; --hw-hi: #e68a40;
   --brand: #d4ae5c; --brand-ink: #2e2412; --logo: #c9a96e;
   --suc: #4ade80; --suc-t: #14301f; --dng: #f87171; --dng-t: #3a1a1a; --wrn: #fbbf24; --wrn-t: #362a10;
   --code-bg: #1a1d21; --code-keyword: #6fa8e8; --code-string: #d9a34a; --code-builtin: #b48fe0; --code-comment: #7fa08a; --sel: #25324a;
@@ -141,6 +141,15 @@ input, textarea, select { background: var(--raised); border-color: var(--border2
 .hardware-guide-actions button[aria-pressed="true"] { outline: 2px solid var(--brand); outline-offset: 2px; }
 .hardware-guide-hint { margin: 10px 0 0; color: var(--ink-3); font-size: 12px; line-height: 1.7; }
 .hardware-guide-response { margin: 12px 0 0; padding-top: 12px; border-top: 1px solid var(--border); font-size: 13px; line-height: 1.8; }
+.integration-progress { margin: 0 14px 6px; padding: 4px 8px; border: 1px solid var(--border); border-radius: 7px; background: var(--raised); flex-shrink: 0; font-size: 12px; }
+.integration-progress-current { display: flex; align-items: center; gap: 10px; min-width: 0; }
+.integration-progress-current strong { white-space: nowrap; color: var(--ink-2); font-weight: 500; }
+.integration-progress-current select { min-width: 0; flex: 1; width: 100%; font-size: 12px; }
+.integration-progress-current button { flex-shrink: 0; min-height: 32px; padding: 4px 6px; gap: 4px; font-size: 12px; white-space: nowrap; }
+.integration-progress-details p { color: var(--ink-3); margin: 6px 0; line-height: 1.6; overflow-wrap: anywhere; }
+.integration-progress-actions { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
+.integration-progress-actions button { min-height: 34px; font-size: 12px; gap: 6px; }
+.integration-progress-actions small { font-size: 11px; color: var(--ink-3); }
 .chat-form { background: var(--panel); padding: 12px 14px; border-top-color: var(--border); }
 .chat-form textarea { border: 1px solid var(--border2); border-radius: 9px; background: var(--raised); color: var(--ink-2); min-height: 64px; }
 .chat-form > div > span { color: var(--ink-3); }
@@ -495,17 +504,17 @@ dialog::backdrop { background: #0b182d70; backdrop-filter: blur(3px); }
 .hardware-panel .panel-head { padding: 5px 6px; gap: 0; }
 /* Align all three engineering headers, including the editor's 44px controls. */
 .workbench > .hardware-panel > .panel-head,
-.workbench > .ai-panel > .panel-head,
-.workbench > .code-panel > .filebar {
+.workbench .ai-panel > .panel-head,
+.workbench .code-panel > .filebar {
   height: 60px; min-height: 60px; flex: 0 0 60px;
   padding-top: 7px; padding-bottom: 7px; box-sizing: border-box;
 }
-.workbench > .code-panel > .filebar { flex-wrap: nowrap; padding-top: 0; padding-bottom: 0; }
+.workbench .code-panel > .filebar { flex-wrap: nowrap; padding-top: 0; padding-bottom: 0; }
 @media (min-width: 768px) and (max-width: 1500px) {
-  .workbench > .code-panel > .filebar { gap: 6px; padding-left: 8px; padding-right: 8px; font-size: 12px; }
-  .workbench > .code-panel > .filebar .code-version-select { min-width: 80px; flex: 1 1 160px; }
-  .workbench > .code-panel > .filebar .editor-view-controls > button { min-width: 32px; padding: 4px; }
-  .workbench > .code-panel > .filebar > button { padding-left: 6px; padding-right: 6px; gap: 4px; }
+  .workbench .code-panel > .filebar { gap: 6px; padding-left: 8px; padding-right: 8px; font-size: 12px; }
+  .workbench .code-panel > .filebar .code-version-select { min-width: 80px; flex: 1 1 160px; }
+  .workbench .code-panel > .filebar .editor-view-controls > button { min-width: 32px; padding: 4px; }
+  .workbench .code-panel > .filebar > button { padding-left: 6px; padding-right: 6px; gap: 4px; }
 }
 .board-field-label { color: var(--ink-3); font-size: 12px; font-weight: 500; }
 .board-select-hint { color: var(--ink-3); font-size: 12px; line-height: 1.5; }
@@ -569,9 +578,12 @@ dialog::backdrop { background: #0b182d70; backdrop-filter: blur(3px); }
 .answer-summary { margin: 8px 0; line-height: 1.7; font-size: 14px; color: var(--ink-1); }
 .answer-points { margin: 8px 0; padding-left: 20px; font-size: 13px; line-height: 1.8; }
 .answer-code-link { display: inline-flex; gap: 6px; align-items: center; min-height: 44px; padding: 6px 8px; border: 1px solid var(--border2); color: var(--ink-2); font-size: 12px; }
-.answer-details, .answer-original { margin-top: 8px; font-size: 12px; }
-.answer-details summary, .answer-original summary { cursor: pointer; padding: 8px 0; color: var(--ink-3); }
-.answer-original pre { max-height: 300px; overflow: auto; }
+.answer-details { margin-top: 4px; font-size: 12px; }
+.answer-details summary { cursor: pointer; padding: 6px 0; color: var(--ink-2); }
+.answer-details summary:focus-visible { outline: 2px solid var(--sw); outline-offset: 2px; }
+@media (pointer: coarse) {
+  .integration-progress-current button, .integration-progress-current select, .answer-details summary { min-height: 44px; }
+}
 .answer-question { border-top: 1px solid var(--border); padding-top: 12px; margin-top: 12px; }
 .answer-question > strong { color: var(--sw); }
 .answer-question p { font-size: 14px; line-height: 1.7; }
@@ -611,7 +623,7 @@ dialog::backdrop { background: #0b182d70; backdrop-filter: blur(3px); }
 .workspace-titlebar .current-project strong { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; color: var(--ink-2); }
 .document-info { white-space: nowrap; }
 .document-info.has-error { color: var(--wrn); border-color: var(--wrn); }
-.tool-group[aria-label="三师模式"] .zhangwen-tool { width: 86px; flex-basis: 86px; }
+.tool-group[aria-label="工作角色"] .zhangwen-tool { width: 86px; flex-basis: 86px; }
 .tool-group[aria-label="设备操作"] .zhangwen-tool:first-child { width: 72px; flex-basis: 72px; }
 .workbench-action-menu { position: fixed; z-index: 2000; width: 250px; max-width: calc(100vw - 16px); max-height: calc(100vh - 16px); overflow-y: auto; padding: 6px; border: 1px solid var(--border2); border-radius: 9px; background: var(--raised); color: var(--ink-2); box-shadow: 0 10px 30px #00000024; }
 .workbench-action-menu button { display: flex; align-items: center; gap: 10px; width: 100%; min-height: 38px; padding: 7px 10px; border: 0; border-radius: 5px; background: transparent; color: inherit; text-align: left; font-size: 13px; box-shadow: none; }
@@ -623,9 +635,6 @@ dialog::backdrop { background: #0b182d70; backdrop-filter: blur(3px); }
 .action-menu-trigger:focus-visible, .title-save:focus-visible, .workbench-action-menu button:focus-visible { outline: 2px solid var(--brand); outline-offset: 1px; }
 .filebar > .action-menu-trigger { min-width: 30px; padding: 5px; }
 .project-folder-status > span { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-.project-folder-status > .code-check-status { display: inline-flex; align-items: center; gap: 5px; flex: 0 0 auto; margin-left: auto; font-size: 11px; white-space: nowrap; }
-.code-check-status.is-valid { color: var(--suc); }
-.code-check-status.has-error { color: var(--dng); }
 .current-project strong { overflow: hidden; white-space: nowrap; text-overflow: ellipsis; max-width: 100%; font-weight: 500; color: var(--ink-2); }
 .current-project > .dirty-dot { display: block; flex-shrink: 0; }
 .mode-picker-dialog { width: min(640px, calc(100vw - 32px)); }
@@ -727,3 +736,64 @@ dialog::backdrop { background: #0b182d70; backdrop-filter: blur(3px); }
 .selected-sensors-toolbar .board-control > .board-artwork:first-child { display: block; }
 
 .answer-run-hint { padding: 10px 12px; border-left: 3px solid var(--accent); background: var(--accent-soft); border-radius: 5px; font-size: 12px; line-height: 1.7; }
+
+/* Desktop tracks reserve readable hardware names and keep the editor stable on collapse. */
+@media (min-width: 1101px) {
+  .workbench { --hardware-width: 224px; --editor-width: max(320px, calc(50% - 112px)); }
+  .project-folder-panel { flex-basis: 240px; width: 240px; }
+  .learning-workbench, .workflow-surface .learning-workbench, .structure-workbench { grid-template-columns: 224px minmax(0, 1fr) minmax(0, 1.15fr); }
+  .workflow-surface.learning-collapsed .learning-workbench { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); }
+  .structure-collapsed .structure-workbench { grid-template-columns: 30px minmax(0, 1fr) 50%; }
+  .hardware-panel .panel-head { padding: 8px 12px; }
+  .hardware-panel .panel-head h2 { font-size: 14px; }
+  .selected-sensors-toolbar, .selected-sensor-list { padding: 10px; }
+  .selected-sensor-list .module-row .module-name { font-size: 14px; overflow-wrap: normal; }
+  .project-hardware-manage { white-space: nowrap; }
+}
+@media (min-width: 1101px) and (max-width: 1350px) {
+  .workbench { --hardware-width: 200px; --editor-width: max(300px, calc(50% - 100px)); }
+  .project-folder-panel { flex-basis: 220px; width: 220px; }
+  .workflow-surface .learning-workbench, .structure-workbench { grid-template-columns: 200px minmax(0, 1fr) minmax(0, 1.15fr); }
+}
+@media (min-width: 1700px) {
+  .workbench { --hardware-width: 240px; --editor-width: max(360px, calc(50% - 120px)); }
+  .project-folder-panel { flex-basis: 260px; width: 260px; }
+}
+.tool-disabled-explanation { position: relative; display: inline-flex; flex: 0 0 auto; border-radius: 6px; }
+.tool-disabled-explanation:focus-visible { outline: 2px solid var(--sw); outline-offset: 2px; }
+.tool-disabled-reason { display: none; position: fixed; top: 122px; z-index: 90; max-width: min(300px, 80vw); padding: 10px 12px; border: 1px solid var(--border2); border-radius: 8px; background: var(--raised); color: var(--ink-1); font-size: 13px; line-height: 1.6; box-shadow: 0 4px 16px #0003; }
+.tool-disabled-explanation:hover .tool-disabled-reason, .tool-disabled-explanation:focus .tool-disabled-reason { display: block; }
+.workflow-shared-goal { padding: 10px 14px; border-bottom: 1px solid var(--border); font-size: 13px; color: var(--ink-1); flex: 0 0 auto; }
+.workflow-shared-goal small { display: block; margin-top: 4px; color: var(--ink-3); line-height: 1.6; }
+.workflow-goal-recovery { padding: 12px; border: 1px solid var(--border2); border-radius: 8px; background: var(--sel); font-size: 13px; margin-bottom: 12px; }
+.workflow-goal-recovery p { margin: 6px 0; }
+.workflow-goal-recovery button { min-height: 40px; color: var(--sw); }
+:root[data-theme="dark"] .primary { background: #2f5f96; color: #fff; }
+:root[data-theme="dark"] .primary:hover:not(:disabled) { background: #3e73b0; }
+
+.structure-preview-empty details { max-width: 100%; text-align: left; font-size: 13px; line-height: 1.7; overflow-wrap: anywhere; }
+.structure-preview-empty details p { max-height: 180px; overflow-y: auto; }
+.structure-preview-empty[role="status"] { min-height: 0; overflow-y: auto; justify-content: flex-start; }
+.structure-preview-empty[role="status"] > svg { flex-shrink: 0; }
+
+/* Secondary information stays available without competing with the current task. */
+.compact-disclosure { min-width: 0; font-size: 13px; line-height: 1.6; color: var(--ink-2); }
+.compact-disclosure > summary { cursor: pointer; min-height: 32px; align-content: center; color: var(--ink-2); }
+.compact-disclosure > summary:focus-visible { outline: 2px solid var(--sw); outline-offset: 2px; border-radius: 3px; }
+.compact-disclosure > summary > small { margin-left: 10px; color: var(--ink-3); font-size: 12px; }
+.compact-disclosure p { margin: 8px 0; overflow-wrap: anywhere; }
+.compact-disclosure .disclosure-content { padding: 0 4px 6px; }
+.workflow-shared-goal { padding: 2px 14px; }
+.workflow-shared-goal small { display: inline; }
+.workflow-shared-goal > p { max-height: 120px; overflow-y: auto; }
+.workflow-hardware-details { margin-top: 8px; }
+.workflow-goal-recovery { padding: 8px 12px; display: flex; flex-wrap: wrap; gap: 4px 12px; align-items: center; }
+.workflow-goal-recovery strong { flex: 1 1 180px; }
+.workflow-goal-recovery button { flex: 0 0 auto; }
+.workflow-record-anchor { scroll-margin-top: 8px; }
+.structure-basic-templates { margin: 4px 0 12px; }
+.structure-basic-templates .structure-templates { margin-top: 8px; }
+.folder-panel-foot details { width: 100%; }
+.folder-panel-foot details p { max-height: 160px; overflow-y: auto; }
+.folder-panel-empty > details { text-align: left; width: 100%; margin-top: 8px; }
+.folder-panel-empty > details p { margin-top: 8px; }

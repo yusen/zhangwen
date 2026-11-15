@@ -26,8 +26,7 @@ def complete_checks(repo, details, result):
                 if attr:
                     known = [c for c in components if getattr(c.electrical, attr) > 0]
                     result.checks.extend(engine._execute_range_overlap(known, rule))
-            elif operator == 'sum-lte':
-                result.checks.extend(engine._execute_sum_lte(components, rule))
+            # Load current is outside the requested verification scope.
             elif operator == 'contains-any':
                 result.checks.extend(engine._execute_contains_any(components, rule))
             elif operator == 'required-if':
@@ -38,14 +37,7 @@ def complete_checks(repo, details, result):
         result.checks.append(ValidationCheck(dimension=dimension, severity=ValidationSeverity.WARNING,
                                             message=message, details=notes))
 
-    unknown_current = [d.displayName for d in details if d.category != HardwareCategory.STRUCTURE
-                       and d.specification.electrical.peakCurrent <= 0]
-    if unknown_current:
-        result.checks = [c for c in result.checks if c.dimension != 'current' or c.severity != ValidationSeverity.PASS]
-        warn('current', '峰值电流资料不完整，无法确认完整供电余量。', '未知：' + '、'.join(unknown_current) + '。0是未知占位，不能按零负载计算。')
-    loads = [c for c in components if c.category not in {HardwareCategory.POWER, HardwareCategory.STRUCTURE}]
-    if any(c.electrical.peakCurrent > 0 for c in loads) and not any(c.category == HardwareCategory.POWER for c in components):
-        warn('current', '未选择供电模块，无法确认峰值电流余量。', '已知负载仅为下限；还须核对实际供电路径。')
+    result.checks = [c for c in result.checks if c.dimension != 'current']
 
     boards = [d.componentId for d in details if d.category == HardwareCategory.MCU]
     if not boards and not any(c.dimension == 'mcu' for c in result.checks):

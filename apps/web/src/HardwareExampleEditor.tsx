@@ -8,6 +8,7 @@ export function HardwareExampleEditor({ detail, board, boards, startEditing, onS
 }) {
   const saved = detail.localExamples?.find(item => item.boardId === board?.componentId);
   const guide = detail.moduleGuides?.find(item => item.boardId === board?.componentId);
+  const language = board?.programmingMode === 'chat-coding' ? 'Lua' : 'MicroPython';
   const otherExamples = detail.localExamples?.filter(item => item.boardId !== board?.componentId) ?? [];
   const initialSetup = guide ? guideValues(guide, saved?.setup) : {};
   const initialAddress = saved?.i2cAddress ?? saved?.setup?.address ?? detail.i2c?.defaultAddress ?? '';
@@ -98,7 +99,7 @@ export function HardwareExampleEditor({ detail, board, boards, startEditing, onS
       <textarea id="module-example-notes" aria-label="接线与使用备注" value={notes} disabled={saving} maxLength={2000} rows={notes.length > 140 ? 3 : 1} onChange={event => { setNotes(event.target.value); setStatus(''); }} placeholder="例如：固件版本、模块批次或实际测试现象" />
       {saved?.notes && !saved.setup && <small className="muted">已保留原备注；上面的默认选项只是建议，请按实际接线选择。</small>}
       {guide && code !== generated && <div className="module-guide-regenerate"><span>当前为自定义代码，修改接线不会覆盖它。</span><button type="button" disabled={saving} onClick={() => { setCode(generated); setStatus('已按当前选项载入内置示例，保存后生效。'); }}>按接线更新示例</button></div>}
-      <label htmlFor="module-example-code">MicroPython 案例代码</label>
+      <label htmlFor="module-example-code">{language} 案例代码</label>
       <textarea id="module-example-code" className="module-example-code" value={code} disabled={saving} maxLength={16000} rows={9} spellCheck={false} onChange={event => { setCode(event.target.value); setStatus(''); }} placeholder="粘贴可参考的程序。保存后无需在每轮对话重新上传。" />
       <div className="module-example-actions"><small className="muted">保存支持主控与当前主控案例，供后续对话参考；保存不代表实测通过。</small><button type="button" className="primary" disabled={!board || saving || !changed || pinError || addressError} onClick={() => void save()}>{saving ? '正在保存…' : '保存案例'}</button></div>
       {error && <p className="module-example-error" role="alert">{error}</p>}{status && <p role="status">{status}</p>}

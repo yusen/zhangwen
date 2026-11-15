@@ -8,12 +8,13 @@ export async function bootstrap(signal?: AbortSignal): Promise<{ aiConfigured: b
   const response = await fetch('/api/session', { signal });
   if (!response.ok) throw new Error('无法连接本机服务，请检查启动窗口。');
   const result = await response.json() as { token: string; aiConfigured: boolean; aiModel: string; aiBaseUrl?: string };
+  signal?.throwIfAborted();
   token = result.token;
   return result;
 }
-export async function api<T>(path: string, method = 'GET', body?: unknown): Promise<T> {
+export async function api<T>(path: string, method = 'GET', body?: unknown, signal?: AbortSignal): Promise<T> {
   const response = await fetch('/api' + path, {
-    method, headers: { 'Content-Type': 'application/json', 'X-Zhangwen-Session': token },
+    method, signal, headers: { 'Content-Type': 'application/json', 'X-Zhangwen-Session': token },
     body: body === undefined ? undefined : JSON.stringify(body),
   });
   const result: unknown = await response.json();
@@ -29,8 +30,8 @@ export async function api<T>(path: string, method = 'GET', body?: unknown): Prom
 }
 
 export async function chat(projectId: string, input: ChatInput, signal: AbortSignal,
-  onEvent: (event: ChatEvent) => void): Promise<{ messages: ChatMessage[] }> {
-  const response = await fetch(`/api/projects/${projectId}/chat`, {
+  onEvent: (event: ChatEvent) => void, endpoint = `/projects/${projectId}/chat`): Promise<{ messages: ChatMessage[] }> {
+  const response = await fetch('/api'+endpoint, {
     method: 'POST', signal,
     headers: { 'Content-Type': 'application/json', 'X-Zhangwen-Session': token, Accept: 'application/x-ndjson' },
     body: JSON.stringify(input),

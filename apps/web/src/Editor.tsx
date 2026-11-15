@@ -4,15 +4,19 @@ import { Annotation, Compartment, EditorSelection, EditorState } from '@codemirr
 import { EditorView } from '@codemirror/view';
 import { python } from '@codemirror/lang-python';
 import { indentSelection, undo } from '@codemirror/commands';
-import { indentUnit, HighlightStyle, syntaxHighlighting } from '@codemirror/language';
+import { indentUnit, HighlightStyle, syntaxHighlighting, StreamLanguage } from '@codemirror/language';
+import { lua } from '@codemirror/legacy-modes/mode/lua';
+import { c } from '@codemirror/legacy-modes/mode/clike';
+import { json } from '@codemirror/legacy-modes/mode/javascript';
 import { tags } from '@lezer/highlight';
 
 export interface EditorHandle { formatIndentation: () => void; undo: () => void }
 const externalValue = Annotation.define<boolean>();
-export const Editor = forwardRef<EditorHandle, { value: string; onChange: (value: string) => void; zoom?: number; readOnly?: boolean }>(function Editor({ value, onChange, zoom = 100, readOnly = false }, ref) {
+export const Editor = forwardRef<EditorHandle, { value: string; onChange: (value: string) => void; zoom?: number; readOnly?: boolean; language?: 'python' | 'lua' | 'c' | 'json' | 'plain'; label?: string }>(function Editor({ value, onChange, zoom = 100, readOnly = false, language = 'python', label = 'MicroPython 代码编辑器' }, ref) {
   const host = useRef<HTMLDivElement>(null);
   const view = useRef<EditorView>();
   const editing = useRef(new Compartment());
+  const syntax = useRef(new Compartment());
   const callback = useRef(onChange);
   callback.current = onChange;
   useImperativeHandle(ref, () => ({ undo: () => { const instance = view.current; if (instance && !instance.state.readOnly) { undo(instance); instance.focus(); } }, formatIndentation: () => {
@@ -28,7 +32,7 @@ export const Editor = forwardRef<EditorHandle, { value: string; onChange: (value
   useEffect(() => {
     if (!host.current) return;
     const instance = new EditorView({ parent: host.current, state: EditorState.create({ doc: value, extensions: [
-      basicSetup, python(), indentUnit.of('    '), EditorView.lineWrapping,
+      basicSetup, syntax.current.of([]), EditorView.lineWrapping,
       syntaxHighlighting(HighlightStyle.define([
         { tag: tags.keyword, color: 'var(--code-keyword)' },
         { tag: [tags.string, tags.number], color: 'var(--code-string)' },
@@ -36,7 +40,7 @@ export const Editor = forwardRef<EditorHandle, { value: string; onChange: (value
         { tag: [tags.standard(tags.variableName), tags.function(tags.variableName)], color: 'var(--code-builtin)' },
       ])),
       editing.current.of([EditorState.readOnly.of(readOnly), EditorView.editable.of(!readOnly)]),
-      EditorView.contentAttributes.of({ 'aria-label': 'MicroPython 代码编辑器' }),
+      EditorView.contentAttributes.of({ 'aria-label': label }),
       EditorView.updateListener.of(update => { if (update.docChanged && !update.transactions.some(transaction => transaction.annotation(externalValue))) callback.current(update.state.doc.toString()); }),
       EditorView.theme({ '&': { height: '100%', background: 'var(--code-bg)', color: 'var(--ink-1)' }, '.cm-scroller': { overflow: 'auto', fontSize: 'var(--editor-font-size, 14px)', fontFamily: 'Consolas, ui-monospace, monospace', lineHeight: '1.8' }, '.cm-content': { padding: '14px 0', caretColor: 'var(--ink-1)' }, '.cm-gutters': { background: 'var(--code-bg)', color: 'var(--ink-3)', borderRight: '1px solid var(--border)', minWidth: '44px' }, '&.cm-focused': { outline: 'none' }, '.cm-activeLine': { background: 'var(--sel)' }, '.cm-activeLineGutter': { background: 'var(--sel)' }, '.cm-selectionBackground, &.cm-focused .cm-selectionBackground': { background: 'var(--sel)' }, '.cm-cursor': { borderLeftColor: 'var(--ink-1)' }, '.cm-tooltip': { background: 'var(--raised)', color: 'var(--ink-1)', borderColor: 'var(--border)' } }),
     ] }) });
@@ -45,6 +49,9 @@ export const Editor = forwardRef<EditorHandle, { value: string; onChange: (value
     // Editor lifetime is independent of draft updates.
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
+  useEffect(() => {
+    view.current?.dispatch({ effects: syntax.current.reconfigure([...(language === 'python' ? [python()] : language === 'lua' ? [StreamLanguage.define(lua)] : language === 'c' ? [StreamLanguage.define(c)] : language === 'json' ? [StreamLanguage.define(json)] : []), indentUnit.of(language === 'python' ? '    ' : '  ')]) });
+  }, [language]);
   useEffect(() => {
     const instance = view.current;
     // CodeMirror displays LF internally; rendering a CRLF file is not a user edit.

@@ -1,0 +1,37 @@
+{
+  "schema": "zhangwen.hardware-skill-manifest/v1",
+  "schemaVersion": 1,
+  "skillName": "luatos-esp32c3-core",
+  "componentId": "hw_luatos_esp32c3_core",
+  "displayName": "esp32C3",
+  "description": "蓝色51×21mm PCB、Type-C/CH343P、4MB Flash；含引脚与3D参考，高度暂定，须确认MicroPython固件。",
+  "status": "ACTIVE",
+  "sourceKind": "MANUAL",
+  "files": [
+    "SKILL.md",
+    "references/specifications.md",
+    "references/compatibility-rules.md",
+    "references/mechanical.md",
+    "references/integration.md",
+    "references/safety.md",
+    "references/sources.md",
+    "models/cadquery.py",
+    "examples/usage.md",
+    "tests/validation-cases.md"
+  ],
+  "media": [
+    {
+      "path": "assets/cover.webp",
+      "role": "cover",
+      "alt": "用户提供的蓝色esp32C3核心板商品图",
+      "contentType": "image/webp",
+      "sha256": "02e58b786fa3fbd98fe61b23b198c226b3f2ea78e45bf83fc279bab135c500cf",
+      "sourceUrl": "https://wiki-zh.luatos.org/chips/esp32c3/board.html",
+      "attribution": "用户提供商品图；板型参考官方资料",
+      "license": "商品图权利归原权利人；本地识别参考，无额外授权"
+    }
+  ],
+  "revision": "e69fc51c866a530bf45b614c",
+  "createdAt": "2026-11-10T14:00:00+00:00",
+  "updatedAt": "2026-11-10T14:00:00+00:00"
+}

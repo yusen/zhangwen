@@ -90,7 +90,7 @@ def valid_i2c_address(value):
 class GuideDocument(Boundary):
     format: Literal['zhangwen.module-guides/v1'] = Field(alias='schema')
     componentId: str
-    guides: list[ModuleGuide] = Field(min_length=1, max_length=5)
+    guides: list[ModuleGuide] = Field(min_length=1, max_length=6)
     i2c: I2CInfo | None = None
 
 

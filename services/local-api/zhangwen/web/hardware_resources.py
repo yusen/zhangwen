@@ -90,6 +90,30 @@ def resource_bytes(relative):
     return raw
 
 
+def linked_structure_reference(detail):
+    """Project the already-bound, hash-checked resource without changing user Skill files."""
+    profile = next((p for p in structure_profiles()
+                    if p['componentId'] == detail.componentId and p['skillName'] == detail.skillName), None)
+    if profile is None:
+        return None
+    mounting = profile.get('mounting', {})
+    legacy = {n['id']: n['value'] for n in profile.get('legacy_reference', {}).get('notes', [])}
+    hole_data = legacy.get('mounting_holes_mm', {})
+    holes = mounting.get('holes')
+    if holes is None:
+        holes = [dict(h, diameter_mm=hole_data['hole_diameter']) for h in hole_data.get('holes', [])]
+    return dict(id=profile['id'], name=profile['name'], dimensions=profile['dimensions_mm'],
+                holes=[dict(x=h['x'], y=h['y'], diameter=h['diameter_mm'],
+                            **({'z': h['z']} if 'z' in h else {})) for h in holes],
+                mounting=dict(face=mounting.get('mating_hardware_face', ''),
+                              **({'clearance': mounting['clearance_mm']} if 'clearance_mm' in mounting else {})),
+                openings=[dict(id=o['id'], **({'diameter': o['diameter_mm']} if 'diameter_mm' in o else {}),
+                               **({'clearance': o['clearance_mm']} if 'clearance_mm' in o else {}))
+                          for o in profile.get('opening', [])],
+                keepouts=[dict(id=k['id'], size=k['size_mm']) for k in profile.get('keepouts', [])],
+                notes=profile.get('source_status', ''))
+
+
 def programming_root(skill_name):
     if skill_name not in index()['modules']:
         raise HardwareSkillValidationError('主控编程资料不存在。')

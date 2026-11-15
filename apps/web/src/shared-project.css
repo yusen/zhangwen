@@ -1,0 +1,16 @@
+.shared-project-dialog { width:min(760px,calc(100vw - 32px)); }
+.shared-project-tools { display:flex; align-items:center; justify-content:space-between; gap:12px; margin:14px 0; flex-wrap:wrap; }
+.shared-project-tools span { min-width:0; overflow-wrap:anywhere; }
+.shared-project-content { display:grid; gap:18px; }
+.shared-project-content section { min-width:0; }
+.shared-project-content h3 { margin:0 0 8px; font-size:15px; }
+.shared-project-content p,.shared-project-content li,.shared-project-content dd { overflow-wrap:anywhere; white-space:pre-wrap; }
+.shared-project-content p { margin:7px 0; }
+.shared-project-content ul { margin:8px 0; padding-left:22px; }
+.shared-project-content li { margin-bottom:8px; }
+.shared-project-content small { display:block; margin-top:4px; color:var(--muted); }
+.shared-project-content dl { display:block; margin:0; }
+.shared-project-content dl>div { display:grid; grid-template-columns:48px minmax(0,1fr); gap:12px; margin-top:7px; }
+.shared-project-content dd { margin:0; }
+.shared-project-warning { padding:10px 12px; border-left:3px solid currentColor; font-size:14px; }
+@media(max-width:540px) { .shared-project-dialog { width:calc(100vw - 24px); } .shared-project-tools { align-items:flex-start; } }

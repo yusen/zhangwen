@@ -1,0 +1,23 @@
+.mosaico-tools { flex:1; min-height:0; overflow:auto; padding:16px; color:var(--ink-1); font-size:13px; line-height:1.7; }
+.mosaico-tools-nav,.mosaico-actions { display:flex; flex-wrap:wrap; align-items:center; gap:8px; margin-bottom:14px; }
+.mosaico-tools-nav label { flex:1; min-width:140px; }
+.mosaico-tools select,.mosaico-tools input:not([type=checkbox]),.mosaico-tools textarea { color:var(--ink-1); background:var(--raised); border:1px solid var(--border); border-radius:6px; padding:8px; font:inherit; box-sizing:border-box; max-width:100%; }
+.mosaico-tools select { width:100%; }
+.mosaico-config-field { margin:14px 0; }
+.mosaico-config-field label:not(.mosaico-check) { display:flex; flex-direction:column; gap:5px; }
+.mosaico-tools .mosaico-check { display:flex; align-items:center; gap:8px; margin-top:5px; color:var(--ink-2); }
+.mosaico-tools button { min-height:38px; font:inherit; }
+.mosaico-tools .muted { color:var(--ink-2); line-height:1.7; }
+.mosaico-status { display:block; }.mosaico-status>div { display:flex; justify-content:space-between; flex-wrap:wrap; gap:8px; border-bottom:1px solid var(--border); padding:10px 0; }
+.mosaico-status dd { margin:0; }.mosaico-tools pre,.mosaico-tools p,.mosaico-tools dd { overflow-wrap:anywhere; }
+.mosaico-cap-list article { display:flex; flex-wrap:wrap; align-items:center; gap:8px 14px; padding:12px 0; border-bottom:1px solid var(--border); }
+.mosaico-cap-list strong { flex-basis:100%; }.mosaico-cap-list small { color:var(--ink-2); }.mosaico-cap-list label { display:flex; align-items:center; gap:6px; }
+.mosaico-file-list { display:flex; flex-direction:column; border-top:1px solid var(--border); }.mosaico-file-list button { display:flex; align-items:center; justify-content:space-between; gap:8px; text-align:left; border:0; border-bottom:1px solid var(--border); border-radius:0; }
+.mosaico-file-editor h3 { font-size:14px; overflow-wrap:anywhere; }.mosaico-file-editor textarea { width:100%; min-height:240px; font-family:Consolas,monospace; margin-bottom:10px; resize:vertical; }.mosaico-file-editor p { font-size:11px; }
+.mosaico-memory-list { display:flex; flex-wrap:wrap; gap:8px; margin-bottom:14px; }.mosaico-upload { display:inline-flex; border:1px solid var(--border); border-radius:6px; padding:5px 10px; }.mosaico-upload input { max-width:170px; }
+.mosaico-logs { background:var(--raised); border:1px solid var(--border); padding:12px; min-height:200px; white-space:pre-wrap; font:12px/1.7 Consolas,monospace; }
+.mosaico-qr { width:220px; height:220px; max-width:100%; object-fit:contain; background:white; }
+.mosaico-tools :is(input,button,textarea,select,summary,a):focus-visible { outline:2px solid var(--ink-1); outline-offset:2px; }
+.mosaico-tools details { margin:16px 0; }.mosaico-tools summary { cursor:pointer; padding:8px 0; }
+.mosaico-workspace-tabs { display:flex; gap:8px; padding:8px 12px; border-bottom:1px solid var(--border); flex:none; }.mosaico-workspace-tabs button { flex:1; min-height:36px; }.mosaico-workspace-tabs .active { background:var(--raised); border-color:var(--ink-2); }
+@media(max-width:600px) { .mosaico-tools button { min-height:44px; }.mosaico-tools { min-height:440px; } }
