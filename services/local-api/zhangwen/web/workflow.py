@@ -14,7 +14,7 @@ from pydantic import Field, ValidationError
 from zhangwen.artifacts.models import ArtifactPreview, ArtifactPreviewKind, ArtifactStatus
 from zhangwen.llm.contracts import ChatMessage, ChatRole, ChatMessageStatus
 from .models import Boundary
-from .workflow_models import Baseline, CaseContent, Checkpoint, CodeChoice, CodeReference, Conditions, Definition, DefinitionVersion, Evidence, EvidenceContent, Message, Observation, Reflection, ReflectionContent, StructureReference, TestCase, TestRun, digest, structure_digest
+from .workflow_models import Baseline, CaseContent, Checkpoint, CodeChoice, CodeReference, Conditions, Definition, DefinitionVersion, Evidence, EvidenceContent, Message, Observation, Reflection, CaseSuggestion, ReflectionContent, StructureReference, TestCase, TestRun, digest, structure_digest
 
 def now():
     return datetime.now(UTC).isoformat()
@@ -94,7 +94,38 @@ def baseline(repo, pid, value):
     structures = structure_references(repo, pid)
     definition = confirmed(value)
     raw = {'boardId': project['boardId'], 'boardName': next((m['name'] for m in modules if m['id'] == project['boardId']), '未选择主控'), 'modules': sorted(modules, key=lambda m: m['id']), 'definitionRevision': definition.revision if definition else None, 'code': code.model_dump(), 'structure': structures[0].model_dump() if structures else None, 'conditions': value.conditions.model_dump()}
+    raw['controllers'] = controller_baselines(repo, pid, raw)
     return (Baseline(**raw, fingerprint=digest(raw)), codes, structures)
+
+def controller_baselines(repo, pid, root):
+    from . import channels
+    from .programming_modes import board_mode
+    checkpoint = channels.load(repo, pid)
+    result = [dict(id='project', name=checkpoint.mainName or root['boardName'], boardId=root['boardId'], modules=root['modules'], code=root['code'])]
+    for channel in checkpoint.channels:
+        modules = []
+        for cid in [channel.boardId, *channel.componentIds]:
+            detail = repo.skills.get_active_by_component_id(cid)
+            modules.append(dict(id=cid, name=detail.displayName, revision=detail.revision))
+        version = channel.versions[-1]
+        mode = 'micropython'
+        if board_mode(repo, channel.boardId) == 'chat-coding':
+            mode = 'claw'
+            if channel.mosaico and channel.mosaico.source == 'local':
+                mode = 'lua'
+                version = next((v for v in channel.mosaico.lua.versions if v.revision == channel.mosaico.lua.accepted), None)
+        code = dict(mode=mode if version else 'none', revision=version.revision if version else None, checksum=version.checksum if version else '', name='Lua程序' if mode == 'lua' else '主控程序')
+        result.append(dict(id=channel.id, name=channel.name, boardId=channel.boardId, modules=sorted(modules, key=lambda m: m['id']), code=code))
+    return result
+
+def validate_case_scope(repo, pid, case, controllers=None):
+    if controllers is None:
+        controllers = baseline(repo, pid, load(repo, pid))[0].controllers or []
+    if len(set(case.controllerIds)) != len(case.controllerIds) or set(case.controllerIds) - {c.id for c in controllers}:
+        raise HTTPException(422, f'测试“{case.title}”：关联主控不存在或重复，请重新选择。')
+    selected = [c for c in controllers if not case.controllerIds or c.id in case.controllerIds]
+    if case.componentId and (not any((case.componentId in [m.id for m in c.modules] for c in selected))):
+        raise HTTPException(422, f'测试“{case.title}”：关联器件 {case.componentId} 已移出项目或不在所选主控中，请重新选择或明确设为整机。')
 
 def stale_reasons(run, case, current, equivalent_structure=False):
     previous = run.baseline
@@ -103,10 +134,25 @@ def stale_reasons(run, case, current, equivalent_structure=False):
         reasons.append('测试要求已修改')
     if previous.definitionRevision != current.definitionRevision:
         reasons.append('已确认需求已更新')
-    if previous.boardId != current.boardId or previous.modules != current.modules:
-        reasons.append('硬件选择或资料已更新')
-    if (previous.code.mode, previous.code.checksum) != (current.code.mode, current.code.checksum):
-        reasons.append('当前程序已改变')
+    if not case.controllerIds or 'project' in case.controllerIds:
+        if previous.boardId != current.boardId or previous.modules != current.modules:
+            reasons.append('硬件选择或资料已更新')
+        if (previous.code.mode, previous.code.checksum) != (current.code.mode, current.code.checksum):
+            reasons.append('当前程序已改变')
+    if current.controllers:
+        scope = set(case.controllerIds) or {c.id for c in current.controllers} | {c.id for c in previous.controllers or []}
+        old = {c.id: c for c in previous.controllers or []}
+        new = {c.id: c for c in current.controllers}
+        if previous.controllers is None and (len(current.controllers) > 1 or case.controllerIds):
+            reasons.append('历史观察未记录多主控程序，请按当前主控重新核对')
+        elif previous.controllers is not None:
+            for cid in sorted(scope):
+                a, b = (old.get(cid), new.get(cid))
+                name = b.name if b else a.name if a else cid
+                if a is None or b is None or a.boardId != b.boardId or (a.modules != b.modules):
+                    reasons.append(name + '：主控或器件资料已更新')
+                elif (a.code.mode, a.code.checksum) != (b.code.mode, b.code.checksum):
+                    reasons.append(name + '：程序已改变')
     fields = ['firmware', 'wiring', 'power'] + (['assembly'] if case.stage != 'module' else [])
     if any((getattr(previous.conditions, k) != getattr(current.conditions, k) for k in fields)):
         reasons.append('测试条件已改变')
@@ -144,9 +190,9 @@ def mutate(repo, pid, expected, apply):
         raise HTTPException(422, '记录未通过校验：' + str(exc.errors()[0]['msg'])[:250]) from exc
     return view(repo, pid, value)
 
-def context(repo, pid):
+def context(repo, pid, query=''):
     from .shared_project import text
-    return text(repo, pid)
+    return text(repo, pid, query=query)
 
 class Revision(Boundary):
     expectedRevision: int = Field(ge=0, strict=True)
@@ -160,11 +206,13 @@ class SaveConditions(Revision):
     conditions: Conditions
 
 class SaveCase(Revision, CaseContent):
+    definitionRevision: int | None = Field(default=None, ge=1, strict=True)
     id: str | None = Field(default=None, pattern='^[a-f0-9]{32}$')
     active: bool = True
 
 class AddCases(Revision):
-    tests: list[CaseContent] = Field(min_length=1, max_length=30)
+    tests: list[CaseSuggestion] = Field(min_length=1, max_length=30)
+    mode: Literal['merge', 'replace'] = 'merge'
 
 class SaveRun(Revision, Observation):
     caseId: str = Field(pattern='^[a-f0-9]{32}$')
@@ -219,9 +267,10 @@ def router(repo, settings):
             old = next((c for c in value.cases if c.id == request.id), None)
             if request.id and (not old):
                 raise HTTPException(404, '测试项不存在。')
-            if request.componentId and request.componentId not in [project['boardId'], *project['componentIds']] and (not (old and (not request.active) and (request.componentId == old.componentId))):
-                raise HTTPException(422, '测试模块不在当前项目中，请先保存硬件选择。')
-            new = TestCase(**request.model_dump(exclude={'expectedRevision', 'id'}), id=request.id or uuid.uuid4().hex, revision=old.revision + 1 if old else 1)
+            if request.active:
+                validate_case_scope(repo, pid, request)
+            new = TestCase(**request.model_dump(exclude={'expectedRevision', 'id', 'definitionRevision'}), id=request.id or uuid.uuid4().hex, revision=old.revision + 1 if old else 1)
+            new.definitionRevision = confirmed(value).revision if confirmed(value) else None
             if old:
                 value.cases[value.cases.index(old)] = new
             else:
@@ -236,8 +285,7 @@ def router(repo, settings):
             if not case:
                 raise HTTPException(422, '请选择当前启用的测试项。')
             current, codes, structures = baseline(repo, pid, value)
-            if case.componentId and case.componentId not in [m.id for m in current.modules]:
-                raise HTTPException(422, '这个测试项的器件已移出项目，请修改关联器件或停用测试项。')
+            validate_case_scope(repo, pid, case, current.controllers)
             if current.fingerprint != request.expectedBaseline:
                 raise HTTPException(409, '程序、结构或硬件条件已更新。请读取最新条件并核对本次实际使用的版本。')
             code = next((c for c in codes if c.mode == request.code.mode and c.revision == request.code.revision), None)
@@ -249,19 +297,51 @@ def router(repo, settings):
             if request.structureRevision is not None and structure is None:
                 raise HTTPException(422, '结构版本不存在或尚未生成产物。')
             raw = {**current.model_dump(exclude={'fingerprint'}), 'code': code.model_dump(), 'structure': structure.model_dump() if structure else None}
+            raw['controllers'] = [{**c, 'code': code.model_dump()} if c['id'] == 'project' else c for c in raw.get('controllers') or []]
             value.runs.append(TestRun(**request.model_dump(exclude={'expectedRevision', 'caseId', 'code', 'structureRevision', 'expectedBaseline'}), id=uuid.uuid4().hex, createdAt=now(), test=case.model_copy(deep=True), baseline=Baseline(**raw, fingerprint=digest(raw))))
         return mutate(repo, pid, request.expectedRevision, apply)
 
     @router.post('/case-batch')
     def add_cases(pid: str, request: AddCases):
+        counts = dict(added=0, updated=0, retired=0, unchanged=0)
 
         def apply(value):
-            p = repo.get(pid)
+            seen = set()
+            controllers = baseline(repo, pid, value)[0].controllers or []
+
+            def identity(c):
+                return (c.stage, tuple(sorted(c.controllerIds)), c.componentId, c.title.strip())
             for case in request.tests:
-                if case.componentId and case.componentId not in [p['boardId'], *p['componentIds']]:
-                    raise HTTPException(422, '测试模块不在当前项目中。')
-                value.cases.append(TestCase(**case.model_dump(), id=uuid.uuid4().hex, revision=1))
-        return mutate(repo, pid, request.expectedRevision, apply)
+                validate_case_scope(repo, pid, case, controllers)
+                matches = [c for c in value.cases if c.active and identity(c) == identity(case)]
+                old = next((c for c in value.cases if c.id == case.id), None) if case.id else matches[0] if len(matches) == 1 else None
+                if case.id and (not old):
+                    raise HTTPException(422, '测试项已不存在，请重新核对清单。')
+                key = old.id if old else identity(case)
+                if key in seen:
+                    raise HTTPException(422, f'测试“{case.title}”在本次清单中重复，请合并后保存。')
+                seen.add(key)
+                data = case.model_dump(exclude={'id'})
+                if old and old.active and (old.definitionRevision == (confirmed(value).revision if confirmed(value) else None)) and all((getattr(old, k) == v for k, v in data.items())):
+                    counts['unchanged'] += 1
+                    continue
+                new = TestCase(**data, id=old.id if old else uuid.uuid4().hex, revision=old.revision + 1 if old else 1, definitionRevision=confirmed(value).revision if confirmed(value) else None)
+                if old:
+                    value.cases[value.cases.index(old)] = new
+                    counts['updated'] += 1
+                else:
+                    value.cases.append(new)
+                    seen.add(new.id)
+                    counts['added'] += 1
+            if request.mode == 'replace':
+                for c in value.cases:
+                    if c.active and c.id not in seen:
+                        c.active = False
+                        c.revision += 1
+                        counts['retired'] += 1
+        result = mutate(repo, pid, request.expectedRevision, apply)
+        result['caseBatch'] = counts
+        return result
 
     @router.post('/evidence')
     def evidence(pid: str, request: SaveEvidence):
@@ -286,6 +366,8 @@ def router(repo, settings):
         with repo.lock:
             state = view(repo, pid)
             state['sharedProject'] = snapshot(repo, pid, state)
+            from .references import list_references
+            state['projectReferences'] = list_references(repo, pid)
         if state['checkpoint']['revision'] != request.expectedRevision:
             raise HTTPException(409, '项目记录已更新，请读取最新记录再提问。')
         if request.changeId and request.purpose == 'review':
@@ -355,3 +437,28 @@ def validate_snapshot(checkpoint, snapshot):
             raise ValueError('测试程序来源与项目历史不一致。')
         if s and s.checksum not in structures.get(s.revision, set()):
             raise ValueError('测试结构来源与项目历史不一致。')
+    channel_checkpoint = getattr(snapshot, 'developmentChannels', None)
+    channel_map = {c.id: c for c in channel_checkpoint.channels} if channel_checkpoint else {}
+    baselines = [r.baseline for r in checkpoint.runs] + [c.baseline for c in checkpoint.changes]
+    for message in checkpoint.messages:
+        if message.role == 'assistant':
+            proposal = Proposal.model_validate_json(message.content)
+            if proposal.review and proposal.review.source:
+                baselines.append(proposal.review.source.baseline)
+    for b in baselines:
+        for controller in b.controllers or []:
+            code = controller.code
+            if controller.id == 'project':
+                valid = codes
+            else:
+                ch = channel_map.get(controller.id)
+                if ch is None:
+                    raise ValueError('测试主控不属于当前项目。')
+                valid = {('claw' if v.programmingMode == 'chat-coding' else 'micropython', v.revision): v.checksum for v in ch.versions}
+                if ch.mosaico:
+                    valid.update({('lua', v.revision): v.checksum for v in ch.mosaico.lua.versions if v.source == 'saved'})
+            if code.mode == 'none':
+                if code.revision is not None or code.checksum:
+                    raise ValueError('主控未关联程序却含版本。')
+            elif valid.get((code.mode, code.revision)) != code.checksum:
+                raise ValueError('测试主控程序来源与项目历史不一致。')

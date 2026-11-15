@@ -53,6 +53,32 @@ def context(skills, component_ids):
     return result
 
 
+def project_context(repo, project_id, component_ids=None):
+    """Physical controller copies share Skill facts, never lose their ownership."""
+    from . import channels
+    project = repo.get(project_id)
+    controllers = [dict(id='project', name=project.get('boardName') or '原项目主控',
+                        boardId=project['boardId'], componentIds=project['componentIds'])]
+    controllers.extend(dict(id=c.id, name=c.name, boardId=c.boardId, componentIds=c.componentIds)
+                       for c in channels.load(repo, project_id).channels)
+    owners = {}
+    for controller in controllers:
+        for component_id in dict.fromkeys(filter(None, [controller['boardId'], *controller['componentIds']])):
+            owners.setdefault(component_id, []).append(dict(controllerId=controller['id'], controllerName=controller['name']))
+    # The browser's hardware list may predate an added controller. Saved peers
+    # must remain visible; structure selections are carried separately by IDs.
+    facts = context(repo.skills, [*owners, *(component_ids or [])])
+    primary = next((f for f in facts if f['componentId'] == project['boardId']), None)
+    if primary:
+        controllers[0]['name'] = channels.load(repo, project_id).mainName or primary['name']
+    for fact in facts:
+        fact['instances'] = owners.get(fact['componentId'], [])
+        for owner in fact['instances']:
+            if owner['controllerId'] == 'project':
+                owner['controllerName'] = controllers[0]['name']
+    return dict(controllers=controllers, hardware=facts)
+
+
 def cad_profile(profile, component, image='', documentation=''):
     """Data-only adapter to the existing enclosure worker's profile contract."""
     mounting = profile['mounting']

@@ -5,6 +5,9 @@
 .native-chat-panel .chat-form > div { gap:8px; }
 .native-chat-panel .chat-form > div > span { flex:1; min-width:0; }
 .native-chat-panel .chat-form textarea { min-height:100px; }
+.native-chat-panel .chat-form > .native-composer-row { align-items:flex-end; gap:8px; padding:0; }
+.native-chat-panel .native-composer-row > textarea { flex:1; width:auto; min-width:0; }
+.native-chat-panel .native-composer-row > .icon-button { flex:0 0 44px; width:44px; min-height:44px; }
 .native-chat-panel .chat-hint { overflow-wrap:anywhere; }
 .native-task-content { flex:1; min-height:0; overflow:auto; padding:16px; color:var(--ink-1); font-size:13px; }
 .native-task-preview { min-height:140px; border-bottom:1px solid var(--border); padding-bottom:16px; }

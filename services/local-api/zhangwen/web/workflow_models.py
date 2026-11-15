@@ -64,6 +64,7 @@ class Conditions(Boundary):
 
 
 class CaseContent(Boundary):
+    controllerIds: list[str] = Field(default_factory=list, max_length=8)
     title: str = Field(min_length=1, max_length=100)
     stage: Literal['module', 'system', 'assembly']
     componentId: str = Field(default='', max_length=150)
@@ -78,6 +79,7 @@ class CaseContent(Boundary):
 
 
 class TestCase(CaseContent):
+    definitionRevision: int | None = Field(default=None, ge=1, strict=True)
     id: str = Field(pattern='^[a-f0-9]{32}$')
     revision: int = Field(ge=1, strict=True)
     active: bool = True
@@ -105,7 +107,16 @@ class Module(Boundary):
     revision: str = Field(max_length=64)
 
 
+class ControllerBaseline(Boundary):
+    id: str = Field(max_length=150)
+    name: str = Field(max_length=300)
+    boardId: str = Field(max_length=150)
+    modules: list[Module] = Field(max_length=33)
+    code: CodeReference
+
+
 class Baseline(Boundary):
+    controllers: list[ControllerBaseline] | None = Field(default=None, max_length=8)
     boardId: str = Field(max_length=150)
     boardName: str = Field(max_length=300)
     modules: list[Module] = Field(max_length=33)
@@ -117,7 +128,10 @@ class Baseline(Boundary):
 
     @model_validator(mode='after')
     def integrity(self):
-        if digest(self.model_dump(exclude={'fingerprint'})) != self.fingerprint: raise ValueError('测试条件摘要不一致。')
+        raw = self.model_dump(exclude={'fingerprint'})
+        legacy = {k: v for k, v in raw.items() if k != 'controllers'}
+        if self.fingerprint != digest(raw) and not (self.controllers is None and self.fingerprint == digest(legacy)): raise ValueError('测试条件摘要不一致。')
+        if self.controllers is not None and len({c.id for c in self.controllers}) != len(self.controllers): raise ValueError('测试主控标识重复。')
         if len({m.id for m in self.modules}) != len(self.modules): raise ValueError('测试硬件标识重复。')
         return self
 
@@ -238,11 +252,18 @@ class ProjectReview(Boundary):
         return values
 
 
+class CaseSuggestion(CaseContent):
+    id: str | None = Field(default=None, pattern='^[a-f0-9]{32}$')
+
+
 class Proposal(Boundary):
-    summary: str = Field(min_length=1, max_length=2000)
-    question: Question | None
-    definition: Definition | None
-    tests: list[CaseContent] = Field(max_length=15)
+    summary: str = Field(min_length=1, max_length=12000)
+    question: Question | None = None
+    definition: Definition | None = None
+    tests: list[CaseSuggestion] = Field(default_factory=list, max_length=30)
+    testsMode: Literal['merge', 'replace'] = 'merge'
+    references: list[dict] = Field(default_factory=list, max_length=40)
+    referenceNotice: str = Field(default='', max_length=1000)
     review: ProjectReview | None = None
 
 

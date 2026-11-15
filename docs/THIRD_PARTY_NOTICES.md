@@ -57,3 +57,5 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 ```
+
+2026-11-15补充的ESP-Mosaico V1.2整机照片来自Espressif官方硬件指南，BBC micro:bit V2正面照片裁自Micro:bit Educational Foundation官网的正反面合照。仅裁切、等比缩小及WebP转换，未由AI合成或重绘；V2配图不表示V1外观相同。原图URL、署名、原件与成品SHA256、裁切区域和尺寸见 `apps/web/src/assets/boards/sources.json`。图片版权归原权利人，项目代码许可证不改变图片权利。

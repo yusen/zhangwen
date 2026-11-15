@@ -8,7 +8,7 @@ import math
 import json
 from typing import Literal
 
-from pydantic import BaseModel, ConfigDict, Field
+from pydantic import BaseModel, ConfigDict, Field, model_serializer
 
 from . import laser_joinery
 
@@ -16,6 +16,7 @@ from . import laser_joinery
 class HardwarePlacement(BaseModel):
     model_config = ConfigDict(extra='forbid', allow_inf_nan=False)
     componentId: str = Field(pattern=r'^[A-Za-z0-9_-]{1,150}$')
+    controllerId: str | None = Field(default=None, pattern=r'^(project|[a-f0-9]{32})$')
     skillRevision: str = Field(min_length=1, max_length=160)
     panel: Literal['top', 'bottom', 'front', 'back', 'left', 'right']
     x: float = Field(ge=0, le=1000)
@@ -23,6 +24,17 @@ class HardwarePlacement(BaseModel):
     rotation: Literal[0, 90, 180, 270] = 0
     method: Literal['screw', 'adhesive', 'opening_only']
     includeOpenings: bool = True
+
+    @model_serializer(mode='wrap')
+    def serialize(self, handler):
+        result = handler(self)
+        if self.controllerId is None:
+            result.pop('controllerId', None)
+        return result
+
+
+def placement_key(placement):
+    return (placement.controllerId or 'project', placement.componentId)
 
 
 def panel_geometry(spec, panel):
@@ -58,13 +70,13 @@ def panel_geometry(spec, panel):
 
 
 def resolve(placements, facts):
-    """Resolve one current, revision-bound mechanical snapshot per component."""
+    """Resolve a revision-bound snapshot per physical controller/component pair."""
     sources = {f['componentId']: f for f in facts}
     output, seen = [], set()
     for p in placements:
-        if p.componentId in seen:
-            raise ValueError('同一工程器件只能安排一次；多个实物请分别建立模块身份。')
-        seen.add(p.componentId)
+        if placement_key(p) in seen:
+            raise ValueError('同一主控下的同一工程器件只能安排一次；多个实物须使用各自主控身份。')
+        seen.add(placement_key(p))
         fact = sources.get(p.componentId)
         if not fact or not fact.get('mechanicalProfile'):
             raise ValueError('所选器件缺少机械档案，请先补充尺寸与安装资料。')
@@ -72,6 +84,13 @@ def resolve(placements, facts):
             raise ValueError(f'{fact["name"]}的资料已更新，请核对并使用最新资料修订。')
         source = {key: copy.deepcopy(fact[key]) for key in
                   ['componentId', 'skillName', 'revision', 'name', 'mechanicalProfile', 'documentation'] if key in fact}
+        if 'instances' in fact:
+            owner = next((i for i in fact['instances'] if i['controllerId'] == (p.controllerId or 'project')), None)
+            if owner is None:
+                raise ValueError('安装器件不属于指定主控，请核对项目中的主控与器件。')
+            source.update(copy.deepcopy(owner))
+        elif p.controllerId is not None:
+            raise ValueError('缺少该主控的安装来源，请重新读取项目机械资料。')
         output.append(dict(placement=p.model_dump(), name=fact['name'], source=source))
     return output
 
@@ -87,12 +106,13 @@ def checked_snapshots(items):
             raise ValueError('安装资料快照格式无效。')
         p = HardwarePlacement.model_validate(item.get('placement'))
         source = item['source']
-        if (p.componentId in seen or source.get('componentId') != p.componentId
+        if (placement_key(p) in seen or source.get('componentId') != p.componentId
                 or source.get('revision') != p.skillRevision
+                or source.get('controllerId', 'project') != (p.controllerId or 'project')
                 or not isinstance(item.get('name'), str) or not 1 <= len(item['name']) <= 120
                 or not isinstance(source.get('documentation', ''), str) or len(source.get('documentation', '')) > 100000):
             raise ValueError('安装资料快照与器件身份、修订不一致。')
-        seen.add(p.componentId)
+        seen.add(placement_key(p))
         HardwareProfile.model_validate(source.get('mechanicalProfile'))
         json.dumps(source.get('mechanicalProfile'), allow_nan=False)
     return items

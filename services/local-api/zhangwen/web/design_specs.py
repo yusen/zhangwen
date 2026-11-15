@@ -323,6 +323,17 @@ def template_spec(template, params):
     raise HTTPException(422, '未知设计模板。')
 
 
+def assembly_instructions():
+    return ('项目级结构协同：projectControllers是本作品平等的主控实物清单，projectHardware.instances记录每个型号属于哪些主控。'
+            '相同componentId在不同controllerId下代表多个实物，不能合并成一块；Mosaico与其他板混用时分别依据各自机械档案。'
+            '用户要求组合为同一作品时，先按分工设计整体布局、共同底座与连接件、各板托座、供电安装位、接口朝向、走线与检修空间，'
+            '同时区分固定部分和运动部分，考虑行程避让、传感器朝向及视野。旋转装置还需标注转臂、可调半径、线束路径和配重的待验证条件。'
+            'summary说明各主控/部件装在哪里、怎样连接和装配；assumptions列出未知尺寸、配合、运动与实物检查项。'
+            '用户仅改局部时保留其他结构；不因多主控强制所有板装同一盒，不用单板外壳代替整机机构。'
+            '结构布局变化涉及引脚、通信或控制逻辑时只说明需交给智能工程师的条件，不声称已修改程序或完成联调。'
+            '几何生成或静态检查不能证明强度、动态平衡、全行程无干涉或实物适配，未知项目保留待验。')
+
+
 def design_instructions(design_type):
     laser = design_type == 'laser'
     example = template_spec('plate' if laser else 'box', {}).model_dump(mode='json', exclude_defaults=True)
@@ -343,8 +354,9 @@ def design_instructions(design_type):
         +
         'previousDesign.spec是所选版本的有效设计，history是截至该版本的同类需求记录；优先本次request，'
         '保留未要求修改的内容，不要重新引入历史中已替换的方案。pendingQuestions可用于理解本次回答。'
-        'previousDesign.projectHardware是当前项目原模块的机械资料、来源及修订，selectedStructureProfiles是选定结构硬件。'
+        'previousDesign.projectHardware是当前项目全部主控与模块的机械资料、来源及修订，selectedStructureProfiles是选定结构硬件。'
         '按本次请求决定哪些硬件参与结构；参考其中尺寸、坐标原点、孔位、开口和避让，不能猜缺失的数据或把外包络冒充精细模型。'
+        + assembly_instructions()
         + ('需要安装或开孔而相应资料缺失时必须用questions追问；未要求安装硬件的独立作品不受缺项阻止。' if laser else
         '需安装但缺精密资料时先展示可逆的安装空间方案，避免无依据的固定孔；实测资料补齐后再细化。')
         + ('本次只做激光平面图纸：solid=[]，drawing包含完整图纸。rect的x/y为左上角，circle为圆心，'
@@ -363,6 +375,7 @@ def design_instructions(design_type):
            '榫齿盒文字用顶层panelTexts:[{panel:front,x:6,y:10,text:掌问,fontSize:10}]；panel选left/right/front/back/bottom/top。'
            '坐标相对该面板左上角，文字须完全处于四边各扣除一倍板厚后的矩形内，drawing仍省略。'
            '圆角盒/榫齿盒安装电子件使用顶层hardwarePlacements数组。每项componentId与skillRevision必须逐字取projectHardware的componentId/revision；'
+           '多主控安装时controllerId必须取该器件instances中的controllerId，同型号不同主控分别安排；旧单板安装可省略controllerId（对应project）。'
            'panel为top/bottom/front/back/left/right，x/y为该面板加工图左上角到器件包络中心的毫米坐标，rotation为顺时针0/90/180/270，不自动镜像。'
            'method=screw需原档案hole_fastened与完整孔位；adhesive只雕刻轮廓并另配胶垫，须用户选择；opening_only只开口不固定。'
            'includeOpenings明确是否按档案生成开口；启用时必须有档案XY平面(top/bottom)圆孔或直角矩形，缺项不得猜。'

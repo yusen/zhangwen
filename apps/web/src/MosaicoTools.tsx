@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
-import { api } from './api';
+import { api as baseApi } from './api';
 import { generate } from 'lean-qr';
 import type { MosaicoConfig, MosaicoDeviceState, MosaicoFileData, MosaicoFileEntry, MosaicoSection, MosaicoWechatState, MosaicoWriteResult } from '../../../packages/contracts/src/platform';
 import './mosaico-tools.css';
@@ -15,7 +15,7 @@ const fields: Record<string, Fields> = {
   im: [['wechat_account_id','微信账号ID'],['wechat_token','微信Token','password'],['wechat_base_url','微信服务地址'],['wechat_cdn_base_url','微信CDN地址'],['qq_app_id','QQ应用ID'],['qq_app_secret','QQ应用密钥','password'],['feishu_app_id','飞书应用ID'],['feishu_app_secret','飞书应用密钥','password'],['tg_bot_token','Telegram Bot Token','password']],
   search: [['search_brave_key','Brave搜索密钥','password'],['search_tavily_key','Tavily搜索密钥','password'],['search_http_allowlist','HTTP访问白名单']],
 };
-export function useMosaicoDevice(active: boolean, onBusy: (busy: boolean) => void) {
+export function useMosaicoDevice(active: boolean, onBusy: (busy: boolean) => void, api = baseApi) {
   const [state,setState] = useState<MosaicoDeviceState>({connected:false});
   const [section,setSection] = useState<MosaicoSection>('records');
   const [busy,setBusy] = useState('');
@@ -41,7 +41,7 @@ export function useMosaicoDevice(active: boolean, onBusy: (busy: boolean) => voi
   }
   const connect = async (endpoint: string) => { const result=await run<MosaicoDeviceState>('连接设备','/connect','POST',{endpoint});current.current=result;return result; };
   const chooseSection=(value:MosaicoSection)=>{if(unsaved.current&&!window.confirm('当前设备修改尚未保存，放弃并切换？'))return;unsaved.current=false;setSection(value);};
-  return {state,section,setSection,chooseSection,unsaved,busy,error,notice,setNotice,run,connect,disconnect:()=>run<MosaicoDeviceState>('断开连接','/disconnect','POST')};
+  return {api,state,section,setSection,chooseSection,unsaved,busy,error,notice,setNotice,run,connect,disconnect:()=>run<MosaicoDeviceState>('断开连接','/disconnect','POST')};
 }
 export type MosaicoController = ReturnType<typeof useMosaicoDevice>;
 export const decode = (v: string) => Uint8Array.from(atob(v), c=>c.charCodeAt(0));
@@ -84,7 +84,7 @@ export function MosaicoTools({device,projectId,disabled,onProjectSaved}:{device:
   useEffect(()=>{
     if(section!=='logs'||!logs.active||!state.connected)return;
     let live=true,reading=false;
-    const timer=setInterval(()=>{if(reading||document.hidden||device.busy)return;reading=true;void api<typeof logs>('/mosaico/logs').then(v=>{if(live)setLogs(v);}).catch(e=>{if(live)setLocalError(errorText(e));}).finally(()=>{reading=false;});},1500);
+    const timer=setInterval(()=>{if(reading||document.hidden||device.busy)return;reading=true;void device.api<typeof logs>('/mosaico/logs').then(v=>{if(live)setLogs(v);}).catch(e=>{if(live)setLocalError(errorText(e));}).finally(()=>{reading=false;});},1500);
     return()=>{live=false;clearInterval(timer);};
   },[section,logs.active,state.connected,device.busy]);
   async function saveConfig(){if(!config)return;const v=await run<MosaicoWriteResult>('保存设备配置','/config','POST',{section,revision:config.revision,patch});const message=v.message;const fresh=await run<MosaicoConfig>('回读设备配置','/config/'+section);setConfig(fresh);setPatch({});device.setNotice(message);}

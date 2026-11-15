@@ -4,6 +4,7 @@ import type { ArchiveProjectReference, ProjectReference, ReferenceCitation } fro
 import { api } from './api';
 import { Dialog } from './Dialog';
 import type { ProjectDirectory } from './projectFolders';
+import { ReferenceImageImport, type ImageReferenceInput } from './ReferenceImageImport';
 
 const textExtensions = /\.(txt|md|markdown|py|lua|html?|js|ts|json|csv|css|xml|ya?ml|ino|c|h)$/i;
 const supported = /\.(txt|md|markdown|py|lua|html?|js|ts|json|csv|css|xml|ya?ml|ino|c|h|pdf|docx)$/i;
@@ -67,8 +68,8 @@ export function ProjectReferences({ projectId, folder, folderPath, folderStatus,
       await refresh(); setRemoving(null); setStatus(`${item.name}：${archived?'已移到回收站，不再提供给 AI；可在回收站恢复':'已恢复到项目资料'}。`); syncLater();
     } catch(e) { setError(String(e)); } finally { setBusy(false); }
   };
-  const store = async (input: Pick<ProjectReference, 'name' | 'original' | 'encoding'>, previous?: ProjectReference, mode?: ProjectReference['mode']) => {
-    const result = await api<ProjectReference>(`/projects/${projectId}/references`, 'POST', { name: input.name, original: input.original, encoding: input.encoding, mode: mode ?? previous?.mode ?? 'auto', expectedVersion: previous?.version ?? 0 });
+  const store = async (input: ImageReferenceInput, previous?: ProjectReference, mode?: ProjectReference['mode']) => {
+    const result = await api<ProjectReference>(`/projects/${projectId}/references`, 'POST', { name: input.name, original: input.original, encoding: input.encoding, imageDescription:input.imageDescription??previous?.imageDescription??'', mode: mode ?? previous?.mode ?? 'auto', expectedVersion: previous?.version ?? 0 });
     await refresh(); return result;
   };
   const importFiles = async (files: { file: File; name: string }[]) => {
@@ -139,11 +140,12 @@ export function ProjectReferences({ projectId, folder, folderPath, folderStatus,
     {view === 'add' && <><button className="resource-back" disabled={busy} onClick={() => setView('list')}>← 返回资料列表</button><div className="reference-import-options">
       <label className="reference-file-button primary">选择文件<input aria-label="导入项目资料" type="file" multiple disabled={busy} accept=".txt,.md,.markdown,.py,.html,.js,.ts,.json,.csv,.css,.xml,.yaml,.yml,.ino,.c,.h,.pdf,.docx" onChange={event => { const files = [...(event.target.files ?? [])]; event.target.value = ''; void importFiles(files.map(file => ({ file, name: file.name }))); }} /></label>
       <button disabled={busy || !folder} onClick={() => void fromFolder()}>从项目文件夹导入</button><button disabled={busy} onClick={() => setPasteOpen(value => !value)}>粘贴文字</button>
-    </div><p className="muted">支持 UTF-8 文本、代码、文本 PDF 和 DOCX，每份最多1MB。扫描件与图片需先转文字。</p>
+    </div><p className="muted">支持 UTF-8 文本、代码、文本 PDF 和 DOCX，每份最多1MB。图片与视频请使用下方关键帧入口。</p>
+      <ReferenceImageImport projectId={projectId} disabled={busy} onSave={async input=>{await store(input);syncLater();}}/>
       {!folder && <small className="muted">保存到项目文件夹后，可导入其中“参考资料”目录。</small>}
       {pasteOpen && <div><label className="reference-field">文件名<input value={pasteName} onChange={e => setPasteName(e.target.value)} maxLength={200} /></label><label className="reference-field">说明内容<textarea value={paste} onChange={e => setPaste(e.target.value)} rows={6} maxLength={120000} /></label><button className="primary" disabled={busy || !paste.trim()} onClick={() => { setBusy(true); setError(''); void store({ name: pasteName, original: paste, encoding: 'text' }).then(() => { setPaste(''); setTrash(false); setView('list'); setStatus('说明已保存到本机项目，文件夹在后台同步。'); syncLater(); }).catch(e => setError(String(e))).finally(() => setBusy(false)); }}>保存说明</button></div>}
     </>}
-    {view === 'preview' && preview && <section className="reference-preview"><button className="resource-back" onClick={() => setView(previewBack)}>← {previewBack === 'history' ? '返回版本列表' : '返回资料列表'}</button><h3>{preview.name} · V{preview.version}</h3><div className="reference-actions"><button onClick={()=>download(preview)}><Download size={16}/>下载原文件</button><details><summary>文件保存位置</summary><p className="reference-disk-path">{archivePath(preview)}</p><small>本机项目记录已保存。归档副本需等文件夹同步完成后查看。</small>{onOpenFolder&&<button onClick={openFolder}>打开项目文件夹</button>}</details></div><small className="muted">提取文字预览，图片未分析；请核对表格与参数。</small><pre>{preview.text}</pre>{!preview.archived&&<button onClick={() => onModule(preview.text)}>用这份资料创建我的模块</button>}</section>}
+    {view === 'preview' && preview && <section className="reference-preview"><button className="resource-back" onClick={() => setView(previewBack)}>← {previewBack === 'history' ? '返回版本列表' : '返回资料列表'}</button><h3>{preview.name} · V{preview.version}</h3><div className="reference-actions"><button onClick={()=>download(preview)}><Download size={16}/>下载原文件</button><details><summary>文件保存位置</summary><p className="reference-disk-path">{archivePath(preview)}</p><small>本机项目记录已保存。归档副本需等文件夹同步完成后查看。</small>{onOpenFolder&&<button onClick={openFolder}>打开项目文件夹</button>}</details></div>{preview.imageDescription&&<img alt={preview.name} src={`data:${/\.png$/i.test(preview.name)?'image/png':/\.webp$/i.test(preview.name)?'image/webp':'image/jpeg'};base64,${preview.original}`} style={{maxWidth:'100%',maxHeight:360}}/>}<small className="muted">{preview.imageDescription?'图片配有用户核对的说明；未分析整段视频。':'提取文字预览，图片未分析；请核对表格与参数。'}</small><pre>{preview.text}</pre>{!preview.archived&&<button onClick={() => onModule(preview.text)}>用这份资料创建我的模块</button>}</section>}
     {view === 'history' && preview && <section><button className="resource-back" onClick={() => setView('list')}>← 返回资料列表</button><h3>{preview.name} · 历史版本</h3><div className="reference-list">{history.map(item => <article key={item.version}><button className="reference-name" onClick={() => openPreview(item, 'history')}>V{item.version}{item.version === history[0]?.version ? ' · 当前版本' : ''}</button><span>{modeLabels[item.mode]}</span><small>{item.text.length} 字</small></article>)}</div></section>}
     {error && <p role="alert">{error}</p>}{status && <p role="status" className="reference-status">{status}</p>}
     <small className="muted">启用的相关片段会发送给你配置的 AI 服务，资料随项目保存。</small>

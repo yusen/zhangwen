@@ -2,13 +2,16 @@ import { StructureExports } from './StructureExports';
 import { lazy, Suspense, useEffect, useRef, useState, type MutableRefObject } from 'react';
 import { ArrowUp, Box, CircuitBoard, CheckCheck, ChevronRight, Download, FileCode2, FolderOpen, LoaderCircle, Maximize, Minimize, PanelLeftClose, PanelLeftOpen, Plus, Settings, SlidersHorizontal, Sparkles, X } from 'lucide-react';
 import type { HardwareSummary } from '../../../packages/contracts/src/platform';
-import type { CadProfile, CadResult, HardwarePlacement, LaserPreviewInput, StructureAction, StructureCatalog, StructureWorkspace as Workspace, TemplateParameterField } from '../../../packages/contracts/src/structure';
+import type { CadProfile, CadResult, HardwarePlacement, LaserPreviewInput, StructureAction, StructureCatalog, StructureWorkspace as Workspace, StructureController, StructureHardwareInstance, TemplateParameterField } from '../../../packages/contracts/src/structure';
+import type { ChannelsCheckpoint } from '../../../packages/contracts/src/channels';
 import { api, ApiError, bootstrap } from './api';
 import { Dialog } from './Dialog';
 import { CaseTemplatePicker } from './CaseTemplatePicker';
 import { LaserPreview } from './LaserPreview';
 import { readStructureDraft, structureDraftKey } from './structureDraft';
 import { HardwarePlacementEditor, panelNames } from './HardwarePlacementEditor';
+import { ReferenceSources } from './ProjectReferences';
+import type { ReferenceCitation } from '../../../packages/contracts/src/platform';
 const StructurePreview = lazy(() => import('./StructurePreview').then(module => ({default: module.StructurePreview})));
 const sizeText = (size?: {length_x: number; width_y: number; height_z: number}) => size ? `${size.length_x} × ${size.width_y} × ${size.height_z} mm` : '尺寸待补充';
 import './structure.css';
@@ -26,8 +29,9 @@ function loadCatalog() {
 }
 function exportText(name: string, text: string) { const url = URL.createObjectURL(new Blob([text])); const a = document.createElement('a'); a.href = url; a.download = name; a.click(); setTimeout(() => URL.revokeObjectURL(url), 1000); }
 
-export function StructureWorkspace({ projectId, active, board, modules, designType = 'model', draft: input, onDraftChange: setInput, onSaveProject, onSettings, onBusy, onSaved, onHardwareDetail, onManageHardware, hardwareBlocked, hardwareDirty, onDirtyChange, saveDraftRef }: {
+export function StructureWorkspace({ projectId, active, board, modules, hardwareLibrary, designType = 'model', draft: input, onDraftChange: setInput, onSaveProject, onSettings, onBusy, onSaved, onHardwareDetail, onManageHardware, hardwareBlocked, hardwareDirty, onDirtyChange, saveDraftRef }: {
   projectId?: string; active: boolean; board?: HardwareSummary; modules: HardwareSummary[];
+  hardwareLibrary: HardwareSummary[];
   designType?: 'model' | 'laser';
   draft: string; onDraftChange: (value: string) => void;
   onSaveProject: () => void; onSettings: () => void; onBusy: (value: boolean) => void; onSaved: (id: string) => Promise<void>;
@@ -41,6 +45,11 @@ export function StructureWorkspace({ projectId, active, board, modules, designTy
   const [catalogRevision, setCatalogRevision] = useState(0);
   const [workspace, setWorkspace] = useState<Workspace>(empty);
   const [workspaceReady, setWorkspaceReady] = useState(false);
+  const [peerControllers, setPeerControllers] = useState<StructureController[]>([]);
+  const [mainControllerName,setMainControllerName]=useState('');
+  const [controllersReady, setControllersReady] = useState(false);
+  const [controllersError, setControllersError] = useState('');
+  const [controllersAttempt, setControllersAttempt] = useState(0);
   const initialDraft = useRef(readStructureDraft(projectId,designType));
   const [selectedVersion, setSelectedVersion] = useState<number | null>(initialDraft.current?.sourceRevision ?? null);
   const [draftLoadedFor, setDraftLoadedFor] = useState<number | null>(null);
@@ -91,6 +100,19 @@ export function StructureWorkspace({ projectId, active, board, modules, designTy
   const hardwareRevisions = [board, ...modules].filter(Boolean).map(item => `${item?.componentId}:${item?.revision}`).join('|');
 
   useEffect(() => {
+    if (!active || !projectId) return;
+    const controller = new AbortController();
+    setControllersReady(false); setControllersError('');
+    void api<ChannelsCheckpoint>(`/projects/${projectId}/channels`, 'GET', undefined, controller.signal).then(value => {
+      if (controller.signal.aborted) return;
+      setMainControllerName(value.mainName??'');
+      setPeerControllers(value.channels.map(({id, name, boardId, componentIds}) => ({id, name, boardId, componentIds})));
+      setControllersReady(true);
+    }).catch(error => { if (!controller.signal.aborted) setControllersError(errorText(error)); });
+    return () => controller.abort();
+  }, [active, projectId, controllersAttempt]);
+
+  useEffect(() => {
     let live = true;
     if (active) {
       setCatalogLoading(true);
@@ -115,6 +137,7 @@ export function StructureWorkspace({ projectId, active, board, modules, designTy
   }, [active, projectId]);
   useEffect(() => {
     setWorkspace(empty); setSelected([]); setCustomProfiles([]); setError(''); setErrorStatus(0);
+    setPeerControllers([]); setControllersReady(false); setControllersError('');
   }, [projectId]);
   useEffect(() => {
     if (!current || draftLoadedFor === current.revision) return;
@@ -135,6 +158,7 @@ export function StructureWorkspace({ projectId, active, board, modules, designTy
   const act = async (action: StructureAction['action'], message = '', option = '', template?: StructureAction['template']) => {
     if (!projectId || busyRef.current) return;
     if (!workspaceReady) { setError('项目记录尚未读取完成，请重新加载记录后继续。需求草稿已保留。'); return; }
+    if (!controllersReady) { setError('项目主控清单尚未读取完成，请重新读取主控后继续。需求草稿已保留。'); return; }
     if (hardwareDirty) { setError('项目器件有未保存更改，请打开“项目器件”保存后继续。结构草稿已保留。'); return; }
     if (draftConflict) { setError('本地参数的来源版本已不存在，请先导出保留草稿，再明确载入当前参数。'); return; }
     if (result?.builtinTemplate && dimensionsDirty && ['analyze', 'revise', 'selected'].includes(action)) { setError('案例参数尚未应用，请先应用参数或恢复本版参数，再继续对话或切换案例。对话输入和参数草稿已保留。'); return; }
@@ -146,6 +170,7 @@ export function StructureWorkspace({ projectId, active, board, modules, designTy
         hardwarePlacements: !template && (action === 'parameters' || action === 'build' || action === 'validate' || placementsDirty) ? hardwarePlacements : undefined,
         customProfiles, parameters: template ? {} : params, faces: template ? {} : faces, rotations: template ? {} : rotations, resolutionOptionId: option, designType, template} satisfies StructureAction);
       if (scope.current !== id) return;
+      if(action==='validate'){setWorkspace(value);return;}
       try {localStorage.removeItem(structureDraftKey(id,designType));} catch {setError('新结构版本已保存，但浏览器旧草稿未能清理，请核对来源版本。');}
       initialDraft.current=null; setDraftLoadedFor(null);
       setWorkspace(value); setSelectedVersion(null); if (['analyze', 'revise'].includes(action) && message === input) setInput(''); setTab(value.versions[0]?.result.status === 'artifact' ? 'model' : 'chat');
@@ -154,7 +179,9 @@ export function StructureWorkspace({ projectId, active, board, modules, designTy
     finally { busyRef.current = false; setBusy(''); onBusy(false); }
   };
   const selectedProfiles = selected.map(id => catalog?.profiles.find(p => p.id === id) ?? customProfiles.find(p => p.id === id) as unknown as CadProfile).filter(Boolean);
-  const projectHardware = [...(board ? [board] : []), ...modules];
+  const controllers: StructureController[] = [{id:'project', name:mainControllerName||board?.displayName||'原项目主控', boardId:board?.componentId ?? '', componentIds:modules.map(item=>item.componentId)}, ...peerControllers];
+  const hardwareInstances: StructureHardwareInstance[] = controllers.flatMap(controller => [...new Set([controller.boardId, ...controller.componentIds].filter(Boolean))].map(componentId=>({controllerId:controller.id, controllerName:controller.name, componentId})));
+  const projectHardware = [...new Set(hardwareInstances.map(item=>item.componentId))].map(id=>[board,...modules,...hardwareLibrary].find(item=>item?.componentId===id)).filter((item): item is HardwareSummary=>!!item);
   const matchedIds = catalog?.profiles.filter(p => projectHardware.some(h => h.componentId === p.componentId)).map(p => p.id) ?? [];
   const missingParts = projectHardware.filter(h => !catalog?.profiles.some(p => p.componentId === h.componentId));
   const bom = result?.bom ?? result?.partial_bom ?? [];
@@ -205,6 +232,9 @@ export function StructureWorkspace({ projectId, active, board, modules, designTy
         <div className="panel-head"><h2><Box size={17} />{laser ? "图纸模板" : "设计与硬件"}</h2><button aria-label="收起结构硬件" onClick={() => setCollapsed(true)}><PanelLeftClose size={17} /></button></div>
         <div className="structure-parts-scroll">
           <button className="structure-add" disabled={hardwareBlocked||!!busy} onClick={onManageHardware}><CircuitBoard size={17}/>{board?'调整主控与模块':'选择主控与模块'}</button>
+          {projectId && !controllersReady && !controllersError && <p role="status" className="structure-caption">正在读取项目全部主控…</p>}
+          {controllersError && <div role="alert" className="structure-missing"><p>项目主控读取失败：{controllersError}</p><button disabled={!!busy} onClick={()=>setControllersAttempt(value=>value+1)}>重新读取主控</button></div>}
+          {controllersReady && controllers.length > 1 && <details open className="compact-disclosure" aria-label="整机结构设计范围"><summary>整机结构 · {controllers.length} 个主控</summary><p className="structure-caption">共同设计底座、支架、安装位置、运动空间和走线；同型号的板分别安排。</p>{controllers.map(controller=><p className="structure-caption" key={controller.id}><strong>{controller.name}</strong> · {hardwareLibrary.find(item=>item.componentId===controller.boardId)?.displayName??controller.boardId} · {controller.componentIds.length} 个模块</p>)}</details>}
           <details className="compact-disclosure structure-basic-templates"><summary>基础形状模板</summary><div className="structure-templates" aria-label={laser ? '激光图纸模板' : '无硬件3D模板'}>{(laser ? [['plate', '矩形挂牌'], ['round-tag', '圆形挂牌'], ['finger-box', '榫齿盒'], ['rounded-box', '圆角盒子'], ['panel-box', '胶合收纳盒板件']] : [['box', '开口收纳盒'], ['cup', '圆柱笔筒'], ['bracket', 'L形支架']]).map(([id, name]) => <button key={id} disabled={!projectId || !!busy} onClick={() => void act('selected', '使用' + name + '模板', '', id as StructureAction['template'])}>{name}<ChevronRight size={14} /></button>)}</div></details>
           {!laser && !!catalog?.templates?.length && <><h3 className="structure-template-heading">案例模板</h3><button className="structure-add" disabled={!!busy} onClick={() => setCasePicker(true)}><Plus size={17} />添加案例模板</button>{result?.builtinTemplate ? <div className="structure-selected structure-selected-case" aria-label="当前案例模板"><article>{result.builtinTemplate.image && <img src={result.builtinTemplate.image} alt="" />}<div><strong>{result.builtinTemplate.title}</strong><small>{sizeText(result.design_state?.enclosure_parameters.outer_box_size)}</small></div></article></div> : null}</>}
           {<>
@@ -212,7 +242,7 @@ export function StructureWorkspace({ projectId, active, board, modules, designTy
           {catalogLoading && <p role="status" className="structure-caption">正在更新尺寸与安装资料…</p>}
           {catalog && !catalogLoading && missingParts.length > 0 && <details open className="structure-missing"><summary>{missingParts.length} 个器件需要补充尺寸</summary><p className="structure-caption">请逐个补充外形和所需孔位/开口；未参与安装的器件可以不补。</p>{missingParts.map(h=><button key={h.componentId} disabled={!!busy} onClick={()=>onHardwareDetail(h)}>补充 {h.displayName}</button>)}</details>}
           <button className="structure-add" disabled={!!busy} onClick={() => {setPendingIds(selected); setPicker(true);}}><Plus size={17} />选择结构硬件</button>
-          <details className="compact-disclosure"><summary>结构安装说明</summary><p className="structure-caption">无硬件作品可直接描述。主控与模块可在本页选择，三师共用已保存的选择。结构硬件用于确定参与安装的器件与尺寸。装配与加工前请核对实物。</p></details>
+          <details className="compact-disclosure"><summary>结构安装说明</summary><p className="structure-caption">无硬件作品可直接描述。结构设计共用项目中全部主控的已保存器件资料，同型号不同主控分别布局。结构硬件列表用于选择尺寸档案；整机需求请在对话中说明各板分工、固定与运动关系。装配与加工前请核对实物。</p></details>
           <div className="structure-selected">{selectedProfiles.map(p => <article key={p.id}>{p.thumbnail_url ? <img src={p.thumbnail_url} alt="" /> : <Box size={19} />}<div><strong>{p.name ?? p.id}</strong><small>{sizeText(p.dimensions_mm)}</small></div><button aria-label={`移除 ${p.name ?? p.id}`} disabled={!!busy} onClick={() => setSelected(v => v.filter(x => x !== p.id))}><X size={14} /></button></article>)}</div>
           {!selected.length && <p className="structure-caption">还没有选择结构硬件</p>}
           {!laser && <><button className="structure-selected-build" disabled={!projectId || !selected.length || !!busy} onClick={() => void act('selected')}>按所选硬件生成草案<ChevronRight size={15} /></button></>}
@@ -242,11 +272,13 @@ export function StructureWorkspace({ projectId, active, board, modules, designTy
           </section>}
           {busy && <p className="ai-progress" role="status"><LoaderCircle size={16} className="spin" />{busy} · {elapsed} 秒</p>}
         </div>
+        <ReferenceSources references={result?.references as ReferenceCitation[]|undefined} notice={result?.referenceNotice as string|undefined}/>
         {error && <div className="chat-error" role="alert">{failureHint || error}{failureHint&&<details><summary>查看具体原因</summary><p>{error}</p></details>}{errorStatus === 409 || !workspaceReady ? <button disabled={!!busy} onClick={() => void api<Workspace>(`/projects/${projectId}/structure`).then(v => {setWorkspace(v); setWorkspaceReady(true); setSelectedVersion(null); setError('');}).catch(e => setError(errorText(e)))}>重新加载记录</button> : <>{input.trim() && <button disabled={!!busy} onClick={() => void act(current ? 'revise' : 'analyze', input)}>重试当前需求</button>}{errorStatus === 502 && <button disabled={!!busy} onClick={onSettings}>AI 设置</button>}</>}</div>}
         <form className="chat-form" onSubmit={e => {e.preventDefault(); void act(current ? 'revise' : 'analyze', input);}}><label className="sr-only" htmlFor="structure-message">发送给结构工程师</label><textarea id="structure-message" placeholder={laser ? "描述材料、厚度、图案轮廓与毫米尺寸…" : result?.builtinTemplate ? `基于${result.builtinTemplate.title}，描述要调整的尺寸、孔位、凹字或结构…` : "描述想做什么，先看模型预览；也可说明要改哪里…"} value={input} maxLength={4000} disabled={!projectId || !!busy} onChange={e => setInput(e.target.value)} onKeyDown={e => {if ((e.ctrlKey || e.metaKey) && e.key === 'Enter' && !e.nativeEvent.isComposing && input.trim()) {e.preventDefault(); void act(current ? 'revise' : 'analyze', input);}}} /><div><span>{laser ? "描述作品 → 确认尺寸 → 导出图纸" : result?.builtinTemplate ? "基于当前案例对话 → 检查并更新3D" : "描述需求 → 生成预览 → 确认与调整"}</span><button className="primary icon-button" aria-label="发送结构需求" disabled={!projectId || !workspaceReady || !input.trim() || !!busy}>{busy ? <LoaderCircle size={19} className="spin" /> : <ArrowUp size={20} />}</button></div></form>
       </section>
       <section className={`panel structure-model ${parametersExpanded ? 'parameters-expanded' : ''} structure-mobile-${tab === 'model' ? 'show' : 'hide'}`}>
-        <div className="filebar"><span><Box size={16} />{laser ? "激光造物" : "3D造物"}</span><select aria-label="结构历史版本" disabled={!versions.length || !!busy} value={current?.revision ?? ''} onChange={e => selectVersion(Number(e.target.value))}>{!versions.length && <option value="">尚无版本</option>}{versions.map(v => <option key={v.revision} value={v.revision}>V{v.revision} · {v.name || v.result.title || v.prompt.slice(0, 24)} · {stageLabels[v.result.status] ?? '检查结果'}</option>)}</select><span className="filebar-space" /><button disabled={!current || !!busy} aria-pressed={parametersExpanded} onClick={revealParameters}><SlidersHorizontal size={15} />参数</button><button disabled={!(result?.design_state || result?.designSpec) || !!busy || ((laser || !!result?.builtinTemplate) && dimensionsDirty)} onClick={() => void act('validate')}><CheckCheck size={15} />检查</button><button aria-label={fullscreen ? '退出模型全屏' : '模型全屏'} onClick={() => setFullscreen(v => !v)}>{fullscreen ? <Minimize size={16} /> : <Maximize size={16} />}</button><button disabled={!result?.exports?.length || ((laser || !!result?.builtinTemplate) && dimensionsDirty) || !!busy} onClick={() => setExports(true)}><Download size={16} />导出</button></div>
+        {workspace.validation&&workspace.validation.sourceRevision===current?.revision&&<section role="status" className="structure-check-summary"><p>{workspace.validation.message}</p>{workspace.validation.checks.map((c,i)=><p key={i}>{c.message}</p>)}</section>}
+        <div className="filebar"><span><Box size={16} />{laser ? "激光造物" : "3D造物"}</span><select aria-label="结构历史版本" disabled={!versions.length || !!busy} value={current?.revision ?? ''} onChange={e => selectVersion(Number(e.target.value))}>{!versions.length && <option value="">尚无版本</option>}{versions.map(v => <option key={v.revision} value={v.revision}>V{v.revision} · {v.name || v.result.title || v.prompt.slice(0, 24)} · {stageLabels[v.result.status] ?? '检查结果'}</option>)}</select><span className="filebar-space" /><button disabled={!current || !!busy} aria-pressed={parametersExpanded} onClick={revealParameters}><SlidersHorizontal size={15} />参数</button><button disabled={!(result?.design_state || result?.designSpec) || !!busy || dimensionsDirty} onClick={() => void act('validate')}><CheckCheck size={15} />检查</button><button aria-label={fullscreen ? '退出模型全屏' : '模型全屏'} onClick={() => setFullscreen(v => !v)}>{fullscreen ? <Minimize size={16} /> : <Maximize size={16} />}</button><button disabled={!result?.exports?.length || dimensionsDirty || !!busy} onClick={() => setExports(true)}><Download size={16} />导出</button></div>
         {active && laser ? <><LaserPreview result={previewDirty && draftPreview?.result ? draftPreview.result : result} />{previewDirty && <p className="structure-caption laser-draft-status" role="status">{draftPreview?.error ? `${draftPreview.error} 当前仍显示 V${current?.revision} 已应用图纸。` : draftPreview?.result ? '参数草案预览 · 尚未应用；应用参数后可导出新图纸。' : `正在更新参数预览；当前仍显示 V${current?.revision} 已应用图纸。`}</p>}</> : active && <Suspense fallback={<p className="structure-caption" role="status">正在准备模型视图区…</p>}><StructurePreview result={result} /></Suspense>}
         <section ref={inspector} tabIndex={-1} className="structure-inspector" aria-label="结构参数与检查">
           {draftDirty && <div className="structure-draft-note" role="status"><p>结构草稿已在本浏览器保留 · 基于 V{parameterSourceRevision} · 尚未应用到模型</p><button onClick={()=>exportText('structure-draft.json',JSON.stringify({sourceRevision:parameterSourceRevision,params,faces,rotations,selected,customProfiles,hardwarePlacements},null,2))}>导出参数草稿</button>{!draftConflict && dimensionsDirty && <button disabled={!!busy} onClick={()=>{if(!window.confirm("恢复当前已保存版本的参数？尚未应用的参数修改将放弃，对话输入保留。"))return;setParams(flatten(result, templateFields));setFaces({});setRotations({});setHardwarePlacements(result?.designSpec?.hardwarePlacements??[]);setError('');}}>恢复本版参数</button>}{draftConflict && <p role="alert">草稿来源版本已不可用，请先导出保留，再选择是否放弃本地参数。</p>}{draftConflict && <button onClick={()=>{setParameterSourceRevision(current?.revision??null);setParams(flatten(result, templateFields));setFaces({});setRotations({});setHardwarePlacements(result?.designSpec?.hardwarePlacements??[]);setSelected(current?.selectedIds??[]);setCustomProfiles(current?.customProfiles??[]);setDraftConflict(false);if(projectId)localStorage.removeItem(structureDraftKey(projectId,designType));}}>放弃本地参数，载入当前版本</button>}</div>}
@@ -258,10 +290,10 @@ export function StructureWorkspace({ projectId, active, board, modules, designTy
           {invalidParameters && <p className="structure-caption" role="alert">请填写有效数值，并保持在各参数的允许范围内。</p>}{(result?.design_state || result?.designSpec) && <button className="primary" disabled={!!busy || result.status === 'needs_input' || invalidPlacements || invalidParameters} onClick={() => void act(result.status === 'confirmation' ? 'build' : 'parameters')}>{result.builtinTemplate ? (dimensionsDirty ? '应用参数，生成新版本' : '重新生成当前模型') : result.status === 'confirmation' ? (laser ? '应用参数并生成图纸' : '应用参数并生成模型') : '应用参数，重新生成'}</button>}
         </details>
           {laser && (result?.designSpec?.roundedBox || result?.designSpec?.fingerBox) && <>
-            <HardwarePlacementEditor hardware={projectHardware} profiles={catalog?.profiles??[]} placements={hardwarePlacements} onChange={setHardwarePlacements} onDetail={onHardwareDetail} spec={result.designSpec} disabled={!!busy || catalogLoading}/>
+            <HardwarePlacementEditor hardware={projectHardware} instances={hardwareInstances} profiles={catalog?.profiles??[]} placements={hardwarePlacements} onChange={setHardwarePlacements} onDetail={onHardwareDetail} spec={result.designSpec} disabled={!!busy || catalogLoading || !controllersReady}/>
             <button className="primary" disabled={!!busy || result.status==='needs_input' || invalidPlacements || Object.values(params).some(v=>!Number.isFinite(v))} onClick={()=>void act(result.status==='confirmation'?'build':'parameters')}>应用安装布局，生成图纸</button>
           </>}
-          {!!result?.hardwareInstallations?.length && <details className="hardware-installation-report"><summary>{result.status==='needs_input'?'上一版安装清单':'本版安装清单'} · {result.hardwareInstallations.length} 个器件</summary>{result.hardwareInstallations.map(i=><article key={i.placement.componentId}><strong>{i.name}</strong><p>{panelNames[i.placement.panel]} · 中心 {i.placement.x}, {i.placement.y} mm · {i.placement.rotation}° · {i.cutCount} 个切口</p><p>{i.note}</p><details><summary>所用尺寸来源记录</summary><small>资料修订：{i.placement.skillRevision}</small><pre>{String(i.source.documentation??'').split('<!-- web-mechanical-notes -->')[1]?.split('<!-- /web-mechanical-notes -->')[0] ?? '原模块机械档案；完整记录见导出安装清单。'}</pre></details></article>)}</details>}
+          {!!result?.hardwareInstallations?.length && <details className="hardware-installation-report"><summary>{result.status==='needs_input'?'上一版安装清单':'本版安装清单'} · {result.hardwareInstallations.length} 个器件</summary>{result.hardwareInstallations.map(i=><article key={`${i.placement.controllerId??'project'}:${i.placement.componentId}`}><strong>{typeof i.source.controllerName==='string'?`${i.source.controllerName} · `:''}{i.name}</strong><p>{panelNames[i.placement.panel]} · 中心 {i.placement.x}, {i.placement.y} mm · {i.placement.rotation}° · {i.cutCount} 个切口</p><p>{i.note}</p><details><summary>所用尺寸来源记录</summary><small>资料修订：{i.placement.skillRevision}</small><pre>{String(i.source.documentation??'').split('<!-- web-mechanical-notes -->')[1]?.split('<!-- /web-mechanical-notes -->')[0] ?? '原模块机械档案；完整记录见导出安装清单。'}</pre></details></article>)}</details>}
         <details><summary><CheckCheck size={15} />检查结果 · {result?.checks?.length ?? 0}</summary>{result?.checks?.map((c, i) => <p className={`structure-check check-${c.status}`} key={i}><strong>{c.status === 'pass' ? '通过' : c.status === 'fail' ? '未通过' : c.status === 'pending' ? '待验证' : '提示'}</strong>{c.message}</p>)}<p className="structure-caption">电脑检查通过后，仍需试装并检查尺寸、活动空间和强度。</p></details><details className="classroom-details"><summary>高级：建模过程</summary><button disabled={!result?.cadquery_code} onClick={() => setCode(true)}><FileCode2 size={15} />查看建模代码</button></details></section>
       </section>
     </main>

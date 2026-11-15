@@ -6,14 +6,17 @@ export interface ProjectDefinition {
 export interface DefinitionVersion extends ProjectDefinition { revision: number; createdAt: string; confirmed: boolean }
 export interface ProjectConditions { firmware: string; wiring: string; power: string; assembly: string }
 export type TestStage = 'module' | 'system' | 'assembly';
-export interface ProjectTestCase { id: string; revision: number; title: string; stage: TestStage; componentId: string; procedure: string; expected: string; active: boolean }
+export interface ProjectTestCase { id: string; revision: number; title: string; stage: TestStage; componentId: string; controllerIds?: string[]; definitionRevision?: number | null; procedure: string; expected: string; active: boolean }
+export type TestSuggestion = Omit<ProjectTestCase, 'id' | 'revision' | 'active'> & { id?: string };
 export interface CodeReference { mode: 'micropython' | 'lua' | 'idea' | 'claw' | 'none'; revision: number | null; checksum: string; name: string }
 export interface StructureReference { revision: number; checksum: string; name: string }
 export interface ProjectBaseline {
+  controllers?: ControllerBaseline[] | null;
   boardId: string; boardName: string; modules: { id: string; name: string; revision: string }[];
   definitionRevision: number | null; code: CodeReference; structure: StructureReference | null;
   conditions: ProjectConditions; fingerprint: string;
 }
+export interface ControllerBaseline { id: string; name: string; boardId: string; modules: ProjectBaseline['modules']; code: CodeReference }
 export interface TestObservation {
   caseId: string; result: 'passed' | 'failed' | 'blocked'; observer: string;
   prediction: string; observed: string; explanation: string; changes: string;
@@ -32,7 +35,7 @@ export type LearningDocumentKind = 'teaching' | 'poster' | 'application' | 'log'
 export interface LearningDocument { id: string; revision: number; kind: LearningDocumentKind; title: string; content: string; createdAt: string; source: 'blank' | 'project'; sourceFingerprint: string | null; generated: boolean }
 export interface DocumentMessage { id:string; role:'user'|'assistant'; scope:'teaching'|'archive'; source:'blank'|'project'; content:string; createdAt:string }
 export interface ProjectReview { conclusion: string; gaps: string[]; nextSteps: string[]; decisions: string[]; comparison: string; source?: ReviewSource | null }
-export interface WorkflowProposal { summary: string; question: { text: string; options: string[] } | null; definition: ProjectDefinition | null; tests: Omit<ProjectTestCase, 'id' | 'revision' | 'active'>[]; review?: ProjectReview | null }
+export interface WorkflowProposal { summary: string; question: { text: string; options: string[] } | null; definition: ProjectDefinition | null; tests: TestSuggestion[]; testsMode?: 'merge' | 'replace'; review?: ProjectReview | null; references?: import('./platform').ReferenceCitation[]; referenceNotice?: string }
 export interface WorkflowMessage { id: string; role: 'user' | 'assistant'; content: string; createdAt: string }
 export type ChangeRole = 'engineer' | 'structure';
 export interface ChangeTask {
@@ -55,6 +58,7 @@ export interface WorkflowCheckpoint {
   changes?: RequirementChange[];
 }
 export interface WorkflowView {
+  caseBatch?: { added: number; updated: number; retired: number; unchanged: number };
   checkpoint: WorkflowCheckpoint; current: ProjectBaseline; codeVersions: CodeReference[];
   structureVersions: StructureReference[];
   caseStates: { id: string; status: 'unrecorded' | 'passed' | 'failed' | 'blocked' | 'stale'; reasons: string[]; runId: string | null }[];

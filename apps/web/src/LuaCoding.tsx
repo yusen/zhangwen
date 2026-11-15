@@ -1,7 +1,8 @@
-import { useEffect, useRef, useState, type ReactNode } from 'react';
+import { useEffect, useId, useRef, useState, type ReactNode } from 'react';
 import { ArrowUp, Save, Sparkles, Wifi, Upload, FileCode2, MoreHorizontal, Terminal, Settings, Eye, ZoomIn, ZoomOut, Maximize, Minimize } from 'lucide-react';
 import type { ChatMessage, LuaCodingCheckpoint, LuaManifest, LuaVersion, LuaWifiPlan, LuaWifiStatus, Project, ReferenceCitation, RecoverLuaRun } from '../../../packages/contracts/src/platform';
-import { api, bootstrap, chat } from './api';
+import { api as baseApi, bootstrap, chat } from './api';
+import type { MosaicoScope } from './controllerApi';
 import { replyCode, replyView, streamText } from './assistantReply';
 import type { MosaicoController } from './MosaicoTools';
 import { Dialog } from './Dialog';
@@ -16,11 +17,15 @@ const errorText = (e: unknown) => e instanceof Error ? e.message : String(e);
 const requestId = () => crypto.randomUUID().replaceAll('-', '');
 const draftKey = (id: string) => 'zhangwen-lua-draft-' + id;
 
-export function useLuaCoding({ active, project, disabled, device, onSaved, onBusy, prepareProject, onProjectPrepared }: {
+export function useLuaCoding({ active, project, disabled, device, onSaved, onBusy, prepareProject, onProjectPrepared, controllerScope }: {
   active: boolean; project: Project | null; unsaved: boolean; disabled: boolean; device: MosaicoController;
   onSaved: (id: string) => Promise<void>; onBusy: (busy: boolean) => void;
   prepareProject: () => Promise<Project>; onProjectPrepared: (project: Project) => void;
+  controllerScope?: MosaicoScope;
 }) {
+  const api = controllerScope?.client ?? baseApi;
+  const generateChat = controllerScope?.generateChat ?? chat;
+  const localKey = (id:string) => draftKey(controllerScope?.key ?? id);
   const [state, setState] = useState(empty), [draft, setDraft] = useState(''), [prompt, setPrompt] = useState('');
   const [messages, setMessages] = useState<ChatMessage[]>([]), [busy, setBusy] = useState(''), [error, setError] = useState(''), [notice, setNotice] = useState('');
   const [preview, setPreview] = useState<LuaManifest | null>(null), [stream, setStream] = useState('');
@@ -61,7 +66,7 @@ export function useLuaCoding({ active, project, disabled, device, onSaved, onBus
       setState(value); setMessages(project?.messages.filter(m => m.intent === 'lua-coding') ?? []);
       setOutput(value.runs.at(-1)?.output ?? '');
       let local: { draft?: string; prompt?: string; candidate?: typeof codeCandidate; showingCandidate?: boolean; sourceRevision?: number } = {};
-      try { local = JSON.parse(localStorage.getItem(draftKey(pid)) ?? '{}') as typeof local; } catch { /* invalid local draft */ }
+      try { local = JSON.parse(localStorage.getItem(localKey(pid)) ?? '{}') as typeof local; } catch { /* invalid local draft */ }
       setDraft(typeof local.draft === 'string' ? local.draft : value.versions.find(v => v.revision === value.accepted)?.code ?? '');
       setPrompt(typeof local.prompt === 'string' ? local.prompt : '');
       if (local.candidate && typeof local.candidate.code === 'string' && Number.isInteger(local.candidate.revision)
@@ -71,7 +76,7 @@ export function useLuaCoding({ active, project, disabled, device, onSaved, onBus
     return () => { live = false; if (!adopting.current || adopting.current !== current.current) abort.current?.abort(); };
   }, [pid]);
   useEffect(() => {
-    if (pid && loaded) try { localStorage.setItem(draftKey(pid), JSON.stringify({ draft, prompt, candidate: codeCandidate, showingCandidate, sourceRevision: draftSourceRevision })); }
+    if (pid && loaded) try { localStorage.setItem(localKey(pid), JSON.stringify({ draft, prompt, candidate: codeCandidate, showingCandidate, sourceRevision: draftSourceRevision })); }
     catch { setError('浏览器草稿无法保存，请保存代码或复制保留当前Lua。'); }
   }, [pid, loaded, draft, prompt, codeCandidate, showingCandidate, draftSourceRevision]);
   useEffect(() => { setWifi(null); setWifiPlan(null); setPreview(null); setNotice(''); setError(''); }, [device.state.connectionId]);
@@ -163,7 +168,7 @@ export function useLuaCoding({ active, project, disabled, device, onSaved, onBus
       setBusy('掌问正在生成 Lua');
       const controller = new AbortController(); abort.current = controller; setStream(''); setSubmittedSources(null);
       try {
-        const result = await chat(id, { message: text, code: base, boardId: prepared.boardId, componentIds: prepared.componentIds, intent: 'lua-coding' }, controller.signal,
+        const result = await generateChat(id, { message: text, code: base, boardId: prepared.boardId, componentIds: prepared.componentIds, intent: 'lua-coding' }, controller.signal,
           event => { if (current.current !== id) return; if (event.type === 'delta') setStream(v => v + event.content);
             if (event.type === 'references') setSubmittedSources({references:event.references,notice:event.notice}); });
         if (current.current === id) {
@@ -290,6 +295,7 @@ export function useLuaCoding({ active, project, disabled, device, onSaved, onBus
 
 type LuaController = ReturnType<typeof useLuaCoding>;
 export function LuaConversation({ lua, mobileTab, onSettings, onSource, picker }: { lua: LuaController; mobileTab: string; onSettings: () => void; onSource: () => void; picker?: ReactNode }) {
+  const promptId=useId();
   return <section className={`ai-panel panel native-chat-panel mobile-${mobileTab === 'ai' ? 'show' : 'hide'}`} aria-label="掌问Lua编程对话">
     <div className="panel-head"><h2><Sparkles size={18}/>掌问 · 编程助手</h2><button className="api-settings-entry" onClick={onSettings} disabled={!!lua.busy}>AI 设置</button></div>
     {picker ?? <details className="lua-source"><summary>编程方式 · 掌问模型</summary><label>编程来源<select aria-label="编程来源" value="local" disabled={!!lua.busy} onChange={onSource}><option value="local">掌问模型生成 Lua（推荐）</option><option value="device">设备原生 Claw</option></select></label></details>}
@@ -301,9 +307,10 @@ export function LuaConversation({ lua, mobileTab, onSettings, onSource, picker }
     </div>
     {lua.error && <p className="chat-error" role="alert">{lua.error}</p>}{lua.notice && <p className="chat-hint" role="status">{lua.notice}</p>}
     {!lua.ready && <p className="chat-hint">直接描述需求即可生成；主控和模块会自动记录，无需先载入示例或连接设备。</p>}
-    <form className="chat-form" onSubmit={e => { e.preventDefault(); void lua.generate(); }}>
-      <label className="sr-only" htmlFor="lua-prompt">Lua编程需求</label><textarea id="lua-prompt" value={lua.prompt} maxLength={4000} disabled={lua.generateLocked} placeholder="描述想让 Mosaico 完成的一个小任务…" onChange={e => lua.setPrompt(e.target.value)} onKeyDown={e => { if ((e.ctrlKey || e.metaKey) && e.key === 'Enter' && !e.nativeEvent.isComposing) { e.preventDefault(); void lua.generate(); } }}/>
-      <div><span>{lua.busy || '生成后自动保存 · 自己修改后请点保存'}</span>{lua.busy.includes('生成') && <button type="button" onClick={lua.cancel}>取消生成</button>}<button className="primary icon-button" aria-label="使用掌问模型生成Lua" disabled={lua.generateLocked || !lua.prompt.trim()}><ArrowUp size={20}/></button></div>
+    {lua.busy.includes('生成') && <p className="chat-hint" role="status">{lua.busy}<button type="button" onClick={lua.cancel}>取消生成</button></p>}
+    <form className="chat-form inline-chat-form" onSubmit={e => { e.preventDefault(); void lua.generate(); }}>
+      <label className="sr-only" htmlFor={promptId}>Lua编程需求</label><textarea id={promptId} value={lua.prompt} maxLength={4000} disabled={lua.generateLocked} placeholder="描述想让 Mosaico 完成的一个小任务…" onChange={e => lua.setPrompt(e.target.value)} onKeyDown={e => { if ((e.ctrlKey || e.metaKey) && e.key === 'Enter' && !e.nativeEvent.isComposing) { e.preventDefault(); void lua.generate(); } }}/>
+      <button className="primary icon-button" aria-label="使用掌问模型生成Lua" disabled={lua.generateLocked || !lua.prompt.trim()}><ArrowUp size={20}/></button>
     </form>
   </section>;
 }

@@ -30,20 +30,29 @@ import { MICROBIT_BOARD } from './controllerDiagnostics';
 import { DeviceFilesDialog } from './DeviceFilesDialog';
 import { EngineeringActions, EngineeringChatHeader, EngineeringComposer, EngineeringConnection, EngineeringFilebar, EngineeringModuleList } from './EngineeringUi';
 
+export interface ControllerContext {
+  id:string; name:string; boardId:string; componentIds:string[]; hardwareDirty:boolean;
+  dirty:boolean; locked:boolean; status:string; prompt:string;
+  source?: 'local' | 'device';
+}
+export interface ControllerPrompt {
+  id:string; read:()=>string; write:(value:string)=>void;
+}
 export interface ControllerWorkspaceProps {
-  folder:FolderBinding|null; projectId: string; channel: DevelopmentChannel; hardware: HardwareSummary[]; active: boolean; mobileTab: string;
-  actionsHost: HTMLElement|null; connectionHost: HTMLElement|null; modulesHost: HTMLElement|null;
+  folder:FolderBinding|null; projectId: string; channel: DevelopmentChannel; hardware: HardwareSummary[]; active: boolean; selected:boolean; mobileTab: string;
+  actionsHost: HTMLElement|null; connectionHost: HTMLElement|null; modulesHost: HTMLElement|null; dialogsHost:HTMLElement|null;
   configured: boolean; onSettings: () => void; fullscreen: boolean; onFullscreen: (value: boolean) => void; onMobileTab: (value: string) => void;
   onHardwareSaved: (value: HardwareDetail) => void;
   saveSelected: MutableRefObject<(() => Promise<void>) | null>; manageSelected: MutableRefObject<(() => void) | null>;
   programsSelected: MutableRefObject<(() => void) | null>;
-  onState: (value: {id:string;dirty:boolean;locked:boolean;status:string}) => void;
+  promptSelected: MutableRefObject<ControllerPrompt|null>;
+  onState: (value: ControllerContext) => void;
   onChange: (value: DevelopmentChannel) => void; onSaved: (pid: string) => Promise<void>; onActivity: (id: string,value: boolean) => void;
 }
 const errorText=(error:unknown)=>error instanceof Error?error.message:String(error);
 function download(name:string,value:string|Uint8Array){const url=URL.createObjectURL(new Blob([typeof value==='string'?value:new Uint8Array(value).buffer]));const a=document.createElement('a');a.href=url;a.download=name;a.click();setTimeout(()=>URL.revokeObjectURL(url),1000);}
 
-export function ControllerWorkspace({folder,projectId,channel,hardware,active,mobileTab,actionsHost,connectionHost,modulesHost,configured,onSettings,fullscreen,onFullscreen,onMobileTab,onHardwareSaved,saveSelected,manageSelected,programsSelected,onState,onChange,onSaved,onActivity}:ControllerWorkspaceProps){
+export function ControllerWorkspace({folder,projectId,channel,hardware,active,selected,mobileTab,actionsHost,connectionHost,modulesHost,dialogsHost,configured,onSettings,fullscreen,onFullscreen,onMobileTab,onHardwareSaved,saveSelected,manageSelected,programsSelected,promptSelected,onState,onChange,onSaved,onActivity}:ControllerWorkspaceProps){
   const key=`zhangwen-channel-draft:${projectId}:${channel.id}`;
   const saved=channel.versions.at(-1)!;
   const restored=useRef((()=>{try{const value=JSON.parse(localStorage.getItem(key)??'null');if(value&&typeof value.code==='string'&&typeof value.name==='string'&&typeof value.boardId==='string'&&Number.isSafeInteger(value.baseRevision)&&Array.isArray(value.componentIds)&&value.componentIds.every((id:unknown)=>typeof id==='string'))return value as {code:string;name:string;boardId:string;componentIds:string[];baseRevision:number};}catch{/* no draft */}return null;})()).current;
@@ -75,7 +84,17 @@ export function ControllerWorkspace({folder,projectId,channel,hardware,active,mo
   useEffect(()=>{try{if(prompt)localStorage.setItem(promptKey,prompt);else localStorage.removeItem(promptKey);}catch{setError('需求草稿未能保存在浏览器，请复制保留。');}},[promptKey,prompt]);
   useEffect(()=>{try{localStorage.setItem(key+':integration',JSON.stringify({boardId,componentIds:components,targetId:testTarget}));}catch{/* saved messages retain integration metadata */}},[key,boardId,components,testTarget]);
   useEffect(()=>{callbacks.current.onActivity(channel.id,locked||state!=='disconnected');},[channel.id,locked,state]);
-  useEffect(()=>{if(active)callbacks.current.onState({id:channel.id,dirty,locked,status:error||busy||status});},[active,channel.id,dirty,locked,status,error,busy]);
+  useEffect(()=>{if(selected)callbacks.current.onState({id:channel.id,name,boardId,componentIds:components,hardwareDirty,dirty,locked,status:error||busy||status,prompt});},[selected,channel.id,name,boardId,components,hardwareDirty,dirty,locked,status,error,busy,prompt]);
+  useEffect(()=>{
+    if(!selected)return;
+    const target={id:channel.id,read:()=>prompt,write:setPrompt};promptSelected.current=target;
+    return()=>{if(promptSelected.current===target)promptSelected.current=null;};
+  },[selected,channel.id,prompt,promptSelected]);
+  useEffect(()=>{
+    if(!selected)return;
+    const programs=()=>setFiles('programs');programsSelected.current=programs;
+    return()=>{if(programsSelected.current===programs)programsSelected.current=null;};
+  },[selected,programsSelected]);
   useEffect(()=>()=>{generation.current?.abort();void device.current?.disconnect();callbacks.current.onActivity(channel.id,false);},[channel.id]);
   useEffect(()=>{const warn=(event:BeforeUnloadEvent)=>{if(device.current&&device.current.state!=='disconnected'){event.preventDefault();event.returnValue='';}};window.addEventListener('beforeunload',warn);return()=>window.removeEventListener('beforeunload',warn);},[]);
   useEffect(()=>{if(active)messages.current?.scrollTo({top:messages.current.scrollHeight});},[active,channel.messages.length,generating]);
@@ -89,10 +108,11 @@ export function ControllerWorkspace({folder,projectId,channel,hardware,active,mo
   useEffect(()=>{
     if(!active)return;
     const handler=async()=>{if(locked)return;const dialog=document.activeElement?.closest('dialog');if(dialog&&!dialog.classList.contains('project-hardware-dialog'))return;await action('保存项目',async()=>{if(managing){if(hardwareDirty)await save(code,true);}else await save();});};
-    const manage=()=>setManaging(true),programs=()=>setFiles('programs');saveSelected.current=handler;manageSelected.current=manage;programsSelected.current=programs;
+    saveSelected.current=handler;
     const shortcut=(event:KeyboardEvent)=>{if((event.ctrlKey||event.metaKey)&&event.key.toLowerCase()==='s'){event.preventDefault();void handler();}};window.addEventListener('keydown',shortcut);
-    return()=>{window.removeEventListener('keydown',shortcut);if(saveSelected.current===handler)saveSelected.current=null;if(manageSelected.current===manage)manageSelected.current=null;if(programsSelected.current===programs)programsSelected.current=null;};
+    return()=>{window.removeEventListener('keydown',shortcut);if(saveSelected.current===handler)saveSelected.current=null;};
   });
+  useEffect(()=>{if(!selected)return;const manage=()=>setManaging(true);manageSelected.current=manage;return()=>{if(manageSelected.current===manage)manageSelected.current=null;};},[selected,manageSelected]);
   const generate=async(preset?:string,target?:string)=>{
     const text=preset??prompt;if(locked||conflict||!text.trim())return;target=target??(testTarget&&components.includes(testTarget)?testTarget:undefined);
     setGenerating(true);setError('');const controller=new AbortController();generation.current=controller;
@@ -161,8 +181,9 @@ export function ControllerWorkspace({folder,projectId,channel,hardware,active,mo
       {check&&<section className="check-results" aria-label="检查结果"><div><strong>{check.valid?'静态检查完成':'检查发现问题'}</strong><button disabled={locked} onClick={checkCode}>重新检查</button><button className="icon-button" aria-label="关闭检查" onClick={()=>setCheck(null)}><X size={16}/></button></div>{check.diagnostics.some(item=>item.repair==='k10-screen')&&<button disabled={locked} onClick={()=>repair('k10-screen')}>预览屏幕修复</button>}{check.diagnostics.some(item=>item.repair==='mpython-pins')&&<button disabled={locked} onClick={()=>repair('mpython-pins')}>按P号预览修复</button>}{check.diagnostics.map((item,index)=><p className={`diagnostic ${item.severity.toLowerCase()}`} key={index}>{item.severity==='PASS'?'通过 · ':item.severity==='FAIL'?'错误 · ':'提示 · '}{item.line?`第 ${item.line} 行 · `:''}{item.message}</p>)}</section>}
       <section className="terminal-panel" hidden={!terminalOpen}><div className="terminal-head"><h3><Terminal size={17}/>REPL</h3><span>{running?'正在执行 · 发送会先中断':state==='connected'?'设备已连接':attention?'连接需核对':'未连接'}</span><button disabled={locked} onClick={()=>setLog('')}>清空</button><button onClick={()=>void action('导出设备备份',async()=>{const value=await latestBackup({projectId,channelId:channel.id});if(!value)throw new Error('尚无设备备份。');if(value.bytes)download('main-before-upload.py',value.bytes);else setStatus('上次上传前设备不存在 main.py，无需恢复旧文件。');})}>备份</button><button aria-label="收起终端" onClick={()=>setTerminalOpen(false)}><X size={16}/></button></div><pre className="serial-log" aria-label="串口输出">{log}</pre><details className="terminal-commands"><summary>高级：发送设备命令</summary><form className="repl-form" onSubmit={event=>{event.preventDefault();const command=repl;if(locked||!command.trim()||attention)return;void(async()=>{if(state==='disconnected')await connect();if(!device.current||!['connected','running'].includes(device.current.state))return;await action('发送设备命令',async()=>{const target=device.current!;if(target.state==='running')await target.stop();await target.repl(command);setReceipt(null);setRunSubmitted(false);setRepl('');});})();}}><span aria-hidden="true">&gt;&gt;&gt;</span><input aria-label="REPL 命令" value={repl} maxLength={4000} onChange={event=>setRepl(event.target.value)} placeholder={running?'输入命令，发送时先中断当前程序':state==='connected'?'输入命令，按 Enter 发送':'输入命令，发送时选择并连接设备'} onKeyDown={event=>{if(event.ctrlKey&&event.key.toLowerCase()==='c'&&event.currentTarget.selectionStart===event.currentTarget.selectionEnd&&running&&!locked){event.preventDefault();void action('中断程序',async()=>{await device.current?.stop();});}}} disabled={locked}/><button disabled={locked||!repl.trim()||attention} aria-label="发送 REPL 命令"><ArrowUp size={17}/></button></form></details></section>
     </section>
+    {dialogsHost&&createPortal(<>
     {managing&&<ProjectHardwareDialog controllerName={name} onControllerName={setName} boardId={boardId} board={board} componentIds={components} hardware={hardware} dirty={hardwareDirty} savedProject blocked={locked} error={error} busy={busy} onClose={()=>{if(!locked)setManaging(false);}} onChooseBoard={()=>{if(state!=='disconnected'){setError('请先断开当前设备，再更换主控型号。');return;}setChoosingBoard(true);}} onAdd={()=>{setPending([]);setSearch('');setPicking(true);}} onRemove={id=>setComponents(previous=>previous.filter(value=>value!==id))} onDetail={openDetail} onSave={()=>void action('保存器件选择',async()=>{await save(code,true);})}/>}
-    {choosingBoard&&<BoardPicker boards={hardware.filter(item=>item.programmingMode!=='chat-coding')} selected={boardId} onClose={()=>setChoosingBoard(false)} onSelect={item=>{setBoardId(item.componentId);setReceipt(null);setRunSubmitted(false);setTestTarget(null);setChoosingBoard(false);}} onHelp={()=>{setChoosingBoard(false);setStatus('请按实际主控选择型号；原代码和历史继续保留，须重新核对兼容性。');}}/>}
+    {choosingBoard&&<BoardPicker boards={hardware.filter(item=>item.category==='MCU')} selected={boardId} onClose={()=>setChoosingBoard(false)} onSelect={item=>{setBoardId(item.componentId);setReceipt(null);setRunSubmitted(false);setTestTarget(null);setChoosingBoard(false);}} onHelp={()=>{setChoosingBoard(false);setStatus('请按实际主控选择型号；原代码和历史继续保留，须重新核对兼容性。');}}/>}
     {picking&&<Dialog title="添加模块" className="sensor-picker-dialog" onClose={()=>setPicking(false)} headerActions={<><div className="catalog-search picker-search"><Search size={17}/><input data-dialog-autofocus aria-label="搜索硬件" placeholder="搜索名称、型号或功能…" value={search} onChange={event=>setSearch(event.target.value)}/></div><ModuleFilters items={modules} brand={brand} direction={direction} type={moduleType} onBrand={setBrand} onType={(value,type)=>{setDirection(value);setModuleType(type);}} onClear={()=>{setSearch('');setBrand('all');setDirection('all');setModuleType('');}}/></>}><div className="sensor-picker-context"><strong>多品牌模块库</strong><span>当前主控：{board?.displayName}</span></div><div className="reference-actions"><button className="primary" onClick={()=>{setPicking(false);setPersonal(true);}}>新建我的模块</button><label><input type="checkbox" checked={onlyPersonal} onChange={event=>setOnlyPersonal(event.target.checked)}/>只看我的模块</label></div><p className="catalog-result-count">找到 {available.length} 个模块 · 可跨品牌选择，接线与驱动需单独核对</p><div className="sensor-picker-list module-grid">{available.map(item=><ModuleCard key={item.componentId} item={item} boardId={boardId} boards={hardware.filter(value=>value.category==='MCU')} added={components.includes(item.componentId)} checked={components.includes(item.componentId)||pending.includes(item.componentId)} disabled={locked||components.includes(item.componentId)||(!pending.includes(item.componentId)&&components.length+pending.length>=32)} onToggle={checked=>setPending(previous=>checked?[...previous,item.componentId]:previous.filter(id=>id!==item.componentId))} onDetail={()=>openDetail(item)}/>)}</div><div className="sensor-picker-actions"><span>已选择 {pending.length} 个</span><button onClick={()=>setPicking(false)}>取消</button><button className="primary" aria-label="加入所选模块" disabled={!pending.length||locked} onClick={()=>{setComponents(previous=>[...new Set([...previous,...pending])]);setCheck(null);setReceipt(null);setTestTarget(null);setPicking(false);onMobileTab('ai');}}>加入 {pending.length} 个模块</button></div></Dialog>}
     {personal&&<PersonalModuleDialog boardId={boardId} boards={hardware.filter(item=>item.category==='MCU')} source="" onClose={()=>setPersonal(false)} onCreated={value=>{onHardwareSaved(value);setComponents(previous=>previous.length<32?[...previous,value.componentId]:previous);setPersonal(false);setDetail(value);}}/>}
     {detail&&<HardwareDetails detail={detail} board={board} boards={hardware.filter(item=>item.category==='MCU')} editExample={editExample} onSaved={value=>{setDetail(value);onHardwareSaved(value);setCheck(null);}} onClose={()=>setDetail(null)}/>}
@@ -172,5 +193,6 @@ export function ControllerWorkspace({folder,projectId,channel,hardware,active,mo
     {files&&<DeviceFilesDialog view={files} device={device.current} connected={state==='connected'} code={visibleCode} versions={versions} disabled={locked} onClose={()=>setFiles(null)} onLoad={loadCode} onDownload={download} onHistory={()=>{setFiles(null);setHistory(true);}} folder={folder} controller={{id:channel.id,name:channel.name,revision:channel.revision}} board={board} componentIds={components} programReceipt={currentReceipt?receipt:null} programRun={runSubmitted&&currentReceipt&&runAt?{projectId,revision:receipt!.revision,boardId,sha256:receipt!.sha256,submittedAt:runAt}:null} onChooseFolder={()=>setStatus('此主控随当前项目文件夹统一保存。')}/>}
     {history&&<Dialog title="保存的代码版本" onClose={()=>setHistory(false)}><p className="muted">选择版本载入草稿；再次保存创建新版本，历史保持。</p>{versions.slice().reverse().map(version=><article className="version-row" key={version.revision}><div><strong>V{version.revision} · MicroPython 程序</strong><small>{new Date(version.createdAt).toLocaleString()}</small></div><button onClick={()=>{loadCode(version.code);setHistory(false);}}>载入代码</button><button onClick={()=>download(`main-v${version.revision}.py`,version.code)}>导出</button></article>)}</Dialog>}
     {execution&&<Dialog title="本次执行结果" onClose={()=>setExecution(false)}><p>{dirty?'当前修改尚未上传校验。':'以下记录仅对应当前已保存版本。'}</p><p>{currentReceipt?`V${receipt!.revision} · 上传回读一致`:'当前版本尚无有效上传回读记录'}</p><p>{runSubmitted&&currentReceipt?'运行命令已提交':'尚无当前版本的运行提交记录'} · 实物结果待观察</p><label>实际观察<select aria-label="通道实际观察" value={observed} disabled={!runSubmitted||!currentReceipt} onChange={event=>setObserved(event.target.value)}><option value="unconfirmed">待观察</option><option value="passed">符合预期</option><option value="failed">存在异常</option></select></label><details><summary>备份与恢复</summary><p>备份按主控隔离；载入只恢复为草稿，不会操作设备。</p><button disabled={locked} onClick={()=>void action('读取备份',async()=>{const value=await latestBackup({projectId,channelId:channel.id});if(!value?.bytes)throw new Error('此主控暂无可恢复的旧 main.py。');loadCode(new TextDecoder('utf-8',{fatal:true}).decode(value.bytes));setExecution(false);setStatus('已载入上传前备份；尚未保存或上传。');})}>将此通道备份载入编辑器</button></details></Dialog>}
+    </>,dialogsHost)}
   </>;
 }

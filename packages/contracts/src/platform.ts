@@ -90,6 +90,7 @@ export interface CreatePersonalModule {
   boardId: string; code: string; notes: string;
 }
 export interface ProjectReference {
+  imageDescription?: string;
   id: string; version: number; name: string; text: string; original: string;
   encoding: 'text' | 'base64'; mode: 'auto' | 'pin' | 'off'; checksum: string;
   archived?: boolean;

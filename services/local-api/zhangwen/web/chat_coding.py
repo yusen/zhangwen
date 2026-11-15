@@ -12,6 +12,7 @@ import ipaddress
 import json
 import re
 import uuid
+from contextlib import nullcontext
 from datetime import UTC, datetime
 from urllib.parse import urlsplit
 
@@ -104,6 +105,9 @@ def now():
 
 def load_checkpoint(repo, project_id):
     repo.get(project_id)
+    if getattr(repo, 'controller_id', None):
+        state = repo.mosaico_state(project_id)
+        return state.clawRevision, state.claw
     with repo.connect() as conn:
         row = conn.execute('''SELECT v.version, v.preview_json FROM artifacts a
             JOIN artifact_versions v ON v.id=a.current_version_id WHERE a.id=? AND a.project_id=?''',
@@ -115,6 +119,9 @@ def load_checkpoint(repo, project_id):
 
 def insert_checkpoint(repo, conn, project_id, checkpoint, revision=1):
     """Shared by runtime commits and the existing portable import transaction."""
+    if getattr(repo, 'controller_id', None):
+        repo.write_mosaico(conn, project_id, claw=checkpoint.model_dump(), clawRevision=revision)
+        return
     content = checkpoint.model_dump_json(exclude_none=True)
     source_id = uuid.uuid4().hex
     aid = f'zhangwen_chat_coding_{project_id}'
@@ -131,6 +138,9 @@ def insert_checkpoint(repo, conn, project_id, checkpoint, revision=1):
 
 
 def insert_conversation_records(repo, conn, project_id, records):
+    if getattr(repo, 'controller_id', None):
+        # Scoped checkpoint already contains these private device messages.
+        return
     conversation_id = conn.execute('SELECT id FROM conversations WHERE project_id=? ORDER BY created_at LIMIT 1', (project_id,)).fetchone()[0]
     for record in records:
         # Original Conversation; separate channel from local AI, not executable tools.
@@ -190,6 +200,7 @@ class ChatCodingService:
         self.readers = {}
         self.connection_errors = {}
         self.attachment_check = None
+        self.endpoint_guard = lambda base: nullcontext()
 
     def project(self, pid):
         project = self.repo.get(pid)
@@ -210,7 +221,7 @@ class ChatCodingService:
     async def connect(self, pid, endpoint):
         self.project(pid)
         base = endpoint_url(endpoint)
-        async with self.connection_lock, self.lock(pid):
+        async with self.endpoint_guard(base), self.connection_lock, self.lock(pid):
             if any(c['endpoint'] == base for p,c in self.connections.items() if p != pid):
                 raise HTTPException(409, '此设备地址已被另一个掌问项目连接，请先在该项目断开。')
             if pid in self.connections:

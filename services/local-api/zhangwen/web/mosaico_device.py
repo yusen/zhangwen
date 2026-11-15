@@ -4,6 +4,7 @@ Wire reference: esp-claw f95614dc and the user's native frontend. No arbitrary
 URL proxy, shell, auto-retry, firmware endpoint, recursive or root deletion.
 """
 from __future__ import annotations
+from contextlib import nullcontext
 
 import asyncio
 import base64
@@ -168,6 +169,7 @@ class MosaicoService:
         self.lock=asyncio.Lock();self.operations={};self.logs=deque(maxlen=1000);self.log_seq=0
         self.log_channel=None;self.log_reader=None;self.log_error='';self.logs_dropped=0
         self.fingerprints={};self.attachments={}
+        self.endpoint_guard = lambda base: nullcontext()
 
     def state(self):
         return {'connected':bool(self.endpoint),**({'endpoint':self.endpoint,'connectionId':self.connection_id,'status':self.basic} if self.endpoint else {}),**({'unknownWrite':self.unknown} if self.unknown else {})}
@@ -186,7 +188,7 @@ class MosaicoService:
 
     async def connect(self,endpoint):
         base=endpoint_url(endpoint)
-        async with self.lock:
+        async with self.endpoint_guard(base), self.lock:
             if self.endpoint:raise HTTPException(409,'请先断开当前设备再连接。')
             basic=(await self.client.request(base,'GET','/api/status')).json()
             web=(await self.client.request(base,'GET','/api/webim/status')).json()
@@ -270,6 +272,16 @@ class MosaicoService:
 
     def backup(self,pid,path,content,operation):
         self.project(pid)
+        if getattr(self.repo, 'controller_id', None):
+            bid = 'artifact_version_'+uuid.uuid4().hex
+            value = dict(id=bid,path=path,exists=content is not None,
+                content=base64.b64encode(content or b'').decode(),
+                sha256=digest(content) if content is not None else None,
+                operation=operation,createdAt=datetime.now(UTC).isoformat())
+            with self.repo.lock,self.repo.connect() as conn:
+                state = self.repo.mosaico_state(pid)
+                self.repo.write_mosaico(conn,pid,backups=[*[v.model_dump() for v in state.backups],value])
+            return bid
         # Original Artifact version history, outside project upload manifests and AI.
         aid='zhangwen_mosaico_backups_'+pid;bid=uuid.uuid4().hex;vid='artifact_version_'+bid
         stamp=datetime.now(UTC).isoformat()
@@ -288,6 +300,8 @@ class MosaicoService:
 
     def backups(self,pid):
         self.project(pid)
+        if getattr(self.repo, 'controller_id', None):
+            return [v.model_dump() for v in reversed(self.repo.mosaico_state(pid).backups)]
         with self.repo.connect() as conn:
             rows=conn.execute("SELECT id,preview_json FROM artifact_versions WHERE project_id=? AND source_entity_type='zhangwen_mosaico_backup' ORDER BY created_at DESC LIMIT 100",(pid,)).fetchall()
         items=[];total=0
@@ -367,6 +381,7 @@ class MosaicoService:
             if raw is None or digest(raw)!=known[1]:raise HTTPException(409,'附件已改变，请重新上传并核对。')
 
     async def write_file(self,request,delete=False):
+        self.project(request.projectId)
         backup_id=None
         async def prepare():
             nonlocal backup_id

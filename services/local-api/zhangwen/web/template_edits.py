@@ -5,7 +5,7 @@ import math
 import re
 from typing import Annotated
 from pydantic import Field, model_validator
-from .design_specs import Strict, SolidPart, propose
+from .design_specs import Strict, SolidPart, propose, assembly_instructions
 from .endpoints import configured
 from .solid_text import TextOperation
 from .laser_text import outlines
@@ -308,7 +308,9 @@ async def propose_edit(message, previous, item, source, settings, conversation):
         '不得假称已生成、已装配或实物兼容。无法明确表达的改动用questions询问，不得用无关近似模型假装完成。'
         '默认先更新模型预览再让用户确认。外观尺寸、厚度或角度未给出时保留原案例数值，或按需求采用可逆初稿值，'
         '用assumptions说明数值与依据，不因缺这些尺寸要求用户先提供尺寸表。保留currentEdit中尚未核实的assumptions，明确解决后才移除。'
-        'conversation.projectHardware提供原模块机械档案与修订；未知孔位不能猜测，可先保留原案例参考件或预留空间并在assumptions说明待适配。'
+        'conversation.projectHardware提供全部主控与模块机械档案及修订，conversation.projectControllers标识独立实物。'
+        + assembly_instructions() +
+        '未知孔位不能猜测，可先保留原案例参考件或预留空间并在assumptions说明待适配。'
         '只有明确要求精确安装但缺必要资料，或无法表达核心改动时，questions最多问一个真正阻塞的问题。'
         'JSON Schema: ' + json.dumps(TemplateEditSpec.model_json_schema(), ensure_ascii=False))
     context = {'template': {key: item[key] for key in ['id', 'title', 'description', 'notes', 'parts']},

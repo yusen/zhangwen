@@ -19,7 +19,10 @@ export function makingStep(view: WorkflowView, selectedId = '') {
   };
   const priority = {stale:0, failed:1, blocked:2, unrecorded:3, passed:4};
   const next = active.find(item => item.id === selectedId) ?? [...active].sort((a,b) =>
-    (priority[stateOf(a.id)?.status ?? 'unrecorded']) - (priority[stateOf(b.id)?.status ?? 'unrecorded']))[0];
+    // Requirements tied to the current goal take precedence over superseded
+    // or legacy requirements. Within one goal prefer the newest actionable item.
+    Number(b.definitionRevision===view.current.definitionRevision)-Number(a.definitionRevision===view.current.definitionRevision) ||
+    (priority[stateOf(a.id)?.status ?? 'unrecorded']) - (priority[stateOf(b.id)?.status ?? 'unrecorded']) || active.indexOf(b)-active.indexOf(a))[0];
   if (next) return {
     title: next.title, steps: [next.procedure], expected: next.expected, test: next,
     status: stateOf(next.id)?.status ?? 'unrecorded', reasons: stateOf(next.id)?.reasons ?? [],

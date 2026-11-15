@@ -42,6 +42,52 @@
       "attribution": "Seeed Studio / XIAO ESP32S3 官方文档",
       "rights": "产品图片版权归 Seeed Studio；保留原图来源，不授予额外许可。",
       "retrievedAt": "2026-10-16"
+    },
+    {
+      "file": "esp-mosaico-v1.2.webp",
+      "componentId": "hw_espressif_mosaico",
+      "pageUrl": "https://docs.espressif.com/projects/esp-dev-kits/zh_CN/latest/esp32s31/esp-mosaico/user_guide.html",
+      "attribution": "Espressif Systems / ESP-Mosaico 官方硬件指南",
+      "variant": "ESP-Mosaico V1.2 整机",
+      "imageUrl": "https://docs.espressif.com/projects/esp-dev-kits/zh_CN/latest/esp32s31/_images/esp-mosaico-v1.2-isometric.png",
+      "originalSha256": "7b9005a7b65a1ef74b42cab2c1650b8ad8c3afa3bc9b3453d0ee64b2bc4a75c3",
+      "sha256": "808f795e0af3623dcf9ecb84396bb553d3ea08e65da5e61d014dfa4e7f424c3b",
+      "originalWidth": 586,
+      "originalHeight": 642,
+      "crop": [
+        0,
+        0,
+        586,
+        642
+      ],
+      "width": 584,
+      "height": 640,
+      "conversion": "仅裁切和等比缩小，WebP quality 94；未合成或重绘产品细节",
+      "rights": "产品图片版权归原权利人；用于主控识别，保留官方来源，不授予额外许可。",
+      "retrievedAt": "2026-11-15"
+    },
+    {
+      "file": "bbc-microbit-v2.webp",
+      "componentId": "hw_bbc_microbit",
+      "pageUrl": "https://microbit.org/new-microbit/",
+      "attribution": "Micro:bit Educational Foundation / microbit.org",
+      "variant": "BBC micro:bit V2 正面；V1 / V2 主控共用的识别配图",
+      "imageUrl": "https://cdn.sanity.io/images/ajwvhvgo/production/69cda3f409b82d272fd8cc2ad9e95d731dbe3865-1688x734.png",
+      "originalSha256": "bf05ed04b59c53aee12d822eabd7ceb3f768665782139928c7c74d9d33101aa3",
+      "sha256": "c183993a397155abec813bc2bebf55d654f995013d138c1ed448b8c95786b97a",
+      "originalWidth": 1688,
+      "originalHeight": 734,
+      "crop": [
+        28,
+        45,
+        828,
+        713
+      ],
+      "width": 640,
+      "height": 534,
+      "conversion": "仅裁切和等比缩小，WebP quality 94；未合成或重绘产品细节",
+      "rights": "产品图片版权归原权利人；用于主控识别，保留官方来源，不授予额外许可。",
+      "retrievedAt": "2026-11-15"
     }
   ]
 }

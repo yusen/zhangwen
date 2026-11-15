@@ -115,8 +115,14 @@ export function replyView(content: string): AssistantReply & { structured: boole
   if (!complete && text(data.summary, 240)) return { summary: data.summary,
     points: strings(data.points, 3, 240) ? data.points : [], question: replyQuestion(data.question),
     details: '', code: null, structured: false, formatIssue: true, original: content };
+  if(complete){
+    // Protocol/plan discussions may be complete JSON with no code envelope.
+    // Render the values as discussion, never promote them into executable code.
+    const lines=(value:unknown,depth=0):string=>Array.isArray(value)?value.map(v=>lines(v,depth+1)).join('\n'):value&&typeof value==='object'&&depth<6?Object.entries(value).filter(([k])=>k!=='code').map(([k,v])=>`${k}：${lines(v,depth+1)}`).join('\n'):String(value??'');
+    return {summary:text(complete.summary,240)?complete.summary:'方案与协议说明',points:[],question:replyQuestion(complete.question),details:lines(complete),code:replyCode(content),structured:false,formatIssue:false,original:content};
+  }
   // Preserve the full original text behind disclosure. Never infer missing facts.
-  const prose = content.replace(/```[\s\S]*?```/g, '').trim();
+  const prose = content.replace(/```(?:python|micropython|py)\s*\n[\s\S]*?```/g, '').replace(/```[^\n]*\n([\s\S]*?)```/g,'$1').trim();
   const paragraphs = prose.split(/\n\s*\n/).filter(Boolean);
   const first = paragraphs[0]?.trim() ?? '';
   const summary = first.length > 0 && first.length <= 240 ? first : '回复已就绪，展开查看完整说明。';

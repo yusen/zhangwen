@@ -201,6 +201,8 @@ def confirmed_api_context(text):
 
 def load(repo, pid):
     repo.get(pid)
+    if getattr(repo, 'controller_id', None):
+        return repo.mosaico_state(pid).lua
     with repo.connect() as conn:
         row = conn.execute('SELECT v.preview_json FROM artifacts a JOIN artifact_versions v ON v.id=a.current_version_id WHERE a.id=? AND a.project_id=?', ('zhangwen_lua_'+pid,pid)).fetchone()
     return Checkpoint.model_validate_json(json.loads(row[0])['code']) if row else Checkpoint()
@@ -209,6 +211,9 @@ def load(repo, pid):
 def insert(repo, conn, pid, value):
     """Also called inside portable Project import's original transaction."""
     value = Checkpoint.model_validate(value.model_dump())
+    if getattr(repo, 'controller_id', None):
+        repo.write_mosaico(conn, pid, lua=value.model_dump())
+        return
     aid='zhangwen_lua_'+pid; vid='artifact_version_'+uuid.uuid4().hex; stamp=now(); text=value.model_dump_json(exclude_none=True)
     preview=ArtifactPreview(kind=ArtifactPreviewKind.CODE, code=text, language='json', summary='掌问Lua候选、已接受代码与上传证据；不代表实物成功。')
     conn.execute("""INSERT INTO artifacts(id,project_id,title,kind,status,source_agent_id,current_version_id,created_at,updated_at)
@@ -273,20 +278,22 @@ def accepted(repo,pid,revision):
     return value,version
 
 
-def device_path(pid): return '/scripts/temp/zw_'+sha(pid)[:16]+'.lua'
+def device_path(pid, repo=None):
+    identity = pid + (':'+repo.controller_id if getattr(repo, 'controller_id', None) else '')
+    return '/scripts/temp/zw_'+sha(identity)[:16]+'.lua'
 
 
 async def manifest(service,pid,revision):
     _,v=accepted(service.repo,pid,revision)
     connection=service.connection_id
     service.target(connection)
-    path=device_path(pid);raw=await service.read_file(path)
+    path=device_path(pid,service.repo);raw=await service.read_file(path)
     return {'projectId':pid,'revision':v.revision,'checksum':v.checksum,'content':v.code,'size':len(v.code.encode()),'path':path,
             'expectedChecksum':hashlib.sha256(raw).hexdigest() if raw is not None else None,'connectionId':connection}
 
 
 async def upload(service,request):
-    repo=service.repo; path=device_path(request.projectId)
+    repo=service.repo; path=device_path(request.projectId,repo)
     # Durable intent in original Artifact history survives a lost response/restart.
     with repo.lock:
         value,version=accepted(repo,request.projectId,request.revision)

@@ -1,27 +1,31 @@
 import type { HardwareSummary } from '../../../packages/contracts/src/platform';
-import type { CadProfile, DesignSpec, HardwarePlacement } from '../../../packages/contracts/src/structure';
+import type { CadProfile, DesignSpec, HardwarePlacement, StructureHardwareInstance } from '../../../packages/contracts/src/structure';
 
 export const panelNames = {top:'顶盖',bottom:'底盖',front:'前面',back:'后面',left:'左侧',right:'右侧'};
-export function HardwarePlacementEditor({hardware, profiles, placements, onChange, onDetail, spec, disabled}: {
+const placementKey = (p: Pick<HardwarePlacement,'componentId'|'controllerId'>) => `${p.controllerId??'project'}:${p.componentId}`;
+export function HardwarePlacementEditor({hardware, instances, profiles, placements, onChange, onDetail, spec, disabled}: {
   hardware: HardwareSummary[]; profiles: CadProfile[]; placements: HardwarePlacement[];
+  instances?: StructureHardwareInstance[];
   onChange: (v: HardwarePlacement[]) => void; onDetail: (item: HardwareSummary) => void;
   spec: DesignSpec; disabled: boolean;
 }) {
   const box = spec.roundedBox ?? spec.fingerBox;
   if (!box) return null;
-  const update = (id: string, patch: Partial<HardwarePlacement>) => onChange(placements.map(p=>p.componentId===id?{...p,...patch}:p));
-  const rows = [...hardware.map(h=>({id:h.componentId,name:h.displayName,hardware:h})),
-    ...placements.filter(p=>!hardware.some(h=>h.componentId===p.componentId)).map(p=>({id:p.componentId,name:'历史器件 '+p.componentId,hardware:undefined}))];
+  const update = (id: string, patch: Partial<HardwarePlacement>) => onChange(placements.map(p=>placementKey(p)===id?{...p,...patch}:p));
+  const copies = instances ?? hardware.map(h=>({controllerId:'project',controllerName:'',componentId:h.componentId}));
+  const multiple = copies.some(item=>item.controllerId!=='project');
+  const rows = [...copies.map(copy=>{const h=hardware.find(h=>h.componentId===copy.componentId);return {...copy,id:placementKey(copy),name:`${multiple?copy.controllerName+' · ':''}${h?.displayName??copy.componentId}`,hardware:h};}),
+    ...placements.filter(p=>!copies.some(copy=>placementKey(copy)===placementKey(p))).map(p=>({id:placementKey(p),componentId:p.componentId,controllerId:p.controllerId??'project',name:`历史器件 ${p.controllerId??'project'} · ${p.componentId}`,hardware:undefined}))];
   return <details open className="hardware-installation-editor"><summary>电子件安装 · {placements.length} 个参与图纸</summary>
     <p className="structure-caption">勾选需要安装的器件。X/Y 是该板加工图左上角到器件包络中心的 mm 坐标，X 向右、Y 向下，旋转为顺时针，不自动镜像。蓝色轮廓为安装参考，红色为实际切口。</p>
     {spec.roundedBox && <p className="structure-caption">顶/底盖按盒体外宽深定位；侧面仅使用去掉两端圆角的直边（前后 {(box.width-2*spec.roundedBox.corner_radius).toFixed(1)} mm，左右 {(box.depth-2*spec.roundedBox.corner_radius).toFixed(1)} mm）。前面中间有胶合接缝，不能跨缝安装。</p>}
     {!rows.length && <p className="structure-caption">先在智能工程师中选择主控与模块，再回到这里安排安装位置。</p>}
     {rows.map(row=>{
-      const p=placements.find(p=>p.componentId===row.id);
-      const profile=profiles.find(p=>p.componentId===row.id && p.skillRevision);
+      const p=placements.find(p=>placementKey(p)===row.id);
+      const profile=profiles.find(p=>p.componentId===row.componentId && p.skillRevision);
       const stale=!!p && !!profile && p.skillRevision!==profile.skillRevision;
       return <fieldset disabled={disabled} className="hardware-installation-row" key={row.id}><legend>{row.name}</legend>
-        <label className="structure-param-toggle"><input aria-label={`安装到图纸：${row.name}`} type="checkbox" checked={!!p} disabled={disabled || (!p && !profile?.skillRevision)} onChange={e=>onChange(e.target.checked?[...placements,{componentId:row.id,skillRevision:profile!.skillRevision!,panel:'bottom',x:box.width/2,y:box.depth/2,rotation:0,method:'screw',includeOpenings:false}]:placements.filter(p=>p.componentId!==row.id))}/>参与本张安装图</label>
+        <label className="structure-param-toggle"><input aria-label={`安装到图纸：${row.name}`} type="checkbox" checked={!!p} disabled={disabled || (!p && !profile?.skillRevision)} onChange={e=>onChange(e.target.checked?[...placements,{componentId:row.componentId,...(row.controllerId==='project'?{}:{controllerId:row.controllerId}),skillRevision:profile!.skillRevision!,panel:'bottom',x:box.width/2,y:box.depth/2,rotation:0,method:'screw',includeOpenings:false}]:placements.filter(p=>placementKey(p)!==row.id))}/>参与本张安装图</label>
         {!profile && !p && <p className="structure-caption">缺少机械档案：请先补充外形、孔位或开口。不会自动猜测尺寸。</p>}
         {row.hardware && <button type="button" onClick={()=>onDetail(row.hardware!)}>尺寸与安装资料</button>}
         {p && <>

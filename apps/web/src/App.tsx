@@ -46,6 +46,7 @@ import { StructureWorkspace } from './StructureWorkspace';
 import { UpdateCenter } from './UpdateCenter';
 import { FirmwareDialog } from './FirmwareDialog';
 import { DevelopmentChannels } from './DevelopmentChannels';
+import type { ControllerContext, ControllerPrompt } from './ControllerWorkspace';
 import { EngineeringActions, EngineeringChatHeader, EngineeringComposer, EngineeringConnection, EngineeringFilebar, EngineeringModuleList } from './EngineeringUi';
 import type { DevelopmentChannel } from '../../../packages/contracts/src/channels';
 import { ControllerSelfTest } from './ControllerSelfTest';
@@ -106,15 +107,15 @@ export default function App() {
     const [controllerConnectionHost, setControllerConnectionHost] = useState<HTMLDivElement | null>(null);
     const [controllerModulesHost, setControllerModulesHost] = useState<HTMLDivElement | null>(null);
     const [controllerSelectorHost, setControllerSelectorHost] = useState<HTMLDivElement | null>(null);
+    const [learningControllerHost, setLearningControllerHost] = useState<HTMLDivElement | null>(null);
+    const [mainControllerName, setMainControllerName] = useState('');
+    const manageProjectController = useRef<(() => void) | null>(null);
     const [controllerWorkspaceHost, setControllerWorkspaceHost] = useState<HTMLDivElement | null>(null);
+    const [controllerDialogsHost, setControllerDialogsHost] = useState<HTMLDivElement | null>(null);
     const controllerSave = useRef<(() => Promise<void>) | null>(null);
     const controllerPrograms = useRef<(() => void) | null>(null);
-    const [controllerState, setControllerState] = useState<{
-        id: string;
-        dirty: boolean;
-        locked: boolean;
-        status: string;
-    } | null>(null);
+    const controllerPrompt = useRef<ControllerPrompt | null>(null);
+    const [controllerState, setControllerState] = useState<ControllerContext | null>(null);
     useEffect(() => { setSelectedController(null); }, [project?.id]);
     const [channelsActive, setChannelsActive] = useState(false);
     const [controllerCheckOpen, setControllerCheckOpen] = useState(false);
@@ -346,6 +347,12 @@ export default function App() {
     const deviceBusy = deviceState === 'busy' || deviceState === 'connecting';
     const boardInfo = hardware.find(item => item.componentId === board);
     const isChatCoding = boardInfo?.programmingMode === 'chat-coding';
+    // Original workspaces stay mounted; global navigation describes only the selected controller.
+    const selectedContext = selectedController && controllerState?.id === selectedController.id ? controllerState : null;
+    const currentBoardId = selectedContext?.boardId ?? selectedController?.boardId ?? board;
+    const currentBoard = hardware.find(item => item.componentId === currentBoardId);
+    const currentComponents = selectedContext?.componentIds ?? selectedController?.componentIds ?? components;
+    const currentChatCoding = currentBoard?.programmingMode === 'chat-coding';
     const currentCode = useRef(visibleCode);
     currentCode.current = visibleCode;
     const currentHardware = useRef({ board, components });
@@ -795,7 +802,7 @@ export default function App() {
     const saveRef = useRef(saveWorkspace);
     saveRef.current = saveWorkspace;
     const savingAllowed = useRef(false);
-    savingAllowed.current = workspaceOpen && !loading && !learningBusy && !aiBusy && !deviceBusy && !flashing && !chatCodingBusy && !selectedController;
+    savingAllowed.current = workspaceOpen && !loading && !learningBusy && !aiBusy && !deviceBusy && !flashing && !chatCodingBusy && !(mode === 'engineer' && selectedController);
     useEffect(() => {
         const key = (event: KeyboardEvent) => { if ((event.ctrlKey || event.metaKey) && event.key.toLowerCase() === 's') {
             event.preventDefault();
@@ -1316,7 +1323,7 @@ export default function App() {
     const fillReply = (answer: string) => { setMessage(value => (value.trim() ? value + '\n' + answer : answer).slice(0, 4000)); chatInput.current?.focus(); };
     const boardSensors = selectableModules(hardware);
     const available = filterModules(boardSensors, moduleBrandFilter, moduleFilter, moduleTypeFilter, search).filter(item => !onlyPersonal || item.personal);
-    const outsideLibrary = components.filter(id => !boardSensors.some(item => item.componentId === id));
+    const outsideLibrary = currentComponents.filter(id => !boardSensors.some(item => item.componentId === id));
     const selectedSensors = components.map(id => hardware.find(item => item.componentId === id)).filter((item): item is HardwareSummary => !!item && !!moduleDirection(item));
     const receipt = device.current?.receipt;
     const projectLocked = folderRestoring || learningBusy || loading || !!busy || aiBusy || structureBusy || deviceBusy || flashing || chatCodingBusy;
@@ -1363,6 +1370,7 @@ export default function App() {
             loadCode(value);
         });
     };
+    const currentMosaicoSource = selectedController ? selectedContext?.source ?? selectedController.mosaico?.source ?? 'local' : nativeChat.source;
     const saveState = folderStatus === '正在同步' ? folderProgress || '正在整理项目文件…' : mode === 'learning' ? learningBusy ? '项目记录处理中…' : learningDirty ? '项目草稿 · 本浏览器保留' : folderError ? '本机已记录 · 文件夹未同步' : '项目记录随项目保存' : mode === 'structure' && structureUnsaved ? '参数草稿已保留 · 尚未应用到模型' : mode === 'structure' && !!structureDrafts[structureDesignType].trim() ? '需求草稿已保留 · 尚未发送' : busy.includes('保存') ? '正在保存…'
         : isChatCoding && nativeChat.source === 'local' && !!nativeChat.lua.editorCode.trim() && !nativeChat.lua.saved ? 'Lua修改未保存 · 点击「保存代码」'
             : manualDirty || hardwareDirty ? (folderError ? '未保存更改 · 文件夹未同步' : '未保存更改 · 本浏览器保留') : codePreview && codePreview.code !== project?.code ? '正在预览生成稿 · 尚未保存' : folderError ? '本机已记录 · 文件夹未同步'
@@ -1377,12 +1385,17 @@ export default function App() {
     const matchesLatestReply = latestReplyCode !== null && latestReplyCode.trimEnd() === visibleCode.trimEnd();
     const pastMessages = messages.filter(item => !activeMessages.includes(item));
     const openLearningTask = (target: 'engineer' | 'structure', text: string) => {
-        const original = target === 'structure' ? structureDrafts[structureDesignType] : isChatCoding ? nativeChat.source === 'local' ? nativeChat.lua.prompt : code : message;
+        const selectedPrompt = selectedController && controllerPrompt.current?.id === selectedController.id ? controllerPrompt.current : null;
+        if (target === 'engineer' && selectedController && !selectedPrompt)
+            return false;
+        const original = target === 'structure' ? structureDrafts[structureDesignType] : selectedPrompt ? selectedPrompt.read() : isChatCoding ? nativeChat.source === 'local' ? nativeChat.lua.prompt : code : message;
         const next = appendLearningTask(original, text);
-        if (next === null || projectLocked || !selectMode(target))
+        if (next === null || projectLocked || target === 'engineer' && selectedContext?.locked || !selectMode(target))
             return false;
         if (target === 'structure')
             updateStructureInput(next);
+        else if (selectedPrompt)
+            selectedPrompt.write(next);
         else if (!isChatCoding)
             setMessage(next);
         else if (nativeChat.source === 'local')
@@ -1402,7 +1415,7 @@ export default function App() {
         <ActionMenu label="项目" disabled={projectLocked} items={[
                 { label: '新建项目', icon: Plus, onSelect: openNew },
                 { label: '打开项目…', icon: FolderOpen, onSelect: openLoad },
-                { label: '项目程序', icon: FileCode2, disabled: !selectedController && isChatCoding, onSelect: () => { if (mode === 'engineer' && selectedController)
+                { label: '项目程序', icon: FileCode2, disabled: currentChatCoding, onSelect: () => { if (selectedController)
                         controllerPrograms.current?.();
                     else
                         openFiles('programs'); } },
@@ -1415,7 +1428,7 @@ export default function App() {
                 { label: '查看文件列表', icon: Files, disabled: !project, onSelect: () => { setFolderPanel(true); setCodeFullscreen(false); } },
                 { label: '三师共用资料', icon: BookOpen, disabled: !project, onSelect: () => setSharedProjectOpen(true) },
             ]}/>
-        <button className="title-save" aria-label="保存项目" title="保存项目（Ctrl / ⌘ + S）" disabled={mode === 'engineer' && selectedController ? loading || folderRestoring || controllerState?.locked : projectLocked} onClick={() => void saveWorkspace()}>{busy.includes('保存') ? <LoaderCircle size={15} className="spin"/> : <Save size={15}/>}保存</button>
+        <button className="title-save" aria-label="保存项目" title="保存项目（Ctrl / ⌘ + S）" disabled={mode === 'engineer' && selectedController ? loading || folderRestoring || !selectedContext || selectedContext.locked : projectLocked} onClick={() => void saveWorkspace()}>{busy.includes('保存') ? <LoaderCircle size={15} className="spin"/> : <Save size={15}/>}保存</button>
       </div>
       <div className="current-project" aria-label="当前项目" title={name}><strong>{name}</strong>{(workspaceDirty || !!selectedController && controllerState?.id === selectedController.id && controllerState.dirty) && <span className="dirty-dot" aria-label="项目存在未保存内容"/>}</div>
       <span className={`document-info ${folderError ? 'has-error' : ''}`} role="status" aria-label="项目保存状态" title="浏览器草稿：当前尚未保存的修改；本机记录：已保存的项目内容；项目文件夹：已同步的可携带副本。文件夹中不包含未保存的草稿。">{mode === 'engineer' && selectedController ? (controllerState?.id === selectedController.id ? (controllerState.dirty ? '当前主控有未保存草稿' : controllerState.status || '当前主控已保存') : '正在读取主控状态') : saveState}</span>
@@ -1426,6 +1439,7 @@ export default function App() {
         <div className="tool-group" role="group" aria-label="工作角色">
         <ToolbarButton icon={Layers3} label={modeInfo.name} aria-label="模式切换" variant="brand" active={modeDialog} disabled={learningBusy || loading || !!busy || aiBusy || structureBusy || chatCodingBusy || deviceBusy || running || flashing || deviceState === 'attention'} onClick={() => setModeDialog(true)} disabledReason={operationReason} title={`切换角色 · ${modeInfo.name}`}/>
         </div>
+        {mode === 'engineer' && <div className="current-controller" role="group" aria-label="当前操作主控" title={`${selectedContext?.name ?? selectedController?.name ?? (mainControllerName || currentBoard?.displayName) ?? '未选择主控'} · ${currentBoard?.displayName ?? ''}`}><span>当前主控</span><strong>{selectedContext?.name ?? selectedController?.name ?? (mainControllerName || currentBoard?.displayName) ?? '未选择主控'}</strong></div>}
         {mode === 'engineer' && !selectedController && !isChatCoding && <>
         <EngineeringActions boardId={board} uploadDisabled={loading || !board || !!busy || aiBusy || deviceBusy || running || deviceState === 'attention'} runDisabled={!!busy || deviceBusy || deviceState === 'attention' || !(running || canRun)} checkDisabled={loading || !board || !!busy || aiBusy || deviceBusy || running} firmwareDisabled={loading || !board || !!busy || aiBusy || flashing || deviceState !== 'disconnected'} running={running} attention={deviceState === 'attention'} terminalOpen={terminalOpen} reason={operationReason} onUpload={() => void prepareUpload()} onRun={() => { setTerminalOpen(true); setMobileTab('code'); void action(running ? '停止' : '运行', async () => { if (running)
                 await device.current?.stop();
@@ -1487,18 +1501,18 @@ export default function App() {
     </Dialog>}
     <div className="workspace-deck"><div className="workspace-stage" id="workspace-stage" tabIndex={-1}>
     <div className="engineering-surface" hidden={mode !== 'engineer'}>
-    <nav className="mobile-tabs" aria-label="工作区切换">{[['hardware', '硬件库'], ['ai', isChatCoding ? (nativeChat.source === 'local' ? '编程对话' : 'Chat Coding') : '掌问 AI'], ['code', isChatCoding ? (nativeChat.source === 'local' ? '程序' : '任务与记录') : '代码']].map(([key, label]) => <button key={key} className={mobileTab === key ? 'active' : ''} onClick={() => { setMobileTab(key); if (key === 'hardware')
+    <nav className="mobile-tabs" aria-label="工作区切换">{[['hardware', '硬件库'], ['ai', currentChatCoding ? (currentMosaicoSource === 'local' ? '编程对话' : 'Chat Coding') : '掌问 AI'], ['code', currentChatCoding ? (currentMosaicoSource === 'local' ? '程序' : '任务与记录') : '代码']].map(([key, label]) => <button key={key} className={mobileTab === key ? 'active' : ''} onClick={() => { setMobileTab(key); if (key === 'hardware')
             setHardwareCollapsed(false); }}>{label}</button>)}</nav>
     <main className={`workbench ${selectedController ? 'has-controller-channel' : ''}`}>
       <aside className={`hardware-panel panel mobile-${mobileTab === 'hardware' ? 'show' : 'hide'}`}>
         <div className="panel-head"><h2><CircuitBoard size={18}/>已加入的模块</h2><button className="icon-button hardware-collapse" aria-label="收起硬件模块" title="向左收起硬件模块" onClick={() => setHardwareCollapsed(true)}><PanelLeftClose size={17}/></button></div>
-        <div className="selected-sensors-toolbar"><div ref={setControllerSelectorHost}/>{!project && <><span className="board-field-label">项目主控</span><div className="project-hardware-summary"><BoardArtwork board={boardInfo}/><strong>{boardInfo?.displayName ?? '未选择主控板'}</strong></div><button className="project-hardware-manage" disabled={projectLocked} onClick={openProjectHardware}><CircuitBoard size={17}/>管理项目器件</button></>}{hardwareSelectionDirty && <p className="project-hardware-state" role="status">器件选择有更改，请到项目器件保存。</p>}</div>
+        <div className="selected-sensors-toolbar"><div ref={setControllerSelectorHost}/>{!project && <><span className="board-field-label">项目主控</span><div className="project-hardware-summary"><BoardArtwork board={boardInfo}/><strong>{boardInfo?.displayName ?? '未选择主控板'}</strong></div><button className="project-hardware-manage" disabled={projectLocked} onClick={openProjectHardware}><CircuitBoard size={17}/>管理项目器件</button></>}{(selectedController ? selectedContext?.hardwareDirty : hardwareSelectionDirty) && <p className="project-hardware-state" role="status">器件选择有更改，请到项目器件保存。</p>}</div>
         <div className="controller-module-host" hidden={!!selectedController}><EngineeringModuleList boardId={board} hardware={hardware} componentIds={components} loading={loading} disabled={projectLocked} chatCoding={isChatCoding} onDetail={openDetail} onEditExample={item => openDetail(item, false, true)} onLoad={loadModuleSample}/></div>
         <div ref={setControllerModulesHost} className="controller-module-host" hidden={!selectedController}/>
 
         {outsideLibrary.length > 0 && <p className="library-notice">有 {outsideLibrary.length} 个项目元件的资料缺失或未激活，已保留；请查看资料并核对。</p>}
       </aside>
-      <button className="hardware-restore" aria-label="展开硬件模块" title="展开硬件模块" onClick={() => { setHardwareCollapsed(false); setMobileTab('hardware'); }}><PanelLeftOpen size={18}/><span>硬件模块</span><small>{selectedSensors.length}</small></button>
+      <button className="hardware-restore" aria-label="展开硬件模块" title="展开硬件模块" onClick={() => { setHardwareCollapsed(false); setMobileTab('hardware'); }}><PanelLeftOpen size={18}/><span>硬件模块</span><small>{currentComponents.length}</small></button>
       <div className="controller-original" hidden={!!selectedController}>
       {isChatCoding ? <>
         <ChatCodingConversation chat={nativeChat} task={code} onTask={value => { setCode(value); setSelectedVersion(null); }} onSave={() => void action('保存项目', () => save())} mobileTab={mobileTab} onSettings={openAiSettings}/>
@@ -1571,10 +1585,10 @@ export default function App() {
       </div><div ref={setControllerWorkspaceHost} className={`controller-workspaces mobile-${mobileTab === 'hardware' ? 'hide' : 'show'}`} hidden={!selectedController}/>
     </main>
     </div>
-    {mode === 'engineer' && isChatCoding && nativeChat.connectionOpen && <ChatCodingConnection chat={nativeChat} onSave={() => void action('保存任务', () => save())}/>}
-    <StructureWorkspace key={`${project?.id ?? 'new'}-${structureDesignType}`} designType={structureDesignType} draft={structureDrafts[structureDesignType]} onDraftChange={updateStructureInput} onDirtyChange={updateStructureDirty} saveDraftRef={structureSaveRef} projectId={project?.id} active={mode === 'structure'} board={boardInfo} modules={selectedSensors} onSaveProject={openSave} onSettings={openAiSettings} onBusy={setStructureBusy} onSaved={syncFolder} onHardwareDetail={item => openDetail(item, false, false, true)} onManageHardware={openProjectHardware} hardwareDirty={hardwareSelectionDirty} hardwareBlocked={projectLocked}/>
-    <LearningWorkflow key={project?.id ?? 'scratch'} active={mode === 'learning'} project={project} board={boardInfo} modules={selectedSensors} section={learningSection} sectionSelection={learningSectionSelection} onSection={setLearningSection} onSaved={syncFolder} onSyncRequested={async (id) => { if (!folderUpToDate(id))
-            await syncFolder(id); }} onBusy={setLearningBusy} onDirty={setLearningDirty} onRegisterSave={fn => { learningSaveRef.current = fn; }} onNew={openNew} blocked={loading || !!busy || aiBusy || structureBusy || chatCodingBusy || deviceBusy || flashing} engineeringDirty={dirty || nativeChat.lua.hasUnsaved} hardwareDirty={hardwareSelectionDirty} onManageHardware={openProjectHardware} onHardwareDetail={openDetail} refreshKey={historyRefresh} reviewChange={reviewChange} onReviewConsumed={() => setReviewChange(null)} onCollaborate={() => setRequirementSync(true)} onTask={openLearningTask}/>
+    {mode === 'engineer' && !selectedController && isChatCoding && nativeChat.connectionOpen && <ChatCodingConnection chat={nativeChat} onSave={() => void action('保存任务', () => save())}/>}
+    <StructureWorkspace key={`${project?.id ?? 'new'}-${structureDesignType}`} designType={structureDesignType} draft={structureDrafts[structureDesignType]} onDraftChange={updateStructureInput} onDirtyChange={updateStructureDirty} saveDraftRef={structureSaveRef} projectId={project?.id} active={mode === 'structure'} board={boardInfo} modules={selectedSensors} hardwareLibrary={hardware} onSaveProject={openSave} onSettings={openAiSettings} onBusy={setStructureBusy} onSaved={syncFolder} onHardwareDetail={item => openDetail(item, false, false, true)} onManageHardware={openProjectHardware} hardwareDirty={hardwareSelectionDirty} hardwareBlocked={projectLocked}/>
+    <LearningWorkflow onControllerHost={setLearningControllerHost} key={project?.id ?? 'scratch'} active={mode === 'learning'} project={project} board={boardInfo} modules={selectedSensors} section={learningSection} sectionSelection={learningSectionSelection} onSection={setLearningSection} onSaved={syncFolder} onSyncRequested={async (id) => { if (!folderUpToDate(id))
+            await syncFolder(id); }} onBusy={setLearningBusy} onDirty={setLearningDirty} onRegisterSave={fn => { learningSaveRef.current = fn; }} onNew={openNew} blocked={loading || !!busy || aiBusy || structureBusy || chatCodingBusy || deviceBusy || flashing} engineeringDirty={dirty || nativeChat.lua.hasUnsaved || !!selectedContext?.dirty} hardwareDirty={hardwareSelectionDirty} onManageHardware={() => manageProjectController.current ? manageProjectController.current() : openProjectHardware()} onHardwareDetail={openDetail} refreshKey={historyRefresh} reviewChange={reviewChange} onReviewConsumed={() => setReviewChange(null)} onCollaborate={() => setRequirementSync(true)} onTask={openLearningTask}/>
     </div>
     {folderPanel && project && <ProjectFolderPanel key={`folder:${project.id}`} hidden={codeFullscreen} binding={folder} restoring={folderRestoring} status={folderStatus} onLoadFolder={() => void loadFolder()} syncError={folderError} unsaved={workspaceDirty} onClose={() => { setFolderPanel(false); folderToggle.current?.focus(); }} onChooseFolder={() => { setUploadAfterSave(false); openSave(); }} onLocated={async (path) => {
                     const binding = folderRef.current;
@@ -1586,12 +1600,12 @@ export default function App() {
                     await rememberFolder(updated);
                 }}/>}
     </div>
-    <footer className="statusbar">{mode === 'engineer' && selectedController ? <><span>智能工程师 · {selectedController.name}</span><span>{hardware.find(item => item.componentId === selectedController.boardId)?.displayName} · {selectedController.componentIds.length} 个模块</span><span>本机保存 · 设备操作需确认</span></> : mode === 'engineer' && isChatCoding ? <><span>Mosaico · {'Chat Coding'}</span><span>{nativeChat.source === 'local' ? '掌问生成 · WiFi运行' : '任务保存与设备发送分开'}</span><span>实物结果由观察确认</span></> : mode === 'engineer' ? <><span><span className="status-dot"/>智能工程师 · 编程与测试</span><span>{boardInfo?.displayName ?? '先选择主控板'} · {components.length} 个模块</span><span>本机保存 · 设备操作需确认</span></> : <><span>{modeInfo.name}{mode === 'learning' ? learningSection === 'teaching' ? ' · 教学设计' : learningSection === 'outcomes' ? ' · 成果档案' : ' · 制作指导与学习' : ' · 设计与制作'}</span><span>{mode === 'learning' ? learningSection === 'teaching' ? '三阶六维 · 教案草稿请核对' : learningSection === 'outcomes' ? '保留制作发现与实际成果' : '当前任务 · 动手验证 · 制作发现' : saveState}</span></>}</footer>
+    <footer className="statusbar">{mode === 'engineer' && selectedController ? <><span>智能工程师 · {selectedContext?.name ?? selectedController.name}</span><span>{currentBoard?.displayName} · {currentComponents.length} 个模块</span><span>本机保存 · 设备操作需确认</span></> : mode === 'engineer' && isChatCoding ? <><span>Mosaico · {'Chat Coding'}</span><span>{nativeChat.source === 'local' ? '掌问生成 · WiFi运行' : '任务保存与设备发送分开'}</span><span>实物结果由观察确认</span></> : mode === 'engineer' ? <><span><span className="status-dot"/>智能工程师 · 编程与测试</span><span>{boardInfo?.displayName ?? '先选择主控板'} · {components.length} 个模块</span><span>本机保存 · 设备操作需确认</span></> : <><span>{modeInfo.name}{mode === 'learning' ? learningSection === 'teaching' ? ' · 教学设计' : learningSection === 'outcomes' ? ' · 成果档案' : ' · 制作指导与学习' : ' · 设计与制作'}</span><span>{mode === 'learning' ? learningSection === 'teaching' ? '三阶六维 · 教案草稿请核对' : learningSection === 'outcomes' ? '保留制作发现与实际成果' : '当前任务 · 动手验证 · 制作发现' : saveState}</span></>}</footer>
     </> : <StartScreen loading={loading} ready={initialized} busy={busy} error={error} theme={theme} onTheme={() => setTheme(value => value === 'light' ? 'dark' : 'light')} onNew={openNew} onLoad={openLoad} onRetry={() => setBootstrapAttempt(value => value + 1)}/>}
-    {requirementSync && project && <RequirementSync key={project.id + '-' + mode} projectId={project.id} sourceMode={mode} initialText={(mode === 'engineer' ? (isChatCoding ? nativeChat.source === 'local' ? nativeChat.lua.prompt : '' : message) : mode === 'structure' ? structureDrafts[structureDesignType] : '').slice(0, 2000)} onClose={() => setRequirementSync(false)} onBusy={setLearningBusy} engineeringDirty={dirty || nativeChat.lua.hasUnsaved} onSaved={async (id) => { setHistoryRefresh(v => v + 1); await syncFolder(id); }} onReview={id => { if (!selectMode('learning'))
+    {requirementSync && project && <RequirementSync key={project.id + '-' + mode} projectId={project.id} sourceMode={mode} initialText={(mode === 'engineer' ? (selectedController ? selectedContext?.prompt ?? '' : isChatCoding ? nativeChat.source === 'local' ? nativeChat.lua.prompt : '' : message) : mode === 'structure' ? structureDrafts[structureDesignType] : '').slice(0, 2000)} onClose={() => setRequirementSync(false)} onBusy={setLearningBusy} engineeringDirty={dirty || nativeChat.lua.hasUnsaved || !!selectedContext?.dirty} onSaved={async (id) => { setHistoryRefresh(v => v + 1); await syncFolder(id); }} onReview={id => { if (!selectMode('learning'))
         return false; setLearningSection('guidance'); setReviewChange({ projectId: project.id, id }); return true; }} onTask={openLearningTask}/>}
     {modeDialog && <ModePicker current={mode} onSelect={selectMode} onClose={() => setModeDialog(false)}/>}
-    {workspaceOpen && mode === 'engineer' && !isChatCoding && executionDetailsOpen && <Dialog title="本次执行结果" onClose={() => setExecutionDetailsOpen(false)}>
+    {workspaceOpen && mode === 'engineer' && !selectedController && !isChatCoding && executionDetailsOpen && <Dialog title="本次执行结果" onClose={() => setExecutionDetailsOpen(false)}>
       <p>{deviceState === 'attention' ? '运行状态需核对，请查看 REPL。' : dirty ? '当前修改尚未上传校验。' : '以下记录仅对应当前已保存版本。'}</p>
       <p>{execution.upload ? `V${execution.upload.revision} · 上传回读一致` : '当前版本尚无有效上传回读记录'}</p>
       <p>{execution.submitted ? '运行命令已提交' : '尚无当前版本的运行提交记录'} · 实物结果待观察</p>
@@ -1604,8 +1618,9 @@ export default function App() {
     {boardDialog && <BoardPicker boards={hardware} selected={board} onClose={() => setBoardDialog(false)} onSelect={item => { switchBoard(item.componentId); setBoardDialog(false); }} onHelp={() => { setBoardDialog(false); setHelpDialog(true); }}/>}
     {loadDialog && <Dialog title="打开项目" onClose={() => setLoadDialog(false)}>{busy === '读取项目' && <p className="muted" role="status">正在读取项目列表…</p>}<p className="muted">从原项目文件夹打开，会恢复文件夹关联、主控、模块、对话与版本。</p><button className="primary choose-project-folder" disabled={!!busy} onClick={() => void loadFolder()}><FolderOpen size={19}/>选择项目文件夹</button>{error && <p className="settings-error" role="alert">{error}</p>}<h3 className="recent-projects-title">最近本机项目</h3><p className="muted">也可继续本机记录。浏览器会恢复记住的文件夹；旧记录未关联目录时，可在右侧打开原文件夹，或另存新位置。</p>{projects.length ? projects.map(item => <button className="load-project-row" data-project-id={item.id} disabled={!!busy} key={item.id} onClick={async () => { if (await chooseProject(item.id))
         setLoadDialog(false); }}><FolderOpen size={22}/><span><strong>{item.name}</strong><small>版本 {item.revision} · {new Date(item.updatedAt).toLocaleString()}</small></span>{item.id === project?.id ? <Check size={18}/> : <ChevronRight size={18}/>}</button>) : <p>还没有最近项目，可从文件夹加载。</p>}</Dialog>}
-    {helpDialog && <WorkbenchHelp mode={mode} mosaico={!!isChatCoding} source={nativeChat.source} onClose={() => setHelpDialog(false)}/>}
-    {project && <DevelopmentChannels folder={folder} key={`controllers:${project.id}`} projectId={project.id} mainBoard={board} hardware={hardware} engineeringActive={mode === 'engineer'} programsSelected={controllerPrograms} onState={setControllerState} selectorHost={controllerSelectorHost} workspaceHost={controllerWorkspaceHost} actionsHost={controllerActionsHost} connectionHost={controllerConnectionHost} modulesHost={controllerModulesHost} configured={aiConfigured} onSettings={openAiSettings} fullscreen={codeFullscreen} onFullscreen={setCodeFullscreen} onMobileTab={setMobileTab} onHardwareSaved={value => setHardware(items => items.some(item => item.skillName === value.skillName) ? items.map(item => item.skillName === value.skillName ? value : item) : [...items, value])} mobileTab={mobileTab} onSaved={syncFolder} onActivity={setChannelsActive} onSelection={value => { if (selectedController?.id !== value?.id)
+    {helpDialog && <WorkbenchHelp mode={mode} mosaico={currentChatCoding} source={currentMosaicoSource} onClose={() => setHelpDialog(false)}/>}
+    <div ref={setControllerDialogsHost}/>
+    {project && <DevelopmentChannels folder={folder} key={`controllers:${project.id}`} projectId={project.id} mainBoard={board} hardware={hardware} engineeringActive={mode === 'engineer'} programsSelected={controllerPrograms} promptSelected={controllerPrompt} onState={setControllerState} onMainName={setMainControllerName} manageController={manageProjectController} selectorHost={mode === 'learning' ? learningControllerHost : controllerSelectorHost} workspaceHost={controllerWorkspaceHost} dialogsHost={controllerDialogsHost} actionsHost={controllerActionsHost} connectionHost={controllerConnectionHost} modulesHost={controllerModulesHost} configured={aiConfigured} onSettings={openAiSettings} fullscreen={codeFullscreen} onFullscreen={setCodeFullscreen} onMobileTab={setMobileTab} onHardwareSaved={value => setHardware(items => items.some(item => item.skillName === value.skillName) ? items.map(item => item.skillName === value.skillName ? value : item) : [...items, value])} mobileTab={mobileTab} onSaved={async (id) => { setHistoryRefresh(v => v + 1); await syncFolder(id); }} onActivity={setChannelsActive} onSelection={value => { if (selectedController?.id !== value?.id)
         setCodeFullscreen(false); setSelectedController(value); }} onShared={() => setSharedProjectOpen(true)} onManageMain={openProjectHardware} saveSelected={controllerSave}/>}
     {controllerCheckOpen && <ControllerSelfTest boardId={board} scope={`${project?.id ?? 'new'}:main`} device={device.current} onClose={() => setControllerCheckOpen(false)} onLoadCode={value => { if (!manualDirty || window.confirm('载入自检程序会替换未保存手工稿，继续吗？')) {
         setCode(value);

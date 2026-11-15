@@ -30,8 +30,8 @@ export async function api<T>(path: string, method = 'GET', body?: unknown, signa
 }
 
 export async function chat(projectId: string, input: ChatInput, signal: AbortSignal,
-  onEvent: (event: ChatEvent) => void): Promise<{ messages: ChatMessage[] }> {
-  const response = await fetch(`/api/projects/${projectId}/chat`, {
+  onEvent: (event: ChatEvent) => void, endpoint = `/projects/${projectId}/chat`): Promise<{ messages: ChatMessage[] }> {
+  const response = await fetch('/api'+endpoint, {
     method: 'POST', signal,
     headers: { 'Content-Type': 'application/json', 'X-Zhangwen-Session': token, Accept: 'application/x-ndjson' },
     body: JSON.stringify(input),

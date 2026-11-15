@@ -1,8 +1,9 @@
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useId, useRef, useState } from 'react';
 import { ArrowUp, FileCode2, Save, Sparkles, Unplug, Wifi } from 'lucide-react';
 import { Dialog } from './Dialog';
 import type { ChatCodingState, Project, Version } from '../../../packages/contracts/src/platform';
-import { api } from './api';
+import { api as baseApi } from './api';
+import type { MosaicoScope } from './controllerApi';
 import './chat-coding.css';
 import { mosaicoPanelEndpoint } from './mosaicoPanel';
 import { decode, download, encode, MosaicoTools, useMosaicoDevice } from './MosaicoTools';
@@ -11,16 +12,21 @@ type MosaicoSource = 'local' | 'device';
 
 const EMPTY: ChatCodingState = { schemaVersion: 1, revision: 0, records: [], connected: false };
 const errorText = (value: unknown) => value instanceof Error ? value.message : String(value);
-const rememberedEndpoint = () => { try { return mosaicoPanelEndpoint(localStorage.getItem('zhangwen-mosaico-panel-address') ?? '') ?? ''; } catch { return ''; } };
-const rememberEndpoint = (value: string) => { try { localStorage.setItem('zhangwen-mosaico-panel-address', value); } catch { /* optional address preference */ } };
+const rememberedEndpoint = (scope = '') => { try { return mosaicoPanelEndpoint(localStorage.getItem('zhangwen-mosaico-panel-address'+scope) ?? '') ?? ''; } catch { return ''; } };
+const rememberEndpoint = (value: string, scope = '') => { try { localStorage.setItem('zhangwen-mosaico-panel-address'+scope, value); } catch { /* optional address preference */ } };
 
-export function useChatCoding({ active, project, task, unsaved, disabled, onSaved, onBusy, prepareProject, onProjectPrepared }: {
+export function useChatCoding({ active, project, task, unsaved, disabled, onSaved, onBusy, prepareProject, onProjectPrepared, controllerScope }: {
   active: boolean; project: Project | null; task: string; unsaved: boolean; disabled: boolean;
   onSaved: (id: string) => Promise<void>; onBusy: (value: boolean) => void;
   prepareProject: () => Promise<Project>; onProjectPrepared: (project: Project) => void;
+  controllerScope?: MosaicoScope;
 }) {
+  const api = controllerScope?.client ?? baseApi;
+  const addressScope = controllerScope ? ':'+controllerScope.key : '';
+  const readEndpoint = () => rememberedEndpoint(addressScope);
+  const storeEndpoint = (value:string) => rememberEndpoint(value,addressScope);
   const [state, setState] = useState<ChatCodingState>(EMPTY);
-  const [endpoint, setEndpoint] = useState(rememberedEndpoint);
+  const [endpoint, setEndpoint] = useState(readEndpoint);
   const [observation, setObservation] = useState('');
   const [busy, setBusy] = useState('');
   const [error, setError] = useState('');
@@ -33,10 +39,12 @@ export function useChatCoding({ active, project, task, unsaved, disabled, onSave
   const prepareForSource = prepareProject;
   const setSource=(value:MosaicoSource)=>{
     if(luaBusy||busy||deviceBusy)return;
+    const previous=source;
     setSourceValue(value);
+    if(controllerScope&&project)void api(`/projects/${project.id}/mosaico-source`,'POST',{source:value}).catch(e=>{setSourceValue(previous);setError(errorText(e));});
   };
-  const device = useMosaicoDevice(active,setDeviceBusy);
-  const lua = useLuaCoding({active,project,unsaved,disabled,device,onSaved,onBusy:setLuaBusy,prepareProject:prepareForSource,onProjectPrepared});
+  const device = useMosaicoDevice(active,setDeviceBusy,api);
+  const lua = useLuaCoding({active,project,unsaved,disabled,device,onSaved,onBusy:setLuaBusy,prepareProject:controllerScope?prepareProject:prepareForSource,onProjectPrepared,controllerScope});
   const [attachments,setAttachments]=useState<string[]>([]);
   useEffect(()=>{onBusy(!!busy||deviceBusy||luaBusy);},[busy,deviceBusy,luaBusy,onBusy]);
   const currentProject = useRef(project?.id); currentProject.current = project?.id;
@@ -56,11 +64,11 @@ export function useChatCoding({ active, project, task, unsaved, disabled, onSave
 
   useEffect(() => {
     let current = true;
-    setState(EMPTY); setEndpoint(rememberedEndpoint()); setError(''); setNotice(''); setObservation('');
+    setState(EMPTY); setEndpoint(readEndpoint()); setError(''); setNotice(''); setObservation('');
     setAttachments([]);
     if (!active) setConnectionOpen(false);
     if (ready && id) void api<ChatCodingState>(`/projects/${id}/chat-coding`).then(value => {
-      if (current) { setState(value); setEndpoint(value.endpoint ?? rememberedEndpoint()); }
+      if (current) { setState(value); setEndpoint(value.endpoint ?? readEndpoint()); }
     }).catch(err => { if (current) setError(errorText(err)); });
     return () => { current = false; };
   }, [id, ready, active]);
@@ -94,7 +102,7 @@ export function useChatCoding({ active, project, task, unsaved, disabled, onSave
         setNotice(operation === '/send' ? '发送请求已处理。回执仅表示设备接收状态，请查看回复并观察实物。' : operation === '/disconnect' ? '已断开掌问连接；设备上的任务可能仍在运行。' : operation === '/observations' ? '已保存个人观察，未自动判定硬件成功。' : operation === '/connect' ? (value.protocol === 'legacy-websocket' ? '已连接旧版 WebIM 实时通道。回复会自动收取；设备不提供历史补读或运行状态。' : 'WebIM接口匹配；主控型号和固件能力仍须按实物核对。') : '会话记录已读取；请结合设备回复和实物现象判断。');
         if (operation === '/observations') setObservation('');
         if (operation === '/send') setAttachments([]);
-        if (operation === '/connect') { setConnectionOpen(false); if (value.endpoint) rememberEndpoint(value.endpoint); }
+        if (operation === '/connect') { setConnectionOpen(false); if (value.endpoint) storeEndpoint(value.endpoint); }
       }
       await onSaved(projectId);
     } catch (err) {
@@ -131,7 +139,7 @@ export function useChatCoding({ active, project, task, unsaved, disabled, onSave
     if (!target) { setError('请在连接设备中填写局域网IPv4 HTTP地址，例如 http://192.168.60.126。'); setConnectionOpen(true); return; }
     try {
       if(!device.state.connected) await device.connect(target);
-      rememberEndpoint(target);setEndpoint(target);
+      storeEndpoint(target);setEndpoint(target);
       if(source==='device'&&ready&&!state.connected) await perform('连接设备','/connect',{endpoint:target});
       else setConnectionOpen(false);
     } catch { /* management hook exposes the error */ }
@@ -139,7 +147,7 @@ export function useChatCoding({ active, project, task, unsaved, disabled, onSave
   const disconnectDevice = async () => {try {await device.disconnect();if(state.connected)await perform('断开连接','/disconnect');setState(EMPTY);}catch{/* retain error */}};
   return { state, endpoint, setEndpoint, observation, setObservation, busy, locked, ready, saved, pending, taskBytes,
     error, notice, deviceMessages, perform, canSend, send, connectionOpen, setConnectionOpen, device, connectDevice, disconnectDevice,
-    projectId:ready?id:undefined, onDeviceSaved:()=>id?onSaved(id):Promise.resolve(),attachments,setAttachments,uploadAttachment,downloadReply,source,setSource,lua };
+    scoped:!!controllerScope,projectId:ready?id:undefined, onDeviceSaved:()=>id?onSaved(id):Promise.resolve(),attachments,setAttachments,uploadAttachment,downloadReply,source,setSource,lua };
 }
 
 type Controller = ReturnType<typeof useChatCoding>;
@@ -169,12 +177,13 @@ export function ChatCodingConversation({ chat, task, onTask, onSave, mobileTab, 
   chat: Controller; task: string; onTask: (value: string) => void; onSave: () => void; mobileTab: string; onSettings: () => void;
 }) {
   const { state, deviceMessages, locked } = chat;
+  const taskId=useId();
   const unmirrored = state.records.filter(r => r.kind === 'submission' && !deviceMessages.some(m => m.role === 'user' && m.session === r.session && m.text === r.text));
   const conversation = [...deviceMessages, ...unmirrored].sort((a,b) => {
     if (a.session === b.session && a.kind === 'device-history' && b.kind === 'device-history') return Number(a.id.split('_').at(-1)) - Number(b.id.split('_').at(-1));
     return a.createdAt.localeCompare(b.createdAt);
   });
-  const picker=<MosaicoSourcePicker value={chat.source} disabled={locked||!!chat.lua.busy} onChange={chat.setSource}/>;
+  const picker=chat.scoped?<div className="lua-source"><label>编程方式<select aria-label="编程方式" value={chat.source} disabled={locked} onChange={e=>chat.setSource(e.target.value as 'local'|'device')}><option value="local">Lua 脚本编程</option><option value="device">设备原生 Claw</option></select></label></div>:<MosaicoSourcePicker value={chat.source} disabled={locked||!!chat.lua.busy} onChange={chat.setSource}/>;
   if(chat.source==='local') return <LuaConversation lua={chat.lua} mobileTab={mobileTab} onSettings={onSettings} onSource={()=>chat.setSource('device')} picker={picker}/>;
   return <section className={`ai-panel panel native-chat-panel mobile-${mobileTab === 'ai' ? 'show' : 'hide'}`} aria-label="Mosaico Chat Coding对话">
     <div className="panel-head"><h2><Sparkles size={18}/>掌问 · Chat Coding</h2><span className="native-chat-source">设备原生 Claw</span></div>
@@ -190,9 +199,11 @@ export function ChatCodingConversation({ chat, task, onTask, onSave, mobileTab, 
     <p className="chat-hint">设备收到任务后可能生成并执行 Lua。核对任务和接线后发送，回复需结合实物观察判断。</p>
     {chat.pending && <p className="chat-error" role="alert">上次发送结果未知，请在设备面板核对；不会自动重发。</p>}
     <form className="chat-form" onSubmit={e => { e.preventDefault(); chat.send(); }}>
-      <label className="sr-only" htmlFor="chat-coding-task">Chat Coding任务</label>
-      <textarea id="chat-coding-task" value={task} maxLength={4000} disabled={locked} onChange={e => onTask(e.target.value)} onKeyDown={e => { if ((e.ctrlKey || e.metaKey) && e.key === 'Enter' && !e.nativeEvent.isComposing) { e.preventDefault(); chat.send(); } }} placeholder="描述想让 Mosaico 完成的任务…"/>
-      <label className="native-chat-attachment">添加附件（最多4个，每个1 MB）<input aria-label="Chat Coding附件" type="file" disabled={locked||!chat.ready||!state.connected||!chat.device.state.connected||chat.attachments.length>=4} onChange={e=>{const file=e.target.files?.[0];if(file)void chat.uploadAttachment(file);e.target.value='';}}/></label>{chat.attachments.map(file=><div key={file}><small>{file.split('/').at(-1)}</small><button type="button" disabled={locked} onClick={()=>chat.setAttachments(paths=>paths.filter(p=>p!==file))}>移出待发送</button></div>)}<div><span>{chat.taskBytes} / 4000 字节 · {chat.saved ? '已保存' : '请先保存任务'}</span><button type="button" className="native-save-task" disabled={locked} onClick={onSave}><Save size={15}/>保存任务</button><button type="submit" className="primary icon-button" aria-label="发送任务到设备" title="发送已保存任务到设备" disabled={!chat.canSend}><ArrowUp size={20}/></button></div>
+      <label className="native-chat-attachment">添加附件（最多4个，每个1 MB）<input aria-label="Chat Coding附件" type="file" disabled={locked||!chat.ready||!state.connected||!chat.device.state.connected||chat.attachments.length>=4} onChange={e=>{const file=e.target.files?.[0];if(file)void chat.uploadAttachment(file);e.target.value='';}}/></label>{chat.attachments.map(file=><div key={file}><small>{file.split('/').at(-1)}</small><button type="button" disabled={locked} onClick={()=>chat.setAttachments(paths=>paths.filter(p=>p!==file))}>移出待发送</button></div>)}<div><span>{chat.taskBytes} / 4000 字节 · {chat.saved ? '已保存' : '请先保存任务'}</span><button type="button" className="native-save-task" disabled={locked} onClick={onSave}><Save size={15}/>保存任务</button></div>
+      <div className="native-composer-row">
+      <label className="sr-only" htmlFor={taskId}>Chat Coding任务</label>
+      <textarea id={taskId} value={task} maxLength={4000} disabled={locked} onChange={e => onTask(e.target.value)} onKeyDown={e => { if ((e.ctrlKey || e.metaKey) && e.key === 'Enter' && !e.nativeEvent.isComposing) { e.preventDefault(); chat.send(); } }} placeholder="描述想让 Mosaico 完成的任务…"/>
+      <button type="submit" className="primary icon-button" aria-label="发送任务到设备" title="发送已保存任务到设备" disabled={!chat.canSend}><ArrowUp size={20}/></button></div>
     </form>
   </section>;
 }
@@ -202,6 +213,7 @@ export function ChatCodingTask({ chat, task, versions, selectedVersion, onVersio
   onVersion: (revision: number) => void; mobileTab: string; saveState: string; folderError: string; onRetryFolder: () => void;
 }) {
   const { state, locked } = chat;
+  const observationId=useId();
   return <section className={`code-panel panel native-task-panel mobile-${mobileTab === 'code' ? 'show' : 'hide'}`} aria-label="Chat Coding任务与记录">
     {chat.source==='local'?<>
       <LuaProgram key={chat.projectId} lua={chat.lua} connected={chat.device.state.connected} onConnect={() => chat.setConnectionOpen(true)} saveState={saveState} folderError={folderError} onRetryFolder={onRetryFolder} observations={<div className="lua-observations"><label>发生了什么？<textarea aria-label="Lua实际观察" value={chat.observation} maxLength={2000} disabled={locked} onChange={e=>chat.setObservation(e.target.value)}/></label><button disabled={locked||!chat.ready||!chat.observation.trim()} onClick={()=>void chat.perform('保存观察','/observations',{text:chat.observation})}>保存观察</button>{state.records.filter(r=>r.kind==='observation').map(r=><p key={r.id}>{r.text}</p>)}</div>}/>
@@ -215,7 +227,7 @@ export function ChatCodingTask({ chat, task, versions, selectedVersion, onVersio
       <div className="native-task-preview" aria-label="当前任务文件"><p className="muted">在对话输入框编辑，保存后形成任务版本。</p><pre>{task || '尚未输入任务。'}</pre></div>
       <p className="chat-hint" role="status">{state.protocol === 'legacy-websocket' ? '旧版实时会话 · 设备不提供运行状态' : state.session ? `设备会话：${state.runState === 'running' ? '处理中' : state.runState === 'queued' ? '已排队' : '空闲'}` : '尚未创建设备会话'} · 回执不代表实物通过。</p>
       <details className="chat-coding-receipts"><summary>发送回执 · {state.records.filter(r => r.kind === 'submission').length} 条</summary>{state.records.filter(r => r.kind === 'submission').map(r => <article key={r.id}><strong>{r.state === 'submitted' ? '设备返回接收回执' : '结果未知，勿重复发送'}</strong><p>任务 V{r.taskRevision}{r.runId !== undefined ? ` · 运行编号 ${r.runId}` : ''}</p><pre>{r.text}</pre><small>{r.createdAt} · {r.id}</small></article>)}</details>
-      <section className="chat-coding-observations"><h3>我的实际观察</h3><label htmlFor="claw-observation">发生了什么？与预期哪里不同？</label><textarea id="claw-observation" value={chat.observation} maxLength={2000} disabled={locked} onChange={e => chat.setObservation(e.target.value)} placeholder="例如：屏幕出现了文字，但按键没有反应。"/><button disabled={!chat.ready || locked || !chat.observation.trim()} onClick={() => void chat.perform('保存观察','/observations',{text:chat.observation})}>保存观察</button>{state.records.filter(r => r.kind === 'observation').map(r => <article key={r.id}><p>{r.text}</p><small>{r.createdAt} · 用户记录</small></article>)}</section>
+      <section className="chat-coding-observations"><h3>我的实际观察</h3><label htmlFor={observationId}>发生了什么？与预期哪里不同？</label><textarea id={observationId} value={chat.observation} maxLength={2000} disabled={locked} onChange={e => chat.setObservation(e.target.value)} placeholder="例如：屏幕出现了文字，但按键没有反应。"/><button disabled={!chat.ready || locked || !chat.observation.trim()} onClick={() => void chat.perform('保存观察','/observations',{text:chat.observation})}>保存观察</button>{state.records.filter(r => r.kind === 'observation').map(r => <article key={r.id}><p>{r.text}</p><small>{r.createdAt} · 用户记录</small></article>)}</section>
     </div>
     </>}
   </section>;

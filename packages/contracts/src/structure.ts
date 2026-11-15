@@ -44,6 +44,7 @@ export interface CadResult {
   templateParts?: TemplatePart[];
   designSpec?: DesignSpec;
   hardwareInstallations?: HardwareInstallation[];
+  projectControllers?: StructureController[];
   laserTextPaths?: Record<string, string>;
   [key: string]: unknown;
 }
@@ -54,6 +55,7 @@ export interface StructureVersion {
   designType?: 'model' | 'laser'; name?: string;
 }
 export interface StructureWorkspace {
+  validation?: { sourceRevision: number; checks: CadCheck[]; message: string };
   revision: number; versions: StructureVersion[];
   messages: { id: string; role: 'user' | 'assistant'; content: string; createdAt: string; designType?: 'model' | 'laser' }[];
 }
@@ -74,10 +76,14 @@ export interface LaserPreviewInput { expectedRevision: number; sourceRevision: n
 /** Coordinates in the panel drawing: X right, Y down, no automatic mirroring. */
 export interface HardwarePlacement {
   componentId: string; skillRevision: string;
+  /** Omitted in legacy single-controller layouts; identifies a physical copy. */
+  controllerId?: string;
   panel: 'top' | 'bottom' | 'front' | 'back' | 'left' | 'right';
   x: number; y: number; rotation: 0 | 90 | 180 | 270;
   method: 'screw' | 'adhesive' | 'opening_only'; includeOpenings: boolean;
 }
+export interface StructureController { id: string; name: string; boardId: string; componentIds: string[] }
+export interface StructureHardwareInstance { controllerId: string; controllerName: string; componentId: string }
 export interface HardwareInstallation {
   placement: HardwarePlacement; name: string; source: Record<string, unknown>;
   cutCount: number; note: string;

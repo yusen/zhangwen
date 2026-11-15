@@ -7,6 +7,24 @@ from .endpoints import configured, is_deepseek
 from .workflow_models import Proposal
 
 
+def parse_proposal(content):
+    """Accept complete structured advice or plain discussion, never partial JSON."""
+    text=content.strip()
+    if text.startswith('```json') or text.startswith('```zhangwen'):
+        if not text.endswith('```'): raise ValueError('incomplete JSON fence')
+        text=text.split('\n',1)[1].rsplit('```',1)[0].strip()
+    if text.startswith('{'):
+        data=json.loads(text)
+        # Some providers put discussion in details while leaving tests/definition absent.
+        if isinstance(data,dict) and 'details' in data and not data.get('definition') and not data.get('tests'):
+            details=data.pop('details')
+            if not isinstance(details,str): raise ValueError('invalid discussion')
+            data['summary']='\n\n'.join(filter(None,[data.get('summary',''),details]))
+        return Proposal.model_validate(data)
+    if not text or text.startswith(('[','```')): raise ValueError('invalid discussion')
+    return Proposal(summary=text)
+
+
 async def propose(message, role, state, settings):
     if not configured(settings): raise HTTPException(503,'请先在“AI 设置”中为学习设计师配置服务。手工填写与保存不受影响。')
     value=state['checkpoint']
@@ -19,6 +37,10 @@ async def propose(message, role, state, settings):
              'caseStates':state.get('caseStates',[]),'activeChange':state.get('activeChange'),'reviewSources':state.get('reviewSources'),
              'requirementChanges':[{k:v for k,v in c.items() if k!='baseline'} for c in value.get('changes',[])[-12:]],
              'observations':[{k:r[k] for k in ('id','createdAt','test','baseline','result','observed','changes') if k in r} for r in selected]}
+    from .references import select_references
+    citations,notice=select_references(state.get('projectReferences',[]),message)
+    context['references']=citations
+    context['referenceNotice']=notice
     system='''你是掌问的学习设计师。用户是教师、学生和DIY爱好者，称“你”或“用户”，不用老板、总办、主控角色、收口、基线、产物等公司或开发术语。
 你的主要职责是辅助用户完成项目制作，在动手过程中理解方法、分析问题并积累经验。用日常中文简短回复，每轮最多问一个关键问题。
 通过对话逐步确定作品目标，不要求用户先填写立项表。先结合器件、用途、制作条件澄清想法；信息足够时主动用definition整理标准作品需求说明（PRD）：problem背景问题、audience使用者场景、goal作品目标、behavior功能与动作流程、parameters参数、exceptionPolicy异常处理、constraints范围限制、criteria完成条件。未知项注明待确认。用户核对确认后成为共用目标；以真实确认记录为准。未选主控时继续引导选择主控，不要求切换工程师；器件测试建议可先整理但实物结论只能由用户记录。确认后继续当前制作任务。
@@ -41,7 +63,11 @@ role仅用于兼容历史师生记录。默认面向正在制作项目的人，�
 交付项目定义必须填写goal、behavior和至少一条非空criteria（每条最多500字）。criteria是可观察的验收预期，不能只写在summary或tests里而将criteria留空。
 同时给定义与测试时，整机测试的预期应与criteria对应；未知的角度、尺寸、供电、固件写“待实测确认”，不编造数值，不以缺少这些数值为由清空已明确的验收目标。
 确实没有足够信息提出目标、动作或验收预期时，先问一个必要问题，不能用“已整理完整”描述缺失关键字段的定义。
-definition与tests仅为待审阅建议，用户需要明确保存。不要输出任何设备命令或代码。'''
+definition与tests仅为待审阅建议，用户需要明确保存。不要输出任何设备命令或代码。
+用户只讨论进展、原理、实验设计或数据分析时，直接在summary给出完整指导，definition=null、tests=[]，无需强行生成目标或测试。summary可用分段文本，最多12000字。
+修改已有测试时保留原测试id；主控范围controllerIds使用current.controllers的id数组，空数组代表整机。componentId只能取所选主控实际modules.id，不用显示名称代替ID。同型号的多块板是独立实物，按id逐一核对数量、固定/运动位置和职责，位置未知则问清楚，不能自行多算一块。
+测试清单默认testsMode=merge，表示新增或更新；用户明确要求合并精简、替换整份清单时testsMode=replace，tests必须给完整新清单，未保留项仅停用、历史观察保留。不能声称已保存或以建议数量冒充实际生效数量。
+references仅为本轮真正提供的资料片段；只能据此说明已读范围，不能声称看过未发送的原图或完整视频。'''
     if state.get('reviewSources') is not None:
         system += '''\n用户显式要求检查整体成果。请阅读reviewSources的已保存程序、结构说明和前后变化，结合目标、实际条件、caseStates与观察，输出结果，不能只汇编资料或再次询问是否检查。
 必须返回review对象：{"conclusion":"先说明整体状态、目前能否判断达到目标及理由","comparison":"比较程序与结构变化，核对安装位置/行程与控制角度/时序等配合，指出具体依据和未知条件","gaps":["仍缺什么"],"nextSteps":["可操作的下一步"],"decisions":["需要用户决定什么"]}。
@@ -54,13 +80,15 @@ truncated/inputTruncated表示资料有截断，必须说明检查范围，不�
     try:
         async with asyncio.timeout(100),httpx.AsyncClient(timeout=httpx.Timeout(90,connect=15),trust_env=False,follow_redirects=False) as client:
             response=await client.post(settings['baseUrl']+'/chat/completions',headers={'Authorization':'Bearer '+settings['apiKey']} if settings['apiKey'] else {},json={
-                'model':settings['model'],'messages':messages,'max_tokens':4000,'stream':False,
+                'model':settings['model'],'messages':messages,'max_tokens':8000,'stream':False,
                 **({'thinking':{'type':'disabled'},'response_format':{'type':'json_object'}} if is_deepseek(settings['baseUrl']) else {})})
             response.raise_for_status()
             if len(response.content)>180000: raise ValueError('reply too large')
             choice=response.json()['choices'][0]
             if choice.get('finish_reason') not in {None,'stop'}: raise ValueError('incomplete reply')
-            return Proposal.model_validate_json(choice['message']['content'])
+            result=parse_proposal(choice['message']['content'])
+            result.references=citations;result.referenceNotice=notice
+            return result
     except (httpx.TimeoutException,TimeoutError) as exc: raise HTTPException(504,'学习设计师回复超时，原记录保留。请先刷新核对已有回复。') from exc
     except httpx.HTTPError as exc: raise HTTPException(502,'学习设计师的 AI 服务连接失败，请检查“AI 设置”；原记录保留。') from exc
-    except (ValueError,KeyError,IndexError,TypeError) as exc: raise HTTPException(502,'学习设计师未返回完整的建议格式，原记录保留。') from exc
+    except (ValueError,KeyError,IndexError,TypeError) as exc: raise HTTPException(502,'学习设计师回复不完整或字段未通过校验，输入和原记录保留。可将本轮改为“只讨论这一步，不修改目标和清单”，或分开整理目标与测试后发送；没有自动重试。') from exc

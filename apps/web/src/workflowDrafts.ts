@@ -11,6 +11,10 @@ export interface WorkflowDrafts {
   definitionEdited: boolean;
   pendingDefinition: ProjectDefinition | null;
   generatedTests: TestSuggestion[];
+  testsMode?: 'merge' | 'replace';
+  testsEdited?: boolean;
+  pendingTests?: { tests:TestSuggestion[]; mode:'merge'|'replace' };
+  testBackup?: { tests:TestSuggestion[]; mode:'merge'|'replace' };
   conditions: ProjectConditions | null;
   test: CaseDraft | null;
   observations: Record<string, TestObservation>;
@@ -26,13 +30,13 @@ export function readDrafts(id: string): WorkflowDrafts {
       const v = JSON.parse(raw) as WorkflowDrafts;
       if (typeof v.prompt === 'string' && typeof v.observations === 'object' && v.observations !== null && (v.baseRevision === null || Number.isSafeInteger(v.baseRevision))) {
         // Drafts from the previous UI are hand drafts until explicitly saved.
-        return { ...freshDrafts(), ...v, definitionEdited: v.definitionEdited ?? !!v.definition, generatedTests: Array.isArray(v.generatedTests) ? v.generatedTests : [] };
+        return { ...freshDrafts(), ...v, definitionEdited: v.definitionEdited ?? !!v.definition, generatedTests: Array.isArray(v.generatedTests) ? v.generatedTests : [], testsEdited:v.testsEdited??(Array.isArray(v.generatedTests)&&v.generatedTests.length>0) };
       }
     }
   } catch { /* Preserve the original browser backup if it cannot be read. */ }
   return freshDrafts();
 }
-export const testSuggestionKey = (t: TestSuggestion) => JSON.stringify([t.stage, t.componentId, t.title.trim(), t.procedure.trim(), t.expected.trim()]);
+export const testSuggestionKey = (t: TestSuggestion) => JSON.stringify([t.stage, [...(t.controllerIds??[])].sort(), t.componentId, t.title.trim(), t.procedure.trim(), t.expected.trim()]);
 export function newTestSuggestions(tests: TestSuggestion[], saved: TestSuggestion[]): TestSuggestion[] {
   const seen = new Set(saved.map(testSuggestionKey));
   return tests.filter(test => {
@@ -46,9 +50,14 @@ export function newTestSuggestions(tests: TestSuggestion[], saved: TestSuggestio
 export function projectProposal(drafts: WorkflowDrafts, proposal: WorkflowProposal, saved: ProjectTestCase[], revision: number): WorkflowDrafts {
   const definition = proposal.definition ? definitionContent(proposal.definition) : null;
   const preserveManual = !!drafts.definition && drafts.definitionEdited;
+  const generated=proposal.testsMode==='replace'?proposal.tests:newTestSuggestions(proposal.tests,saved.filter(t=>t.active));
+  const preserveTests=!!drafts.testsEdited&&drafts.generatedTests.length>0;
   return {
     ...drafts, baseRevision: revision, prompt: '',
     ...(definition ? preserveManual ? { pendingDefinition: definition } : { definition, definitionEdited: false, pendingDefinition: null } : {}),
-    generatedTests: newTestSuggestions([...drafts.generatedTests, ...proposal.tests], saved),
+    // A new proposal supersedes untouched generated drafts. Edited lists and
+    // individual hand drafts remain available for review.
+    ...(proposal.tests.length ? preserveTests?{pendingTests:{tests:generated,mode:proposal.testsMode??'merge'}}:
+      {generatedTests:generated,testsMode:proposal.testsMode??'merge',testsEdited:false,pendingTests:undefined} : {}),
   };
 }

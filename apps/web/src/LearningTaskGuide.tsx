@@ -32,6 +32,7 @@ export function LearningTaskGuide({view,disabled,selected,pendingTests,onDefine,
     <details className="classroom-details making-progress"><summary>查看整体制作进展</summary><dl className="classroom-record-details">
       <div><dt>作品目标</dt><dd>{goal?`V${goal.revision} 已确认`:'尚未确认'} <button onClick={onDefine}>查看目标</button></dd></div>
       <div><dt>程序</dt><dd>{view.current.code.revision?`已保存 V${view.current.code.revision}，运行与效果需到智能工程师核对`:'尚无已保存程序；需要控制功能时再编写'}</dd></div>
+      {(view.current.controllers?.length??0)>1&&view.current.controllers?.map(c=><div key={c.id}><dt>{c.name}</dt><dd>{c.code.mode} V{c.code.revision??'未关联'} · 仅已保存，实物效果待观察</dd></div>)}
       <div><dt>结构</dt><dd>{view.current.structure?`已保存 V${view.current.structure.revision}，模型状态与试装需到结构工程师核对`:'尚无已保存结构；需要外壳或机构时再设计'}</dd></div>
       <div><dt>实际测试</dt><dd>{cases.length?`${cases.length} 项要求，${passed} 项有当前适用的用户通过记录${needsRetest?`，${needsRetest} 项需复测`:''}`:'尚未建立测试要求'}</dd></div>
     </dl><div className="workflow-actions"><button onClick={onConditions}>实际接线与条件</button><button onClick={onCollaborate}>查看目标调整与协作记录</button></div></details>

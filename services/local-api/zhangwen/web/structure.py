@@ -428,7 +428,7 @@ class StructureService:
         # Same captured sources for ordinary parameter previews; an explicit new
         # profile revision is resolved read-only from the original Skill store.
         changed = request.hardwarePlacements is not None and [p.model_dump() for p in request.hardwarePlacements] != [i['placement'] for i in previous.get('hardwareInstallations', [])]
-        facts = mechanical.context(self.repo.skills, [p.componentId for p in request.hardwarePlacements]) if changed and request.hardwarePlacements else []
+        facts = mechanical.project_context(self.repo, project_id, [p.componentId for p in request.hardwarePlacements])['hardware'] if changed and request.hardwarePlacements else []
         return await design_service.act(action, previous, {}, None, {'projectHardware': facts}, preview_only=True)
 
     async def act(self, project_id: str, request: StructureInput, settings: dict) -> dict:
@@ -436,7 +436,7 @@ class StructureService:
             raise HTTPException(409, '已有结构设计正在处理，请完成后再操作。')
         async with self.gate:
             workspace = self.get(project_id)
-            if workspace['revision'] >= 200:
+            if workspace['revision'] >= 200 and request.action != 'validate':
                 raise HTTPException(413, '当前项目已有200个结构版本，请保存归档后新建项目。')
             if workspace['revision'] != request.expectedRevision:
                 raise HTTPException(409, '结构版本已在另一页面更新，请重新加载后再操作。')
@@ -526,24 +526,34 @@ class StructureService:
                 conversation = {'history': [{'request': v['result'].get('requestText') or v['prompt'],
                     'summary': v['result'].get('message', '')[:1200], 'questions': v['result'].get('questions', [])}
                     for v in history[-8:]], 'pendingQuestions': previous.get('questions', [])}
-                project = self.repo.get(project_id)
-                facts = mechanical.context(self.repo.skills, request.hardwareComponentIds if request.hardwareComponentIds is not None else [project['boardId'], *project['componentIds']])
+                assembly = mechanical.project_context(self.repo, project_id, request.hardwareComponentIds)
+                facts = assembly['hardware']
                 for fact in facts:
                     fact['cadProfiles'] = [p for p in live_profiles if p.get('componentId') == fact['componentId']]
                     if fact['cadProfiles'] and fact.get('mechanicalProfile'):
                         fact['missing'] = []
                 conversation['projectHardware'] = facts
+                conversation['projectControllers'] = assembly['controllers']
                 from .workflow import context as project_definition_context
-                conversation['confirmedProjectDefinition'] = project_definition_context(self.repo, project_id)
+                conversation['confirmedProjectDefinition'] = project_definition_context(self.repo, project_id,request.message or prompt)
                 conversation['selectedStructureProfiles'] = [p for p in [*live_profiles, *profiles] if p['id'] in ids]
                 if request.designType == 'model':
-                    conversation['referenceCases'] = builtin_templates.reference_cases()
+                    try: conversation['referenceCases'] = builtin_templates.reference_cases()
+                    except (ValueError,OSError) as exc:
+                        raise HTTPException(422,'内置案例资料校验失败，请修复安装后重试，原结构记录保留。') from exc
                 if request.hardwarePlacements is not None:
                     conversation['pendingHardwarePlacements'] = [p.model_dump() for p in request.hardwarePlacements]
                 if valid:
                     conversation['spec'] = valid
                 result = await design_service.act(request, previous, settings, job_root, conversation)
+                if request.action == 'validate':
+                    return {**workspace,'validation':{'sourceRevision':base['revision'],'checks':result.get('checks',[]),
+                        'message':'已检查已保存结构；未新增设计版本，几何检查不代表实物装配通过。'}}
+                from .shared_project import snapshot as shared_snapshot
+                shared=shared_snapshot(self.repo,project_id,query=request.message or prompt)
+                result['references']=shared['references'];result['referenceNotice']=shared['referenceNotice']
                 result['hardwareContext'] = facts
+                result['projectControllers'] = assembly['controllers']
                 result = self.public_result(result, project_id, job_id, job_root)
                 version = {'revision': workspace['revision'] + 1, 'createdAt': datetime.now(UTC).isoformat(), 'prompt': request.message or (base['prompt'] if base else result['title']),
                     'selectedIds': ids, 'customProfiles': profiles, 'result': result, 'offline': bool(result.get('generationSource') == 'local_text_intent' or request.template or (base and base.get('offline') and request.action in {'build', 'parameters', 'validate'})),
@@ -551,9 +561,10 @@ class StructureService:
                 self.commit(project_id, version, request.message or result['title'], result.get('message') or result['title'])
                 return self.get(project_id)
             project = self.repo.get(project_id)
-            selected_hardware = set(request.hardwareComponentIds) if request.hardwareComponentIds is not None else {project['boardId'], *project['componentIds']}
+            assembly = mechanical.project_context(self.repo, project_id, request.hardwareComponentIds)
+            selected_hardware = {f['componentId'] for f in assembly['hardware']}
             from .workflow import context as project_definition_context
-            body['confirmedProjectDefinition'] = project_definition_context(self.repo, project_id)
+            body['confirmedProjectDefinition'] = project_definition_context(self.repo, project_id,request.message or prompt)
             body['engineeringHardware'] = [{'componentId': item['componentId'], 'name': item['displayName']}
                 for item in self.repo.skills.web_summaries() if item['componentId'] in selected_hardware]
             available = all(importlib.util.find_spec(x) is not None for x in ['cadquery', 'OCP'])
@@ -561,8 +572,8 @@ class StructureService:
                 'python': sys.executable, 'settings': settings, 'offline': offline, 'previousResult': previous,
                 'environment': {'cadqueryAvailable': available, 'missingPythonPackages': [] if available else ['cadquery', 'OCP']}})
             if request.action == 'validate':
-                # Validation must retain the existing asset references and artifact stage.
-                result['status'] = previous['status']
+                return {**workspace,'validation':{'sourceRevision':base['revision'],'checks':result.get('checks',[]),
+                    'message':'已检查已保存结构；未新增设计版本，几何检查不代表实物装配通过。'}}
             else:
                 result = self.public_result(result, project_id, job_id, job_root)
             revision = workspace['revision'] + 1
