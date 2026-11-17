@@ -35,6 +35,8 @@ curl -fsSL https://gitee.com/zmh1979/ask-with-your-palm/raw/master/install.sh | 
 
 结构设计使用 CadQuery/OCP/trimesh，首次安装需要下载几何库。Intel Mac 的 numpy/numba/llvmlite/nlopt 使用独立精确版本，依赖检测与 pip 均按同一平台条件选择；Intel Mac 复用 Python 3.12/3.13，其他解释器由启动入口切换至托管 3.13.7。Windows、Apple Silicon 继续使用对应平台的锁定版本。
 
+Windows 桌面快捷方式通过 Unicode Shell 接口保存，兼容英文系统中的“掌问”名称和中文目录。更新时仅移除指向同一安装位置的旧英文快捷方式，其他安装的入口保留。
+
 macOS 锁目录若因强制关机留下，确认没有安装程序后再移除提示中的 install.lock 或 bootstrap-unix.lock 目录；Windows 文件锁进程结束自动释放。
 
 ## 安装位置与数据
