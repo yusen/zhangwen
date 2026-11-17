@@ -10,6 +10,7 @@ import type { AiSettings, ChatMessage, CheckResult, CodeRepair, CreateProject, H
 import { DEFAULT_AI_MODEL } from '../../../packages/contracts/src/platform';
 import { api, ApiError, bootstrap, chat } from './api';
 import { MicroPythonDevice, serialApi } from './serial';
+import { MicrobitPreparation } from './MicrobitPreparation';
 import { latestBackup, persistBackup } from './backups';
 import { Editor, type EditorHandle } from './Editor';
 import { Dialog } from './Dialog';
@@ -506,11 +507,16 @@ export default function App() {
                 setCodeVersions(result.versions);
                 const firstLoad = restoredPreviewProject.current !== project.id;
                 restoredPreviewProject.current = project.id;
-                const recovered = result.versions.find(item => item.source === 'ai' && item.boardId === currentHardware.current.board && item.code.trim());
-                if (firstLoad && recovered && !project.code.trim() && !currentCode.current.trim() && !manualCodeDirtyRef.current) {
+                const recovered = result.versions.find(item => item.source === 'ai' && item.revision > project.revision
+                    && item.boardId === currentHardware.current.board && item.code.trim());
+                // Restore only a candidate newer than the saved program. An in-flight
+                // reply owns the next preview; late history must not change its baseline.
+                if (firstLoad && recovered && !sendingMessage.current) {
                     setCandidate(recovered);
-                    setCodePreview(recovered);
-                    setCheck(null);
+                    if (!manualCodeDirtyRef.current && currentCode.current === project.code) {
+                        setCodePreview(recovered);
+                        setCheck(null);
+                    }
                 }
             }).catch(err => { if (active)
                 setError('读取代码历史失败：' + errorText(err)); });
@@ -1410,7 +1416,7 @@ export default function App() {
     {workspaceOpen && sharedProjectOpen && project && <SharedProjectDialog key={`shared:${project.id}`} projectId={project.id} unsaved={workspaceDirty} onClose={() => setSharedProjectOpen(false)}/>}
     {workspaceOpen ? <>
     <header className="workspace-titlebar">
-      <a className="title-brand" href="/" aria-label="掌问：智能体造物工作台"><span><img src={palmMark} alt="" width={24} height={24}/></span><strong>掌问：智能体造物工作台</strong></a>
+      <a className="title-brand" href="/" aria-label="掌问·AI造物工作台"><span><img src={palmMark} alt="" width={24} height={24}/></span><strong>掌问·AI造物工作台</strong></a>
       <div className="title-project-actions" role="group" aria-label="项目操作">
         <ActionMenu label="项目" disabled={projectLocked} items={[
                 { label: '新建项目', icon: Plus, onSelect: openNew },
@@ -1627,7 +1633,7 @@ export default function App() {
         setCodePreview(null);
         setCheck(null);
     } }}/>}
-    {firmwareDialog && boardInfo && (board === MICROBIT_BOARD ? <Dialog title="micro:bit 固件准备" onClose={() => setFirmwareDialog(false)}><p>先备份设备上的旧程序，再使用官方 Python 编辑器为实际 V1/V2 主控准备 MicroPython。完成后回到掌问连接串口，运行主控自检，再上传 main.py。</p><a href="https://python.microbit.org/v/3" target="_blank" rel="noreferrer">打开官方 micro:bit Python 编辑器</a><p className="muted">掌问不会自动刷写 HEX。main.py 上传前备份并完整回读；写入中断后须重连核对，不自动重发。</p></Dialog> : <FirmwareDialog board={boardInfo} onClose={() => setFirmwareDialog(false)} onBusy={setFlashing}/>)}
+    {firmwareDialog && boardInfo && (board === MICROBIT_BOARD ? <MicrobitPreparation onClose={() => setFirmwareDialog(false)}/> : <FirmwareDialog board={boardInfo} onClose={() => setFirmwareDialog(false)} onBusy={setFlashing}/>)}
     {aiSettingsDialog && <AiSettingsDialog settings={{ aiConfigured, aiModel, aiBaseUrl }} initialMode={mode} onClose={() => setAiSettingsDialog(false)} onSaved={result => { if (!result.mode || result.mode === 'engineer') {
         setAiConfigured(result.aiConfigured);
         setAiModel(result.aiModel);

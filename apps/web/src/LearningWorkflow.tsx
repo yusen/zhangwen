@@ -21,6 +21,7 @@ import './learning.css';
 import './workflow.css';
 import { ReferenceSources } from './ProjectReferences';
 import { TestScopeFields } from './TestScopeFields';
+import { ProjectImageDialog } from './ProjectImageDialog';
 
 function download(name: string, value: string, type='application/json') {
   const url=URL.createObjectURL(new Blob([value],{type}));const a=document.createElement('a');a.href=url;a.download=name;a.click();setTimeout(()=>URL.revokeObjectURL(url),1500);
@@ -60,6 +61,7 @@ export function LearningWorkflow({active,project,board,modules,section,sectionSe
   const [selected,setSelected]=useState(''),[stage,setStage]=useState<TestStage>('module'),[collapsed,setCollapsed]=useState(true),[preview,setPreview]=useState(false);
   const [caption,setCaption]=useState(''),[showConditions,setShowConditions]=useState(false),[history,setHistory]=useState(false);
   const [editingGoal,setEditingGoal]=useState(false);
+  const [showImages,setShowImages]=useState(false);
   const [showTests,setShowTests]=useState(()=>!!(drafts.test||drafts.generatedTests.length||Object.keys(drafts.observations).length));
   const [needsRead,setNeedsRead]=useState(false);
   const entered=useRef(false);
@@ -232,7 +234,7 @@ export function LearningWorkflow({active,project,board,modules,section,sectionSe
         <button className="workflow-side-button" onClick={()=>setShowConditions(true)}><FileText size={15}/>实际接线与条件</button><button className="workflow-side-button" onClick={()=>setPreview(true)}><BookOpen size={15}/>材料模板与案例<small>预览</small></button>
         {dirty&&<button className="workflow-side-button" onClick={()=>download('掌问-学习草稿.json',JSON.stringify(drafts,null,2))}><Download size={15}/>导出当前草稿</button>}
       </div></aside>
-      <section className="panel learning-chat"><div className="panel-head"><h2><Sparkles size={17}/>学习设计师</h2><small>陪你一步步完成作品</small></div>
+      <section className="panel learning-chat"><div className="panel-head"><h2><Sparkles size={17}/>学习设计师</h2><button disabled={!project||working} onClick={()=>setShowImages(true)}><ImagePlus size={16}/>生成图示</button></div>
         <details className="workflow-shared-goal compact-disclosure"><summary><span role="status">{project?sharedDefinitionStatus(value?.definitions):'请先打开项目'}</span><small>目标说明</small></summary><p>对话会逐步整理目标、功能与完成条件。你确认后的作品说明会供三师共同参考；具体协作仍由你决定。</p></details>
         <div className="workflow-conversation" ref={chatScroll}>{project&&section!=='outcomes'&&<section className="conversation-hardware-confirm" aria-label="确认制作器件">
           <strong>{!board?'先一起选一块主控板':hardwareDirty?'器件选择尚未保存':hardwareConfirmed===hardwareSignature?'本轮器件已确认':'这些器件适合这次作品吗？'}</strong>
@@ -299,5 +301,6 @@ export function LearningWorkflow({active,project,board,modules,section,sectionSe
     </main>
     {active&&showConditions&&<Dialog title="本项目的实际条件" onClose={()=>setShowConditions(false)}><p className="muted">记录本次实际使用的条件；模块资料中的默认案例不会自动替代这里的记录。</p>{field('固件与库版本',conditions.firmware,text=>edit({conditions:{...conditions,firmware:text}}),{maxLength:1000})}{field('实际接线',conditions.wiring,text=>edit({conditions:{...conditions,wiring:text}}),{maxLength:2000,placeholder:'模块 → 接口/引脚；I²C地址与总线'})}{field('供电方式',conditions.power,text=>edit({conditions:{...conditions,power:text}}),{maxLength:1000,placeholder:'电源电压、供电对象、独立供电和共地；未确认写待确认'})}{field('装配条件',conditions.assembly,text=>edit({conditions:{...conditions,assembly:text}}),{placeholder:'空载/带载、固定方式、开合空间和实测尺寸'})}<div aria-live="polite">{error&&<p role="alert">{error}</p>}{notice&&<p role="status">{notice}</p>}{conflict&&<button onClick={()=>setShowConditions(false)}>返回记录，核对保存冲突</button>}</div><button className="primary" disabled={working||!drafts.conditions} onClick={()=>void saveConditions()}>保存实际条件</button></Dialog>}
     {active&&preview&&<Dialog title="学习材料与案例预览" className="workflow-template-dialog" onClose={()=>setPreview(false)}><LearningWorkspace active projectName={project?.name??'项目'} project={project} board={board} modules={modules} role={role} section={section} onSection={onSection}/></Dialog>}
+    {active&&showImages&&project&&<ProjectImageDialog key={project.id} projectId={project.id} projectName={project.name} onClose={()=>setShowImages(false)} onBusy={onBusy} hardwareDirty={hardwareDirty} onSaved={async()=>{await refresh();await onSaved(project.id);}}/>}
   </div>;
 }

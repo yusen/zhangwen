@@ -36,7 +36,7 @@ from zhangwen.web.structure import StructureService, structure_router
 from zhangwen.web import mechanical
 from zhangwen.web.mode_settings import load as load_mode_settings, for_mode
 from .legacy_names import settings_path as compatible_settings_path, environment_model, session_header
-from . import references, personal_modules, workflow, project_folder, channels
+from . import references, personal_modules, workflow, project_folder, channels, project_images
 from . import chat_coding, mosaico_device, lua_coding
 from .programming_modes import board_mode
 from typing import Literal
@@ -184,6 +184,7 @@ def create_app(data_dir: Path | None=None, *, port: int=30801, dev: bool=False) 
     app.state.ai_mode_settings = mode_overrides
     app.state.structure = StructureService(repo, data_dir)
     app.include_router(references.router(repo, lambda: for_mode(app.state, 'learning')))
+    app.include_router(project_images.router(repo, data_dir))
     app.include_router(project_folder.router(repo))
     app.include_router(workflow.router(repo, lambda: for_mode(app.state, 'learning')))
     app.include_router(personal_modules.router(repo))
@@ -240,6 +241,8 @@ def create_app(data_dir: Path | None=None, *, port: int=30801, dev: bool=False) 
 
     @app.exception_handler(RequestValidationError)
     async def invalid_request(request: Request, exc: RequestValidationError):
+        if request.url.path == '/api/settings/images':
+            return JSONResponse({'detail': '请核对图片 API 基础地址、Key、模型名称及返回格式。地址须为HTTPS（本机可HTTP），不含凭据、查询或 /images/generations；Key和模型不能包含空白或控制字符。'}, status_code=422)
         if request.url.path in {'/api/settings/ai', '/api/settings/ai/test'}:
             return JSONResponse({'detail': '请核对 API 地址、Key 和模型名称：地址使用HTTPS（本机可HTTP），不含凭据、查询或/chat/completions；Key最多500字符；模型ID须为1–100字符，不含空白或控制字符。'}, status_code=422)
         return await request_validation_exception_handler(request, exc)

@@ -18,7 +18,7 @@ export function StartScreen({ loading, ready, busy, error, theme, onTheme, onNew
   const disabled = loading || !ready || !!busy;
   return <div className="start-screen">
     <header className="workspace-titlebar">
-      <span className="title-brand"><span><img src={palmMark} alt="" width={24} height={24} /></span><strong>掌问：智能体造物工作台</strong></span>
+      <span className="title-brand"><span><img src={palmMark} alt="" width={24} height={24} /></span><strong>掌问·AI造物工作台</strong></span>
       <span className="start-header-label">对话即创造</span>
       <button className="theme-toggle" aria-label={theme === 'light' ? '切换深色主题' : '切换浅色主题'} onClick={onTheme}>{theme === 'light' ? <Moon size={17} /> : <Sun size={17} />}</button>
     </header>

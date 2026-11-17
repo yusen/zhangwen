@@ -124,11 +124,11 @@
 - [手搓小智：DIFY+掌控板](https://mp.weixin.qq.com/s/cnAYEfgUubl2f_Gf9yg9JA)
 - [对话即创造与免登录进课堂](https://mp.weixin.qq.com/s/uhTg1GoyBdNsHff1opiUjw)
 
-当前工作台标题为 **掌问：智能体造物工作台**。Mosaico 提供掌问模型生成 Lua、WiFi 显式上传运行及可手动切换的设备原生 Claw。完整生成的 Lua 自动保存；手工修改需保存，上传运行仍由用户点击。首次安装固定 Lua 服务及重启分别确认。原生 Idea 应用暂不随本次发布，完整开发源码保留在本机。见[使用说明](docs/MOSAICO_WIFI_RUN_20261030.md)。
+当前工作台标题为 **掌问·AI造物工作台**。Mosaico 提供掌问模型生成 Lua、WiFi 显式上传运行及可手动切换的设备原生 Claw。完整生成的 Lua 自动保存；手工修改需保存，上传运行仍由用户点击。首次安装固定 Lua 服务及重启分别确认。原生 Idea 应用暂不随本次发布，完整开发源码保留在本机。见[使用说明](docs/MOSAICO_WIFI_RUN_20261030.md)。
 
-**GitHub 与 Gitee 本次同步版本为 `V0.4.2026.1115.03`，包含多主控制作流程修复。默认安装命令使用 Gitee；GitHub 下载源保留，已安装版本可在掌问中检查更新。**
+**GitHub 当前版本为 `V0.4.2026.1117.01`，包含代码栏刷新修复、micro:bit 上传提示优化和学习设计师图示功能。Gitee 保持 `V0.4.2026.1115.03`。默认安装命令使用 Gitee；使用 GitHub 下载源的已安装版本可在掌问中检查更新。**
 
-本次产品改动与验证范围见 [版本说明](docs/RELEASE_20261115_03.md)。
+本次产品改动与验证范围见 [版本说明](docs/RELEASE_20261117_01.md)。学习设计师的线路方框图、项目方案图和独立图片 API 设置见 [图示使用说明](docs/LEARNING_IMAGE_GUIDE.md)。
 
 ## 一条命令安装并启动
 

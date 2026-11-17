@@ -55,7 +55,11 @@ export class MicroPythonDevice {
     this.connectionId = crypto.randomUUID();
     this.setState('connecting');
     try {
-      await this.port.open({ baudRate: 115200 });
+      try { await this.port.open({ baudRate: 115200 }); }
+      catch (error) {
+        if (!this.microbit) throw error;
+        throw new Error('micro:bit 串口未能打开，尚未检测固件。请关闭占用串口的其他编辑器；若设备管理器中的 mbed Serial Port 报错 39，需先修复串口驱动。原始错误：' + (error instanceof Error ? error.message : String(error)));
+      }
       if (!this.port.readable || !this.port.writable) throw new Error('串口未提供可读写通道。');
       this.reader = this.port.readable.getReader();
       this.writer = this.port.writable.getWriter();
@@ -67,7 +71,9 @@ export class MicroPythonDevice {
           await this.enterRaw();
           // Check the runtime before importing MicroPython-only board modules.
           if (this.microbit) {
-            const result = await this.execute('import sys\nfrom microbit import display\nprint("ZW_MICROBIT|" + sys.implementation[0] + "|" + sys.platform + "|" + sys.version.replace("\\n", " "))');
+            // sys.version is the Python language compatibility version (e.g.
+            // 3.4.0 on V1), not the MicroPython/board firmware version.
+            const result = await this.execute('import sys, os\nfrom microbit import display\n_zw_info=os.uname() if hasattr(os,"uname") else None\n_zw_version=(_zw_info[3]+"; "+_zw_info[4]) if _zw_info else ("MicroPython "+".".join(str(n) for n in sys.implementation[1]))\nprint("ZW_MICROBIT|"+sys.implementation[0]+"|"+sys.platform+"|"+_zw_version.replace("\\n"," ").replace("|","/"))\ndel _zw_info, _zw_version');
             const fields = result.trim().split('|');
             if (fields.length !== 4 || fields[0] !== 'ZW_MICROBIT' || !/microbit/i.test(fields[2])) throw new Error('当前串口未确认是 micro:bit MicroPython。请从官方 Python 编辑器准备固件后再连接。');
             // micro:bit V1 has no portable hardware unique-id API. Never invent a hardware serial.
@@ -77,8 +83,12 @@ export class MicroPythonDevice {
             parsed = JSON.parse(result.trim());
           }
         } catch (error) {
-          if (error instanceof DeviceResponseTimeout) throw new Error('未检测到有效的 MicroPython 响应，可能是固件版本不对，请重刷固件。若已刷入 MicroPython，请确认串口、数据线及主控已退出 BOOT 下载模式后重试连接。');
-          if (error instanceof SyntaxError || (error instanceof Error && error.message.startsWith('MicroPython:'))) throw new Error('MicroPython 固件检测未通过，请重刷当前主控对应的固件后重新连接。');
+          if (error instanceof DeviceResponseTimeout) throw new Error(this.microbit
+            ? '未收到 micro:bit 的 MicroPython 响应，固件尚未确认。请核对选中的串口，关闭占用串口的其他编辑器后重新连接；若仍无响应，再从「固件准备」核对官方 MicroPython。'
+            : '未检测到有效的 MicroPython 响应，可能是固件版本不对，请重刷固件。若已刷入 MicroPython，请确认串口、数据线及主控已退出 BOOT 下载模式后重试连接。');
+          if (error instanceof SyntaxError || (error instanceof Error && error.message.startsWith('MicroPython:'))) throw new Error(this.microbit
+            ? '已收到串口响应，但未能确认 micro:bit MicroPython 接口。请查看终端错误，并从「固件准备」核对当前固件。'
+            : 'MicroPython 固件检测未通过，请重刷当前主控对应的固件后重新连接。');
           throw error;
         }
         if (!parsed || typeof parsed !== 'object') throw new Error('固件身份响应无效，无法确认 MicroPython，请重刷当前主控对应的固件。');

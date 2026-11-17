@@ -4,6 +4,7 @@ import type { AiDiagnosticCheck, AiDiagnosticReport, AiSettings, SaveAiSettings,
 import { DEEPSEEK_MODELS } from '../../../packages/contracts/src/platform';
 import { api, bootstrap, testAiSettings } from './api';
 import { Dialog } from './Dialog';
+import { ImageSettingsDialog } from './ImageSettingsDialog';
 
 const providers = [
   { id: 'deepseek', name: 'DeepSeek', url: 'https://api.deepseek.com', models: [...DEEPSEEK_MODELS] as string[] },
@@ -17,6 +18,7 @@ export function AiSettingsDialog({ settings: initial, initialMode = 'engineer', 
   settings: AiSettings; initialMode?: WorkspaceMode; onSaved: (settings: AiSettings) => void; onClose: () => void;
 }) {
   const [settings, setSettings] = useState(initial);
+  const [imageSettingsOpen, setImageSettingsOpen] = useState(false);
   const [mode, setMode] = useState<WorkspaceMode>(initialMode);
   const [loading, setLoading] = useState(initialMode !== 'engineer');
   const [provider, setProvider] = useState(providers.find(item => item.url === initial.aiBaseUrl)?.id ?? 'custom');
@@ -79,9 +81,11 @@ export function AiSettingsDialog({ settings: initial, initialMode = 'engineer', 
     } catch (err) { setError(err instanceof Error ? err.message : 'AI 设置保存失败，请重试。'); }
     finally { setSaving(false); }
   };
+  if (imageSettingsOpen) return <ImageSettingsDialog onClose={() => setImageSettingsOpen(false)}/>;
   return <Dialog title="AI 设置" onClose={close}>
     <form onSubmit={event => { event.preventDefault(); void save(); }}>
       <p className="muted">由教师或设备管理员填写模型服务信息。三个角色可以使用不同模型，学生使用前配置一次即可。</p>
+      <button type="button" disabled={saving || testing} onClick={() => setImageSettingsOpen(true)}>图片模型 API 设置</button>
       <label className="field">设置哪个角色<select aria-label="设置哪个角色" value={mode} disabled={saving || testing} onChange={event => setMode(event.target.value as WorkspaceMode)}>{Object.entries(modeNames).map(([id, name]) => <option key={id} value={id}>{name}</option>)}</select></label>
       {settings.inherited && <p className="muted">当前沿用智能工程师的设置。保存后，此角色使用自己的设置。</p>}
       <fieldset disabled={loading || saving || testing} className="ai-provider-fields">
