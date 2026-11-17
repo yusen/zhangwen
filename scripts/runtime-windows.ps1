@@ -49,6 +49,7 @@ function Get-PythonRuntime([string]$Executable, [string]$Prefix = '', [switch]$R
     $output = Invoke-RuntimeProbe $Executable ($Prefix + ' -c ' + $code)
     if (!$output) { return $null }
     $lines = $output -split '\r?\n'
-    if ($lines.Count -ne 3 -or $lines[0] -notmatch '^3 (\d+) (\d+)$' -or [int]$Matches[1] -lt 12) { return $null }
+    # The locked native CAD dependencies support CPython 3.12 through 3.14.
+    if ($lines.Count -ne 3 -or $lines[0] -notmatch '^3 (\d+) (\d+)$' -or [int]$Matches[1] -lt 12 -or [int]$Matches[1] -ge 15) { return $null }
     return [pscustomobject]@{ Executable = $lines[1]; Version = ($lines[0] -replace ' ', '.'); IsVenv = ($lines[2] -eq '1') }
 }

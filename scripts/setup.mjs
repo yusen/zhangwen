@@ -68,10 +68,10 @@ try {
   lock = openSync(lockPath, 'wx');
   writeFileSync(lock, String(process.pid));
   if (!existsSync(localPython)) {
-    console.log('准备项目内 Python 虚拟环境（需要 Python 3.12+）…');
+    console.log('准备项目内 Python 虚拟环境（需要 Python 3.12–3.14）…');
     await run(process.env.ZHANGWEN_PYTHON || (process.platform === 'win32' ? 'python' : 'python3'), ['-m', 'venv', resolve(root, '.venv')]);
   }
-  await run(localPython, ['-c', 'import platform, sys; assert sys.version_info >= (3, 12) and (sys.platform != "darwin" or platform.machine() != "x86_64" or sys.version_info < (3, 14)), "Python 3.12+ required; Intel macOS needs Python 3.12/3.13 (use bash start-web.sh)"']);
+  await run(localPython, ['-c', 'import platform, sys; assert (3, 12) <= sys.version_info < (3, 15) and (sys.platform != "darwin" or platform.machine() != "x86_64" or sys.version_info < (3, 14)), "Python 3.12-3.14 required; Intel macOS needs Python 3.12/3.13 (use start-web.bat or bash start-web.sh)"']);
   function inspectPython() {
     // The first CadQuery/VTK import can populate native-library and font
     // caches on a fresh Mac. Keep the probe bounded without treating that

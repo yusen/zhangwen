@@ -25,7 +25,7 @@ curl -fsSL https://gitee.com/zmh1979/ask-with-your-palm/raw/master/install.sh | 
 ## 环境准备顺序
 
 1. 读取选定仓库分支的不可变提交 SHA（Gitee master / GitHub main）。Windows 上述命令带 `-Reinstall`，同一版本也重新下载；不带该参数时复用完整包，损坏包自动下载修复。macOS 复用校验通过的版本，缺失才下载该 SHA 的源码 ZIP。Windows 检查压缩包路径和链接，macOS 检查路径；逐文件校验 DEPLOYMENT.sha256 后才执行包内脚本。
-2. 离线检查项目运行时和本机 Node 22+/npm、Python 3.12+；可用则复用。缺失时直接下载 Node 24.14.0、Python 3.13.7 独立构建 20250918（固定 SHA-256），所有渠道均无需 uv。国内渠道使用 npm 国内镜像，GitHub 渠道使用 Node 官网与 python-build-standalone 上游发布文件。Windows x64、macOS arm64/x64 分别选择匹配运行时，不需要 sudo；安装器下载的运行时放在安装根的 runtime，各程序版本共享并先检测复用。
+2. 离线检查项目运行时和本机 Node 22+/npm、Python 3.12–3.14（Intel Mac 为 3.12/3.13）；可用则复用。跳过 Python 3.15 等尚不适配锁定几何依赖的版本。缺失时直接下载 Node 24.14.0、Python 3.13.7 独立构建 20250918（固定 SHA-256），所有渠道均无需 uv。国内渠道使用 npm 国内镜像，GitHub 渠道使用 Node 官网与 python-build-standalone 上游发布文件。Windows x64、macOS arm64/x64 分别选择匹配运行时，不需要 sudo；安装器下载的运行时放在安装根的 runtime，各程序版本共享并先检测复用。
 3. 使用 Python 自带的 `venv` 创建每版 `.venv`，通过环境内的 `python -m pip` 安装锁定依赖；本机解释器需具备 `venv` 和 `ensurepip`，否则选择独立 Python。已有可用 `.venv` 直接复用，不因本次准备方式变更而重建。实际包版本和关键导入均检查；前端核对锁文件、平台及命令入口。完整依赖跳过下载，缺失才补齐，npm 优先使用缓存。源码摘要不变时跳过构建。
 
    Windows 覆盖重装会连同旧程序环境暂存，再在原路径准备新的 `.venv`、前端依赖及构建；共享 `runtime` 中的 Node/Python 和可用下载缓存仍可复用。日常启动、正常后台更新及 macOS 同版本重试沿用上述依赖复用逻辑。

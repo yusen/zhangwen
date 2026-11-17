@@ -72,7 +72,7 @@ python_ok() {
   # Apple's developer-tool shim can open an Xcode installation dialog on a
   # fresh Mac. Use an independent interpreter or the managed Python instead.
   case "$1" in /usr/bin/python|/usr/bin/python3) return 1 ;; esac
-  [ -n "$1" ] && [ -x "$1" ] && "$1" -c 'import platform, sys; assert sys.version_info >= (3,12) and (sys.platform != "darwin" or platform.machine() != "x86_64" or sys.version_info < (3,14))' >/dev/null 2>&1
+  [ -n "$1" ] && [ -x "$1" ] && "$1" -c 'import platform, sys; assert (3,12) <= sys.version_info < (3,15) and (sys.platform != "darwin" or platform.machine() != "x86_64" or sys.version_info < (3,14))' >/dev/null 2>&1
 }
 python_venv_ok() {
   python_ok "$1" && "$1" -c 'import venv, ensurepip' >/dev/null 2>&1

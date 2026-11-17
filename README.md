@@ -126,9 +126,9 @@
 
 当前工作台标题为 **掌问·AI造物工作台**。Mosaico 提供掌问模型生成 Lua、WiFi 显式上传运行及可手动切换的设备原生 Claw。完整生成的 Lua 自动保存；手工修改需保存，上传运行仍由用户点击。首次安装固定 Lua 服务及重启分别确认。原生 Idea 应用暂不随本次发布，完整开发源码保留在本机。见[使用说明](docs/MOSAICO_WIFI_RUN_20261030.md)。
 
-**GitHub 当前版本为 `V0.4.2026.1117.01`，包含代码栏刷新修复、micro:bit 上传提示优化和学习设计师图示功能。Gitee 保持 `V0.4.2026.1115.03`。默认安装命令使用 Gitee；使用 GitHub 下载源的已安装版本可在掌问中检查更新。**
+**GitHub 当前版本为 `V0.4.2026.1117.02`，包含代码栏刷新修复、micro:bit 上传提示优化、学习设计师图示及安装器 Python 兼容性修复。Gitee 保持 `V0.4.2026.1115.03`。默认安装命令使用 Gitee；使用 GitHub 下载源的已安装版本可在掌问中检查更新。**
 
-本次产品改动与验证范围见 [版本说明](docs/RELEASE_20261117_01.md)。学习设计师的线路方框图、项目方案图和独立图片 API 设置见 [图示使用说明](docs/LEARNING_IMAGE_GUIDE.md)。
+本次产品改动与验证范围见 [版本说明](docs/RELEASE_20261117_02.md)。学习设计师的线路方框图、项目方案图和独立图片 API 设置见 [图示使用说明](docs/LEARNING_IMAGE_GUIDE.md)。
 
 ## 一条命令安装并启动
 
@@ -206,7 +206,7 @@ I²C模块资料显示默认/参考地址，可按主控保存实际地址与接
 
 ## 已下载源码时
 
-Windows 双击 `start-web.bat`，macOS 执行 `bash start-web.sh`。已有 Node 22+、Python 3.12+ 时也可以 `npm run setup` 后 `npm start`。Intel Mac 使用 Python 3.12/3.13；启动入口会自动选择兼容环境，几何依赖按处理器分别锁定。
+Windows 双击 `start-web.bat`，macOS 执行 `bash start-web.sh`。已有 Node 22+、Python 3.12–3.14 时也可以 `npm run setup` 后 `npm start`。Intel Mac 使用 Python 3.12/3.13；启动入口会自动选择兼容环境，跳过 Python 3.15 等尚不适配锁定几何依赖的版本。
 
 安装入口先检查已有环境；缺失时直接下载 Node 24.14.0、Python 3.13.7（独立构建 20250918），核验固定 SHA-256，再用 Python 自带的 `venv + pip` 创建隔离环境和安装依赖，无需 uv。Windows 和 macOS 均适用。不修改系统 PATH、执行策略或凭据，无管理员权限要求。服务只监听 `127.0.0.1`。
 
